@@ -1,0 +1,160 @@
+import prisma from "../../config/prisma.js";
+import AppError from "../../shared/errors/app-error.js";
+import crypto from "crypto";
+
+const generateRequirementCode = () => {
+  return `REQ-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
+};
+
+export const createJobRequirement = async (clientId, data) => {
+  // Extract relations
+  const { requiredSkills, requiredLanguages, ...requirementData } = data;
+
+  const jobRequirement = await prisma.jobRequirement.create({
+    data: {
+      ...requirementData,
+      clientId,
+      requirementCode: generateRequirementCode(),
+      status: "OPEN", // As per design, directly submit as OPEN for this flow
+      requiredSkills: requiredSkills
+        ? {
+            create: requiredSkills.map((skill) => ({
+              skillId: skill.skillId,
+              experienceYears: skill.experienceYears,
+              proficiencyLevel: skill.proficiencyLevel,
+              isMandatory: skill.isMandatory,
+            })),
+          }
+        : undefined,
+      requiredLanguages: requiredLanguages
+        ? {
+            create: requiredLanguages.map((lang) => ({
+              languageId: lang.languageId,
+              proficiencyLevel: lang.proficiencyLevel,
+              isMandatory: lang.isMandatory,
+            })),
+          }
+        : undefined,
+    },
+    include: {
+      requiredSkills: { include: { skill: true } },
+      requiredLanguages: { include: { language: true } },
+      category: true,
+      location: true,
+    },
+  });
+
+  return jobRequirement;
+};
+
+export const getJobRequirements = async (clientId, query) => {
+  const { status, locationId, page = 1, limit = 10 } = query;
+  
+  const where = {
+    clientId,
+    deletedAt: null,
+  };
+  
+  if (status) where.status = status;
+  if (locationId) where.locationId = locationId;
+
+  const skip = (page - 1) * limit;
+
+  const [total, data] = await Promise.all([
+    prisma.jobRequirement.count({ where }),
+    prisma.jobRequirement.findMany({
+      where,
+      skip,
+      take: Number(limit),
+      orderBy: { createdAt: "desc" },
+      include: {
+        category: true,
+        location: true,
+      },
+    }),
+  ]);
+
+  return { total, data, page: Number(page), limit: Number(limit) };
+};
+
+export const getJobRequirementById = async (id, clientId) => {
+  const jobRequirement = await prisma.jobRequirement.findFirst({
+    where: { id, clientId, deletedAt: null },
+    include: {
+      requiredSkills: { include: { skill: true } },
+      requiredLanguages: { include: { language: true } },
+      category: true,
+      location: true,
+    },
+  });
+
+  if (!jobRequirement) {
+    throw new AppError("Job requirement not found", 404);
+  }
+
+  return jobRequirement;
+};
+
+export const updateJobRequirement = async (id, clientId, data) => {
+  const existingJob = await getJobRequirementById(id, clientId);
+
+  if (existingJob.status === "CANCELLED" || existingJob.status === "CLOSED" || existingJob.status === "COMPLETED") {
+    throw new AppError("Cannot edit a job requirement in its current status", 400);
+  }
+
+  if (["PARTIALLY_FILLED", "FILLED"].includes(existingJob.status)) {
+    // Restricted editing
+    if (data.startDate || data.locationId || data.salaryAmount) {
+      throw new AppError("Cannot edit start date, location, or salary after workers are assigned", 400);
+    }
+  }
+
+  const { requiredSkills, requiredLanguages, ...updateData } = data;
+
+  // For complex relation updates, usually we delete and recreate or use a transaction.
+  // For simplicity, we only update the main requirement fields here.
+  const updatedJob = await prisma.jobRequirement.update({
+    where: { id },
+    data: updateData,
+  });
+
+  return updatedJob;
+};
+
+export const cancelJobRequirement = async (id, clientId, reason) => {
+  const existingJob = await getJobRequirementById(id, clientId);
+
+  if (existingJob.status === "CANCELLED" || existingJob.status === "CLOSED" || existingJob.status === "COMPLETED") {
+    throw new AppError("Job requirement cannot be cancelled in its current status", 400);
+  }
+
+  const requiresReason = ["PARTIALLY_FILLED", "FILLED", "IN_PROGRESS"].includes(existingJob.status);
+  
+  if (requiresReason && !reason) {
+    throw new AppError("A cancellation reason is required for jobs with assigned workers", 400);
+  }
+
+  const updatedJob = await prisma.jobRequirement.update({
+    where: { id },
+    data: {
+      status: "CANCELLED",
+      cancellationReason: reason,
+    },
+  });
+
+  return updatedJob;
+};
+
+export const deleteJobRequirement = async (id, clientId) => {
+  const existingJob = await getJobRequirementById(id, clientId);
+
+  if (!["DRAFT", "OPEN"].includes(existingJob.status)) {
+    throw new AppError("Only DRAFT or OPEN requirements can be deleted", 400);
+  }
+
+  // Soft delete
+  await prisma.jobRequirement.update({
+    where: { id },
+    data: { deletedAt: new Date() },
+  });
+};

@@ -143,6 +143,13 @@ enum RequirementStatus {
   CANCELLED
 }
 
+enum ShiftType {
+  MORNING
+  EVENING
+  NIGHT
+  FLEXIBLE
+}
+
 enum SalaryType {
   HOURLY
   DAILY
@@ -276,7 +283,7 @@ model Skill {
 
   // Future module relation placeholders
   workers WorkerSkill[]
-  // jobRequirements  JobRequirementSkill[]
+  jobRequirements  JobRequirementSkill[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -316,7 +323,7 @@ model Language {
 
   // Future module relation placeholders
   workers WorkerLanguage[]
-  // jobRequirements  JobRequirementLanguage[]
+  jobRequirements  JobRequirementLanguage[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -427,9 +434,12 @@ model JobRequirement {
   endTime         String?
   salaryType      SalaryType?
   salaryAmount    Decimal?
-  priority        Priority          @default(MEDIUM)
-  status          RequirementStatus @default(DRAFT)
-  notes           String?
+  priority             Priority          @default(MEDIUM)
+  status               RequirementStatus @default(DRAFT)
+  shift                ShiftType?
+  assignedCount        Int               @default(0)
+  cancellationReason   String?
+  notes                String?
 
   client   Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
   category Category? @relation(fields: [categoryId], references: [id])
@@ -438,8 +448,8 @@ model JobRequirement {
   // Future module relation placeholders
   // bookings         Booking[]
   // assignments      Assignment[]
-  // requiredSkills   JobRequirementSkill[]
-  // requiredLanguages JobRequirementLanguage[]
+  requiredSkills      JobRequirementSkill[]
+  requiredLanguages   JobRequirementLanguage[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -451,4 +461,41 @@ model JobRequirement {
   @@index([status])
   @@index([priority])
   @@index([deletedAt])
+}
+
+model JobRequirementSkill {
+  id               String           @id @default(uuid())
+  jobRequirementId String
+  skillId          String
+  experienceYears  Int?
+  proficiencyLevel SkillProficiency
+  isMandatory      Boolean          @default(true)
+
+  jobRequirement JobRequirement @relation(fields: [jobRequirementId], references: [id], onDelete: Cascade)
+  skill          Skill          @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([jobRequirementId, skillId])
+  @@index([jobRequirementId])
+  @@index([skillId])
+}
+
+model JobRequirementLanguage {
+  id               String              @id @default(uuid())
+  jobRequirementId String
+  languageId       String
+  proficiencyLevel LanguageProficiency
+  isMandatory      Boolean             @default(true)
+
+  jobRequirement JobRequirement @relation(fields: [jobRequirementId], references: [id], onDelete: Cascade)
+  language       Language       @relation(fields: [languageId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([jobRequirementId, languageId])
+  @@index([jobRequirementId])
+  @@index([languageId])
 }
