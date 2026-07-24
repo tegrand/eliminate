@@ -49,3 +49,11 @@ export const verifyRefreshToken = (token) => {
     return null;
   }
 };
+
+export const verifyAccessToken = (token) => {
+  try {
+    return jwt.verify(token, authConfig.accessSecret);
+  } catch (error) {
+    return null;
+  }
+};
