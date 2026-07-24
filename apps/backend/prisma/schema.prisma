@@ -242,3 +242,23 @@ model Skill {
   @@index([isActive])
   @@index([deletedAt])
 }
+
+model Category {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  slug        String  @unique
+  description String?
+  isActive    Boolean @default(true)
+
+  // Future module relation placeholders
+  // workers          WorkerCategory[]
+  // jobRequirements  JobRequirementCategory[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([slug])
+  @@index([isActive])
+  @@index([deletedAt])
+}
