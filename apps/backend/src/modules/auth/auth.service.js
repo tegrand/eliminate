@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 
 import prisma from "../../config/prisma.js";
 import authConfig from "../../config/auth.config.js";
@@ -220,4 +221,85 @@ export const getCurrentUser = async (userId) => {
   }
 
   return user;
+};
+
+export const changePassword = async (userId, data) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new AppError("Unauthorized", 401);
+  }
+
+  const isPasswordValid = await bcrypt.compare(data.currentPassword, user.passwordHash);
+  if (!isPasswordValid) {
+    throw new AppError("Unauthorized", 401);
+  }
+
+  const isSamePassword = await bcrypt.compare(data.newPassword, user.passwordHash);
+  if (isSamePassword) {
+    throw new AppError("New password cannot be the same as current password", 400);
+  }
+
+  const passwordHash = await bcrypt.hash(data.newPassword, authConfig.bcryptRounds);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      passwordHash,
+      refreshTokenHash: null,
+      refreshTokenExpiresAt: null,
+    },
+  });
+};
+
+export const forgotPassword = async (data) => {
+  const user = await prisma.user.findUnique({
+    where: { email: data.email.toLowerCase().trim() },
+  });
+
+  if (!user) return;
+
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  const resetTokenHash = crypto.createHash("sha256").update(resetToken).digest("hex");
+  const resetTokenExpiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      resetTokenHash,
+      resetTokenExpiresAt,
+    },
+  });
+};
+
+export const resetPassword = async (data) => {
+  const resetTokenHash = crypto.createHash("sha256").update(data.token).digest("hex");
+
+  const user = await prisma.user.findFirst({
+    where: {
+      resetTokenHash,
+      resetTokenExpiresAt: {
+        gt: new Date(),
+      },
+    },
+  });
+
+  if (!user) {
+    throw new AppError("Invalid or expired reset token", 400);
+  }
+
+  const passwordHash = await bcrypt.hash(data.newPassword, authConfig.bcryptRounds);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      passwordHash,
+      resetTokenHash: null,
+      resetTokenExpiresAt: null,
+      refreshTokenHash: null,
+      refreshTokenExpiresAt: null,
+    },
+  });
 };

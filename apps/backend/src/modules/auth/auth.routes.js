@@ -1,7 +1,7 @@
 import { Router } from "express";
 
-import { register, login, refreshToken, logout, me } from "./auth.controller.js";
-import { registerSchema, loginSchema } from "./auth.validation.js";
+import { register, login, refreshToken, logout, me, changePassword, forgotPassword, resetPassword } from "./auth.controller.js";
+import { registerSchema, loginSchema, changePasswordSchema, forgotPasswordSchema, resetPasswordSchema } from "./auth.validation.js";
 
 import validate from "../../middleware/validate.middleware.js";
 import authenticate from "../../middleware/auth.middleware.js";
@@ -25,5 +25,24 @@ router.post("/refresh-token", refreshToken);
 router.post("/logout", logout);
 
 router.get("/me", authenticate, me);
+
+router.patch(
+  "/change-password",
+  authenticate,
+  validate(changePasswordSchema),
+  changePassword
+);
+
+router.post(
+  "/forgot-password",
+  validate(forgotPasswordSchema),
+  forgotPassword
+);
+
+router.post(
+  "/reset-password",
+  validate(resetPasswordSchema),
+  resetPassword
+);
 
 export default router;

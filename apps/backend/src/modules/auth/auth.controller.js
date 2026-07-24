@@ -88,3 +88,23 @@ export const me = asyncHandler(async (req, res) => {
     user
   );
 });
+
+export const changePassword = asyncHandler(async (req, res) => {
+  await authService.changePassword(req.user.id, req.validatedData);
+
+  return ApiResponse.success(
+    res,
+    "Password changed successfully",
+    null
+  );
+});
+
+export const forgotPassword = asyncHandler(async (req, res) => {
+  await authService.forgotPassword(req.validatedData);
+  return ApiResponse.success(res, "If the email exists, a password reset link has been sent.", null);
+});
+
+export const resetPassword = asyncHandler(async (req, res) => {
+  await authService.resetPassword(req.validatedData);
+  return ApiResponse.success(res, "Password reset successfully.", null);
+});
