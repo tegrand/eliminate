@@ -4,6 +4,8 @@ import helmet from "helmet";
 import compression from "compression";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
+import notFoundMiddleware from "./middleware/not-found.middleware.js";
+import errorMiddleware from "./middleware/error.middleware.js";
 
 import routes from "./routes/index.js";
 
@@ -28,6 +30,9 @@ app.use(morgan("dev"));
 
 // API Routes
 app.use("/api/v1", routes);
+
+app.use(notFoundMiddleware)
+app.use(errorMiddleware)
 
 // Health Check
 app.get("/", (req, res) => {
