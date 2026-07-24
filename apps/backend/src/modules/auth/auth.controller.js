@@ -1,7 +1,8 @@
 import asyncHandler from "../../shared/helpers/async-handler.js";
 import ApiResponse from "../../shared/responses/api-response.js";
-
 import * as authService from "./auth.service.js";
+import authConfig from "../../config/auth.config.js";
+import { parseExpToMs } from "./auth.utils.js";
 
 export const register = asyncHandler(async (req, res) => {
   const user = await authService.register(req.validatedData);
@@ -15,11 +16,20 @@ export const register = asyncHandler(async (req, res) => {
 });
 
 export const login = asyncHandler(async (req, res) => {
-  const result = await authService.login(req.validatedData);
+  const { accessToken, refreshToken, user } = await authService.login(req.validatedData);
+
+  const maxAge = parseExpToMs(authConfig.refreshExpiresIn);
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge
+  });
 
   return ApiResponse.success(
     res,
     "Login successful",
-    result
+    { accessToken, user }
   );
 });

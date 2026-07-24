@@ -3,9 +3,9 @@ import bcrypt from "bcrypt";
 import prisma from "../../config/prisma.js";
 import authConfig from "../../config/auth.config.js";
 import AppError from "../../shared/errors/app-error.js";
+import { generateAccessToken, generateRefreshToken, parseExpToMs } from "./auth.utils.js";
 
 export const register = async (data) => {
-
   // Check email
   const existingUser = await prisma.user.findUnique({
     where: {
@@ -42,7 +42,6 @@ export const register = async (data) => {
       profileType: data.accountType,
       roleId: role.id,
     },
-
     select: {
       id: true,
       email: true,
@@ -60,28 +59,62 @@ export const login = async (data) => {
     where: {
       email: data.email.toLowerCase().trim(),
     },
-
     include: {
       role: true,
     },
   });
 
   if (!user) {
-    throw new AppError(
-      "Invalid email or password",
-      401
-    );
+    throw new AppError("Invalid email or password", 401);
   }
 
-  // TODO
+  const isPasswordValid = await bcrypt.compare(data.password, user.passwordHash);
+  if (!isPasswordValid) {
+    throw new AppError("Invalid email or password", 401);
+  }
 
-  // Account status
+  switch (user.status) {
+    case "PENDING":
+      throw new AppError("Your account is pending approval.", 403);
+    case "SUSPENDED":
+      throw new AppError("Your account has been suspended.", 403);
+    case "REJECTED":
+      throw new AppError("Your account has been rejected.", 403);
+    case "DELETED":
+      throw new AppError("Account not available.", 403);
+    case "ACTIVE":
+      break;
+    default:
+      throw new AppError("Invalid account status.", 403);
+  }
 
-  // Compare password
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
 
-  // Generate JWT
+  const refreshTokenHash = await bcrypt.hash(refreshToken, authConfig.bcryptRounds);
+  const refreshTokenExpiresAt = new Date(Date.now() + parseExpToMs(authConfig.refreshExpiresIn));
 
-  // Save Refresh Token
+  const updatedUser = await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      refreshTokenHash,
+      refreshTokenExpiresAt,
+      lastLoginAt: new Date(),
+      failedLoginAttempts: 0,
+    },
+    select: {
+      id: true,
+      email: true,
+      status: true,
+      profileType: true,
+      emailVerified: true,
+      emailVerifiedAt: true,
+      lastLoginAt: true,
+      role: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
 
-  // Return user
+  return { accessToken, refreshToken, user: updatedUser };
 };
