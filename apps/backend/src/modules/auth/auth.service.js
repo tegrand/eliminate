@@ -193,3 +193,31 @@ export const logout = async (token) => {
     });
   }
 };
+
+export const getCurrentUser = async (userId) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      email: true,
+      status: true,
+      profileType: true,
+      emailVerified: true,
+      createdAt: true,
+      updatedAt: true,
+      role: {
+        select: {
+          id: true,
+          name: true,
+          displayName: true,
+        },
+      },
+    },
+  });
+
+  if (!user || user.status !== "ACTIVE") {
+    throw new AppError("Unauthorized", 401);
+  }
+
+  return user;
+};

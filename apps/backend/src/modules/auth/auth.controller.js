@@ -78,3 +78,13 @@ export const logout = asyncHandler(async (req, res) => {
     null
   );
 });
+
+export const me = asyncHandler(async (req, res) => {
+  const user = await authService.getCurrentUser(req.user.id);
+
+  return ApiResponse.success(
+    res,
+    "Current user fetched successfully",
+    user
+  );
+});
