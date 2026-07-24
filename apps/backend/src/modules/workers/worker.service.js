@@ -1,23 +1,25 @@
+import crypto from "crypto";
+
 import prisma from "../../config/prisma.js";
 import AppError from "../../shared/errors/app-error.js";
+
+const generateWorkerCode = () => {
+  return `WRK-${crypto.randomBytes(4).toString("hex").toUpperCase()}`;
+};
 
 const workerSelect = {
   id: true,
   userId: true,
+  workerCode: true,
   firstName: true,
   lastName: true,
   phone: true,
   gender: true,
   dateOfBirth: true,
-  addressLine1: true,
-  addressLine2: true,
-  city: true,
-  state: true,
-  country: true,
-  postalCode: true,
-  profileImage: true,
-  bio: true,
-  isProfileCompleted: true,
+  profilePhoto: true,
+  employmentStatus: true,
+  joiningDate: true,
+  notes: true,
   createdAt: true,
   updatedAt: true,
   user: {
@@ -26,46 +28,59 @@ const workerSelect = {
       email: true,
       status: true,
       profileType: true,
-      role: {
-        select: {
-          id: true,
-          name: true,
-          displayName: true,
-        },
-      },
     },
   },
 };
 
-export const createWorker = async (data) => {
+export const createWorker = async (userId, data) => {
+  // Assuming authorization middleware handles basic access control,
+  // we ensure here that the 1:1 relationship is preserved.
   const existingWorker = await prisma.worker.findUnique({
-    where: { userId: data.userId },
+    where: { userId },
   });
 
   if (existingWorker) {
-    throw new AppError("Worker profile already exists for this user", 400);
+    throw new AppError("Worker profile already exists for this user", 409);
   }
 
+  const workerCode = generateWorkerCode();
+
   const worker = await prisma.worker.create({
-    data,
+    data: {
+      ...data,
+      userId,
+      workerCode,
+    },
     select: workerSelect,
   });
 
   return worker;
 };
 
-export const getWorkers = async ({ page = 1, limit = 10, search, sortBy = 'createdAt', sortOrder = 'desc' }) => {
+export const getWorkers = async ({
+  page = 1,
+  limit = 10,
+  search,
+  status,
+  sortBy = "createdAt",
+  sortOrder = "desc",
+}) => {
   const skip = (page - 1) * limit;
 
   const where = {
     deletedAt: null,
   };
 
+  if (status) {
+    where.employmentStatus = status;
+  }
+
   if (search) {
     where.OR = [
-      { firstName: { contains: search, mode: 'insensitive' } },
-      { lastName: { contains: search, mode: 'insensitive' } },
-      { phone: { contains: search, mode: 'insensitive' } },
+      { firstName: { contains: search, mode: "insensitive" } },
+      { lastName: { contains: search, mode: "insensitive" } },
+      { phone: { contains: search, mode: "insensitive" } },
+      { workerCode: { contains: search, mode: "insensitive" } },
     ];
   }
 
@@ -135,4 +150,6 @@ export const deleteWorker = async (id) => {
     where: { id },
     data: { deletedAt: new Date() },
   });
+
+  return true;
 };
