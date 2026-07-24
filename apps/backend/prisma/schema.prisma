@@ -34,6 +34,7 @@ model Role {
   updatedAt   DateTime @updatedAt
 
   permissions RolePermission[]
+  users       User[]
 
   @@index([isActive])
 }
@@ -66,4 +67,30 @@ model RolePermission {
 
   @@id([roleId, permissionId])
   @@index([permissionId])
+}
+
+model User {
+  id                  String      @id @default(uuid())
+  email               String      @unique
+  passwordHash        String
+  status              UserStatus  @default(PENDING)
+  profileType         ProfileType
+
+  emailVerified       Boolean     @default(false)
+  emailVerifiedAt     DateTime?
+
+  failedLoginAttempts Int         @default(0)
+  lockedUntil         DateTime?
+  lastLoginAt         DateTime?
+
+  roleId              String
+  role                Role        @relation(fields: [roleId], references: [id])
+
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  deletedAt           DateTime?
+
+  @@index([email])
+  @@index([roleId])
+  @@index([status])
 }
