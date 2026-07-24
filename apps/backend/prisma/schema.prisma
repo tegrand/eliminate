@@ -282,3 +282,29 @@ model Language {
   @@index([isActive])
   @@index([deletedAt])
 }
+
+model Location {
+  id          String  @id @default(uuid())
+  name        String
+  code        String  @unique
+  state       String?
+  district    String?
+  country     String?
+  postalCode  String?
+  description String?
+  isActive    Boolean @default(true)
+
+  // Future module relation placeholders
+  // workers          WorkerLocation[]
+  // clients          ClientLocation[]
+  // agencies         AgencyLocation[]
+  // jobRequirements  JobRequirementLocation[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([code])
+  @@index([isActive])
+  @@index([deletedAt])
+}
