@@ -1,22 +1,22 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { ROUTES } from "./routePaths";
-
-// Mock auth hook - will be replaced with real auth logic (zustand/context)
-const useAuth = () => ({ isAuthenticated: true });
+import { useAuth } from "../hooks/useAuth";
 
 const ProtectedRoute = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
+  // Show a loading state while we verify the session on initial load
+  if (isLoading) {
+    // TODO: Replace this with a global Skeleton or Spinner UI component
+    return <div className="min-h-screen flex items-center justify-center text-gray-500">Authenticating...</div>;
+  }
+
+  // If session verification completes and user is not authenticated, kick them to login
   if (!isAuthenticated) {
     return <Navigate to={ROUTES.LOGIN} replace />;
   }
 
-  return (
-    <div className="protected-layout">
-      {/* We can add a common Sidebar/Header layout wrapper here later */}
-      <Outlet />
-    </div>
-  );
+  return <Outlet />;
 };
 
 export default ProtectedRoute;
