@@ -102,6 +102,7 @@ model User {
   roleId String
   role   Role    @relation(fields: [roleId], references: [id])
   worker Worker?
+  client Client?
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -148,5 +149,40 @@ model Worker {
 
   @@index([userId])
   @@index([workerCode])
+  @@index([deletedAt])
+}
+
+model Client {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  clientCode     String? @unique
+  companyName    String?
+  contactPerson  String?
+  phone          String?
+  alternatePhone String?
+  email          String?
+  gstNumber      String?
+  addressLine1   String?
+  addressLine2   String?
+  city           String?
+  state          String?
+  country        String?
+  postalCode     String?
+  notes          String?
+
+  // Future module relation placeholders (awaiting model implementation)
+  // jobRequirements  JobRequirement[]
+  // bookings         Booking[]
+  // invoices         Invoice[]
+  // payments         Payment[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([userId])
+  @@index([clientCode])
   @@index([deletedAt])
 }
