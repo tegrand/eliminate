@@ -23,15 +23,15 @@ enum ProfileType {
 }
 
 model Role {
-  id          String   @id @default(uuid())
-  name        String   @unique
+  id          String  @id @default(uuid())
+  name        String  @unique
   displayName String
   description String?
-  isSystem    Boolean  @default(true)
-  isActive    Boolean  @default(true)
+  isSystem    Boolean @default(true)
+  isActive    Boolean @default(true)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   permissions RolePermission[]
   users       User[]
@@ -40,15 +40,15 @@ model Role {
 }
 
 model Permission {
-  id          String   @id @default(uuid())
-  name        String   @unique
+  id          String  @id @default(uuid())
+  name        String  @unique
   displayName String
   description String?
   module      String
-  isActive    Boolean  @default(true)
+  isActive    Boolean @default(true)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   roles RolePermission[]
 
@@ -60,8 +60,8 @@ model RolePermission {
   roleId       String
   permissionId String
 
-  role        Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission  Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
@@ -70,72 +70,83 @@ model RolePermission {
 }
 
 model User {
-  id                  String      @id @default(uuid())
-  email               String      @unique
-  passwordHash        String
-  status              UserStatus  @default(PENDING)
-  profileType         ProfileType
+  id           String      @id @default(uuid())
+  email        String      @unique
+  passwordHash String
+  status       UserStatus  @default(PENDING)
+  profileType  ProfileType
 
-  firstName           String?
-  lastName            String?
-  phone               String?
-  avatar              String?
-  timezone            String?
-  language            String?
+  firstName String?
+  lastName  String?
+  phone     String?
+  avatar    String?
+  timezone  String?
+  language  String?
 
-  emailVerified       Boolean     @default(false)
-  emailVerifiedAt     DateTime?
+  emailVerified   Boolean   @default(false)
+  emailVerifiedAt DateTime?
 
   verificationTokenHash      String?
   verificationTokenExpiresAt DateTime?
 
-  failedLoginAttempts Int         @default(0)
+  failedLoginAttempts Int       @default(0)
   lockedUntil         DateTime?
   lastLoginAt         DateTime?
 
-  refreshTokenHash    String?
+  refreshTokenHash      String?
   refreshTokenExpiresAt DateTime?
 
   resetTokenHash      String?
   resetTokenExpiresAt DateTime?
 
-  roleId              String
-  role                Role        @relation(fields: [roleId], references: [id])
-  worker              Worker?
+  roleId String
+  role   Role    @relation(fields: [roleId], references: [id])
+  worker Worker?
 
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @updatedAt
-  deletedAt           DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@index([email])
   @@index([roleId])
   @@index([status])
 }
 
+enum EmploymentStatus {
+  ACTIVE
+  INACTIVE
+  ON_LEAVE
+  TERMINATED
+}
+
 model Worker {
-  id                  String    @id @default(uuid())
-  userId              String    @unique
-  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  firstName           String?
-  lastName            String?
-  phone               String?
-  gender              String?
-  dateOfBirth         DateTime?
-  addressLine1        String?
-  addressLine2        String?
-  city                String?
-  state               String?
-  country             String?
-  postalCode          String?
-  profileImage        String?
-  bio                 String?
-  isProfileCompleted  Boolean   @default(false)
+  workerCode       String?          @unique
+  firstName        String?
+  lastName         String?
+  phone            String?
+  gender           String?
+  dateOfBirth      DateTime?
+  profilePhoto     String?
+  employmentStatus EmploymentStatus @default(ACTIVE)
+  joiningDate      DateTime?
+  notes            String?
 
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-  deletedAt           DateTime?
+  // Future module relation placeholders (awaiting model implementation)
+  // skills           WorkerSkill[]
+  // languages        WorkerLanguage[]
+  // categories       WorkerCategory[]
+  // documents        WorkerDocument[]
+  // bookings         Booking[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
   @@index([userId])
+  @@index([workerCode])
   @@index([deletedAt])
 }
