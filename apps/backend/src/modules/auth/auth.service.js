@@ -303,3 +303,50 @@ export const resetPassword = async (data) => {
     },
   });
 };
+
+export const resendVerification = async (data) => {
+  const user = await prisma.user.findUnique({
+    where: { email: data.email.toLowerCase().trim() },
+  });
+
+  if (!user || user.emailVerified) return;
+
+  const verificationToken = crypto.randomBytes(32).toString("hex");
+  const verificationTokenHash = crypto.createHash("sha256").update(verificationToken).digest("hex");
+  const verificationTokenExpiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      verificationTokenHash,
+      verificationTokenExpiresAt,
+    },
+  });
+};
+
+export const verifyEmail = async (data) => {
+  const verificationTokenHash = crypto.createHash("sha256").update(data.token).digest("hex");
+
+  const user = await prisma.user.findFirst({
+    where: {
+      verificationTokenHash,
+      verificationTokenExpiresAt: {
+        gt: new Date(),
+      },
+    },
+  });
+
+  if (!user) {
+    throw new AppError("Invalid or expired verification token", 400);
+  }
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      emailVerified: true,
+      emailVerifiedAt: new Date(),
+      verificationTokenHash: null,
+      verificationTokenExpiresAt: null,
+    },
+  });
+};

@@ -108,3 +108,13 @@ export const resetPassword = asyncHandler(async (req, res) => {
   await authService.resetPassword(req.validatedData);
   return ApiResponse.success(res, "Password reset successfully.", null);
 });
+
+export const verifyEmail = asyncHandler(async (req, res) => {
+  await authService.verifyEmail(req.validatedData);
+  return ApiResponse.success(res, "Email verified successfully.", null);
+});
+
+export const resendVerification = asyncHandler(async (req, res) => {
+  await authService.resendVerification(req.validatedData);
+  return ApiResponse.success(res, "If your email is registered and unverified, a verification link has been sent.", null);
+});
