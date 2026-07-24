@@ -114,6 +114,13 @@ model User {
   @@index([status])
 }
 
+enum SkillProficiency {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
 enum EmploymentStatus {
   ACTIVE
   INACTIVE
@@ -138,7 +145,7 @@ model Worker {
   notes            String?
 
   // Future module relation placeholders (awaiting model implementation)
-  // skills           WorkerSkill[]
+  skills WorkerSkill[]
   // languages        WorkerLanguage[]
   // categories       WorkerCategory[]
   // documents        WorkerDocument[]
@@ -231,7 +238,7 @@ model Skill {
   isActive    Boolean @default(true)
 
   // Future module relation placeholders
-  // workers          WorkerSkill[]
+  workers WorkerSkill[]
   // jobRequirements  JobRequirementSkill[]
 
   createdAt DateTime  @default(now())
@@ -307,4 +314,23 @@ model Location {
   @@index([code])
   @@index([isActive])
   @@index([deletedAt])
+}
+
+model WorkerSkill {
+  id               String           @id @default(uuid())
+  workerId         String
+  skillId          String
+  experienceYears  Int?
+  proficiencyLevel SkillProficiency
+  isPrimary        Boolean          @default(false)
+
+  worker Worker @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  skill  Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([workerId, skillId])
+  @@index([workerId])
+  @@index([skillId])
 }
