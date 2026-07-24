@@ -7,22 +7,27 @@ import ProtectedRoute from "./ProtectedRoute";
 import AuthLayout from "../layouts/AuthLayout";
 import DashboardLayout from "../layouts/DashboardLayout";
 
-// Pages
-import LoginPage from "../pages/LoginPage";
-import ForgotPasswordPage from "../pages/ForgotPasswordPage";
-import ResetPasswordPage from "../pages/ResetPasswordPage";
-import DashboardPage from "../pages/DashboardPage";
-import WorkerPage from "../pages/WorkerPage";
-import ClientPage from "../pages/ClientPage";
-import AgencyPage from "../pages/AgencyPage";
-import JobRequirementPage from "../pages/JobRequirementPage";
-import NotFoundPage from "../pages/NotFoundPage";
+// Feature Pages
+import LoginPage from "../features/auth/pages/LoginPage";
+import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
+import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
+import DashboardPage from "../features/dashboard/pages/DashboardPage";
+import WorkerListPage from "../features/worker/pages/WorkerListPage";
+import ClientListPage from "../features/client/pages/ClientListPage";
+import AgencyListPage from "../features/agency/pages/AgencyListPage";
+import SkillListPage from "../features/master-data/skill/pages/SkillListPage";
+import CategoryListPage from "../features/master-data/category/pages/CategoryListPage";
+import LanguageListPage from "../features/master-data/language/pages/LanguageListPage";
+import LocationListPage from "../features/master-data/location/pages/LocationListPage";
+import JobRequirementListPage from "../features/job-requirement/pages/JobRequirementListPage";
+
+const NotFoundPage = () => <h1>404 Not Found</h1>;
 
 const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public Routes with AuthLayout */}
+        {/* Public Routes */}
         <Route element={<PublicRoute />}>
           <Route element={<AuthLayout />}>
             <Route path={ROUTES.LOGIN} element={<LoginPage />} />
@@ -31,21 +36,18 @@ const AppRouter = () => {
           </Route>
         </Route>
 
-        {/* Protected Routes with DashboardLayout */}
+        {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           <Route element={<DashboardLayout />}>
             <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
-            <Route path={ROUTES.WORKERS} element={<WorkerPage />} />
-            <Route path={ROUTES.CLIENTS} element={<ClientPage />} />
-            <Route path={ROUTES.AGENCIES} element={<AgencyPage />} />
-            
-            {/* Temporary placeholders for non-created pages */}
-            <Route path={ROUTES.SKILLS} element={<div className="p-4">Skills</div>} />
-            <Route path={ROUTES.CATEGORIES} element={<div className="p-4">Categories</div>} />
-            <Route path={ROUTES.LANGUAGES} element={<div className="p-4">Languages</div>} />
-            <Route path={ROUTES.LOCATIONS} element={<div className="p-4">Locations</div>} />
-            
-            <Route path={ROUTES.JOB_REQUIREMENTS} element={<JobRequirementPage />} />
+            <Route path={ROUTES.WORKERS} element={<WorkerListPage />} />
+            <Route path={ROUTES.CLIENTS} element={<ClientListPage />} />
+            <Route path={ROUTES.AGENCIES} element={<AgencyListPage />} />
+            <Route path={ROUTES.SKILLS} element={<SkillListPage />} />
+            <Route path={ROUTES.CATEGORIES} element={<CategoryListPage />} />
+            <Route path={ROUTES.LANGUAGES} element={<LanguageListPage />} />
+            <Route path={ROUTES.LOCATIONS} element={<LocationListPage />} />
+            <Route path={ROUTES.JOB_REQUIREMENTS} element={<JobRequirementListPage />} />
           </Route>
         </Route>
 
