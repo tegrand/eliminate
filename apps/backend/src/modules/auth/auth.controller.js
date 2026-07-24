@@ -59,3 +59,22 @@ export const refreshToken = asyncHandler(async (req, res) => {
     { accessToken, user }
   );
 });
+
+export const logout = asyncHandler(async (req, res) => {
+  const token = req.cookies.refreshToken;
+
+  await authService.logout(token);
+
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
+  });
+
+  return ApiResponse.success(
+    res,
+    "Logged out successfully",
+    null
+  );
+});

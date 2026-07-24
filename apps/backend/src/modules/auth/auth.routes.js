@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { register, login, refreshToken } from "./auth.controller.js";
+import { register, login, refreshToken, logout } from "./auth.controller.js";
 import { registerSchema, loginSchema } from "./auth.validation.js";
 
 import validate from "../../middleware/validate.middleware.js";
@@ -20,5 +20,7 @@ router.post(
 );
 
 router.post("/refresh-token", refreshToken);
+
+router.post("/logout", logout);
 
 export default router;

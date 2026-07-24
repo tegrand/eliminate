@@ -172,3 +172,24 @@ export const refreshToken = async (token) => {
 
   return { accessToken, newRefreshToken, user: updatedUser };
 };
+
+export const logout = async (token) => {
+  if (!token) return;
+
+  const payload = verifyRefreshToken(token);
+  if (!payload || !payload.sub) return;
+
+  const user = await prisma.user.findUnique({
+    where: { id: payload.sub },
+  });
+
+  if (user) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        refreshTokenHash: null,
+        refreshTokenExpiresAt: null,
+      },
+    });
+  }
+};
