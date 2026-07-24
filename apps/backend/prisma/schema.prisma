@@ -33,6 +33,8 @@ model Role {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  permissions RolePermission[]
+
   @@index([isActive])
 }
 
@@ -47,6 +49,21 @@ model Permission {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  roles RolePermission[]
+
   @@index([module])
   @@index([isActive])
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role        Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission  Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@id([roleId, permissionId])
+  @@index([permissionId])
 }
