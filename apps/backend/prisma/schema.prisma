@@ -262,3 +262,23 @@ model Category {
   @@index([isActive])
   @@index([deletedAt])
 }
+
+model Language {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  code        String  @unique
+  description String?
+  isActive    Boolean @default(true)
+
+  // Future module relation placeholders
+  // workers          WorkerLanguage[]
+  // jobRequirements  JobRequirementLanguage[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([code])
+  @@index([isActive])
+  @@index([deletedAt])
+}
