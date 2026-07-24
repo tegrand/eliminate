@@ -101,6 +101,7 @@ model User {
 
   roleId              String
   role                Role        @relation(fields: [roleId], references: [id])
+  worker              Worker?
 
   createdAt           DateTime    @default(now())
   updatedAt           DateTime    @updatedAt
@@ -109,4 +110,32 @@ model User {
   @@index([email])
   @@index([roleId])
   @@index([status])
+}
+
+model Worker {
+  id                  String    @id @default(uuid())
+  userId              String    @unique
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  firstName           String?
+  lastName            String?
+  phone               String?
+  gender              String?
+  dateOfBirth         DateTime?
+  addressLine1        String?
+  addressLine2        String?
+  city                String?
+  state               String?
+  country             String?
+  postalCode          String?
+  profileImage        String?
+  bio                 String?
+  isProfileCompleted  Boolean   @default(false)
+
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  deletedAt           DateTime?
+
+  @@index([userId])
+  @@index([deletedAt])
 }
