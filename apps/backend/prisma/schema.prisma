@@ -134,6 +134,29 @@ enum AgencyWorkerStatus {
   SUSPENDED
 }
 
+enum RequirementStatus {
+  DRAFT
+  OPEN
+  PARTIALLY_FILLED
+  FILLED
+  COMPLETED
+  CANCELLED
+}
+
+enum SalaryType {
+  HOURLY
+  DAILY
+  MONTHLY
+  FIXED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
 enum EmploymentStatus {
   ACTIVE
   INACTIVE
@@ -195,7 +218,7 @@ model Client {
   notes          String?
 
   // Future module relation placeholders (awaiting model implementation)
-  // jobRequirements  JobRequirement[]
+  jobRequirements JobRequirement[]
   // bookings         Booking[]
   // invoices         Invoice[]
   // payments         Payment[]
@@ -273,7 +296,7 @@ model Category {
 
   // Future module relation placeholders
   // workers          WorkerCategory[]
-  // jobRequirements  JobRequirementCategory[]
+  jobRequirements JobRequirement[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -319,7 +342,7 @@ model Location {
   // workers          WorkerLocation[]
   // clients          ClientLocation[]
   // agencies         AgencyLocation[]
-  // jobRequirements  JobRequirementLocation[]
+  jobRequirements JobRequirement[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -387,4 +410,45 @@ model AgencyWorker {
   @@unique([agencyId, workerId])
   @@index([agencyId])
   @@index([workerId])
+}
+
+model JobRequirement {
+  id              String            @id @default(uuid())
+  requirementCode String            @unique
+  clientId        String
+  title           String
+  description     String?
+  categoryId      String?
+  locationId      String?
+  requiredWorkers Int               @default(1)
+  startDate       DateTime?
+  endDate         DateTime?
+  startTime       String?
+  endTime         String?
+  salaryType      SalaryType?
+  salaryAmount    Decimal?
+  priority        Priority          @default(MEDIUM)
+  status          RequirementStatus @default(DRAFT)
+  notes           String?
+
+  client   Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  category Category? @relation(fields: [categoryId], references: [id])
+  location Location? @relation(fields: [locationId], references: [id])
+
+  // Future module relation placeholders
+  // bookings         Booking[]
+  // assignments      Assignment[]
+  // requiredSkills   JobRequirementSkill[]
+  // requiredLanguages JobRequirementLanguage[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([clientId])
+  @@index([categoryId])
+  @@index([locationId])
+  @@index([status])
+  @@index([priority])
+  @@index([deletedAt])
 }
