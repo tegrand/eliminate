@@ -76,6 +76,13 @@ model User {
   status              UserStatus  @default(PENDING)
   profileType         ProfileType
 
+  firstName           String?
+  lastName            String?
+  phone               String?
+  avatar              String?
+  timezone            String?
+  language            String?
+
   emailVerified       Boolean     @default(false)
   emailVerifiedAt     DateTime?
 
