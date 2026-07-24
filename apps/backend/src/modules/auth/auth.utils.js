@@ -41,3 +41,11 @@ export const parseExpToMs = (expStr) => {
     default: return 7 * 24 * 60 * 60 * 1000;
   }
 };
+
+export const verifyRefreshToken = (token) => {
+  try {
+    return jwt.verify(token, authConfig.refreshSecret);
+  } catch (error) {
+    return null;
+  }
+};

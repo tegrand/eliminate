@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import prisma from "../../config/prisma.js";
 import authConfig from "../../config/auth.config.js";
 import AppError from "../../shared/errors/app-error.js";
-import { generateAccessToken, generateRefreshToken, parseExpToMs } from "./auth.utils.js";
+import { generateAccessToken, generateRefreshToken, parseExpToMs, verifyRefreshToken } from "./auth.utils.js";
 
 export const register = async (data) => {
   // Check email
@@ -117,4 +117,58 @@ export const login = async (data) => {
   });
 
   return { accessToken, refreshToken, user: updatedUser };
+};
+
+export const refreshToken = async (token) => {
+  const payload = verifyRefreshToken(token);
+  if (!payload || !payload.sub) {
+    throw new AppError("Unauthorized", 401);
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: payload.sub },
+    include: { role: true },
+  });
+
+  if (!user || !user.refreshTokenHash) {
+    throw new AppError("Unauthorized", 401);
+  }
+
+  const isValid = await bcrypt.compare(token, user.refreshTokenHash);
+  if (!isValid) {
+    throw new AppError("Unauthorized", 401);
+  }
+
+  if (user.refreshTokenExpiresAt && user.refreshTokenExpiresAt < new Date()) {
+    throw new AppError("Unauthorized", 401);
+  }
+
+  const accessToken = generateAccessToken(user);
+  const newRefreshToken = generateRefreshToken(user);
+
+  const refreshTokenHash = await bcrypt.hash(newRefreshToken, authConfig.bcryptRounds);
+  const refreshTokenExpiresAt = new Date(Date.now() + parseExpToMs(authConfig.refreshExpiresIn));
+
+  const updatedUser = await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      refreshTokenHash,
+      refreshTokenExpiresAt,
+      lastLoginAt: new Date(),
+    },
+    select: {
+      id: true,
+      email: true,
+      status: true,
+      profileType: true,
+      emailVerified: true,
+      emailVerifiedAt: true,
+      lastLoginAt: true,
+      role: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  return { accessToken, newRefreshToken, user: updatedUser };
 };
