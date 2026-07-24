@@ -222,3 +222,23 @@ model Agency {
   @@index([agencyCode])
   @@index([deletedAt])
 }
+
+model Skill {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  slug        String  @unique
+  description String?
+  isActive    Boolean @default(true)
+
+  // Future module relation placeholders
+  // workers          WorkerSkill[]
+  // jobRequirements  JobRequirementSkill[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([slug])
+  @@index([isActive])
+  @@index([deletedAt])
+}
