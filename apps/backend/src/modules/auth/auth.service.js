@@ -3,10 +3,8 @@ import bcrypt from "bcrypt";
 import prisma from "../../config/prisma.js";
 import authConfig from "../../config/auth.config.js";
 import AppError from "../../shared/errors/app-error.js";
-import { registerSchema } from "./auth.validation.js";
 
-export const register = async (payload) => {
-  const data = registerSchema.parse(payload);
+export const register = async (data) => {
 
   // Check email
   const existingUser = await prisma.user.findUnique({

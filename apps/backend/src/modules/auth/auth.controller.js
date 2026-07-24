@@ -4,7 +4,7 @@ import ApiResponse from "../../shared/responses/api-response.js";
 import * as authService from "./auth.service.js";
 
 export const register = asyncHandler(async (req, res) => {
-  const user = await authService.register(req.body);
+  const user = await authService.register(req.validatedData);
 
   return ApiResponse.success(
     res,
