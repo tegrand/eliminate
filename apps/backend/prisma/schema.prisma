@@ -128,6 +128,12 @@ enum LanguageProficiency {
   NATIVE
 }
 
+enum AgencyWorkerStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
 enum EmploymentStatus {
   ACTIVE
   INACTIVE
@@ -154,6 +160,7 @@ model Worker {
   // Future module relation placeholders (awaiting model implementation)
   skills    WorkerSkill[]
   languages WorkerLanguage[]
+  agencies  AgencyWorker[]
   // categories       WorkerCategory[]
   // documents        WorkerDocument[]
   // bookings         Booking[]
@@ -224,7 +231,7 @@ model Agency {
   notes          String?
 
   // Future module relation placeholders
-  // workers          AgencyWorker[]
+  workers AgencyWorker[]
   // assignments      Assignment[]
   // jobRequirements  JobRequirement[]
 
@@ -361,4 +368,23 @@ model WorkerLanguage {
   @@unique([workerId, languageId])
   @@index([workerId])
   @@index([languageId])
+}
+
+model AgencyWorker {
+  id         String             @id @default(uuid())
+  agencyId   String
+  workerId   String
+  assignedAt DateTime           @default(now())
+  status     AgencyWorkerStatus @default(ACTIVE)
+  notes      String?
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  worker Worker @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([agencyId, workerId])
+  @@index([agencyId])
+  @@index([workerId])
 }
