@@ -7,6 +7,21 @@ datasource db {
   provider = "postgresql"
 }
 
+enum UserStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  REJECTED
+  DELETED
+}
+
+enum ProfileType {
+  SUPER_ADMIN
+  CLIENT
+  AGENCY
+  WORKER
+}
+
 model Role {
   id          String   @id @default(uuid())
   name        String   @unique
