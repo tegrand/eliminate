@@ -10,3 +10,11 @@ export const registerSchema = z.object({
 
   accountType: z.enum(["CLIENT", "AGENCY", "WORKER"]),
 });
+
+export const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+
+  password: z
+    .string()
+    .min(1, "Password is required"),
+});

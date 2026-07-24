@@ -54,3 +54,34 @@ export const register = async (data) => {
 
   return user;
 };
+
+export const login = async (data) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      email: data.email.toLowerCase().trim(),
+    },
+
+    include: {
+      role: true,
+    },
+  });
+
+  if (!user) {
+    throw new AppError(
+      "Invalid email or password",
+      401
+    );
+  }
+
+  // TODO
+
+  // Account status
+
+  // Compare password
+
+  // Generate JWT
+
+  // Save Refresh Token
+
+  // Return user
+};

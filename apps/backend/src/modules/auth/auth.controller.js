@@ -13,3 +13,13 @@ export const register = asyncHandler(async (req, res) => {
     201
   );
 });
+
+export const login = asyncHandler(async (req, res) => {
+  const result = await authService.login(req.validatedData);
+
+  return ApiResponse.success(
+    res,
+    "Login successful",
+    result
+  );
+});
