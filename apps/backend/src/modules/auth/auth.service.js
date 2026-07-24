@@ -6,39 +6,66 @@ import authConfig from "../../config/auth.config.js";
 import AppError from "../../shared/errors/app-error.js";
 import { generateAccessToken, generateRefreshToken, parseExpToMs, verifyRefreshToken } from "./auth.utils.js";
 
-export const register = async (data) => {
-  // Check email
-  const existingUser = await prisma.user.findUnique({
-    where: {
-      email: data.email.toLowerCase().trim(),
+const issueTokensAndUpdateUser = async (user) => {
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
+
+  const refreshTokenHash = await bcrypt.hash(refreshToken, authConfig.bcryptRounds);
+  const refreshTokenExpiresAt = new Date(Date.now() + parseExpToMs(authConfig.refreshExpiresIn));
+
+  const updatedUser = await prisma.user.update({
+    where: { id: user.id },
+    data: {
+      refreshTokenHash,
+      refreshTokenExpiresAt,
+      lastLoginAt: new Date(),
+      failedLoginAttempts: 0,
     },
+    select: {
+      id: true,
+      email: true,
+      status: true,
+      profileType: true,
+      emailVerified: true,
+      emailVerifiedAt: true,
+      lastLoginAt: true,
+      role: {
+        select: {
+          id: true,
+          name: true,
+          displayName: true,
+        },
+      },
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  return { accessToken, refreshToken, user: updatedUser };
+};
+
+export const register = async (data) => {
+  const existingUser = await prisma.user.findUnique({
+    where: { email: data.email },
   });
 
   if (existingUser) {
     throw new AppError("Email already exists", 409);
   }
 
-  // Get role
   const role = await prisma.role.findUnique({
-    where: {
-      name: data.accountType,
-    },
+    where: { name: data.accountType },
   });
 
   if (!role) {
     throw new AppError("Invalid account type", 400);
   }
 
-  // Hash password
-  const passwordHash = await bcrypt.hash(
-    data.password,
-    authConfig.bcryptRounds
-  );
+  const passwordHash = await bcrypt.hash(data.password, authConfig.bcryptRounds);
 
-  // Create user
   const user = await prisma.user.create({
     data: {
-      email: data.email.toLowerCase().trim(),
+      email: data.email,
       passwordHash,
       profileType: data.accountType,
       roleId: role.id,
@@ -57,15 +84,25 @@ export const register = async (data) => {
 
 export const login = async (data) => {
   const user = await prisma.user.findUnique({
-    where: {
-      email: data.email.toLowerCase().trim(),
-    },
-    include: {
-      role: true,
+    where: { email: data.email },
+    select: {
+      id: true,
+      passwordHash: true,
+      status: true,
+      profileType: true,
+      role: {
+        select: {
+          id: true,
+          name: true,
+          displayName: true,
+        },
+      },
     },
   });
 
   if (!user) {
+    // Dummy compare to prevent timing attacks for user enumeration
+    await bcrypt.compare(data.password, "$2b$10$dummyHashThatIs60CharsLong12345678901234567890123456789");
     throw new AppError("Invalid email or password", 401);
   }
 
@@ -89,35 +126,7 @@ export const login = async (data) => {
       throw new AppError("Invalid account status.", 403);
   }
 
-  const accessToken = generateAccessToken(user);
-  const refreshToken = generateRefreshToken(user);
-
-  const refreshTokenHash = await bcrypt.hash(refreshToken, authConfig.bcryptRounds);
-  const refreshTokenExpiresAt = new Date(Date.now() + parseExpToMs(authConfig.refreshExpiresIn));
-
-  const updatedUser = await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      refreshTokenHash,
-      refreshTokenExpiresAt,
-      lastLoginAt: new Date(),
-      failedLoginAttempts: 0,
-    },
-    select: {
-      id: true,
-      email: true,
-      status: true,
-      profileType: true,
-      emailVerified: true,
-      emailVerifiedAt: true,
-      lastLoginAt: true,
-      role: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-  });
-
-  return { accessToken, refreshToken, user: updatedUser };
+  return issueTokensAndUpdateUser(user);
 };
 
 export const refreshToken = async (token) => {
@@ -128,7 +137,20 @@ export const refreshToken = async (token) => {
 
   const user = await prisma.user.findUnique({
     where: { id: payload.sub },
-    include: { role: true },
+    select: {
+      id: true,
+      refreshTokenHash: true,
+      refreshTokenExpiresAt: true,
+      status: true,
+      profileType: true,
+      role: {
+        select: {
+          id: true,
+          name: true,
+          displayName: true,
+        },
+      },
+    },
   });
 
   if (!user || !user.refreshTokenHash) {
@@ -144,34 +166,7 @@ export const refreshToken = async (token) => {
     throw new AppError("Unauthorized", 401);
   }
 
-  const accessToken = generateAccessToken(user);
-  const newRefreshToken = generateRefreshToken(user);
-
-  const refreshTokenHash = await bcrypt.hash(newRefreshToken, authConfig.bcryptRounds);
-  const refreshTokenExpiresAt = new Date(Date.now() + parseExpToMs(authConfig.refreshExpiresIn));
-
-  const updatedUser = await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      refreshTokenHash,
-      refreshTokenExpiresAt,
-      lastLoginAt: new Date(),
-    },
-    select: {
-      id: true,
-      email: true,
-      status: true,
-      profileType: true,
-      emailVerified: true,
-      emailVerifiedAt: true,
-      lastLoginAt: true,
-      role: true,
-      createdAt: true,
-      updatedAt: true,
-    },
-  });
-
-  return { accessToken, newRefreshToken, user: updatedUser };
+  return issueTokensAndUpdateUser(user);
 };
 
 export const logout = async (token) => {
@@ -182,6 +177,7 @@ export const logout = async (token) => {
 
   const user = await prisma.user.findUnique({
     where: { id: payload.sub },
+    select: { id: true },
   });
 
   if (user) {
@@ -226,6 +222,7 @@ export const getCurrentUser = async (userId) => {
 export const changePassword = async (userId, data) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
+    select: { id: true, passwordHash: true },
   });
 
   if (!user) {
@@ -256,7 +253,8 @@ export const changePassword = async (userId, data) => {
 
 export const forgotPassword = async (data) => {
   const user = await prisma.user.findUnique({
-    where: { email: data.email.toLowerCase().trim() },
+    where: { email: data.email },
+    select: { id: true },
   });
 
   if (!user) return;
@@ -284,6 +282,7 @@ export const resetPassword = async (data) => {
         gt: new Date(),
       },
     },
+    select: { id: true },
   });
 
   if (!user) {
@@ -306,7 +305,8 @@ export const resetPassword = async (data) => {
 
 export const resendVerification = async (data) => {
   const user = await prisma.user.findUnique({
-    where: { email: data.email.toLowerCase().trim() },
+    where: { email: data.email },
+    select: { id: true, emailVerified: true },
   });
 
   if (!user || user.emailVerified) return;
@@ -334,6 +334,7 @@ export const verifyEmail = async (data) => {
         gt: new Date(),
       },
     },
+    select: { id: true },
   });
 
   if (!user) {

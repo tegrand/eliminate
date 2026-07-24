@@ -5,34 +5,26 @@ import * as authService from "./auth.service.js";
 import authConfig from "../../config/auth.config.js";
 import { parseExpToMs } from "./auth.utils.js";
 
+const setRefreshTokenCookie = (res, token) => {
+  const maxAge = parseExpToMs(authConfig.refreshExpiresIn);
+  res.cookie("refreshToken", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
+    maxAge
+  });
+};
+
 export const register = asyncHandler(async (req, res) => {
   const user = await authService.register(req.validatedData);
-
-  return ApiResponse.success(
-    res,
-    "Account created successfully",
-    user,
-    201
-  );
+  return ApiResponse.success(res, "Account created successfully", user, 201);
 });
 
 export const login = asyncHandler(async (req, res) => {
   const { accessToken, refreshToken, user } = await authService.login(req.validatedData);
-
-  const maxAge = parseExpToMs(authConfig.refreshExpiresIn);
-
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge
-  });
-
-  return ApiResponse.success(
-    res,
-    "Login successful",
-    { accessToken, user }
-  );
+  setRefreshTokenCookie(res, refreshToken);
+  return ApiResponse.success(res, "Login successful", { accessToken, user });
 });
 
 export const refreshToken = asyncHandler(async (req, res) => {
@@ -42,61 +34,30 @@ export const refreshToken = asyncHandler(async (req, res) => {
   }
 
   const { accessToken, newRefreshToken, user } = await authService.refreshToken(token);
-
-  const maxAge = parseExpToMs(authConfig.refreshExpiresIn);
-
-  res.cookie("refreshToken", newRefreshToken, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    path: "/",
-    maxAge
-  });
-
-  return ApiResponse.success(
-    res,
-    "Token refreshed successfully",
-    { accessToken, user }
-  );
+  setRefreshTokenCookie(res, newRefreshToken);
+  return ApiResponse.success(res, "Token refreshed successfully", { accessToken, user });
 });
 
 export const logout = asyncHandler(async (req, res) => {
   const token = req.cookies.refreshToken;
-
   await authService.logout(token);
-
   res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
     path: "/",
   });
-
-  return ApiResponse.success(
-    res,
-    "Logged out successfully",
-    null
-  );
+  return ApiResponse.success(res, "Logged out successfully", null);
 });
 
 export const me = asyncHandler(async (req, res) => {
   const user = await authService.getCurrentUser(req.user.id);
-
-  return ApiResponse.success(
-    res,
-    "Current user fetched successfully",
-    user
-  );
+  return ApiResponse.success(res, "Current user fetched successfully", user);
 });
 
 export const changePassword = asyncHandler(async (req, res) => {
   await authService.changePassword(req.user.id, req.validatedData);
-
-  return ApiResponse.success(
-    res,
-    "Password changed successfully",
-    null
-  );
+  return ApiResponse.success(res, "Password changed successfully", null);
 });
 
 export const forgotPassword = asyncHandler(async (req, res) => {
