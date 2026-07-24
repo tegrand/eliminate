@@ -121,6 +121,13 @@ enum SkillProficiency {
   EXPERT
 }
 
+enum LanguageProficiency {
+  BASIC
+  CONVERSATIONAL
+  PROFESSIONAL
+  NATIVE
+}
+
 enum EmploymentStatus {
   ACTIVE
   INACTIVE
@@ -145,8 +152,8 @@ model Worker {
   notes            String?
 
   // Future module relation placeholders (awaiting model implementation)
-  skills WorkerSkill[]
-  // languages        WorkerLanguage[]
+  skills    WorkerSkill[]
+  languages WorkerLanguage[]
   // categories       WorkerCategory[]
   // documents        WorkerDocument[]
   // bookings         Booking[]
@@ -278,7 +285,7 @@ model Language {
   isActive    Boolean @default(true)
 
   // Future module relation placeholders
-  // workers          WorkerLanguage[]
+  workers WorkerLanguage[]
   // jobRequirements  JobRequirementLanguage[]
 
   createdAt DateTime  @default(now())
@@ -333,4 +340,25 @@ model WorkerSkill {
   @@unique([workerId, skillId])
   @@index([workerId])
   @@index([skillId])
+}
+
+model WorkerLanguage {
+  id               String              @id @default(uuid())
+  workerId         String
+  languageId       String
+  proficiencyLevel LanguageProficiency
+  canRead          Boolean             @default(false)
+  canWrite         Boolean             @default(false)
+  canSpeak         Boolean             @default(false)
+  isPrimary        Boolean             @default(false)
+
+  worker   Worker   @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  language Language @relation(fields: [languageId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([workerId, languageId])
+  @@index([workerId])
+  @@index([languageId])
 }
