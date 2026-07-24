@@ -1,13 +1,9 @@
 import bcrypt from "bcrypt";
 
-import { PrismaClient } from "../../generated/prisma/client.js";
-import { PrismaPg } from "@prisma/adapter-pg";
+import prisma from "../../config/prisma.js";
 import { registerSchema } from "./auth.validation.js";
 import AppError from "../../shared/errors/app-error.js";
 import authConfig from "../../config/auth.config.js";
-
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
-const prisma = new PrismaClient({ adapter });
 
 export const register = async (payload) => {
   const data = registerSchema.parse(payload);
