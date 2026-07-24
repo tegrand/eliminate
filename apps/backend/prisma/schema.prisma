@@ -35,3 +35,18 @@ model Role {
 
   @@index([isActive])
 }
+
+model Permission {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  displayName String
+  description String?
+  module      String
+  isActive    Boolean  @default(true)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([module])
+  @@index([isActive])
+}
