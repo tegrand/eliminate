@@ -1,7 +1,14 @@
-const validate = (schema) => {
+const validate = (schema, source = "body") => {
   return (req, res, next) => {
     try {
-      req.validatedData = schema.parse(req.body);
+      const parsedData = schema.parse(req[source]);
+      
+      if (source === "body") {
+        req.validatedData = parsedData;
+      } else {
+        req[source] = parsedData;
+      }
+      
       next();
     } catch (error) {
       next(error);
