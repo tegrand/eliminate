@@ -11,10 +11,10 @@ const ProtectedRoute = () => {
     return <div className="min-h-screen flex items-center justify-center text-gray-500">Authenticating...</div>;
   }
 
-  // If session verification completes and user is not authenticated, kick them to login
-  if (!isAuthenticated) {
-    return <Navigate to={ROUTES.LOGIN} replace />;
-  }
+  // TEMPORARILY DISABLED FOR TESTING
+  // if (!isAuthenticated) {
+  //   return <Navigate to={ROUTES.LOGIN} replace />;
+  // }
 
   return <Outlet />;
 };
