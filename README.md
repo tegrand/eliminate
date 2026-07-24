@@ -1,30 +1,30 @@
 # Project Overview
 
-ഈ പ്രൊജക്റ്റ് പ്രധാനമായും രണ്ട് ഭാഗങ്ങളായിട്ടാണ് നിർമ്മിച്ചിരിക്കുന്നത്: ഫ്രണ്ട് എൻഡ് (Frontend), ബാക്കെൻഡ് (Backend). ഇത് വായിക്കാനും മനസ്സിലാക്കാനും വളരെ എളുപ്പമുള്ള രീതിയിലാണ് താഴെ നൽകിയിരിക്കുന്നത്.
+This project is set up as a monorepo and consists mainly of two parts: the Frontend and the Backend. It is designed to be simple and easy to understand.
 
-## ഫോൾഡറുകൾ (Folder Structure)
+## Folder Structure
 
-* `apps/` - ഇതിലാണ് നമ്മുടെ പ്രധാന കോഡുകൾ ഉള്ളത്.
-  * `backend/` - ബാക്കെൻഡ് കോഡുകൾ (Node.js ഉം Express ഉം ഉപയോഗിച്ച്).
-  * `frontend/` - ഫ്രണ്ട് എൻഡ് കോഡുകൾ (React ഉം Vite ഉം ഉപയോഗിച്ച്).
-* `docs/` - പ്രൊജക്റ്റിനെക്കുറിച്ചുള്ള മറ്റ് വിവരങ്ങൾ സൂക്ഷിക്കാൻ.
-* `packages/` - ഭാവിയിൽ പാക്കേജുകൾ സൂക്ഷിക്കാനുള്ള സ്ഥലം.
+* `apps/` - Contains the main application code.
+  * `backend/` - The backend code (built with Node.js and Express).
+  * `frontend/` - The frontend code (built with React and Vite).
+* `docs/` - A place to store project documentation and related information.
+* `packages/` - A directory for shared packages (currently empty).
 
-## ഇൻസ്റ്റാൾ ചെയ്ത പാക്കേജുകൾ (Installed Packages)
+## Installed Packages
 
-### ബാക്കെൻഡ് (Backend)
-ബാക്കെൻഡിൽ ഇൻസ്റ്റാൾ ചെയ്തിരിക്കുന്ന പ്രധാന പാക്കേജുകൾ താഴെ പറയുന്നവയാണ്:
-* **express**: വെബ് സെർവർ നിർമ്മിക്കാൻ.
-* **prisma, @prisma/client**: ഡാറ്റാബേസുമായി ബന്ധിപ്പിക്കാനും ഡാറ്റ കൈകാര്യം ചെയ്യാനും.
-* **cors**: വെബ്സൈറ്റും സെർവറും തമ്മിലുള്ള ബന്ധം അനുവദിക്കാൻ.
-* **dotenv**: സീക്രട്ട് ഫയലുകൾ (Environment variables) വായിക്കാൻ.
-* **helmet**: സെക്യൂരിറ്റി വർദ്ധിപ്പിക്കാൻ.
-* **morgan**: റിക്വസ്റ്റുകളുടെ വിവരങ്ങൾ ലോഗ് ചെയ്യാൻ.
-* **compression**: ഡാറ്റയുടെ സൈസ് കുറച്ച് വേഗത്തിൽ അയക്കാൻ.
-* **nodemon**: കോഡ് മാറ്റുമ്പോൾ തനിയെ സെർവർ റീസ്റ്റാർട്ട് ചെയ്യാൻ.
+### Backend
+The main packages installed in the backend are:
+* **express**: To build the web server.
+* **prisma, @prisma/client**: To connect to and manage the database.
+* **cors**: To allow cross-origin requests between the website and the server.
+* **dotenv**: To load environment variables and secrets.
+* **helmet**: To enhance server security.
+* **morgan**: To log HTTP requests.
+* **compression**: To compress response sizes and improve speed.
+* **nodemon**: To automatically restart the server during development when code changes.
 
-### ഫ്രണ്ട് എൻഡ് (Frontend)
-ഫ്രണ്ട് എൻഡിൽ ഇൻസ്റ്റാൾ ചെയ്തിരിക്കുന്ന പ്രധാന പാക്കേജുകൾ താഴെ പറയുന്നവയാണ്:
-* **react, react-dom**: വെബ്സൈറ്റിന്റെ ഡിസൈനും യൂസർ ഇന്റർഫേസും (UI) നിർമ്മിക്കാൻ.
-* **vite**: വേഗത്തിൽ കോഡ് റൺ ചെയ്യാനും ബിൽഡ് ചെയ്യാനും.
-* **oxlint**: കോഡിലെ ചെറിയ തെറ്റുകൾ കണ്ടുപിടിക്കാൻ.
+### Frontend
+The main packages installed in the frontend are:
+* **react, react-dom**: To build the website's design and User Interface (UI).
+* **vite**: To serve and build the code quickly.
+* **oxlint**: To catch and fix small code errors (linting).
