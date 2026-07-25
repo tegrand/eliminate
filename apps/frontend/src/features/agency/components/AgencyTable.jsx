@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Eye, CheckCircle, XCircle, Ban, PlayCircle } from "lucide-react";
+import { Eye, CreditCard, Building, User, Phone, MapPin, Users, Star, CheckCircle, XCircle, Ban, PlayCircle } from "lucide-react";
 import { DataTable } from "../../../components/ui/data-table";
 import { Pagination } from "../../../components/ui/pagination";
-import AgencyStatusBadge from "./AgencyStatusBadge";
 import { Link } from "react-router-dom";
 import ApproveDialog from "../../../components/ui/action-dialogs/ApproveDialog";
 import RejectDialog from "../../../components/ui/action-dialogs/RejectDialog";
@@ -30,21 +29,32 @@ export default function AgencyTable({ agencies, loading, page, totalPages }) {
     closeDialog();
   };
 
+  const getStatusBadge = (status) => {
+    if (status === 'ACTIVE' || status === 'APPROVED') {
+      return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-green-100 text-green-700"><span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>ACTIVE</span>;
+    }
+    if (status === 'ONBOARDING' || status === 'PENDING') {
+      return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-orange-100 text-orange-700"><span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span>{status}</span>;
+    }
+    return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-gray-100 text-gray-700"><span className="w-1.5 h-1.5 rounded-full bg-gray-500"></span>Inactive</span>;
+  };
+
   const columns = [
-    { key: "id", title: "Agency Code", render: (row) => <span className="font-medium text-gray-900">{row.id}</span> },
-    { key: "agencyName", title: "Agency Name", render: (row) => row.agencyName },
-    { key: "contactPerson", title: "Contact Person", render: (row) => row.contactPerson },
-    { key: "phone", title: "Phone", render: (row) => row.phone },
-    { key: "district", title: "District", render: (row) => row.district },
-    { key: "totalWorkers", title: "Total Workers", render: (row) => row.totalWorkers },
+    { key: "checkbox", title: <input type="checkbox" className="rounded border-gray-300" />, render: () => <input type="checkbox" className="rounded border-gray-300" /> },
+    { key: "id", title: <div className="flex items-center gap-1.5"><CreditCard className="w-3.5 h-3.5" />AGENCY CODE</div>, render: (row) => <span className="font-bold text-gray-900 text-sm">{row.id}</span> },
+    { key: "agencyName", title: <div className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" />AGENCY NAME</div>, render: (row) => <span className="text-gray-900 text-sm font-medium">{row.agencyName}</span> },
+    { key: "contactPerson", title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />CONTACT PERSON</div>, render: (row) => <span className="text-sm text-gray-600">{row.contactPerson}</span> },
+    { key: "phone", title: <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />PHONE</div>, render: (row) => <span className="text-sm text-gray-600">{row.phone}</span> },
+    { key: "district", title: <div className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />DISTRICT</div>, render: (row) => <span className="text-sm text-gray-600">{row.district}</span> },
+    { key: "totalWorkers", title: <div className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5" />TOTAL WORKERS</div>, render: (row) => <span className="text-sm text-gray-600">{row.totalWorkers}</span> },
     { 
       key: "status", 
-      title: "Status", 
-      render: (row) => <AgencyStatusBadge status={row.status} /> 
+      title: <div className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5" />STATUS</div>, 
+      render: (row) => getStatusBadge(row.status)
     },
     {
       key: "actions",
-      title: "Actions",
+      title: "ACTIONS",
       render: (row) => (
         <div className="flex items-center gap-2">
           {row.status === 'PENDING' && (
@@ -76,7 +86,7 @@ export default function AgencyTable({ agencies, loading, page, totalPages }) {
   ];
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm">
       <DataTable 
         columns={columns} 
         data={agencies || []} 
@@ -85,7 +95,8 @@ export default function AgencyTable({ agencies, loading, page, totalPages }) {
         hover 
       />
       {agencies && agencies.length > 0 && (
-        <div className="p-4 border-t border-gray-100 flex justify-end bg-gray-50/50">
+        <div className="p-4 border-t border-gray-100 flex justify-between items-center bg-white">
+          <span className="text-sm text-gray-500 font-medium">Showing 1 to {agencies.length} of {agencies.length} agencies</span>
           <Pagination 
             currentPage={page}
             totalPages={totalPages}

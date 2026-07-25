@@ -30,25 +30,25 @@ const DataTable = forwardRef(
     );
 
     const thClasses = clsx(
-      "font-semibold whitespace-nowrap",
-      compact ? "px-4 py-2" : "px-6 py-4",
+      "font-semibold",
+      compact ? "px-3 py-2" : "px-4 py-4",
       bordered && "border-r border-gray-200 last:border-r-0"
     );
 
     const trClasses = (index) =>
       clsx(
-        "border-b border-gray-100 last:border-b-0 transition-colors",
+        "border-b border-gray-100 last:border-b-0 transition-colors h-[65px]",
         hover && "hover:bg-gray-50",
         striped && index % 2 !== 0 && "bg-gray-50/50"
       );
 
     const tdClasses = clsx(
-      compact ? "px-4 py-2" : "px-6 py-4",
+      compact ? "px-3 py-2" : "px-4 py-4",
       bordered && "border-r border-gray-200 last:border-r-0"
     );
 
     return (
-      <div className={clsx("w-full overflow-x-auto rounded-lg border border-gray-200 bg-white", className)}>
+      <div className={clsx("w-full overflow-x-auto", className)}>
         <table ref={ref} className={tableClasses} {...props}>
           <thead className={theadClasses}>
             <tr>

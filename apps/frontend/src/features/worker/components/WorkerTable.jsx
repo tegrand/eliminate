@@ -55,8 +55,8 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
       key: "name", 
       title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />NAME</div>, 
       render: (row) => (
-        <div className="flex items-center gap-3 py-1">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${getAvatarColor(row.name)}`}>
+        <div className="flex items-center gap-3">
+          <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-[10px] ${getAvatarColor(row.name)}`}>
             {getInitials(row.name)}
           </div>
           <p className="text-gray-900 text-sm font-medium">{row.name}</p>
