@@ -22,7 +22,7 @@ const authenticate = asyncHandler(async (req, res, next) => {
     include: { role: true },
   });
 
-  if (!user || user.status !== "ACTIVE") {
+  if (!user || !["ACTIVE", "PENDING"].includes(user.status)) {
     throw new AppError("Unauthorized", 401);
   }
 

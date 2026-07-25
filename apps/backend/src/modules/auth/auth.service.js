@@ -265,7 +265,7 @@ export const getCurrentUser = async (userId) => {
     },
   });
 
-  if (!user || user.status !== "ACTIVE") {
+  if (!user || !["ACTIVE", "PENDING"].includes(user.status)) {
     throw new AppError("Unauthorized", 401);
   }
 
