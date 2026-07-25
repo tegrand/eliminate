@@ -13,8 +13,8 @@ export default function AuthProvider({ children }) {
     // Lifecycle: On initial mount, we attempt to restore the session
     const initAuth = async () => {
       try {
-        const storedUser = localStorage.getItem('user');
-        const storedToken = localStorage.getItem('accessToken');
+        const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
+        const storedToken = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
         
         if (storedUser && storedToken) {
           setUser(JSON.parse(storedUser));

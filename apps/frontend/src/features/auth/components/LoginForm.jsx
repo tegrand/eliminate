@@ -44,7 +44,7 @@ export default function LoginForm() {
   const loginMutation = useMutation({
     mutationFn: (data) => authApi.login(data),
     onSuccess: (response, variables) => {
-      const { user, accessToken } = response.data;
+      const { user, accessToken } = response.data.data;
       
       // Pass the user data into the AuthContext
       login(user, accessToken, variables.rememberMe);

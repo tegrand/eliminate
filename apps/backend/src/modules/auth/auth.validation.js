@@ -10,7 +10,7 @@ export const registerSchema = z.object({
     .min(8, "Password must be at least 8 characters")
     .max(100)
     .regex(passwordRegex, passwordMessage),
-  accountType: z.enum(["CLIENT", "AGENCY", "WORKER"]),
+  accountType: z.enum(["SUPER_ADMIN", "CLIENT", "AGENCY", "WORKER"]),
 });
 
 export const loginSchema = z.object({

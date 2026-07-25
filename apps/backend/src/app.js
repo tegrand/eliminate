@@ -17,10 +17,24 @@ app.use(helmet());
 // CORS
 app.use(
     cors({
-        origin: process.env.CLIENT_URL || "http://localhost:5173",
+        origin: function(origin, callback) {
+            // allow requests with no origin (like mobile apps or curl requests)
+            if(!origin) return callback(null, true);
+            if(origin.startsWith("http://localhost:")) {
+                return callback(null, true);
+            }
+            if(origin === process.env.CLIENT_URL) {
+                return callback(null, true);
+            }
+            return callback(new Error('Not allowed by CORS'), false);
+        },
         credentials: true
     })
 );
+
+// Body and Cookie Parsers
+app.use(express.json());
+app.use(cookieParser());
 
 // Compression
 app.use(compression())

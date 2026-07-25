@@ -45,8 +45,8 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Skip interception for the refresh token route to avoid infinite loops
-    if (originalRequest.url.includes("/auth/refresh-token")) {
+    // Skip interception for the refresh token and login routes to avoid infinite loops and masking login errors
+    if (originalRequest.url.includes("/auth/refresh-token") || originalRequest.url.includes("/auth/login")) {
       return Promise.reject(error);
     }
 
