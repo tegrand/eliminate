@@ -1,4 +1,4 @@
-import Modal from "../modal/Modal";
+import { Modal } from "../modal/Modal";
 import { Button } from "../button";
 import { Ban } from "lucide-react";
 import { useState } from "react";
