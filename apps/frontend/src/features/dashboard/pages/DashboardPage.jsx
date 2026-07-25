@@ -2,12 +2,17 @@ import DashboardStats from "../components/DashboardStats";
 import { useAuth } from "../../../hooks/useAuth";
 import { Calendar, ChevronDown } from "lucide-react";
 
+import UpcomingRequirements from "../components/UpcomingRequirements";
+import SystemOverview from "../components/SystemOverview";
+import RecentActivity from "../components/RecentActivity";
+import NotificationPanel from "../components/NotificationPanel";
+
 export default function DashboardPage() {
   const { user } = useAuth();
 
   return (
-    <div className="w-full pb-8 pt-0 space-y-8 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div className="w-full pb-8 pt-0 space-y-6 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             Welcome back, {user?.profileType === "SUPER_ADMIN" ? "Super Admin" : user?.name || "User"}! 👋
@@ -24,6 +29,16 @@ export default function DashboardPage() {
       </div>
 
       <DashboardStats />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <UpcomingRequirements />
+        <SystemOverview />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <RecentActivity />
+        <NotificationPanel />
+      </div>
     </div>
   );
 }
