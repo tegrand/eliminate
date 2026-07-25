@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Eye, CreditCard, User, Building, Wrench, Star } from "lucide-react";
+import { Eye, CreditCard, Briefcase, User, Building, Wrench, Star, Phone, Settings, MoreVertical } from "lucide-react";
 import { DataTable } from "../../../components/ui/data-table";
 import { Pagination } from "../../../components/ui/pagination";
 import { Link } from "react-router-dom";
+import WorkerStatusBadge from "./WorkerStatusBadge";
 import ApproveDialog from "../../../components/ui/action-dialogs/ApproveDialog";
 import RejectDialog from "../../../components/ui/action-dialogs/RejectDialog";
 import SuspendDialog from "../../../components/ui/action-dialogs/SuspendDialog";
@@ -38,68 +39,37 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
     return colors[name.length % colors.length];
   };
 
-  const getStatusBadge = (status) => {
-    if (status === 'ACTIVE' || status === 'APPROVED') {
-      return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-green-100 text-green-700"><span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>ACTIVE</span>;
-    }
-    if (status === 'ON_LEAVE' || status === 'PENDING') {
-      return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-orange-100 text-orange-700"><span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span>{status}</span>;
-    }
-    return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-gray-100 text-gray-700"><span className="w-1.5 h-1.5 rounded-full bg-gray-500"></span>Inactive</span>;
-  };
-
   const columns = [
     { key: "checkbox", title: <input type="checkbox" className="rounded border-gray-300" />, render: () => <input type="checkbox" className="rounded border-gray-300" /> },
-    { key: "id", title: <div className="flex items-center gap-1.5"><CreditCard className="w-3.5 h-3.5" />EMPLOYEE ID</div>, render: (row) => <span className="font-bold text-gray-900 text-sm">{row.id}</span> },
-    { 
-      key: "name", 
-      title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />NAME</div>, 
-      render: (row) => (
-        <div className="flex items-center gap-3">
-          <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-[10px] ${getAvatarColor(row.name)}`}>
-            {getInitials(row.name)}
-          </div>
-          <p className="text-gray-900 text-sm font-medium">{row.name}</p>
+    { key: "id", title: <div className="flex items-center gap-1.5"><Briefcase className="w-3.5 h-3.5" />EMPLOYEE ID</div>, render: (row) => <span className="font-bold text-gray-900 text-sm">{row.id}</span> },
+    { key: "name", title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />NAME</div>, render: (row) => (
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs">
+          {row.name.split(' ').map(n => n[0]).join('')}
         </div>
-      )
-    },
-    { key: "gender", title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />GENDER</div>, render: (row) => <span className="text-sm text-gray-600">-</span> },
-    { key: "phone", title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />PHONE</div>, render: (row) => <span className="text-sm text-gray-600">{row.phone}</span> },
+        <span className="text-sm font-semibold text-gray-900">{row.name}</span>
+      </div>
+    )},
+    { key: "gender", title: <div className="flex items-center gap-1.5">GENDER</div>, render: (row) => <span className="text-sm text-gray-600">-</span> },
+    { key: "phone", title: <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />PHONE</div>, render: (row) => <span className="text-sm text-gray-600">{row.phone}</span> },
     { key: "agency", title: <div className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" />AGENCY</div>, render: (row) => <span className="text-sm text-gray-600">{row.agency}</span> },
-    { key: "primarySkill", title: <div className="flex items-center gap-1.5"><Wrench className="w-3.5 h-3.5" />PRIMARY SKILL</div>, render: (row) => <span className="text-sm text-gray-600">{row.primarySkill}</span> },
+    { key: "primarySkill", title: <div className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5" />PRIMARY SKILL</div>, render: (row) => <span className="text-sm text-gray-600">{row.primarySkill}</span> },
     { 
       key: "status", 
-      title: <div className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5" />STATUS</div>, 
-      render: (row) => getStatusBadge(row.status)
+      title: "STATUS", 
+      render: (row) => <WorkerStatusBadge status={row.status} /> 
     },
     {
       key: "actions",
-      title: "Actions",
+      title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />ACTIONS</div>,
       render: (row) => (
         <div className="flex items-center gap-2">
-          {row.status === 'PENDING' && (
-            <>
-              <button onClick={() => handleAction(row, 'APPROVE')} className="p-1 text-gray-400 hover:text-green-600 focus:outline-none" aria-label="Approve" title="Approve">
-                <CheckCircle className="h-4 w-4" />
-              </button>
-              <button onClick={() => handleAction(row, 'REJECT')} className="p-1 text-gray-400 hover:text-red-600 focus:outline-none" aria-label="Reject" title="Reject">
-                <XCircle className="h-4 w-4" />
-              </button>
-            </>
-          )}
-          {row.status === 'APPROVED' && (
-            <button onClick={() => handleAction(row, 'SUSPEND')} className="p-1 text-gray-400 hover:text-orange-600 focus:outline-none" aria-label="Suspend" title="Suspend">
-              <Ban className="h-4 w-4" />
-            </button>
-          )}
-          {row.status === 'SUSPENDED' && (
-            <button onClick={() => handleAction(row, 'REACTIVATE')} className="p-1 text-gray-400 hover:text-green-600 focus:outline-none" aria-label="Reactivate" title="Reactivate">
-              <PlayCircle className="h-4 w-4" />
-            </button>
-          )}
-          <Link to={`/workers/${row.id}`} className="p-1 text-gray-400 hover:text-blue-600 focus:outline-none" aria-label="View Details" title="View Details">
+          <Link to={`/workers/${row.id}`} className="p-1.5 border border-gray-200 rounded-lg text-gray-400 hover:text-indigo-600 hover:border-indigo-200 focus:outline-none transition-colors" aria-label="View Details" title="View Details">
             <Eye className="h-4 w-4" />
           </Link>
+          <button className="p-1.5 border border-gray-200 rounded-lg text-gray-400 hover:text-indigo-600 hover:border-indigo-200 focus:outline-none transition-colors" aria-label="More Actions" title="More Actions">
+            <MoreVertical className="h-4 w-4" />
+          </button>
         </div>
       )
     },

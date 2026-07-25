@@ -26,7 +26,7 @@ const DataTable = forwardRef(
     );
 
     const theadClasses = clsx(
-      "bg-gray-50 text-xs uppercase text-gray-500 font-semibold border-b border-gray-200 sticky top-0 z-10"
+      "bg-indigo-50/40 text-[11px] uppercase text-slate-500 font-bold tracking-wider border-b border-gray-200 sticky top-0 z-10"
     );
 
     const thClasses = clsx(

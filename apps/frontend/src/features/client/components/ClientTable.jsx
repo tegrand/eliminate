@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye, CreditCard, Building, User, Phone, MapPin, Star, Ban, PlayCircle } from "lucide-react";
+import { Eye, CreditCard, Building, User, Phone, MapPin, Star, Ban, PlayCircle, Settings, MoreVertical } from "lucide-react";
 import { DataTable } from "../../../components/ui/data-table";
 import { Pagination } from "../../../components/ui/pagination";
 import { Link } from "react-router-dom";
@@ -51,39 +51,45 @@ export default function ClientTable({ clients, loading, page, totalPages }) {
     },
     {
       key: "actions",
-      title: "ACTIONS",
+      title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />ACTIONS</div>,
       render: (row) => (
         <div className="flex items-center gap-2">
           {row.status === 'ACTIVE' && (
-            <button onClick={() => handleAction(row, 'SUSPEND')} className="p-1 text-gray-400 hover:text-orange-600 focus:outline-none" aria-label="Suspend" title="Suspend">
+            <button onClick={() => handleAction(row, 'SUSPEND')} className="p-1.5 border border-gray-200 rounded-lg text-gray-400 hover:text-orange-600 hover:border-orange-200 focus:outline-none transition-colors" aria-label="Suspend" title="Suspend">
               <Ban className="h-4 w-4" />
             </button>
           )}
           {row.status === 'SUSPENDED' && (
-            <button onClick={() => handleAction(row, 'REACTIVATE')} className="p-1 text-gray-400 hover:text-green-600 focus:outline-none" aria-label="Reactivate" title="Reactivate">
+            <button onClick={() => handleAction(row, 'REACTIVATE')} className="p-1.5 border border-gray-200 rounded-lg text-gray-400 hover:text-green-600 hover:border-green-200 focus:outline-none transition-colors" aria-label="Reactivate" title="Reactivate">
               <PlayCircle className="h-4 w-4" />
             </button>
           )}
-          <Link to={`/clients/${row.id}`} className="p-1 text-gray-400 hover:text-blue-600 focus:outline-none" aria-label="View Details" title="View Details">
+          <Link to={`/clients/${row.id}`} className="p-1.5 border border-gray-200 rounded-lg text-gray-400 hover:text-indigo-600 hover:border-indigo-200 focus:outline-none transition-colors" aria-label="View Details" title="View Details">
             <Eye className="h-4 w-4" />
           </Link>
+          <button className="p-1.5 border border-gray-200 rounded-lg text-gray-400 hover:text-indigo-600 hover:border-indigo-200 focus:outline-none transition-colors" aria-label="More Actions" title="More Actions">
+            <MoreVertical className="h-4 w-4" />
+          </button>
         </div>
       )
     },
   ];
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm">
-      <DataTable 
-        columns={columns} 
-        data={clients || []} 
-        loading={loading}
-        rowKey="id" 
-        hover 
-      />
+    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm flex flex-col h-full">
+      <div className="flex-1 overflow-auto">
+        <DataTable 
+          columns={columns} 
+          data={clients || []} 
+          loading={loading}
+          rowKey="id" 
+          hover 
+          compact
+        />
+      </div>
       {clients && clients.length > 0 && (
-        <div className="p-4 border-t border-gray-100 flex justify-between items-center bg-white">
-          <span className="text-sm text-gray-500 font-medium">Showing 1 to {clients.length} of {clients.length} clients</span>
+        <div className="p-3 border-t border-gray-100 flex justify-between items-center bg-white flex-shrink-0">
+          <span className="text-[13px] text-gray-500 font-medium">Showing 1 to {clients.length} of {clients.length} clients</span>
           <Pagination 
             currentPage={page}
             totalPages={totalPages}

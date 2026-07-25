@@ -38,13 +38,13 @@ export default function WorkerListPage() {
   ];
 
   return (
-    <div className="w-full pb-8 pt-0 animate-fade-in bg-gray-50/30 min-h-screen">
+    <div className="w-full h-[calc(100vh-4rem)] p-4 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
       <WorkerToolbar totalWorkers={displayedWorkers.length} />
       
       <WorkerStats workers={data?.data?.workers || []} />
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mt-2">
-        <div className="border-b border-gray-100 px-6 pt-2">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col flex-1 overflow-hidden">
+        <div className="border-b border-gray-100 px-6 pt-1 flex-shrink-0">
           <nav className="-mb-px flex space-x-8 overflow-x-auto" aria-label="Tabs">
             {tabs.map((tab) => (
               <Link
@@ -52,9 +52,9 @@ export default function WorkerListPage() {
                 to={tab.path}
                 className={clsx(
                   currentStatus === tab.value
-                    ? "border-blue-600 text-blue-600 font-bold"
+                    ? "border-indigo-600 text-indigo-700 font-bold"
                     : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 font-semibold",
-                  "whitespace-nowrap border-b-2 py-4 px-1 text-sm transition-colors"
+                  "whitespace-nowrap border-b-2 py-3 px-1 text-[13px] transition-colors"
                 )}
               >
                 {tab.name}
@@ -63,10 +63,10 @@ export default function WorkerListPage() {
           </nav>
         </div>
 
-        <div className="px-6 pb-6">
+        <div className="px-6 pb-4 flex flex-col flex-1 overflow-hidden">
           <WorkerFilters />
           
-          <div className="mt-2">
+          <div className="mt-3 flex-1 overflow-hidden flex flex-col">
             <WorkerTable 
               workers={displayedWorkers} 
               loading={isLoading} 

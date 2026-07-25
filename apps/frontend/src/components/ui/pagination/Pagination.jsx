@@ -45,7 +45,7 @@ const Pagination = forwardRef(
       }
     };
 
-    const ButtonClass = "inline-flex h-9 w-9 items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:pointer-events-none disabled:opacity-50";
+    const ButtonClass = "inline-flex h-9 w-9 items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:pointer-events-none disabled:opacity-50";
 
     return (
       <nav
@@ -92,7 +92,7 @@ const Pagination = forwardRef(
                 className={clsx(
                   ButtonClass,
                   currentPage === page
-                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                    ? "bg-indigo-600 text-white hover:bg-indigo-700 shadow-sm"
                     : "hover:bg-gray-100 hover:text-gray-900 text-gray-700"
                 )}
               >
