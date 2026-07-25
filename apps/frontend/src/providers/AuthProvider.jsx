@@ -11,27 +11,44 @@ export default function AuthProvider({ children }) {
   useEffect(() => {
     // Lifecycle: On initial mount, we attempt to restore the session
     const initAuth = async () => {
-      // TODO: Future API integration
-      // 1. Check if backend validates the current HttpOnly cookie via a /me or /session endpoint.
-      // 2. If valid, set user and isAuthenticated to true.
-      
-      // Temporary placeholder: simulate a network delay
-      setTimeout(() => {
+      try {
+        const storedUser = localStorage.getItem('user');
+        const storedToken = localStorage.getItem('accessToken');
+        
+        if (storedUser && storedToken) {
+          setUser(JSON.parse(storedUser));
+          setIsAuthenticated(true);
+        }
+      } catch (err) {
+        console.error("Failed to restore session", err);
+      } finally {
         setIsLoading(false); // Done checking session
-      }, 500);
+      }
     };
 
     initAuth();
   }, []);
 
-  const login = (userData) => {
+  const login = (userData, token, rememberMe = false) => {
     setIsAuthenticated(true);
     setUser(userData);
+    
+    if (rememberMe) {
+      localStorage.setItem('user', JSON.stringify(userData));
+      localStorage.setItem('accessToken', token);
+    } else {
+      sessionStorage.setItem('user', JSON.stringify(userData));
+      sessionStorage.setItem('accessToken', token);
+    }
   };
 
   const logout = () => {
     setIsAuthenticated(false);
     setUser(null);
+    localStorage.removeItem('user');
+    localStorage.removeItem('accessToken');
+    sessionStorage.removeItem('user');
+    sessionStorage.removeItem('accessToken');
   };
 
   const refreshSession = async () => {

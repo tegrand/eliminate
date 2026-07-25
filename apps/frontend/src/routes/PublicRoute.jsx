@@ -11,10 +11,10 @@ const PublicRoute = () => {
     return <div className="min-h-screen flex items-center justify-center text-gray-500">Authenticating...</div>;
   }
 
-  // TEMPORARILY DISABLED FOR TESTING
-  // if (isAuthenticated) {
-  //   return <Navigate to={ROUTES.DASHBOARD} replace />;
-  // }
+  // Redirect authenticated users to their dashboard
+  if (isAuthenticated) {
+    return <Navigate to={ROUTES.DASHBOARD} replace />;
+  }
 
   return <Outlet />;
 };

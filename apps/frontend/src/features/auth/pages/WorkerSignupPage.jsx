@@ -33,17 +33,22 @@ export default function WorkerSignupPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleNext = (e) => {
+  const handleNext = async (e) => {
     e.preventDefault();
     if (currentStep < 5) {
       setCurrentStep(prev => prev + 1);
     } else {
       setLoading(true);
-      setTimeout(() => {
-        setLoading(false);
+      try {
+        const { authApi } = await import("../api/auth.api");
+        await authApi.registerWorker(formData);
         toast.success("Worker application submitted for Super Admin verification.");
         navigate(ROUTES.PENDING_APPROVAL);
-      }, 1000);
+      } catch (error) {
+        toast.error(error?.response?.data?.message || "Registration failed. Please try again.");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 

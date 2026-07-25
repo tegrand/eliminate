@@ -30,17 +30,22 @@ export default function AgencySignupPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleNext = (e) => {
+  const handleNext = async (e) => {
     e.preventDefault();
     if (currentStep < 4) {
       setCurrentStep(prev => prev + 1);
     } else {
       setLoading(true);
-      setTimeout(() => {
-        setLoading(false);
+      try {
+        const { authApi } = await import("../api/auth.api");
+        await authApi.registerAgency(formData);
         toast.success("Agency registration submitted for Super Admin review.");
         navigate(ROUTES.PENDING_APPROVAL);
-      }, 1000);
+      } catch (error) {
+        toast.error(error?.response?.data?.message || "Registration failed. Please try again.");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 

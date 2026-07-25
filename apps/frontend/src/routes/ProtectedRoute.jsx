@@ -11,10 +11,10 @@ const ProtectedRoute = () => {
     return <div className="min-h-screen flex items-center justify-center text-gray-500">Authenticating...</div>;
   }
 
-  // TEMPORARILY DISABLED FOR TESTING
-  // if (!isAuthenticated) {
-  //   return <Navigate to={ROUTES.LOGIN} replace />;
-  // }
+  // Redirect to login if user is not authenticated
+  if (!isAuthenticated) {
+    return <Navigate to={ROUTES.LOGIN} replace />;
+  }
 
   return <Outlet />;
 };

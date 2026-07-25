@@ -17,13 +17,19 @@ export default function ClientSignupPage() {
     resolver: zodResolver(clientSignupSchema),
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      // Dynamic import to avoid circular dependency issues if any
+      const { authApi } = await import("../api/auth.api");
+      await authApi.registerClient(data);
       toast.success("Client account created successfully! Please log in.");
       navigate(ROUTES.LOGIN);
-    }, 1000);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -77,7 +77,7 @@ const Input = forwardRef(
 
           {/* Right Icon */}
           {rightIcon && (
-            <div className="absolute right-3 flex items-center text-gray-400 pointer-events-none">
+            <div className="absolute right-3 flex items-center text-gray-400">
               {rightIcon}
             </div>
           )}
