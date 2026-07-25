@@ -1,7 +1,6 @@
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
-import Breadcrumb from "../components/layout/Breadcrumb";
 import PageContainer from "../components/layout/PageContainer";
 
 export default function DashboardLayout() {
@@ -15,8 +14,6 @@ export default function DashboardLayout() {
         <Header />
         
         <PageContainer>
-          <Breadcrumb />
-          
           {/* This renders the actual feature page (e.g. WorkerListPage) */}
           <Outlet />
         </PageContainer>

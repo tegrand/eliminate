@@ -1,26 +1,18 @@
 import { Card, CardContent } from "../../../components/ui/card";
 
-export default function StatCard({ icon: Icon, title, value, trend, trendUp }) {
+export default function StatCard({ icon: Icon, title, value, bgColor, iconColor }) {
   return (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-gray-500">{title}</p>
-            <h3 className="text-2xl font-bold text-gray-900 mt-1">{value}</h3>
+    <Card className="hover:shadow-md transition-shadow border border-gray-100 shadow-sm">
+      <CardContent className="p-4">
+        <div className="flex items-center gap-3">
+          <div className={`flex items-center justify-center w-8 h-8 rounded-full ${bgColor}`}>
+            <Icon className={`w-4 h-4 ${iconColor}`} />
           </div>
-          <div className="p-3 bg-blue-50 rounded-full">
-            <Icon className="h-6 w-6 text-blue-600" />
-          </div>
+          <p className="text-xs font-semibold text-gray-600 whitespace-nowrap">{title}</p>
         </div>
-        {trend && (
-          <div className="mt-4 flex items-center text-sm">
-            <span className={trendUp ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
-              {trend}
-            </span>
-            <span className="text-gray-500 ml-2">vs last month</span>
-          </div>
-        )}
+        <div className="mt-4">
+          <h3 className="text-2xl font-bold text-gray-900">{value}</h3>
+        </div>
       </CardContent>
     </Card>
   );
