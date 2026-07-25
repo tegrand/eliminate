@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const createJobRequirementSchema = z.object({
+const baseJobRequirementSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(150),
   description: z.string().optional(),
   categoryId: z.string().uuid("Invalid category ID").optional(),
@@ -34,7 +34,9 @@ export const createJobRequirementSchema = z.object({
       })
     )
     .optional(),
-}).refine(
+});
+
+export const createJobRequirementSchema = baseJobRequirementSchema.refine(
   (data) => {
     if (data.startDate && data.endDate) {
       return new Date(data.endDate) >= new Date(data.startDate);
@@ -47,7 +49,7 @@ export const createJobRequirementSchema = z.object({
   }
 );
 
-export const updateJobRequirementSchema = createJobRequirementSchema.partial().extend({
+export const updateJobRequirementSchema = baseJobRequirementSchema.partial().extend({
   status: z.enum(["DRAFT", "OPEN", "PARTIALLY_FILLED", "FILLED", "COMPLETED", "CANCELLED"]).optional(),
   cancellationReason: z.string().optional(),
 });
