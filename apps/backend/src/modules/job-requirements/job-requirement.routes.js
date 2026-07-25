@@ -6,6 +6,7 @@ import {
   getJobRequirement,
   updateJobRequirement,
   deleteJobRequirement,
+  applyForJob,
 } from "./job-requirement.controller.js";
 
 import {
@@ -57,6 +58,11 @@ router.delete(
   requirePermission("job-requirement:delete"),
   validate(jobRequirementIdParamSchema, "params"),
   deleteJobRequirement
+);
+
+router.post(
+  "/:id/apply",
+  applyForJob
 );
 
 export default router;

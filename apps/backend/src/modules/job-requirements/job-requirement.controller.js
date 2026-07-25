@@ -26,3 +26,12 @@ export const deleteJobRequirement = asyncHandler(async (req, res) => {
   await jobRequirementService.deleteJobRequirement(req.params.id);
   return ApiResponse.success(res, "Job requirement deleted successfully", null, 200);
 });
+
+export const applyForJob = asyncHandler(async (req, res) => {
+  const application = await jobRequirementService.applyForJob(
+    req.params.id,
+    req.user.id,
+    req.body?.notes
+  );
+  return ApiResponse.success(res, "Applied for job successfully", application, 201);
+});

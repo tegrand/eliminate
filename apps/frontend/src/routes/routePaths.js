@@ -18,6 +18,11 @@ export const ROUTES = {
   // Worker
   WORKERS: "/workers",
   WORKER_DETAILS: "/workers/:id",
+  
+  // Worker App Routes
+  JOB_BOARD: "/job-board",
+  JOB_BOARD_DETAILS: "/job-board/:id",
+  MY_PROFILE: "/my-profile",
 
   // Client
   CLIENTS: "/clients",

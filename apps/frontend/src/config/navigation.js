@@ -26,6 +26,21 @@ export const NAVIGATION_CONFIG = [
     ]
   },
   {
+    group: "My Account",
+    items: [
+      {
+        title: "Job Board",
+        path: ROUTES.JOB_BOARD,
+        icon: Briefcase,
+      },
+      {
+        title: "My Profile",
+        path: ROUTES.MY_PROFILE,
+        icon: Users,
+      }
+    ]
+  },
+  {
     group: "User Management",
     items: [
       {

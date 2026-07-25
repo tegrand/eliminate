@@ -26,3 +26,18 @@ export const deleteWorker = asyncHandler(async (req, res) => {
   await workerService.deleteWorker(req.params.id);
   return ApiResponse.success(res, "Worker deleted successfully", null, 200);
 });
+
+export const getMe = asyncHandler(async (req, res) => {
+  const worker = await workerService.getWorkerByUserId(req.user.id);
+  return ApiResponse.success(res, "Worker retrieved successfully", worker, 200);
+});
+
+export const updateMe = asyncHandler(async (req, res) => {
+  const worker = await workerService.updateWorkerByUserId(req.user.id, req.validatedData);
+  return ApiResponse.success(res, "Worker updated successfully", worker, 200);
+});
+
+export const getMyApplications = asyncHandler(async (req, res) => {
+  const applications = await workerService.getMyApplications(req.user.id);
+  return ApiResponse.success(res, "Applications retrieved successfully", applications, 200);
+});
