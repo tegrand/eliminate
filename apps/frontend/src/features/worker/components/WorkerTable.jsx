@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Eye, CheckCircle, XCircle, Ban, PlayCircle } from "lucide-react";
+import { Eye, CreditCard, User, Building, Wrench, Star } from "lucide-react";
 import { DataTable } from "../../../components/ui/data-table";
 import { Pagination } from "../../../components/ui/pagination";
-import WorkerStatusBadge from "./WorkerStatusBadge";
 import { Link } from "react-router-dom";
 import ApproveDialog from "../../../components/ui/action-dialogs/ApproveDialog";
 import RejectDialog from "../../../components/ui/action-dialogs/RejectDialog";
@@ -12,7 +11,7 @@ import toast from "react-hot-toast";
 
 export default function WorkerTable({ workers, loading, page, totalPages }) {
   const [selectedWorker, setSelectedWorker] = useState(null);
-  const [actionType, setActionType] = useState(null); // 'APPROVE', 'REJECT', 'SUSPEND', 'REACTIVATE'
+  const [actionType, setActionType] = useState(null);
 
   const handleAction = (worker, type) => {
     setSelectedWorker(worker);
@@ -25,23 +24,53 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
   };
 
   const handleConfirmAction = (reasonOrNote) => {
-    // Mock API call
     console.log(`Action: ${actionType} on Worker: ${selectedWorker.name}, Reason/Note: ${reasonOrNote}`);
     toast.success(`Worker ${actionType.toLowerCase()}d successfully.`);
     closeDialog();
   };
 
+  const getInitials = (name) => {
+    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  };
+
+  const getAvatarColor = (name) => {
+    const colors = ["bg-blue-100 text-blue-600", "bg-orange-100 text-orange-600", "bg-purple-100 text-purple-600", "bg-green-100 text-green-600"];
+    return colors[name.length % colors.length];
+  };
+
+  const getStatusBadge = (status) => {
+    if (status === 'ACTIVE' || status === 'APPROVED') {
+      return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-green-100 text-green-700"><span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>ACTIVE</span>;
+    }
+    if (status === 'ON_LEAVE' || status === 'PENDING') {
+      return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-orange-100 text-orange-700"><span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span>{status}</span>;
+    }
+    return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-gray-100 text-gray-700"><span className="w-1.5 h-1.5 rounded-full bg-gray-500"></span>Inactive</span>;
+  };
+
   const columns = [
-    { key: "id", title: "Employee ID", render: (row) => <span className="font-medium text-gray-900">{row.id}</span> },
-    { key: "name", title: "Name", render: (row) => row.name },
-    { key: "gender", title: "Gender", render: (row) => row.gender ? row.gender.charAt(0).toUpperCase() + row.gender.slice(1).toLowerCase() : "-" },
-    { key: "phone", title: "Phone", render: (row) => row.phone },
-    { key: "agency", title: "Agency", render: (row) => row.agency },
-    { key: "primarySkill", title: "Primary Skill", render: (row) => row.primarySkill },
+    { key: "checkbox", title: <input type="checkbox" className="rounded border-gray-300" />, render: () => <input type="checkbox" className="rounded border-gray-300" /> },
+    { key: "id", title: <div className="flex items-center gap-1.5"><CreditCard className="w-3.5 h-3.5" />EMPLOYEE ID</div>, render: (row) => <span className="font-bold text-gray-900 text-sm">{row.id}</span> },
+    { 
+      key: "name", 
+      title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />NAME</div>, 
+      render: (row) => (
+        <div className="flex items-center gap-3 py-1">
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${getAvatarColor(row.name)}`}>
+            {getInitials(row.name)}
+          </div>
+          <p className="text-gray-900 text-sm font-medium">{row.name}</p>
+        </div>
+      )
+    },
+    { key: "gender", title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />GENDER</div>, render: (row) => <span className="text-sm text-gray-600">-</span> },
+    { key: "phone", title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />PHONE</div>, render: (row) => <span className="text-sm text-gray-600">{row.phone}</span> },
+    { key: "agency", title: <div className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" />AGENCY</div>, render: (row) => <span className="text-sm text-gray-600">{row.agency}</span> },
+    { key: "primarySkill", title: <div className="flex items-center gap-1.5"><Wrench className="w-3.5 h-3.5" />PRIMARY SKILL</div>, render: (row) => <span className="text-sm text-gray-600">{row.primarySkill}</span> },
     { 
       key: "status", 
-      title: "Status", 
-      render: (row) => <WorkerStatusBadge status={row.status} /> 
+      title: <div className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5" />STATUS</div>, 
+      render: (row) => getStatusBadge(row.status)
     },
     {
       key: "actions",
@@ -77,7 +106,7 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
   ];
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm">
       <DataTable 
         columns={columns} 
         data={workers || []} 
@@ -86,7 +115,8 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
         hover 
       />
       {workers && workers.length > 0 && (
-        <div className="p-4 border-t border-gray-100 flex justify-end bg-gray-50/50">
+        <div className="p-4 border-t border-gray-100 flex justify-between items-center bg-white">
+          <span className="text-sm text-gray-500 font-medium">Showing 1 to {workers.length} of {workers.length} workers</span>
           <Pagination 
             currentPage={page}
             totalPages={totalPages}
