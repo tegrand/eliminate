@@ -24,18 +24,12 @@ export default function AuthProvider({ children }) {
     initAuth();
   }, []);
 
-  const login = async (credentials) => {
-    // TODO: Future login API integration
-    // await axiosInstance.post('/auth/login', credentials);
-    console.log("Login placeholder called with:", credentials);
+  const login = (userData) => {
     setIsAuthenticated(true);
-    setUser({ id: '1', role: 'admin', name: 'Placeholder User' });
+    setUser(userData);
   };
 
-  const logout = async () => {
-    // TODO: Future logout API integration (clear HttpOnly cookies server-side)
-    // await axiosInstance.post('/auth/logout');
-    console.log("Logout placeholder called");
+  const logout = () => {
     setIsAuthenticated(false);
     setUser(null);
   };

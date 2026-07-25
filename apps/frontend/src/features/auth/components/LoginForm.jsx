@@ -1,32 +1,71 @@
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { useAuth } from "../../../hooks/useAuth";
+
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Card, CardContent, CardFooter } from "../../../components/ui/card";
+import { authApi } from "../api/auth.api";
+
+// Validation schema
+const loginSchema = z.object({
+  email: z.string().min(1, "Email is required").email("Invalid email address"),
+  password: z.string().min(1, "Password is required").min(6, "Password must be at least 6 characters"),
+});
 
 export default function LoginForm() {
-  const [loading, setLoading] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 1500);
+  // Setup React Hook Form
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  // Setup React Query Mutation
+  const loginMutation = useMutation({
+    mutationFn: (data) => authApi.login(data),
+    onSuccess: (response) => {
+      // Pass the user data into the AuthContext
+      login(response.data.user);
+      toast.success("Login successful!");
+      navigate("/dashboard");
+    },
+    onError: (error) => {
+      toast.error(error?.response?.data?.message || "Invalid email or password");
+    },
+  });
+
+  const onSubmit = (data) => {
+    loginMutation.mutate(data);
   };
 
   return (
     <Card className="border-gray-200 shadow-sm w-full">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <CardContent className="space-y-4 pt-6">
           <Input
             label="Email"
             type="email"
             id="email"
             placeholder="name@example.com"
-            required
-            disabled={loading}
+            disabled={loginMutation.isPending}
             autoComplete="email"
             autoFocus
+            error={errors.email?.message}
+            {...register("email")}
           />
           <div className="space-y-1">
             <Input
@@ -34,9 +73,10 @@ export default function LoginForm() {
               type="password"
               id="password"
               placeholder="••••••••"
-              required
-              disabled={loading}
+              disabled={loginMutation.isPending}
               autoComplete="current-password"
+              error={errors.password?.message}
+              {...register("password")}
             />
             <div className="flex justify-end pt-1">
               <a
@@ -53,7 +93,7 @@ export default function LoginForm() {
           <Button
             type="submit"
             fullWidth
-            loading={loading}
+            loading={loginMutation.isPending}
           >
             Sign In
           </Button>
