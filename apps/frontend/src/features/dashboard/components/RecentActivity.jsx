@@ -2,9 +2,10 @@ import { Card, CardContent } from "../../../components/ui/card";
 
 export default function RecentActivity() {
   const activities = [
-    { id: 1, title: "New worker registered", time: "10 mins ago", description: "John Doe completed onboarding." },
-    { id: 2, title: "Job requirement filled", time: "2 hours ago", description: "Warehouse staff for Client A." },
-    { id: 3, title: "Invoice generated", time: "5 hours ago", description: "Monthly billing for Agency X." },
+    { id: 1, title: "Worker Registration", time: "10 mins ago", description: "John Doe submitted an application (Pending)." },
+    { id: 2, title: "Agency Approved", time: "2 hours ago", description: "Alpha Staffing was approved by Super Admin." },
+    { id: 3, title: "Client Registration", time: "5 hours ago", description: "TechCorp Logistics registered and is Active." },
+    { id: 4, title: "Worker Rejected", time: "1 day ago", description: "Jane Smith application rejected." },
   ];
 
   return (
