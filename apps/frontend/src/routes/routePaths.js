@@ -17,19 +17,15 @@ export const ROUTES = {
 
   // Worker
   WORKERS: "/workers",
-  WORKER_CREATE: "/workers/new",
   WORKER_DETAILS: "/workers/:id",
-  WORKER_EDIT: "/workers/:id/edit",
 
   // Client
   CLIENTS: "/clients",
-  CLIENT_CREATE: "/clients/new",
-  CLIENT_EDIT: "/clients/:id/edit",
+  CLIENT_DETAILS: "/clients/:id",
 
   // Agency
   AGENCIES: "/agencies",
-  AGENCY_CREATE: "/agencies/new",
-  AGENCY_EDIT: "/agencies/:id/edit",
+  AGENCY_DETAILS: "/agencies/:id",
 
   // Master Data
   SKILLS: "/skills",

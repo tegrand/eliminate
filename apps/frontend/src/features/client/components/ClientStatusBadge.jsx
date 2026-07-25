@@ -2,8 +2,8 @@ import { Badge } from "../../../components/ui/badge";
 
 const statusConfig = {
   ACTIVE: { variant: "success", label: "Active" },
-  ONBOARDING: { variant: "warning", label: "Onboarding" },
-  INACTIVE: { variant: "error", label: "Inactive" },
+  SUSPENDED: { variant: "secondary", label: "Suspended" },
+  INACTIVE: { variant: "default", label: "Inactive" },
 };
 
 export default function ClientStatusBadge({ status }) {

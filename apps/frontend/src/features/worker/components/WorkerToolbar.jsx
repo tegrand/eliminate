@@ -1,5 +1,3 @@
-import { Plus } from "lucide-react";
-import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 
 export default function WorkerToolbar({ totalWorkers }) {
@@ -18,9 +16,6 @@ export default function WorkerToolbar({ totalWorkers }) {
             aria-label="Search workers"
           />
         </div>
-        <Button className="w-full sm:w-auto">
-          <Plus className="mr-2 h-4 w-4" /> Add Worker
-        </Button>
       </div>
     </div>
   );

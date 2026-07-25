@@ -26,7 +26,7 @@ export default function ClientFilters() {
             <Select label="Status" {...register("status")}>
               <option value="">All Statuses</option>
               <option value="ACTIVE">Active</option>
-              <option value="ONBOARDING">Onboarding</option>
+              <option value="SUSPENDED">Suspended</option>
               <option value="INACTIVE">Inactive</option>
             </Select>
           </div>

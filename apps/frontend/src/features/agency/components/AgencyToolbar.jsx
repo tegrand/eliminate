@@ -1,7 +1,4 @@
-import { Plus } from "lucide-react";
-import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
-import { Link } from "react-router-dom";
 
 export default function AgencyToolbar({ totalAgencies }) {
   return (
@@ -19,11 +16,6 @@ export default function AgencyToolbar({ totalAgencies }) {
             aria-label="Search agencies"
           />
         </div>
-        <Link to="/agencies/new" className="w-full sm:w-auto">
-          <Button className="w-full">
-            <Plus className="mr-2 h-4 w-4" /> Add Agency
-          </Button>
-        </Link>
       </div>
     </div>
   );

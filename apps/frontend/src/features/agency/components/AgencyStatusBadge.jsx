@@ -1,9 +1,11 @@
 import { Badge } from "../../../components/ui/badge";
 
 const statusConfig = {
-  ACTIVE: { variant: "success", label: "Active" },
-  ONBOARDING: { variant: "warning", label: "Onboarding" },
-  INACTIVE: { variant: "error", label: "Inactive" },
+  PENDING: { variant: "warning", label: "Pending" },
+  APPROVED: { variant: "success", label: "Approved" },
+  REJECTED: { variant: "danger", label: "Rejected" },
+  SUSPENDED: { variant: "secondary", label: "Suspended" },
+  INACTIVE: { variant: "default", label: "Inactive" },
 };
 
 export default function AgencyStatusBadge({ status }) {

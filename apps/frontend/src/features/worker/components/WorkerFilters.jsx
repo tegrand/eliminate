@@ -26,9 +26,10 @@ export default function WorkerFilters() {
           <div className="flex-1 w-full">
             <Select label="Status" {...register("status")}>
               <option value="">All Statuses</option>
-              <option value="ACTIVE">Active</option>
-              <option value="ON_LEAVE">On Leave</option>
-              <option value="INACTIVE">Inactive</option>
+              <option value="PENDING">Pending</option>
+              <option value="APPROVED">Approved</option>
+              <option value="REJECTED">Rejected</option>
+              <option value="SUSPENDED">Suspended</option>
             </Select>
           </div>
           <div className="flex-1 w-full">

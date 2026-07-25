@@ -1,5 +1,5 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Edit } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useWorker } from "../hooks/useWorker";
 import { Skeleton } from "../../../components/ui/skeleton";
 import { Button } from "../../../components/ui/button";
@@ -54,12 +54,6 @@ export default function WorkerDetailsPage() {
           </Link>
           <h1 className="text-3xl font-bold text-gray-900">Worker Details</h1>
         </div>
-        <Button 
-          onClick={() => navigate(`/workers/${workerId}/edit`)}
-          className="w-full sm:w-auto"
-        >
-          <Edit className="mr-2 h-4 w-4" /> Edit Worker
-        </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

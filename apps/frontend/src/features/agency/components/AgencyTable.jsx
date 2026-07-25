@@ -1,7 +1,8 @@
-import { Eye, Edit, Trash2 } from "lucide-react";
+import { Eye, CheckCircle, XCircle, Ban, PlayCircle } from "lucide-react";
 import { DataTable } from "../../../components/ui/data-table";
 import { Pagination } from "../../../components/ui/pagination";
 import AgencyStatusBadge from "./AgencyStatusBadge";
+import { Link } from "react-router-dom";
 
 export default function AgencyTable({ agencies, loading, page, totalPages }) {
   const columns = [
@@ -19,17 +20,31 @@ export default function AgencyTable({ agencies, loading, page, totalPages }) {
     {
       key: "actions",
       title: "Actions",
-      render: () => (
+      render: (row) => (
         <div className="flex items-center gap-2">
-          <button className="p-1 text-gray-400 hover:text-blue-600 focus:outline-none" aria-label="View">
+          {row.status === 'PENDING' && (
+            <>
+              <button className="p-1 text-gray-400 hover:text-green-600 focus:outline-none" aria-label="Approve" title="Approve">
+                <CheckCircle className="h-4 w-4" />
+              </button>
+              <button className="p-1 text-gray-400 hover:text-red-600 focus:outline-none" aria-label="Reject" title="Reject">
+                <XCircle className="h-4 w-4" />
+              </button>
+            </>
+          )}
+          {row.status === 'APPROVED' && (
+            <button className="p-1 text-gray-400 hover:text-orange-600 focus:outline-none" aria-label="Suspend" title="Suspend">
+              <Ban className="h-4 w-4" />
+            </button>
+          )}
+          {row.status === 'SUSPENDED' && (
+            <button className="p-1 text-gray-400 hover:text-green-600 focus:outline-none" aria-label="Reactivate" title="Reactivate">
+              <PlayCircle className="h-4 w-4" />
+            </button>
+          )}
+          <Link to={`/agencies/${row.id}`} className="p-1 text-gray-400 hover:text-blue-600 focus:outline-none" aria-label="View Details" title="View Details">
             <Eye className="h-4 w-4" />
-          </button>
-          <button className="p-1 text-gray-400 hover:text-green-600 focus:outline-none" aria-label="Edit">
-            <Edit className="h-4 w-4" />
-          </button>
-          <button className="p-1 text-gray-400 hover:text-red-600 focus:outline-none" aria-label="Delete">
-            <Trash2 className="h-4 w-4" />
-          </button>
+          </Link>
         </div>
       )
     },

@@ -26,17 +26,13 @@ import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
 import DashboardPage from "../features/dashboard/pages/DashboardPage";
 
 import WorkerListPage from "../features/worker/pages/WorkerListPage";
-import CreateWorkerPage from "../features/worker/pages/CreateWorkerPage";
-import EditWorkerPage from "../features/worker/pages/EditWorkerPage";
 import WorkerDetailsPage from "../features/worker/pages/WorkerDetailsPage";
 
 import ClientListPage from "../features/client/pages/ClientListPage";
-import CreateClientPage from "../features/client/pages/CreateClientPage";
-import EditClientPage from "../features/client/pages/EditClientPage";
+import ClientDetailsPage from "../features/client/pages/ClientDetailsPage";
 
 import AgencyListPage from "../features/agency/pages/AgencyListPage";
-import CreateAgencyPage from "../features/agency/pages/CreateAgencyPage";
-import EditAgencyPage from "../features/agency/pages/EditAgencyPage";
+import AgencyDetailsPage from "../features/agency/pages/AgencyDetailsPage";
 
 import SkillListPage from "../features/master-data/skill/pages/SkillListPage";
 import CategoryListPage from "../features/master-data/category/pages/CategoryListPage";
@@ -96,19 +92,15 @@ const AppRouter = () => {
 
             {/* Workers */}
             <Route path={ROUTES.WORKERS} element={<WorkerListPage />} />
-            <Route path={ROUTES.WORKER_CREATE} element={<CreateWorkerPage />} />
             <Route path={ROUTES.WORKER_DETAILS} element={<WorkerDetailsPage />} />
-            <Route path={ROUTES.WORKER_EDIT} element={<EditWorkerPage />} />
 
             {/* Clients */}
             <Route path={ROUTES.CLIENTS} element={<ClientListPage />} />
-            <Route path={ROUTES.CLIENT_CREATE} element={<CreateClientPage />} />
-            <Route path={ROUTES.CLIENT_EDIT} element={<EditClientPage />} />
+            <Route path={ROUTES.CLIENT_DETAILS} element={<ClientDetailsPage />} />
 
             {/* Agencies */}
             <Route path={ROUTES.AGENCIES} element={<AgencyListPage />} />
-            <Route path={ROUTES.AGENCY_CREATE} element={<CreateAgencyPage />} />
-            <Route path={ROUTES.AGENCY_EDIT} element={<EditAgencyPage />} />
+            <Route path={ROUTES.AGENCY_DETAILS} element={<AgencyDetailsPage />} />
 
             {/* Master Data */}
             <Route path={ROUTES.SKILLS} element={<SkillListPage />} />

@@ -1,7 +1,4 @@
-import { Plus } from "lucide-react";
-import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
-import { Link } from "react-router-dom";
 
 export default function ClientToolbar({ totalClients }) {
   return (
@@ -19,11 +16,6 @@ export default function ClientToolbar({ totalClients }) {
             aria-label="Search clients"
           />
         </div>
-        <Link to="/clients/new" className="w-full sm:w-auto">
-          <Button className="w-full">
-            <Plus className="mr-2 h-4 w-4" /> Add Client
-          </Button>
-        </Link>
       </div>
     </div>
   );
