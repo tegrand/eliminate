@@ -19,11 +19,7 @@ export default function JobRequirementToolbar({ totalRequirements }) {
             aria-label="Search requirements"
           />
         </div>
-        <Link to="/job-requirements/new" className="w-full sm:w-auto">
-          <Button className="w-full">
-            <Plus className="mr-2 h-4 w-4" /> Create Requirement
-          </Button>
-        </Link>
+        {/* Temporarily removed Create Requirement button per request */}
       </div>
     </div>
   );

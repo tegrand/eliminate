@@ -34,13 +34,13 @@ export default function PersonalInformationSection({ register, errors }) {
           <Select 
             label="Gender" 
             error={errors.gender?.message}
+            options={[
+              { value: "MALE", label: "Male" },
+              { value: "FEMALE", label: "Female" },
+              { value: "OTHER", label: "Other" }
+            ]}
             {...register("gender")}
-          >
-            <option value="">Select Gender</option>
-            <option value="MALE">Male</option>
-            <option value="FEMALE">Female</option>
-            <option value="OTHER">Other</option>
-          </Select>
+          />
           <Input 
             label="Date of Birth" 
             type="date" 

@@ -1,4 +1,9 @@
+import { useAuth } from "../../hooks/useAuth";
+import { LogOut } from "lucide-react";
+
 export default function Header() {
+  const { logout } = useAuth();
+  
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 lg:px-8 sticky top-0 z-10 flex-shrink-0">
       {/* Mobile/Tablet Menu Button Placeholder */}
@@ -35,9 +40,15 @@ export default function Header() {
           <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
         </button>
         
-        {/* Profile Dropdown Placeholder */}
-        <button className="w-8 h-8 rounded-full bg-gray-200 border border-gray-300 overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ml-2" aria-label="User profile">
-          <div className="w-full h-full bg-gray-300"></div>
+        {/* Logout Button */}
+        <button 
+          onClick={logout}
+          className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors flex items-center gap-2 text-sm font-medium ml-2" 
+          aria-label="Logout"
+          title="Logout"
+        >
+          <LogOut className="w-4 h-4" />
+          <span className="hidden sm:inline">Logout</span>
         </button>
       </div>
     </header>

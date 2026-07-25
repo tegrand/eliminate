@@ -32,35 +32,16 @@ export const NAVIGATION_CONFIG = [
         title: "Workers",
         path: ROUTES.WORKERS,
         icon: Users,
-        subItems: [
-          { title: "Dashboard", path: ROUTES.WORKERS },
-          { title: "Pending", path: `${ROUTES.WORKERS}?status=PENDING` },
-          { title: "Approved", path: `${ROUTES.WORKERS}?status=APPROVED` },
-          { title: "Rejected", path: `${ROUTES.WORKERS}?status=REJECTED` },
-          { title: "Suspended", path: `${ROUTES.WORKERS}?status=SUSPENDED` }
-        ]
       },
       {
         title: "Agencies",
         path: ROUTES.AGENCIES,
         icon: Building2,
-        subItems: [
-          { title: "Dashboard", path: ROUTES.AGENCIES },
-          { title: "Pending", path: `${ROUTES.AGENCIES}?status=PENDING` },
-          { title: "Approved", path: `${ROUTES.AGENCIES}?status=APPROVED` },
-          { title: "Rejected", path: `${ROUTES.AGENCIES}?status=REJECTED` },
-          { title: "Suspended", path: `${ROUTES.AGENCIES}?status=SUSPENDED` }
-        ]
       },
       {
         title: "Clients",
         path: ROUTES.CLIENTS,
         icon: Building2,
-        subItems: [
-          { title: "Dashboard", path: ROUTES.CLIENTS },
-          { title: "Active", path: `${ROUTES.CLIENTS}?status=ACTIVE` },
-          { title: "Suspended", path: `${ROUTES.CLIENTS}?status=SUSPENDED` }
-        ]
       }
     ]
   },

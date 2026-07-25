@@ -34,6 +34,7 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
   const columns = [
     { key: "id", title: "Employee ID", render: (row) => <span className="font-medium text-gray-900">{row.id}</span> },
     { key: "name", title: "Name", render: (row) => row.name },
+    { key: "gender", title: "Gender", render: (row) => row.gender ? row.gender.charAt(0).toUpperCase() + row.gender.slice(1).toLowerCase() : "-" },
     { key: "phone", title: "Phone", render: (row) => row.phone },
     { key: "agency", title: "Agency", render: (row) => row.agency },
     { key: "primarySkill", title: "Primary Skill", render: (row) => row.primarySkill },

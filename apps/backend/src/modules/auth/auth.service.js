@@ -157,15 +157,14 @@ export const login = async (data, meta) => {
 
   switch (user.status) {
     case "PENDING":
-      throw new AppError("Your account is pending approval.", 403);
+    case "ACTIVE":
+      break;
     case "SUSPENDED":
       throw new AppError("Your account has been suspended.", 403);
     case "REJECTED":
       throw new AppError("Your account has been rejected.", 403);
     case "DELETED":
       throw new AppError("Account not available.", 403);
-    case "ACTIVE":
-      break;
     default:
       throw new AppError("Invalid account status.", 403);
   }
