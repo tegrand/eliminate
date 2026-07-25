@@ -18,8 +18,8 @@ export default function AssignmentStats() {
               <p className="text-sm font-medium text-gray-500">{stat.title}</p>
               <h4 className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</h4>
             </div>
-            <div className={\`h-12 w-12 rounded-full flex items-center justify-center \${stat.bg}\`}>
-              <stat.icon className={\`h-6 w-6 \${stat.color}\`} />
+            <div className={`h-12 w-12 rounded-full flex items-center justify-center ${stat.bg}`}>
+              <stat.icon className={`h-6 w-6 ${stat.color}`} />
             </div>
           </CardContent>
         </Card>

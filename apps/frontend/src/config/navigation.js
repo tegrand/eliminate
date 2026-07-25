@@ -11,8 +11,7 @@ import {
   MapPin, 
   CreditCard, 
   FileText, 
-  BarChart, 
-  ShieldCheck 
+  DollarSign
 } from "lucide-react";
 
 export const NAVIGATION_CONFIG = [
@@ -41,30 +40,48 @@ export const NAVIGATION_CONFIG = [
       },
       {
         title: "Assignments",
-        path: "/assignments",
+        path: ROUTES.ASSIGNMENTS,
         icon: Briefcase,
-        disabled: true, // Future
       },
       {
         title: "Attendance",
-        path: "/attendance",
+        path: ROUTES.ATTENDANCE,
         icon: Clock,
-        disabled: true, // Future
       }
     ]
   },
   {
-    group: "Clients",
+    group: "Clients & Orders",
     items: [
       {
         title: "Clients",
         path: ROUTES.CLIENTS,
-        icon: Briefcase,
+        icon: Building2,
       },
       {
         title: "Job Requirements",
         path: ROUTES.JOB_REQUIREMENTS,
         icon: FileText,
+      }
+    ]
+  },
+  {
+    group: "Finance & Operations",
+    items: [
+      {
+        title: "Payroll",
+        path: ROUTES.PAYROLLS,
+        icon: DollarSign,
+      },
+      {
+        title: "Invoices",
+        path: ROUTES.INVOICES,
+        icon: FileText,
+      },
+      {
+        title: "Payments",
+        path: ROUTES.PAYMENTS,
+        icon: CreditCard,
       }
     ]
   },
@@ -90,52 +107,6 @@ export const NAVIGATION_CONFIG = [
         title: "Locations",
         path: ROUTES.LOCATIONS,
         icon: MapPin,
-      }
-    ]
-  },
-  {
-    group: "Operations",
-    items: [
-      {
-        title: "Payments",
-        path: "/payments",
-        icon: CreditCard,
-        disabled: true,
-      },
-      {
-        title: "Invoices",
-        path: "/invoices",
-        icon: FileText,
-        disabled: true,
-      },
-      {
-        title: "Reports",
-        path: "/reports",
-        icon: BarChart,
-        disabled: true,
-      }
-    ]
-  },
-  {
-    group: "Settings",
-    items: [
-      {
-        title: "Users",
-        path: "/settings/users",
-        icon: Users,
-        disabled: true,
-      },
-      {
-        title: "Roles",
-        path: "/settings/roles",
-        icon: ShieldCheck,
-        disabled: true,
-      },
-      {
-        title: "Permissions",
-        path: "/settings/permissions",
-        icon: ShieldCheck,
-        disabled: true,
       }
     ]
   }

@@ -33,7 +33,7 @@ export default function AvailableWorkersTable({ workers, selectedWorkerIds, onTo
               return (
                 <tr 
                   key={worker.id} 
-                  className={\`hover:bg-gray-50 transition-colors \${isSelected ? 'bg-blue-50/50' : ''}\`}
+                  className={`hover:bg-gray-50 transition-colors ${isSelected ? 'bg-blue-50/50' : ''}`}
                   onClick={() => onToggleSelect(worker.id)}
                 >
                   <td className="px-4 py-3" onClick={e => e.stopPropagation()}>

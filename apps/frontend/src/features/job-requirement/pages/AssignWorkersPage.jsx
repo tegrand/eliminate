@@ -45,7 +45,7 @@ export default function AssignWorkersPage() {
     // Simulate API call
     setTimeout(() => {
       setIsAssigning(false);
-      toast.success(\`Successfully assigned \${selectedIds.length} workers to requirement.\`);
+      toast.success(`Successfully assigned ${selectedIds.length} workers to requirement.`);
       setSelectedIds([]);
     }, 1200);
   };
