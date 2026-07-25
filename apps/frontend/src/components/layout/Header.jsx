@@ -1,15 +1,28 @@
+import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { LogOut } from "lucide-react";
+import { LogOut, Search, Bell, User, ChevronDown } from "lucide-react";
 
 export default function Header() {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsProfileOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   
   return (
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 lg:px-8 sticky top-0 z-10 flex-shrink-0">
-      {/* Mobile/Tablet Menu Button Placeholder */}
+      {/* Mobile/Tablet Menu Button */}
       <div className="flex items-center lg:hidden">
         <button className="p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-md transition-colors" aria-label="Open sidebar">
-          {/* Hamburger Icon Placeholder */}
           <div className="w-5 flex flex-col gap-1">
             <span className="block w-full h-0.5 bg-gray-500 rounded-full"></span>
             <span className="block w-full h-0.5 bg-gray-500 rounded-full"></span>
@@ -18,38 +31,78 @@ export default function Header() {
         </button>
       </div>
 
-      {/* Search Placeholder */}
-      <div className="hidden sm:flex items-center flex-1 ml-4 lg:ml-0 max-w-md">
-        <div className="w-full relative">
+      {/* Search Bar - Styled to match screenshot */}
+      <div className="hidden sm:flex items-center flex-1 ml-4 lg:ml-0 max-w-xl">
+        <div className="w-full relative flex items-center">
+          <div className="absolute left-3 text-gray-400">
+            <Search className="w-4 h-4" />
+          </div>
           <input
             type="text"
-            placeholder="Search resources..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow"
+            placeholder="Search anything..."
+            className="w-full pl-9 pr-16 py-2.5 bg-slate-50 border-none rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 transition-shadow text-gray-700 placeholder-gray-400"
           />
-          {/* Search Icon Placeholder */}
-          <div className="absolute left-3 top-2.5 w-4 h-4 rounded-full border-2 border-gray-400"></div>
+          <div className="absolute right-3 flex items-center pointer-events-none">
+            <span className="text-xs text-gray-400 font-medium tracking-wide">Ctrl + K</span>
+          </div>
         </div>
       </div>
 
       {/* Right Actions */}
-      <div className="flex items-center space-x-3 ml-auto">
-        {/* Notifications Placeholder */}
-        <button className="p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-full transition-colors relative" aria-label="Notifications">
-          <div className="w-5 h-5 rounded-full border-2 border-current"></div>
-          {/* Badge placeholder */}
-          <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+      <div className="flex items-center space-x-5 ml-auto">
+        {/* Notifications */}
+        <button className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors relative" aria-label="Notifications">
+          <Bell className="w-5 h-5" />
+          <span className="absolute top-0 right-0.5 flex items-center justify-center w-3.5 h-3.5 bg-red-500 text-white text-[9px] font-bold rounded-full border border-white">
+            3
+          </span>
         </button>
         
-        {/* Logout Button */}
-        <button 
-          onClick={logout}
-          className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors flex items-center gap-2 text-sm font-medium ml-2" 
-          aria-label="Logout"
-          title="Logout"
-        >
-          <LogOut className="w-4 h-4" />
-          <span className="hidden sm:inline">Logout</span>
-        </button>
+        {/* Profile Section with Dropdown */}
+        <div className="relative" ref={dropdownRef}>
+          <button 
+            onClick={() => setIsProfileOpen(!isProfileOpen)}
+            className="flex items-center gap-3 pl-2 border-l border-gray-100 hover:bg-gray-50 rounded-lg py-1 px-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-100"
+          >
+            <div className="flex items-center justify-center w-9 h-9 rounded-full bg-blue-100 text-blue-600">
+              <User className="w-5 h-5" />
+            </div>
+            <div className="hidden md:flex flex-col text-left">
+              <span className="text-sm font-semibold text-gray-900 leading-tight">Super Admin</span>
+              <span className="text-xs text-gray-500 font-medium">Administrator</span>
+            </div>
+            <div className="text-gray-400">
+              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} />
+            </div>
+          </button>
+
+          {/* Dropdown Menu */}
+          {isProfileOpen && (
+            <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-100 rounded-xl shadow-lg py-2 z-50 animate-fade-in-up origin-top-right">
+              {/* User Info Section */}
+              <div className="px-4 py-2 border-b border-gray-100 mb-1">
+                <p className="text-sm font-semibold text-gray-900 truncate">
+                  {user?.profileType === "SUPER_ADMIN" ? "Super Admin" : user?.name || "User"}
+                </p>
+                <p className="text-xs text-gray-500 truncate" title={user?.email}>
+                  {user?.email || "No email"}
+                </p>
+              </div>
+
+              {/* Logout Button */}
+              <button 
+                onClick={() => {
+                  setIsProfileOpen(false);
+                  logout();
+                }}
+                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Logout</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

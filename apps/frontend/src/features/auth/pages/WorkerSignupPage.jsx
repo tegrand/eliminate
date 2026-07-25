@@ -17,7 +17,6 @@ export default function WorkerSignupPage() {
     fullName: "",
     email: "",
     phone: "",
-    password: "",
     dateOfBirth: "",
     gender: "MALE",
     houseName: "",
@@ -43,8 +42,8 @@ export default function WorkerSignupPage() {
       try {
         const { authApi } = await import("../api/auth.api");
         await authApi.registerWorker(formData);
-        toast.success("Worker application submitted. Please log in.");
-        navigate(ROUTES.LOGIN);
+        toast.success("Worker application submitted for Super Admin verification.");
+        navigate(ROUTES.PENDING_APPROVAL);
       } catch (error) {
         toast.error(error?.response?.data?.message || "Registration failed. Please try again.");
       } finally {
@@ -121,15 +120,6 @@ export default function WorkerSignupPage() {
                   required
                 />
               </div>
-              <Input
-                type="password"
-                label="Password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="••••••••"
-                required
-              />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input
                   type="date"
@@ -247,19 +237,19 @@ export default function WorkerSignupPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-blue-500 transition-colors cursor-pointer bg-gray-50/50">
                   <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">Profile Photo (Optional)</p>
+                  <p className="text-xs font-semibold text-gray-700">Profile Photo *</p>
                   <p className="text-[10px] text-gray-400 mt-1">Clear headshot photo</p>
                 </div>
 
                 <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-blue-500 transition-colors cursor-pointer bg-gray-50/50">
                   <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">Govt ID (Optional)</p>
+                  <p className="text-xs font-semibold text-gray-700">Govt ID (Aadhaar/National ID) *</p>
                   <p className="text-[10px] text-gray-400 mt-1">Front & Back PDF/JPG</p>
                 </div>
 
                 <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-blue-500 transition-colors cursor-pointer bg-gray-50/50">
                   <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">Bank Passbook (Optional)</p>
+                  <p className="text-xs font-semibold text-gray-700">Bank Passbook / Cancelled Cheque *</p>
                   <p className="text-[10px] text-gray-400 mt-1">For direct wage deposits</p>
                 </div>
 

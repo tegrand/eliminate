@@ -6,9 +6,6 @@ import {
   getWorkerById,
   updateWorker,
   deleteWorker,
-  getMe,
-  updateMe,
-  getMyApplications,
 } from "./worker.controller.js";
 
 import {
@@ -32,22 +29,6 @@ router.post(
   requirePermission("worker:create"),
   validate(createWorkerSchema),
   createWorker
-);
-
-router.get(
-  "/me",
-  getMe
-);
-
-router.patch(
-  "/me",
-  validate(updateWorkerSchema),
-  updateMe
-);
-
-router.get(
-  "/me/applications",
-  getMyApplications
 );
 
 router.get(

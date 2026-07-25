@@ -42,10 +42,6 @@ import LocationListPage from "../features/master-data/location/pages/LocationLis
 import JobRequirementListPage from "../features/job-requirement/pages/JobRequirementListPage";
 import AssignWorkersPage from "../features/job-requirement/pages/AssignWorkersPage";
 
-import JobBoardPage from "../features/job-board/pages/JobBoardPage";
-import JobDetailsPage from "../features/job-board/pages/JobDetailsPage";
-import WorkerProfilePage from "../features/worker/pages/WorkerProfilePage";
-
 import AssignmentListPage from "../features/assignment/pages/AssignmentListPage";
 
 import AttendanceListPage from "../features/attendance/pages/AttendanceListPage";
@@ -118,11 +114,6 @@ const AppRouter = () => {
 
             {/* Assignments */}
             <Route path={ROUTES.ASSIGNMENTS} element={<AssignmentListPage />} />
-
-            {/* Worker App Routes */}
-            <Route path={ROUTES.JOB_BOARD} element={<JobBoardPage />} />
-            <Route path={ROUTES.JOB_BOARD_DETAILS} element={<JobDetailsPage />} />
-            <Route path={ROUTES.MY_PROFILE} element={<WorkerProfilePage />} />
 
             {/* Attendance */}
             <Route path={ROUTES.ATTENDANCE} element={<AttendanceListPage />} />

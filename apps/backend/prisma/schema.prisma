@@ -219,7 +219,6 @@ model Worker {
   // categories       WorkerCategory[]
   // documents        WorkerDocument[]
   // bookings         Booking[]
-  jobApplications JobApplication[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -474,7 +473,6 @@ model JobRequirement {
   // Future module relation placeholders
   // bookings         Booking[]
   // assignments      Assignment[]
-  jobApplications     JobApplication[]
   requiredSkills      JobRequirementSkill[]
   requiredLanguages   JobRequirementLanguage[]
 
@@ -526,29 +524,3 @@ model JobRequirementLanguage {
   @@index([jobRequirementId])
   @@index([languageId])
 }
-
-enum ApplicationStatus {
-  APPLIED
-  REVIEWING
-  SHORTLISTED
-  REJECTED
-  ACCEPTED
-}
-
-model JobApplication {
-  id               String            @id @default(uuid())
-  jobRequirementId String
-  workerId         String
-  status           ApplicationStatus @default(APPLIED)
-  appliedAt        DateTime          @default(now())
-  notes            String?
-
-  jobRequirement JobRequirement @relation(fields: [jobRequirementId], references: [id], onDelete: Cascade)
-  worker         Worker         @relation(fields: [workerId], references: [id], onDelete: Cascade)
-
-  @@unique([jobRequirementId, workerId])
-  @@index([jobRequirementId])
-  @@index([workerId])
-  @@index([status])
-}
-

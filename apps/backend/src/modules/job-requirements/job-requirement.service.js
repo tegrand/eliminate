@@ -166,33 +166,3 @@ export const deleteJobRequirement = async (id) => {
 
   return true;
 };
-
-export const applyForJob = async (jobId, userId, notes) => {
-  const worker = await prisma.worker.findFirst({
-    where: { userId, deletedAt: null }
-  });
-  if (!worker) throw new AppError("Worker profile not found", 404);
-
-  const job = await prisma.jobRequirement.findUnique({
-    where: { id: jobId, deletedAt: null }
-  });
-  if (!job) throw new AppError("Job requirement not found", 404);
-
-  const existingApp = await prisma.jobApplication.findUnique({
-    where: {
-      jobRequirementId_workerId: {
-        jobRequirementId: jobId,
-        workerId: worker.id
-      }
-    }
-  });
-  if (existingApp) throw new AppError("You have already applied for this job", 400);
-
-  return await prisma.jobApplication.create({
-    data: {
-      jobRequirementId: jobId,
-      workerId: worker.id,
-      notes
-    }
-  });
-};

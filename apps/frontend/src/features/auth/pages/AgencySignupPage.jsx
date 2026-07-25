@@ -203,7 +203,7 @@ export default function AgencySignupPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-amber-500 transition-colors cursor-pointer bg-gray-50/50">
                   <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">Business Registration Certificate (Optional)</p>
+                  <p className="text-xs font-semibold text-gray-700">Business Registration Certificate *</p>
                   <p className="text-[10px] text-gray-400 mt-1">PDF, PNG, JPG (Max 5MB)</p>
                 </div>
 
@@ -215,13 +215,13 @@ export default function AgencySignupPage() {
 
                 <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-amber-500 transition-colors cursor-pointer bg-gray-50/50">
                   <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">Owner Identity Proof (Optional)</p>
+                  <p className="text-xs font-semibold text-gray-700">Owner Identity Proof *</p>
                   <p className="text-[10px] text-gray-400 mt-1">Passport, Govt ID</p>
                 </div>
 
                 <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-amber-500 transition-colors cursor-pointer bg-gray-50/50">
                   <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">Office Address Proof (Optional)</p>
+                  <p className="text-xs font-semibold text-gray-700">Office Address Proof *</p>
                   <p className="text-[10px] text-gray-400 mt-1">Utility Bill, Lease Agreement</p>
                 </div>
               </div>
