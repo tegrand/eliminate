@@ -17,12 +17,14 @@ const setRefreshTokenCookie = (res, token) => {
 };
 
 export const register = asyncHandler(async (req, res) => {
-  const user = await authService.register(req.validatedData);
+  const meta = { ipAddress: req.ip, userAgent: req.headers["user-agent"] };
+  const user = await authService.register(req.validatedData, meta);
   return ApiResponse.success(res, "Account created successfully", user, 201);
 });
 
 export const login = asyncHandler(async (req, res) => {
-  const { accessToken, refreshToken, user } = await authService.login(req.validatedData);
+  const meta = { ipAddress: req.ip, userAgent: req.headers["user-agent"] };
+  const { accessToken, refreshToken, user } = await authService.login(req.validatedData, meta);
   setRefreshTokenCookie(res, refreshToken);
   return ApiResponse.success(res, "Login successful", { accessToken, user });
 });
@@ -33,14 +35,16 @@ export const refreshToken = asyncHandler(async (req, res) => {
     throw new AppError("Unauthorized", 401);
   }
 
-  const { accessToken, newRefreshToken, user } = await authService.refreshToken(token);
+  const meta = { ipAddress: req.ip, userAgent: req.headers["user-agent"] };
+  const { accessToken, newRefreshToken, user } = await authService.refreshToken(token, meta);
   setRefreshTokenCookie(res, newRefreshToken);
   return ApiResponse.success(res, "Token refreshed successfully", { accessToken, user });
 });
 
 export const logout = asyncHandler(async (req, res) => {
   const token = req.cookies.refreshToken;
-  await authService.logout(token);
+  const meta = { ipAddress: req.ip, userAgent: req.headers["user-agent"] };
+  await authService.logout(token, meta);
   res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -56,7 +60,8 @@ export const me = asyncHandler(async (req, res) => {
 });
 
 export const changePassword = asyncHandler(async (req, res) => {
-  await authService.changePassword(req.user.id, req.validatedData);
+  const meta = { ipAddress: req.ip, userAgent: req.headers["user-agent"] };
+  await authService.changePassword(req.user.id, req.validatedData, meta);
   return ApiResponse.success(res, "Password changed successfully", null);
 });
 

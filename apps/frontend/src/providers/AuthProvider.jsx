@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
+import api from '../api/axios';
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -27,6 +28,17 @@ export default function AuthProvider({ children }) {
     };
 
     initAuth();
+
+    // Listen for global logout events (e.g., from Axios interceptors)
+    const handleGlobalLogout = () => {
+      logout();
+    };
+    
+    window.addEventListener('auth:logout', handleGlobalLogout);
+
+    return () => {
+      window.removeEventListener('auth:logout', handleGlobalLogout);
+    };
   }, []);
 
   const login = (userData, token, rememberMe = false) => {
@@ -52,8 +64,20 @@ export default function AuthProvider({ children }) {
   };
 
   const refreshSession = async () => {
-    // TODO: Future refresh logic if handling manual token rotation
-    console.log("Refresh session placeholder called");
+    // Relying on Axios interceptor for transparent refresh,
+    // but can be called manually if required.
+    try {
+      const { data } = await api.post("/auth/refresh-token");
+      const newToken = data.data.accessToken;
+      
+      if (localStorage.getItem('accessToken')) {
+        localStorage.setItem('accessToken', newToken);
+      } else if (sessionStorage.getItem('accessToken')) {
+        sessionStorage.setItem('accessToken', newToken);
+      }
+    } catch (err) {
+      logout();
+    }
   };
 
   // Memoize the context value to prevent unnecessary re-renders of consuming components

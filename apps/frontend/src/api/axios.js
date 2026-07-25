@@ -1,27 +1,37 @@
 import axios from "axios";
 
 // 1. Create the base Axios instance
-// We use import.meta.env to access environment variables in Vite.
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api/v1",
   withCredentials: true, // Enables sending/receiving HttpOnly cookies automatically
-  timeout: 30000, // 30-second timeout to prevent infinitely hanging requests
+  timeout: 30000, 
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
   },
 });
 
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 // 2. Request Interceptor
-// Executes before the request is sent to the server.
 axiosInstance.interceptors.request.use(
   (config) => {
-    // TODO: Authentication
-    // If utilizing JWT Bearer tokens from state/localStorage, attach them here:
-    // const token = useAuthStore.getState().token;
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
+    const token = localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => {
@@ -30,31 +40,57 @@ axiosInstance.interceptors.request.use(
 );
 
 // 3. Response Interceptor
-// Executes after the server responds, but before the response reaches the calling function.
 axiosInstance.interceptors.response.use(
-  (response) => {
-    // Pass through successful responses unchanged
-    return response;
-  },
+  (response) => response,
   async (error) => {
-    // Standardize error structures if the backend sends inconsistent formats
-    // const originalRequest = error.config;
+    const originalRequest = error.config;
 
-    // TODO: 401 Unauthorized / Token Refresh
-    // if (error.response?.status === 401 && !originalRequest._retry) {
-    //   originalRequest._retry = true;
-    //   try {
-    //     // await refreshAccessToken();
-    //     // return axiosInstance(originalRequest);
-    //   } catch (refreshError) {
-    //     // TODO: Trigger Global Logout
-    //   }
-    // }
+    // Skip interception for the refresh token route to avoid infinite loops
+    if (originalRequest.url.includes("/auth/refresh-token")) {
+      return Promise.reject(error);
+    }
 
-    // TODO: 403 Forbidden
-    // if (error.response?.status === 403) {
-    //   // Trigger 'Permission Denied' notification or redirect
-    // }
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise(function (resolve, reject) {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = "Bearer " + token;
+            return axiosInstance(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        const { data } = await axiosInstance.post("/auth/refresh-token");
+        const newToken = data.data.accessToken;
+        
+        // Update storage
+        if (localStorage.getItem("accessToken")) {
+          localStorage.setItem("accessToken", newToken);
+        } else if (sessionStorage.getItem("accessToken")) {
+          sessionStorage.setItem("accessToken", newToken);
+        }
+
+        processQueue(null, newToken);
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        // Dispatch custom event to let AuthProvider handle global logout
+        window.dispatchEvent(new Event("auth:logout"));
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
+    }
 
     return Promise.reject(error);
   }

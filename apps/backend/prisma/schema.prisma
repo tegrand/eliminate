@@ -108,10 +108,35 @@ model User {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   agency    Agency?
+  authAuditLogs AuthAuditLog[]
 
   @@index([email])
   @@index([roleId])
   @@index([status])
+}
+
+enum AuthAction {
+  LOGIN
+  LOGOUT
+  FAILED_LOGIN
+  REFRESH
+  PASSWORD_CHANGE
+  ACCOUNT_LOCK
+}
+
+model AuthAuditLog {
+  id        String     @id @default(uuid())
+  userId    String?
+  action    AuthAction
+  ipAddress String?
+  userAgent String?
+  timestamp DateTime   @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([timestamp])
 }
 
 enum SkillProficiency {
