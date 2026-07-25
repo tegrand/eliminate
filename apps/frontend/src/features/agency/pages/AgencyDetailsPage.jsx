@@ -1,10 +1,20 @@
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Clock } from "lucide-react";
+import { ArrowLeft, CheckCircle, XCircle, Ban, PlayCircle } from "lucide-react";
+import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "../../../components/ui/card";
+import { Button } from "../../../components/ui/button";
+import toast from "react-hot-toast";
 import AgencyStatusBadge from "../components/AgencyStatusBadge";
+
+import ApproveDialog from "../../../components/ui/action-dialogs/ApproveDialog";
+import RejectDialog from "../../../components/ui/action-dialogs/RejectDialog";
+import SuspendDialog from "../../../components/ui/action-dialogs/SuspendDialog";
+import ReactivateDialog from "../../../components/ui/action-dialogs/ReactivateDialog";
+import AuditLogTimeline from "../../../components/ui/audit-log/AuditLogTimeline";
 
 export default function AgencyDetailsPage() {
   const { id } = useParams();
+  const [actionType, setActionType] = useState(null);
 
   // Mock data for display
   const agency = {
@@ -15,6 +25,17 @@ export default function AgencyDetailsPage() {
     district: "North District",
     totalWorkers: 15,
     status: "PENDING",
+  };
+
+  const logs = [
+    { id: 1, title: "Agency Registered (Pending)", action: "REGISTERED", timestamp: "2026-10-24T10:00:00Z", performedBy: "Jane Doe" }
+  ];
+
+  const handleAction = (type) => setActionType(type);
+  const closeDialog = () => setActionType(null);
+  const handleConfirmAction = (reason) => {
+    toast.success(`Agency ${actionType.toLowerCase()}d successfully.`);
+    closeDialog();
   };
 
   return (
@@ -32,6 +53,29 @@ export default function AgencyDetailsPage() {
             <h1 className="text-3xl font-bold text-gray-900">{agency.agencyName}</h1>
             <AgencyStatusBadge status={agency.status} />
           </div>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          {agency.status === 'PENDING' && (
+            <>
+              <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => handleAction('REJECT')}>
+                <XCircle className="mr-2 h-4 w-4" /> Reject
+              </Button>
+              <Button className="bg-green-600 hover:bg-green-700 text-white" onClick={() => handleAction('APPROVE')}>
+                <CheckCircle className="mr-2 h-4 w-4" /> Approve
+              </Button>
+            </>
+          )}
+          {agency.status === 'APPROVED' && (
+            <Button variant="outline" className="text-orange-600 border-orange-200 hover:bg-orange-50" onClick={() => handleAction('SUSPEND')}>
+              <Ban className="mr-2 h-4 w-4" /> Suspend
+            </Button>
+          )}
+          {agency.status === 'SUSPENDED' && (
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => handleAction('REACTIVATE')}>
+              <PlayCircle className="mr-2 h-4 w-4" /> Reactivate
+            </Button>
+          )}
         </div>
       </div>
 
@@ -67,22 +111,19 @@ export default function AgencyDetailsPage() {
         <div className="lg:col-span-1 space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Verification History</CardTitle>
+              <CardTitle>Approval Timeline & Audit Log</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-start gap-4">
-                <div className="mt-1 bg-blue-100 p-2 rounded-full">
-                  <Clock className="h-4 w-4 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Application Submitted</p>
-                  <p className="text-xs text-gray-500">Oct 24, 2023 - 10:00 AM</p>
-                </div>
-              </div>
+              <AuditLogTimeline logs={logs} />
             </CardContent>
           </Card>
         </div>
       </div>
+
+      {actionType === 'APPROVE' && <ApproveDialog isOpen={true} onClose={closeDialog} onConfirm={handleConfirmAction} entityName={agency.agencyName} />}
+      {actionType === 'REJECT' && <RejectDialog isOpen={true} onClose={closeDialog} onConfirm={handleConfirmAction} entityName={agency.agencyName} />}
+      {actionType === 'SUSPEND' && <SuspendDialog isOpen={true} onClose={closeDialog} onConfirm={handleConfirmAction} entityName={agency.agencyName} />}
+      {actionType === 'REACTIVATE' && <ReactivateDialog isOpen={true} onClose={closeDialog} onConfirm={handleConfirmAction} entityName={agency.agencyName} />}
     </div>
   );
 }
