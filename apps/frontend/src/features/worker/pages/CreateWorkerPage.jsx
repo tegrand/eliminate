@@ -1,8 +1,23 @@
 import WorkerForm from "../components/WorkerForm";
 import { ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { useCreateWorker } from "../hooks/useCreateWorker";
 
 export default function CreateWorkerPage() {
+  const navigate = useNavigate();
+  const { createWorker, isLoading } = useCreateWorker();
+
+  const handleSubmit = async (data) => {
+    try {
+      await createWorker(data);
+      toast.success("Worker created successfully");
+      navigate("/workers");
+    } catch (error) {
+      toast.error("Failed to create worker");
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8 animate-fade-in">
       <div className="mb-6">
@@ -19,7 +34,11 @@ export default function CreateWorkerPage() {
         </p>
       </div>
 
-      <WorkerForm />
+      <WorkerForm 
+        mode="create"
+        onSubmit={handleSubmit}
+        isLoading={isLoading}
+      />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { Button } from "../../../components/ui/button";
 
-export default function WorkerFormActions({ onCancel, loading }) {
+export default function WorkerFormActions({ onCancel, loading, mode = "create" }) {
   return (
     <div className="flex flex-col sm:flex-row items-center justify-end gap-4 pt-4 border-t border-gray-200">
       <Button 
@@ -12,20 +12,22 @@ export default function WorkerFormActions({ onCancel, loading }) {
       >
         Cancel
       </Button>
-      <Button 
-        type="submit" 
-        variant="secondary"
-        disabled={loading}
-        className="w-full sm:w-auto"
-      >
-        Save & New
-      </Button>
+      {mode === "create" && (
+        <Button 
+          type="submit" 
+          variant="secondary"
+          disabled={loading}
+          className="w-full sm:w-auto"
+        >
+          Save & New
+        </Button>
+      )}
       <Button 
         type="submit" 
         loading={loading}
         className="w-full sm:w-auto"
       >
-        Save Worker
+        {mode === "create" ? "Save Worker" : "Update Worker"}
       </Button>
     </div>
   );

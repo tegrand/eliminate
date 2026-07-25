@@ -1,9 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import { workerSchema } from "../schemas/worker.schema";
-import { useCreateWorker } from "../hooks/useCreateWorker";
 
 import PersonalInformationSection from "./PersonalInformationSection";
 import ContactInformationSection from "./ContactInformationSection";
@@ -12,9 +10,33 @@ import SkillsSection from "./SkillsSection";
 import EmergencyContactSection from "./EmergencyContactSection";
 import WorkerFormActions from "./WorkerFormActions";
 
-export default function WorkerForm() {
+export default function WorkerForm({ mode = "create", initialValues, onSubmit, isLoading }) {
   const navigate = useNavigate();
-  const { createWorker, isLoading } = useCreateWorker();
+
+  const defaultValues = {
+    employeeId: "",
+    firstName: "",
+    lastName: "",
+    gender: "",
+    dateOfBirth: "",
+    phone: "",
+    alternatePhone: "",
+    email: "",
+    address: "",
+    city: "",
+    district: "",
+    state: "",
+    pinCode: "",
+    agency: "",
+    primarySkill: "",
+    secondarySkill: "",
+    joiningDate: "",
+    status: "",
+    salary: "",
+    emergencyContactName: "",
+    emergencyRelationship: "",
+    emergencyContactNumber: "",
+  };
 
   const {
     register,
@@ -22,41 +44,8 @@ export default function WorkerForm() {
     formState: { errors },
   } = useForm({
     resolver: zodResolver(workerSchema),
-    defaultValues: {
-      employeeId: "",
-      firstName: "",
-      lastName: "",
-      gender: "",
-      dateOfBirth: "",
-      phone: "",
-      alternatePhone: "",
-      email: "",
-      address: "",
-      city: "",
-      district: "",
-      state: "",
-      pinCode: "",
-      agency: "",
-      primarySkill: "",
-      secondarySkill: "",
-      joiningDate: "",
-      status: "",
-      salary: "",
-      emergencyContactName: "",
-      emergencyRelationship: "",
-      emergencyContactNumber: "",
-    },
+    values: initialValues || defaultValues,
   });
-
-  const onSubmit = async (data) => {
-    try {
-      await createWorker(data);
-      toast.success("Worker created successfully");
-      navigate("/workers");
-    } catch (error) {
-      toast.error("Failed to create worker");
-    }
-  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="pb-8">
@@ -67,6 +56,7 @@ export default function WorkerForm() {
       <EmergencyContactSection register={register} errors={errors} />
       
       <WorkerFormActions 
+        mode={mode}
         loading={isLoading} 
         onCancel={() => navigate("/workers")} 
       />
