@@ -1,57 +1,55 @@
-import { CheckCircle2, Clock, IndianRupee, Calendar } from "lucide-react";
+import { CheckCircle2, Clock, Calendar } from "lucide-react";
 
 export default function WorkerStatsWidget({ attendance, payments }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       {/* Attendance Stat */}
-      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 p-6 rounded-2xl border border-emerald-100 relative overflow-hidden group shadow-sm hover:shadow-md transition-shadow">
-        <div className="absolute -right-4 -top-4 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl group-hover:bg-emerald-500/20 transition-all" />
+      <div className="bg-white rounded-2xl border border-emerald-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] overflow-hidden relative">
+        {/* Decorative Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-transparent pointer-events-none" />
+        <div className="absolute -bottom-6 -left-6 w-32 h-32 bg-emerald-100/50 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-10 right-0 w-full h-24 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-emerald-100/40 via-emerald-50/10 to-transparent pointer-events-none" />
         
-        <div className="flex justify-between items-start mb-4">
-          <div className="bg-white p-2.5 rounded-xl shadow-sm border border-emerald-100 text-emerald-600">
-            <CheckCircle2 className="w-5 h-5" />
+        <div className="relative p-6 flex items-start gap-5">
+          <div className="w-14 h-14 rounded-full border-2 border-emerald-500 flex items-center justify-center bg-white shrink-0 shadow-sm">
+            <CheckCircle2 className="w-7 h-7 text-emerald-600" />
           </div>
-          <span className="px-2.5 py-1 bg-white/60 rounded-full text-[10px] font-bold text-emerald-700 uppercase tracking-wide border border-emerald-200/50 backdrop-blur-sm">
-            Today
-          </span>
-        </div>
-        
-        <div>
-          <p className="text-sm font-medium text-emerald-800/70 mb-1">Attendance Status</p>
-          <h4 className="text-2xl font-bold text-emerald-900 mb-3">{attendance.status}</h4>
-          
-          <div className="flex items-center gap-4 text-xs font-medium text-emerald-700">
-            <div className="flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 opacity-70" />
+          <div className="flex-1 pt-1">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs font-bold text-gray-500 tracking-wider uppercase">Attendance Status</span>
+              <span className="px-2.5 py-0.5 bg-emerald-50 text-emerald-600 text-[10px] font-bold tracking-widest uppercase rounded-full border border-emerald-100">
+                Today
+              </span>
+            </div>
+            <h4 className="text-2xl font-bold text-emerald-600 mb-2">{attendance.status}</h4>
+            <div className="flex items-center gap-2 text-xs font-medium text-gray-500">
+              <Clock className="w-3.5 h-3.5" />
               In: {attendance.timeIn}
             </div>
-            {attendance.timeOut && (
-              <div className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 opacity-70" />
-                Out: {attendance.timeOut}
-              </div>
-            )}
           </div>
         </div>
       </div>
 
       {/* Payments Stat */}
-      <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-2xl border border-amber-100 relative overflow-hidden group shadow-sm hover:shadow-md transition-shadow">
-        <div className="absolute -right-4 -top-4 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all" />
+      <div className="bg-white rounded-2xl border border-orange-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] overflow-hidden relative">
+        {/* Decorative Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-50/50 to-transparent pointer-events-none" />
+        <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-orange-100/50 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-10 left-0 w-full h-24 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-orange-100/40 via-orange-50/10 to-transparent pointer-events-none" />
         
-        <div className="flex justify-between items-start mb-4">
-          <div className="bg-white p-2.5 rounded-xl shadow-sm border border-amber-100 text-amber-600">
-            <IndianRupee className="w-5 h-5" />
+        <div className="relative p-6 flex items-start gap-5">
+          <div className="w-14 h-14 rounded-full border-2 border-orange-400 flex items-center justify-center bg-white shrink-0 shadow-sm">
+            <span className="text-2xl font-bold text-orange-500">₹</span>
           </div>
-        </div>
-        
-        <div>
-          <p className="text-sm font-medium text-amber-800/70 mb-1">Pending Payments</p>
-          <h4 className="text-2xl font-bold text-amber-900 mb-3">{payments.amount}</h4>
-          
-          <div className="flex items-center gap-1.5 text-xs font-medium text-amber-700">
-            <Calendar className="w-3.5 h-3.5 opacity-70" />
-            Due by {payments.dueDate}
+          <div className="flex-1 pt-1">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs font-bold text-gray-500 tracking-wider uppercase">Pending Payments</span>
+            </div>
+            <h4 className="text-2xl font-bold text-orange-500 mb-2">{payments.amount}</h4>
+            <div className="flex items-center gap-2 text-xs font-medium text-orange-600">
+              <Calendar className="w-3.5 h-3.5" />
+              Due by {payments.dueDate}
+            </div>
           </div>
         </div>
       </div>

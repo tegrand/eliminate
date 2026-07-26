@@ -40,11 +40,7 @@ export default function WorkerDashboard() {
   if (!data) return null;
 
   return (
-    <div className="w-full pt-4 pb-8 space-y-6 animate-fade-in">
-      <div className="mb-8">
-        <p className="text-sm text-gray-500 font-medium">Your Personal Workspace</p>
-      </div>
-
+    <div className="w-full space-y-6 animate-fade-in">
       <WorkerStatsWidget 
         attendance={data.todayAttendance} 
         payments={data.pendingPayments} 
