@@ -155,7 +155,7 @@ export const login = async (data, meta) => {
     throw new AppError("Invalid email or password", 401);
   }
 
-  if (user.profileType === "WORKER") {
+  if (user.profileType === "WORKER" || user.profileType === "AGENCY") {
     switch (user.status) {
       case "SUSPENDED":
         throw new AppError("Your account has been suspended.", 403);
@@ -286,7 +286,7 @@ export const getCurrentUser = async (userId) => {
     throw new AppError("Unauthorized", 401);
   }
 
-  if (user.profileType === "WORKER") {
+  if (user.profileType === "WORKER" || user.profileType === "AGENCY") {
     if (user.status !== "ACTIVE" && user.status !== "PENDING") {
       throw new AppError("Unauthorized", 401);
     }

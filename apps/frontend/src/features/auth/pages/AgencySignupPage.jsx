@@ -5,9 +5,11 @@ import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import { ArrowLeft, Briefcase, CheckCircle, Upload } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "../../../hooks/useAuth";
 
 export default function AgencySignupPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
@@ -39,8 +41,13 @@ export default function AgencySignupPage() {
       try {
         const { authApi } = await import("../api/auth.api");
         await authApi.registerAgency(formData);
-        toast.success("Agency registration submitted for Super Admin review.");
-        navigate(ROUTES.PENDING_APPROVAL);
+        
+        // Auto-login the user
+        const response = await authApi.login({ email: formData.email, password: formData.password });
+        login(response.data.data.user, response.data.data.accessToken);
+        
+        toast.success("Agency registration successful! Welcome to your dashboard.");
+        navigate(ROUTES.DASHBOARD);
       } catch (error) {
         toast.error(error?.response?.data?.message || "Registration failed. Please try again.");
       } finally {
@@ -197,13 +204,13 @@ export default function AgencySignupPage() {
           {/* STEP 3: Documents */}
           {currentStep === 3 && (
             <div className="space-y-4 animate-fade-in">
-              <h3 className="text-sm font-semibold text-gray-900">Step 3: Verification Documents</h3>
-              <p className="text-xs text-gray-500">Upload clear scanned copies for Super Admin verification.</p>
+              <h3 className="text-sm font-semibold text-gray-900">Step 3: Verification Documents (Optional)</h3>
+              <p className="text-xs text-gray-500">You can skip this step and upload documents later from your dashboard.</p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                 <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-amber-500 transition-colors cursor-pointer bg-gray-50/50">
                   <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">Business Registration Certificate *</p>
+                  <p className="text-xs font-semibold text-gray-700">Business Registration (Optional)</p>
                   <p className="text-[10px] text-gray-400 mt-1">PDF, PNG, JPG (Max 5MB)</p>
                 </div>
 
@@ -215,13 +222,13 @@ export default function AgencySignupPage() {
 
                 <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-amber-500 transition-colors cursor-pointer bg-gray-50/50">
                   <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">Owner Identity Proof *</p>
+                  <p className="text-xs font-semibold text-gray-700">Owner Identity Proof (Optional)</p>
                   <p className="text-[10px] text-gray-400 mt-1">Passport, Govt ID</p>
                 </div>
 
                 <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-amber-500 transition-colors cursor-pointer bg-gray-50/50">
                   <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">Office Address Proof *</p>
+                  <p className="text-xs font-semibold text-gray-700">Office Address Proof (Optional)</p>
                   <p className="text-[10px] text-gray-400 mt-1">Utility Bill, Lease Agreement</p>
                 </div>
               </div>
