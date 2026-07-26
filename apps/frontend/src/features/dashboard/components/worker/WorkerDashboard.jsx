@@ -3,7 +3,6 @@ import { toast } from "sonner";
 import { dashboardApi } from "../../api/dashboard.api";
 import WorkerProfileWidget from "./WorkerProfileWidget";
 import WorkerJobsWidget from "./WorkerJobsWidget";
-import WorkerStatsWidget from "./WorkerStatsWidget";
 import WorkerActivityWidget from "./WorkerActivityWidget";
 import WorkerTopStatsWidget from "./WorkerTopStatsWidget";
 import api from "../../../../api/axios";
@@ -61,11 +60,6 @@ export default function WorkerDashboard() {
   return (
     <div className="w-full space-y-4 animate-fade-in">
       <WorkerTopStatsWidget stats={data.topStats} />
-
-      <WorkerStatsWidget 
-        attendance={data.todayAttendance} 
-        payments={data.pendingPayments} 
-      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-1 space-y-4">
