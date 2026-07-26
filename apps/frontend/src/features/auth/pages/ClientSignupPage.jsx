@@ -6,16 +6,21 @@ import { ROUTES } from "../../../routes/routePaths";
 import { clientSignupSchema } from "../schemas/signupSchemas";
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
-import { ArrowLeft, Building2, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Building2, User, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function ClientSignupPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(clientSignupSchema),
+    defaultValues: {
+      clientType: "COMPANY"
+    }
   });
+
+  const clientType = watch("clientType");
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -50,12 +55,35 @@ export default function ClientSignupPage() {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <Input
-            label="Company Name"
-            placeholder="e.g. Acme Corp Inc."
-            error={errors.companyName?.message}
-            {...register("companyName")}
-          />
+          <div className="flex bg-gray-100 p-1 rounded-xl mb-4">
+            <button
+              type="button"
+              onClick={() => setValue("clientType", "INDIVIDUAL")}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-lg transition-colors ${
+                clientType === "INDIVIDUAL" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              <User className="w-4 h-4" /> Individual
+            </button>
+            <button
+              type="button"
+              onClick={() => setValue("clientType", "COMPANY")}
+              className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-lg transition-colors ${
+                clientType === "COMPANY" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              <Building2 className="w-4 h-4" /> Company
+            </button>
+          </div>
+
+          {clientType === "COMPANY" && (
+            <Input
+              label="Company Name"
+              placeholder="e.g. Acme Corp Inc."
+              error={errors.companyName?.message}
+              {...register("companyName")}
+            />
+          )}
           <Input
             label="Contact Person Name"
             placeholder="e.g. John Doe"

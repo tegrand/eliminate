@@ -2,7 +2,8 @@ import { z } from "zod";
 
 // Client Signup Schema
 export const clientSignupSchema = z.object({
-  companyName: z.string().min(2, "Company name must be at least 2 characters"),
+  clientType: z.enum(["INDIVIDUAL", "COMPANY"]).default("COMPANY"),
+  companyName: z.string().optional(),
   contactPerson: z.string().min(2, "Contact person name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Valid phone number is required"),

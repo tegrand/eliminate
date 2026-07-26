@@ -130,7 +130,7 @@ export default function LoginForm() {
             </div>
           </div>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex flex-col gap-4 pt-2">
           <Button
             type="submit"
             fullWidth
@@ -138,6 +138,12 @@ export default function LoginForm() {
           >
             Sign In
           </Button>
+          <div className="text-sm text-center text-gray-500 mt-2">
+            Don't have an account?{" "}
+            <Link to={ROUTES.SIGNUP} className="text-blue-600 font-medium hover:underline">
+              Sign up here
+            </Link>
+          </div>
         </CardFooter>
       </form>
     </Card>
