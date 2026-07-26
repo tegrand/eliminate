@@ -5,7 +5,7 @@ import WorkerProfileWidget from "./WorkerProfileWidget";
 import WorkerJobsWidget from "./WorkerJobsWidget";
 import WorkerStatsWidget from "./WorkerStatsWidget";
 import WorkerActivityWidget from "./WorkerActivityWidget";
-import api from "../../../api/axios";
+import api from "../../../../api/axios";
 
 export default function WorkerDashboard() {
   const [data, setData] = useState(null);
