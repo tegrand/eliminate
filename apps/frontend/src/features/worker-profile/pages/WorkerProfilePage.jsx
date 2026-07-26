@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { User, Phone, Briefcase, FileText, Loader2, Save } from "lucide-react";
 
 import { useAuth } from "../../../hooks/useAuth";
-import api from "../../../lib/axios";
+import api from "../../../api/axios";
 import PersonalInfoForm from "../components/PersonalInfoForm";
 import ContactInfoForm from "../components/ContactInfoForm";
 import ProfessionalInfoForm from "../components/ProfessionalInfoForm";
