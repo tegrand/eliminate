@@ -11,16 +11,12 @@ export default function AssignmentToolbar({ totalAssignments }) {
         </p>
       </div>
       <div className="flex flex-col sm:flex-row items-center gap-3">
-        <div className="w-full sm:w-64 relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-gray-400" />
-          </div>
-          <Input
-            placeholder="Search assignments..."
-            aria-label="Search assignments"
-            className="pl-9 h-10 bg-white border-gray-200 text-sm focus:ring-indigo-500 focus:border-indigo-500 rounded-xl"
-          />
-        </div>
+        <Input
+          placeholder="Search assignments..."
+          aria-label="Search assignments"
+          leftIcon={<Search className="h-4 w-4 text-gray-400" />}
+          className="w-full sm:w-64 h-10 bg-white border-gray-200 text-sm focus:ring-indigo-500 focus:border-indigo-500 rounded-xl"
+        />
       </div>
     </div>
   );

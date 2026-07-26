@@ -12,18 +12,14 @@ export default function PayrollToolbar({ totalRecords }) {
         </p>
       </div>
       <div className="flex flex-col sm:flex-row items-center gap-3">
-        <div className="w-full sm:w-64 relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-gray-400" />
-          </div>
-          <Input 
-            placeholder="Search payroll ID..." 
-            aria-label="Search payrolls"
-            className="pl-9"
-          />
-        </div>
-        <Button className="w-full sm:w-auto">
-          <Plus className="mr-2 h-4 w-4" /> Generate Payroll
+        <Input 
+          placeholder="Search payroll ID..." 
+          aria-label="Search payrolls"
+          leftIcon={<Search className="h-4 w-4 text-gray-400" />}
+          className="w-full sm:w-64"
+        />
+        <Button className="w-full sm:w-auto" leftIcon={<Plus className="h-4 w-4" />}>
+          Generate Payroll
         </Button>
       </div>
     </div>
