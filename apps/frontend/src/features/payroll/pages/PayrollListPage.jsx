@@ -9,15 +9,19 @@ export default function PayrollListPage() {
   const { data, isLoading } = usePayrolls({ page });
 
   return (
-    <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6 animate-fade-in">
+    <div className="w-full h-[calc(100vh-4rem)] px-4 pb-4 pt-8 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
       <PayrollToolbar totalRecords={data?.data?.total} />
-      <PayrollStats />
-      <PayrollTable 
-        payrolls={data?.data?.payrolls} 
-        loading={isLoading} 
-        page={data?.data?.page || 1}
-        totalPages={data?.data?.totalPages || 1}
-      />
+      <div className="mb-4">
+        <PayrollStats />
+      </div>
+      <div className="flex-1 overflow-hidden">
+        <PayrollTable 
+          payrolls={data?.data?.payrolls} 
+          loading={isLoading} 
+          page={data?.data?.page || 1}
+          totalPages={data?.data?.totalPages || 1}
+        />
+      </div>
     </div>
   );
 }

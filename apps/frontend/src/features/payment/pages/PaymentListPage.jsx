@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Search } from "lucide-react";
-import { Input } from "../../../components/ui/input";
+import PaymentToolbar from "../components/PaymentToolbar";
 import PaymentTable from "../components/PaymentTable";
 
 const MOCK_PAYMENTS = [
@@ -12,25 +11,17 @@ export default function PaymentListPage() {
   const [payments] = useState(MOCK_PAYMENTS);
 
   return (
-    <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Payment Receipts</h2>
-          <p className="text-sm text-gray-500 mt-1">Track incoming client payments and reconcile invoices.</p>
-        </div>
-        <div className="w-full sm:w-64 relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none mt-6">
-            <Search className="h-4 w-4 text-gray-400" />
-          </div>
-          <Input 
-            placeholder="Search payments..." 
-            aria-label="Search payments"
-            className="pl-9"
-          />
-        </div>
+    <div className="w-full h-[calc(100vh-4rem)] px-4 pb-4 pt-8 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
+      <PaymentToolbar totalPayments={payments.length} />
+      
+      <div className="flex-1 overflow-hidden mt-3">
+        <PaymentTable 
+          payments={payments} 
+          loading={false}
+          page={1}
+          totalPages={1}
+        />
       </div>
-
-      <PaymentTable payments={payments} />
     </div>
   );
 }
