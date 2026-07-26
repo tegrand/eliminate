@@ -38,47 +38,19 @@ export const getWorkerDashboard = async (userId) => {
 
   const currentAgency = worker.agencies[0]?.agency || null;
 
-  // Mocked Data for unbuilt modules
-  const activeJob = {
-    title: "Senior Plumber - Highrise Construction",
-    client: "BuildTech Corp",
-    location: "Downtown Site A",
-    shift: "08:00 AM - 05:00 PM"
-  };
-
-  const upcomingJobs = [
-    { id: 1, title: "Electrical Maintenance", date: "Tommorow, 09:00 AM", location: "Central Mall" },
-    { id: 2, title: "HVAC Inspection", date: "May 25, 10:00 AM", location: "Tech Park Block B" }
-  ];
-
-  const todayAttendance = {
-    status: "Checked In",
-    timeIn: "07:55 AM",
-    timeOut: null,
-    totalHours: "3.5 hrs (so far)"
-  };
-
-  const pendingPayments = {
-    amount: "₹12,450",
-    dueDate: "May 30, 2025"
-  };
-
+  // No fake data as per request
+  const activeJob = null;
+  const upcomingJobs = [];
+  const todayAttendance = null;
+  const pendingPayments = null;
   const topStats = {
-    totalCompletedWork: 42,
-    totalRevenue: "₹84,500",
-    pendingAmount: "₹12,450",
-    totalHoursLogged: "320 hrs"
+    totalCompletedWork: 0,
+    totalRevenue: "₹0",
+    pendingAmount: "₹0",
+    totalHoursLogged: "0 hrs"
   };
-
-  const notifications = [
-    { id: 1, text: "Your timesheet for last week was approved.", time: "2 hours ago", type: "success" },
-    { id: 2, text: "New shift assigned for tomorrow.", time: "5 hours ago", type: "info" }
-  ];
-
-  const recentActivities = [
-    { id: 1, action: "Checked in at Downtown Site A", time: "Today, 07:55 AM" },
-    { id: 2, action: "Completed task: Pipe Fitting", time: "Yesterday, 04:30 PM" }
-  ];
+  const notifications = [];
+  const recentActivities = [];
 
   return {
     profile: {

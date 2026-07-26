@@ -2,10 +2,7 @@ import { useState } from "react";
 import PaymentToolbar from "../components/PaymentToolbar";
 import PaymentTable from "../components/PaymentTable";
 
-const MOCK_PAYMENTS = [
-  { id: "PAY-1", paymentId: "TXN-00921", invoiceNumber: "INV-2026-001", client: "TechCorp Inc", amount: "$49,500.00", method: "Bank Transfer", date: "2026-07-10", status: "COMPLETED" },
-  { id: "PAY-2", paymentId: "TXN-00945", invoiceNumber: "INV-2026-002", client: "Global Logistics", amount: "$13,200.00", method: "Credit Card", date: "2026-07-18", status: "PROCESSING" },
-];
+const MOCK_PAYMENTS = [];
 
 export default function PaymentListPage() {
   const [payments] = useState(MOCK_PAYMENTS);

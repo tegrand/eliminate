@@ -8,19 +8,8 @@ import OvertimeSummaryCard from "../components/OvertimeSummaryCard";
 import DeductionCard from "../components/DeductionCard";
 import ApprovalTimeline from "../components/ApprovalTimeline";
 
-const MOCK_PAYROLL = {
-  id: "PR-2026-07-A",
-  period: "Jul 01 - Jul 15, 2026",
-  workers: 145,
-  amount: "$124,500.00",
-  status: "PENDING_APPROVAL"
-};
-
-const MOCK_SALARIES = [
-  { id: "S-1", worker: "John Smith", assignment: "ASM-1001", regularHours: 80, overtimeHours: 5, grossPay: "$2,100.00", deductions: "$420.00", netPay: "$1,680.00" },
-  { id: "S-2", worker: "Jane Doe", assignment: "ASM-1001", regularHours: 78, overtimeHours: 0, grossPay: "$1,950.00", deductions: "$390.00", netPay: "$1,560.00" },
-  { id: "S-3", worker: "Michael Scott", assignment: "ASM-1003", regularHours: 80, overtimeHours: 12, grossPay: "$2,400.00", deductions: "$480.00", netPay: "$1,920.00" },
-];
+const MOCK_PAYROLL = null;
+const MOCK_SALARIES = [];
 
 export default function PayrollDetailsPage() {
   const { id } = useParams();
@@ -51,9 +40,9 @@ export default function PayrollDetailsPage() {
       <PayrollSummaryCard payroll={MOCK_PAYROLL} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <AttendanceSummaryCard stats={{ regularHours: "11,200", totalShifts: "1,450", avgHours: "77.2" }} />
-        <OvertimeSummaryCard stats={{ otHours: "450", otPayout: "$13,500.00", workersWithOt: "42" }} />
-        <DeductionCard stats={{ taxes: "$24,900.00", advances: "$1,200.00", total: "$26,100.00" }} />
+        <AttendanceSummaryCard stats={null} />
+        <OvertimeSummaryCard stats={null} />
+        <DeductionCard stats={null} />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">

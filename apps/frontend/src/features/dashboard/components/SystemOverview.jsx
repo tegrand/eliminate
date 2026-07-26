@@ -1,13 +1,7 @@
 import { ChevronDown } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
-const data = [
-  { name: "May 1", value: 120 },
-  { name: "May 6", value: 800 },
-  { name: "May 11", value: 280 },
-  { name: "May 16", value: 650 },
-  { name: "May 21", value: 850 },
-];
+const data = [];
 
 export default function SystemOverview() {
   return (
@@ -63,15 +57,15 @@ export default function SystemOverview() {
         <div className="grid grid-cols-3 gap-3 mt-4">
           <div className="bg-blue-50 rounded-lg p-3">
             <p className="text-[11px] font-medium text-gray-600 mb-0.5">Total Applications</p>
-            <h4 className="text-lg font-bold text-gray-900">1,348</h4>
+            <h4 className="text-lg font-bold text-gray-900">0</h4>
           </div>
           <div className="bg-green-50 rounded-lg p-3">
             <p className="text-[11px] font-medium text-gray-600 mb-0.5">Approvals</p>
-            <h4 className="text-lg font-bold text-gray-900">1,028</h4>
+            <h4 className="text-lg font-bold text-gray-900">0</h4>
           </div>
           <div className="bg-red-50 rounded-lg p-3">
             <p className="text-[11px] font-medium text-gray-600 mb-0.5">Rejections</p>
-            <h4 className="text-lg font-bold text-gray-900">320</h4>
+            <h4 className="text-lg font-bold text-gray-900">0</h4>
           </div>
         </div>
       </div>

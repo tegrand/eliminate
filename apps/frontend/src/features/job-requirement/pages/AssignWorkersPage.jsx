@@ -7,13 +7,7 @@ import SelectedWorkersPanel from "../components/SelectedWorkersPanel";
 import { toast } from "sonner";
 
 // Dummy data
-const MOCK_WORKERS = [
-  { id: "W-101", name: "Ravi Kumar", skill: "Electrical", agency: "Alpha Staffing", availabilityDate: "Available Now", status: "AVAILABLE" },
-  { id: "W-102", name: "Sunil Singh", skill: "Plumbing", agency: "Alpha Staffing", availabilityDate: "2026-08-01", status: "ASSIGNED SOON" },
-  { id: "W-103", name: "Arjun M", skill: "Electrical", agency: "Global Temp", availabilityDate: "Available Now", status: "AVAILABLE" },
-  { id: "W-104", name: "Mohammed Ali", skill: "Construction", agency: "Direct", availabilityDate: "Available Now", status: "AVAILABLE" },
-  { id: "W-105", name: "David John", skill: "Electrical", agency: "Beta Staffing", availabilityDate: "2026-07-28", status: "AVAILABLE" },
-];
+const MOCK_WORKERS = [];
 
 export default function AssignWorkersPage() {
   const { requirementId } = useParams();

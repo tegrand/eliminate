@@ -2,12 +2,7 @@ import { Card, CardContent } from "../../../components/ui/card";
 import { Wrench } from "lucide-react";
 import { Checkbox } from "../../../components/ui/checkbox";
 
-const MOCK_SKILLS = [
-  { id: "SK-01", label: "Electrical" },
-  { id: "SK-02", label: "Plumbing" },
-  { id: "SK-03", label: "Forklift Operation" },
-  { id: "SK-04", label: "Carpentry" },
-];
+const MOCK_SKILLS = [];
 
 export default function SkillsSection({ register }) {
   return (

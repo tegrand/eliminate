@@ -6,30 +6,10 @@ import AttendanceSummary from "../components/AttendanceSummary";
 import AttendanceDifferenceCard from "../components/AttendanceDifferenceCard";
 import VerificationActions from "../components/VerificationActions";
 
-// Dummy data
-const MOCK_RECORD = {
-  id: "ATT-1003",
-  worker: "Michael Scott",
-  workerId: "W-103",
-  assignment: "ASM-1003 (Warehouse Manager)",
-  client: "FinServe LLC",
-  date: "2026-07-25",
-  shiftType: "Standard 9-5",
-  status: "PENDING"
-};
-
-const MOCK_SYSTEM_LOG = {
-  checkIn: "09:30 AM",
-  checkOut: "05:00 PM",
-  totalHours: 7.5
-};
-
-const MOCK_MANUAL_LOG = {
-  checkIn: "09:00 AM",
-  checkOut: "05:00 PM",
-  totalHours: 8.0,
-  remarks: "Forgot to badge in at the gate, arrived at 9am."
-};
+// Dummy data removed as requested
+const MOCK_RECORD = null;
+const MOCK_SYSTEM_LOG = null;
+const MOCK_MANUAL_LOG = null;
 
 export default function AttendanceVerificationPage() {
   const { id } = useParams();
@@ -66,7 +46,7 @@ export default function AttendanceVerificationPage() {
         </Link>
         <h1 className="text-3xl font-bold text-gray-900">Verify Attendance</h1>
         <p className="mt-2 text-sm text-gray-500">
-          Review discrepancies between system logs and manual entries for record <span className="font-semibold text-gray-700">{id || MOCK_RECORD.id}</span>.
+          Review discrepancies between system logs and manual entries for record <span className="font-semibold text-gray-700">{id}</span>.
         </p>
       </div>
 

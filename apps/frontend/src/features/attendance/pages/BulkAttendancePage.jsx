@@ -4,13 +4,7 @@ import AttendanceHeader from "../components/AttendanceHeader";
 import AttendanceWorkerTable from "../components/AttendanceWorkerTable";
 import AttendanceSummaryCard from "../components/AttendanceSummaryCard";
 
-const MOCK_WORKERS = [
-  { id: "W-101", name: "Ravi Kumar", status: "PRESENT", checkIn: "08:00", checkOut: "17:00", remarks: "" },
-  { id: "W-102", name: "Sunil Singh", status: "PRESENT", checkIn: "08:15", checkOut: "17:00", remarks: "Traffic delay" },
-  { id: "W-103", name: "Arjun M", status: "ABSENT", checkIn: "", checkOut: "", remarks: "Sick leave" },
-  { id: "W-104", name: "Mohammed Ali", status: "HALF_DAY", checkIn: "08:00", checkOut: "12:30", remarks: "Family emergency" },
-  { id: "W-105", name: "David John", status: "PRESENT", checkIn: "08:00", checkOut: "17:00", remarks: "" },
-];
+const MOCK_WORKERS = [];
 
 export default function BulkAttendancePage() {
   const [workers, setWorkers] = useState(MOCK_WORKERS);
@@ -25,7 +19,7 @@ export default function BulkAttendancePage() {
     // Simulate API bulk save
     setTimeout(() => {
       setIsSaving(false);
-      toast.success("Successfully saved bulk attendance for 5 workers.");
+      toast.success("Successfully saved bulk attendance.");
     }, 1000);
   };
 

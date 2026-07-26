@@ -20,11 +20,7 @@ export default function UpcomingRequirements() {
     },
   ];
 
-  const data = [
-    { id: 1, role: "Forklift Operator", client: "Amazon Hub", workers: 15, status: "URGENT" },
-    { id: 2, role: "Picker/Packer", client: "Walmart Fulfillment", workers: 40, status: "PENDING" },
-    { id: 3, role: "Security Guard", client: "Tech Park", workers: 5, status: "PENDING" },
-  ];
+  const data = [];
 
   return (
     <div className="rounded-2xl bg-white h-full border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col">

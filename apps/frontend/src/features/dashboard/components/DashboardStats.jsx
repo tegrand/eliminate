@@ -3,12 +3,12 @@ import StatCard from "./StatCard";
 
 export default function DashboardStats() {
   const stats = [
-    { title: "Pending Workers", value: "24", icon: Users, bgColor: "bg-blue-50", iconColor: "text-blue-500" },
-    { title: "Pending Agencies", value: "12", icon: Building2, bgColor: "bg-purple-50", iconColor: "text-purple-500" },
-    { title: "Approved Workers", value: "2,543", icon: CheckCircle, bgColor: "bg-green-50", iconColor: "text-green-500" },
-    { title: "Approved Agencies", value: "45", icon: Building, bgColor: "bg-orange-50", iconColor: "text-orange-500" },
-    { title: "Total Clients", value: "128", icon: Users, bgColor: "bg-blue-50", iconColor: "text-blue-500" },
-    { title: "Suspended Accounts", value: "7", icon: Ban, bgColor: "bg-red-50", iconColor: "text-red-500" },
+    { title: "Pending Workers", value: "0", icon: Users, bgColor: "bg-blue-50", iconColor: "text-blue-500" },
+    { title: "Pending Agencies", value: "0", icon: Building2, bgColor: "bg-purple-50", iconColor: "text-purple-500" },
+    { title: "Approved Workers", value: "0", icon: CheckCircle, bgColor: "bg-green-50", iconColor: "text-green-500" },
+    { title: "Approved Agencies", value: "0", icon: Building, bgColor: "bg-orange-50", iconColor: "text-orange-500" },
+    { title: "Total Clients", value: "0", icon: Users, bgColor: "bg-blue-50", iconColor: "text-blue-500" },
+    { title: "Suspended Accounts", value: "0", icon: Ban, bgColor: "bg-red-50", iconColor: "text-red-500" },
   ];
 
   return (

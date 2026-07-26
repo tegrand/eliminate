@@ -3,18 +3,7 @@ import { ArrowLeft, Download, Send } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import InvoiceSummaryCard from "../components/InvoiceSummaryCard";
 
-const MOCK_INVOICE = {
-  id: "INV-1002", 
-  invoiceNumber: "INV-2026-002", 
-  client: "Global Logistics", 
-  clientId: "C-1002",
-  assignments: 1, 
-  subtotal: "$12,000.00", 
-  taxes: "$1,200.00", 
-  grandTotal: "$13,200.00", 
-  status: "UNPAID", 
-  date: "2026-07-15"
-};
+const MOCK_INVOICE = null;
 
 export default function InvoiceDetailsPage() {
   const { id } = useParams();
