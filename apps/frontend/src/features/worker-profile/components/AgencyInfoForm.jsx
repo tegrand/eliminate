@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Building, CheckCircle, XCircle, LogOut, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import api from "../../../../api/axios";
-import Button from "../../../../components/ui/button/Button";
-import { Modal } from "../../../../components/ui/modal/Modal";
+import api from "../../../api/axios";
+import Button from "../../../components/ui/button/Button";
+import { Modal } from "../../../components/ui/modal/Modal";
 
 export default function AgencyInfoForm({ data }) {
   const [agenciesData, setAgenciesData] = useState(null);
