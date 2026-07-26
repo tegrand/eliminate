@@ -54,6 +54,7 @@ import AttendanceVerificationPage from "../features/attendance/pages/AttendanceV
 import MyAttendancePage from "../features/attendance/pages/MyAttendancePage";
 
 import MyPaymentsPage from "../features/payments/pages/MyPaymentsPage";
+import MyDocumentsPage from "../features/documents/pages/MyDocumentsPage";
 
 import PayrollListPage from "../features/payroll/pages/PayrollListPage";
 import PayrollDetailsPage from "../features/payroll/pages/PayrollDetailsPage";
@@ -105,6 +106,7 @@ const AppRouter = () => {
             <Route path={ROUTES.MY_JOBS} element={<MyJobsPage />} />
             <Route path={ROUTES.MY_ATTENDANCE} element={<MyAttendancePage />} />
             <Route path={ROUTES.MY_PAYMENTS} element={<MyPaymentsPage />} />
+            <Route path={ROUTES.MY_DOCUMENTS} element={<MyDocumentsPage />} />
 
             {/* Clients */}
             <Route path={ROUTES.CLIENTS} element={<ClientListPage />} />

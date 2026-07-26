@@ -60,6 +60,12 @@ export const NAVIGATION_CONFIG = [
         path: ROUTES.MY_PAYMENTS,
         icon: CreditCard,
         roles: ["WORKER"],
+      },
+      {
+        title: "My Documents",
+        path: ROUTES.MY_DOCUMENTS,
+        icon: FileText,
+        roles: ["WORKER"],
       }
     ]
   },

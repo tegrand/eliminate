@@ -16,6 +16,7 @@ import jobRequirementRoutes from "../modules/job-requirement/job-requirement.rou
 import jobRoutes from "../modules/jobs/job.routes.js";
 import workerAttendanceRoutes from "../modules/worker-attendance/worker-attendance.routes.js";
 import workerPaymentsRoutes from "../modules/worker-payments/worker-payments.routes.js";
+import workerDocumentsRoutes from "../modules/worker-documents/worker-documents.routes.js";
 
 const router = Router();
 
@@ -32,6 +33,7 @@ router.use("/job-requirements", jobRequirementRoutes);
 router.use("/jobs", jobRoutes);
 router.use("/my-attendance", workerAttendanceRoutes);
 router.use("/my-payments", workerPaymentsRoutes);
+router.use("/my-documents", workerDocumentsRoutes);
 
 // Master Data Routes
 router.use("/skills", skillRoutes);
@@ -53,6 +55,7 @@ router.get("/health", (req, res) => {
 });
 
 export default router; 
+ 
  
  
  

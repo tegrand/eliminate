@@ -6,13 +6,17 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import notFoundMiddleware from "./middleware/not-found.middleware.js";
 import errorMiddleware from "./middleware/error.middleware.js";
+import path from "path";
 
 import routes from "./routes/index.js";
 
 const app = express();
 
 // Security
-app.use(helmet());
+app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
+
+// Serve static files
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // CORS
 app.use(

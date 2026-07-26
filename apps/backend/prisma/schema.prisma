@@ -212,6 +212,21 @@ enum PaymentMethod {
   CHEQUE
 }
 
+enum DocumentType {
+  AADHAAR
+  PAN
+  PASSPORT
+  DRIVING_LICENSE
+  CERTIFICATE
+  OTHER
+}
+
+enum DocumentStatus {
+  PENDING_VERIFICATION
+  VERIFIED
+  REJECTED
+}
+
 enum ShiftType {
   MORNING
   EVENING
@@ -282,8 +297,8 @@ model Worker {
   attendances     WorkerAttendance[]
   leaveRequests   LeaveRequest[]
   payments        WorkerPayment[]
+  documents       WorkerDocument[]
   // categories       WorkerCategory[]
-  // documents        WorkerDocument[]
   // bookings         Booking[]
 
   // Documents & Financial
@@ -702,3 +717,21 @@ model WorkerPayment {
   @@index([workerId])
   @@index([status])
 }
+model WorkerDocument {
+  id           String         @id @default(uuid())
+  workerId     String
+  documentType DocumentType
+  documentUrl  String         // Path or URL to the file
+  fileName     String         // Original file name
+  status       DocumentStatus @default(PENDING_VERIFICATION)
+  remarks      String?        // Admin remarks on verification
+
+  worker       Worker         @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([workerId])
+  @@index([documentType])
+}
+
