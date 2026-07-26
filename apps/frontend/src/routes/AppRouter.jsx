@@ -53,6 +53,8 @@ import BulkAttendancePage from "../features/attendance/pages/BulkAttendancePage"
 import AttendanceVerificationPage from "../features/attendance/pages/AttendanceVerificationPage";
 import MyAttendancePage from "../features/attendance/pages/MyAttendancePage";
 
+import MyPaymentsPage from "../features/payments/pages/MyPaymentsPage";
+
 import PayrollListPage from "../features/payroll/pages/PayrollListPage";
 import PayrollDetailsPage from "../features/payroll/pages/PayrollDetailsPage";
 
@@ -102,6 +104,7 @@ const AppRouter = () => {
             <Route path={ROUTES.FIND_WORK} element={<FindWorkPage />} />
             <Route path={ROUTES.MY_JOBS} element={<MyJobsPage />} />
             <Route path={ROUTES.MY_ATTENDANCE} element={<MyAttendancePage />} />
+            <Route path={ROUTES.MY_PAYMENTS} element={<MyPaymentsPage />} />
 
             {/* Clients */}
             <Route path={ROUTES.CLIENTS} element={<ClientListPage />} />

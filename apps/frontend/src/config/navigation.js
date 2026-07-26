@@ -54,6 +54,12 @@ export const NAVIGATION_CONFIG = [
         path: ROUTES.MY_ATTENDANCE,
         icon: CalendarCheck,
         roles: ["WORKER"],
+      },
+      {
+        title: "My Payments",
+        path: ROUTES.MY_PAYMENTS,
+        icon: CreditCard,
+        roles: ["WORKER"],
       }
     ]
   },

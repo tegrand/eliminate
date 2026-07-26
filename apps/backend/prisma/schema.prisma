@@ -199,6 +199,19 @@ enum LeaveType {
   UNPAID
 }
 
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  CASH
+  CHEQUE
+}
+
 enum ShiftType {
   MORNING
   EVENING
@@ -268,6 +281,7 @@ model Worker {
   savedJobs       SavedJob[]
   attendances     WorkerAttendance[]
   leaveRequests   LeaveRequest[]
+  payments        WorkerPayment[]
   // categories       WorkerCategory[]
   // documents        WorkerDocument[]
   // bookings         Booking[]
@@ -663,6 +677,27 @@ model LeaveRequest {
 
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
+
+  @@index([workerId])
+  @@index([status])
+}
+
+model WorkerPayment {
+  id            String         @id @default(uuid())
+  workerId      String
+  amount        Float
+  paymentDate   DateTime?      @db.Date
+  periodStart   DateTime       @db.Date
+  periodEnd     DateTime       @db.Date
+  status        PaymentStatus  @default(PENDING)
+  paymentMethod PaymentMethod?
+  referenceNo   String?
+  notes         String?
+
+  worker        Worker         @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
   @@index([workerId])
   @@index([status])
