@@ -17,20 +17,20 @@ export default function WorkerProfileWidget({ profile, onStatusChange }) {
   };
 
   return (
-    <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col h-full">
-      <div className="flex justify-between items-start mb-6">
-        <h3 className="text-xs font-bold text-slate-800 uppercase tracking-widest flex items-center gap-2.5">
+    <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col h-full">
+      <div className="flex justify-between items-start mb-5">
+        <h3 className="text-[11px] font-bold text-slate-800 uppercase tracking-widest flex items-center gap-2">
           <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
-            <User className="w-4 h-4" />
+            <User className="w-3.5 h-3.5" />
           </div>
           Worker Profile
         </h3>
         <button className="text-gray-400 hover:text-gray-600 transition-colors">
-          <MoreVertical className="w-4 h-4" />
+          <MoreVertical className="w-3.5 h-3.5" />
         </button>
       </div>
 
-      <div className="space-y-6 flex-1">
+      <div className="space-y-5 flex-1">
         {/* Profile Completion */}
         <div>
           <div className="flex justify-between items-center mb-2">
@@ -45,11 +45,11 @@ export default function WorkerProfileWidget({ profile, onStatusChange }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mt-auto">
+        <div className="grid grid-cols-2 gap-3 mt-auto">
           {/* Status */}
-          <div className="bg-white p-4 rounded-xl border border-slate-100">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500">
+          <div className="bg-white p-3.5 rounded-xl border border-slate-100">
+            <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
                 <span className={`w-2 h-2 rounded-full ${isAvailable ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                 Current Status
               </div>
@@ -64,8 +64,8 @@ export default function WorkerProfileWidget({ profile, onStatusChange }) {
           </div>
 
           {/* Agency */}
-          <div className="bg-white p-4 rounded-xl border border-slate-100">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 mb-2">
+          <div className="bg-white p-3.5 rounded-xl border border-slate-100">
+            <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 mb-1.5">
               <Building className="w-3.5 h-3.5 text-blue-500" />
               Current Agency
             </div>
