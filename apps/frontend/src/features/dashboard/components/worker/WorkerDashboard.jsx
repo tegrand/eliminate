@@ -5,6 +5,7 @@ import WorkerProfileWidget from "./WorkerProfileWidget";
 import WorkerJobsWidget from "./WorkerJobsWidget";
 import WorkerStatsWidget from "./WorkerStatsWidget";
 import WorkerActivityWidget from "./WorkerActivityWidget";
+import api from "../../../api/axios";
 
 export default function WorkerDashboard() {
   const [data, setData] = useState(null);
@@ -24,6 +25,23 @@ export default function WorkerDashboard() {
 
     fetchDashboard();
   }, []);
+
+  const handleStatusChange = async (newStatus) => {
+    try {
+      await api.patch('/workers/my-profile', { employmentStatus: newStatus });
+      setData(prev => ({
+        ...prev,
+        profile: {
+          ...prev.profile,
+          status: newStatus
+        }
+      }));
+      toast.success("Status updated successfully");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to update status");
+      throw error;
+    }
+  };
 
   if (loading) {
     return (
@@ -48,7 +66,10 @@ export default function WorkerDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-1 space-y-4">
-          <WorkerProfileWidget profile={data.profile} />
+          <WorkerProfileWidget 
+            profile={data.profile} 
+            onStatusChange={handleStatusChange} 
+          />
         </div>
         
         <div className="lg:col-span-2">

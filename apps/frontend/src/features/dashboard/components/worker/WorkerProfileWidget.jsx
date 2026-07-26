@@ -1,7 +1,20 @@
+import { useState } from "react";
 import { User, Activity, Building, MoreVertical } from "lucide-react";
+import Switch from "../../../../components/ui/switch/Switch";
+import { Modal } from "../../../../components/ui/modal/Modal";
+import Button from "../../../../components/ui/button/Button";
 
-export default function WorkerProfileWidget({ profile }) {
+export default function WorkerProfileWidget({ profile, onStatusChange }) {
   const isAvailable = profile.status === "ACTIVE";
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const handleStatusChange = async () => {
+    setIsUpdating(true);
+    await onStatusChange(isAvailable ? "ON_LEAVE" : "ACTIVE");
+    setIsUpdating(false);
+    setConfirmModalOpen(false);
+  };
 
   return (
     <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col h-full">
@@ -35,11 +48,17 @@ export default function WorkerProfileWidget({ profile }) {
         <div className="grid grid-cols-2 gap-4 mt-auto">
           {/* Status */}
           <div className="bg-slate-50/80 p-3 rounded-xl border border-slate-100">
-            <div className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500 mb-1.5">
-              <Activity className="w-3.5 h-3.5 text-emerald-500" />
-              Current Status
+            <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500">
+                <Activity className="w-3.5 h-3.5 text-emerald-500" />
+                Current Status
+              </div>
+              <Switch 
+                checked={isAvailable}
+                onChange={() => setConfirmModalOpen(true)}
+              />
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 mt-2">
               <span className={`w-2 h-2 rounded-full ${isAvailable ? 'bg-emerald-500' : 'bg-amber-500'}`} />
               <span className="font-bold text-slate-900 capitalize text-[13px]">
                 {profile.status === "ACTIVE" ? "Available" : profile.status.replace("_", " ").toLowerCase()}
@@ -59,6 +78,30 @@ export default function WorkerProfileWidget({ profile }) {
           </div>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      <Modal 
+        isOpen={confirmModalOpen} 
+        onClose={() => setConfirmModalOpen(false)}
+        title="Change Status"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">
+            Are you sure you want to change your status to 
+            <span className="font-bold text-slate-900"> {isAvailable ? "Not Available (On Leave)" : "Available"}</span>?
+          </p>
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+            <Button variant="outline" onClick={() => setConfirmModalOpen(false)}>Cancel</Button>
+            <Button 
+              variant="primary"
+              loading={isUpdating} 
+              onClick={handleStatusChange}
+            >
+              Yes, Change Status
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
