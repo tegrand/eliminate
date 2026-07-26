@@ -27,12 +27,6 @@ export const NAVIGATION_CONFIG = [
         path: ROUTES.DASHBOARD,
         icon: LayoutDashboard,
         roles: ALL_ROLES,
-      },
-      {
-        title: "My Profile",
-        path: ROUTES.WORKER_PROFILE,
-        icon: UserCircle,
-        roles: ["WORKER"],
       }
     ]
   },
