@@ -27,7 +27,7 @@ export default function UpcomingRequirements() {
   ];
 
   return (
-    <Card className="h-full border border-gray-100 shadow-sm flex flex-col">
+    <Card className="h-full border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col">
       <CardContent className="p-0 flex-1 flex flex-col">
         <div className="p-5 border-b border-gray-50 flex items-center justify-between">
           <h3 className="text-lg font-bold text-gray-900">Upcoming Job Requirements</h3>

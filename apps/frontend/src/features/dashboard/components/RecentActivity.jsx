@@ -42,7 +42,7 @@ export default function RecentActivity() {
   ];
 
   return (
-    <Card className="h-full border border-gray-100 shadow-sm">
+    <Card className="h-full border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
       <CardContent className="p-5">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-base font-bold text-gray-900">Recent Activity</h3>
