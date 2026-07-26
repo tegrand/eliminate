@@ -6,21 +6,39 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import notFoundMiddleware from "./middleware/not-found.middleware.js";
 import errorMiddleware from "./middleware/error.middleware.js";
+import path from "path";
 
 import routes from "./routes/index.js";
 
 const app = express();
 
 // Security
-app.use(helmet());
+app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
+
+// Serve static files
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // CORS
 app.use(
     cors({
-        origin: process.env.CLIENT_URL || "http://localhost:5173",
+        origin: function(origin, callback) {
+            // allow requests with no origin (like mobile apps or curl requests)
+            if(!origin) return callback(null, true);
+            if(origin.startsWith("http://localhost:")) {
+                return callback(null, true);
+            }
+            if(origin === process.env.CLIENT_URL) {
+                return callback(null, true);
+            }
+            return callback(new Error('Not allowed by CORS'), false);
+        },
         credentials: true
     })
 );
+
+// Body and Cookie Parsers
+app.use(express.json());
+app.use(cookieParser());
 
 // Compression
 app.use(compression())

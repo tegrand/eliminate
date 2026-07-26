@@ -108,14 +108,150 @@ model User {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   agency    Agency?
+  authAuditLogs AuthAuditLog[]
+  notifications Notification[]
 
   @@index([email])
   @@index([roleId])
   @@index([status])
 }
 
+enum AuthAction {
+  LOGIN
+  LOGOUT
+  FAILED_LOGIN
+  REFRESH
+  PASSWORD_CHANGE
+  ACCOUNT_LOCK
+}
+
+model AuthAuditLog {
+  id        String     @id @default(uuid())
+  userId    String?
+  action    AuthAction
+  ipAddress String?
+  userAgent String?
+  timestamp DateTime   @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([timestamp])
+}
+
+enum SkillProficiency {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum LanguageProficiency {
+  BASIC
+  CONVERSATIONAL
+  PROFESSIONAL
+  NATIVE
+}
+
+enum AgencyWorkerStatus {
+  INVITED
+  ACTIVE
+  REJECTED
+  LEFT
+  INACTIVE
+  SUSPENDED
+}
+
+enum RequirementStatus {
+  DRAFT
+  OPEN
+  PARTIALLY_FILLED
+  FILLED
+  COMPLETED
+  CANCELLED
+}
+
+enum ApplicationStatus {
+  APPLIED
+  UNDER_REVIEW
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  HALF_DAY
+  ON_LEAVE
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum LeaveType {
+  SICK
+  CASUAL
+  EARNED
+  UNPAID
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  CASH
+  CHEQUE
+}
+
+enum DocumentType {
+  AADHAAR
+  PAN
+  PASSPORT
+  DRIVING_LICENSE
+  CERTIFICATE
+  OTHER
+}
+
+enum DocumentStatus {
+  PENDING_VERIFICATION
+  VERIFIED
+  REJECTED
+}
+
+enum ShiftType {
+  MORNING
+  EVENING
+  NIGHT
+  FLEXIBLE
+}
+
+enum SalaryType {
+  HOURLY
+  DAILY
+  MONTHLY
+  FIXED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
 enum EmploymentStatus {
   ACTIVE
+  BUSY
   INACTIVE
   ON_LEAVE
   TERMINATED
@@ -137,12 +273,51 @@ model Worker {
   joiningDate      DateTime?
   notes            String?
 
+  // Contact Info
+  addressLine1           String?
+  addressLine2           String?
+  city                   String?
+  state                  String?
+  country                String?
+  postalCode             String?
+  emergencyContactName   String?
+  emergencyContactPhone  String?
+  emergencyContactRelation String?
+
+  // Professional Info
+  experienceYears        Int?
+  expectedSalary         String?
+  preferredLocations     Json? // Array of strings stored as JSON
+  
   // Future module relation placeholders (awaiting model implementation)
-  // skills           WorkerSkill[]
-  // languages        WorkerLanguage[]
+  skills    WorkerSkill[]
+  languages WorkerLanguage[]
+  agencies  AgencyWorker[]
+  jobApplications JobApplication[]
+  savedJobs       SavedJob[]
+  attendances     WorkerAttendance[]
+  leaveRequests   LeaveRequest[]
+  payments        WorkerPayment[]
+  documents       WorkerDocument[]
   // categories       WorkerCategory[]
-  // documents        WorkerDocument[]
   // bookings         Booking[]
+
+  // Documents & Financial
+  aadhaarNumber          String?
+  panNumber              String?
+  bankAccountNumber      String?
+  bankIfsc               String?
+  bankName               String?
+  
+  profileStatus          WorkerProfileStatus @default(PENDING)
+  
+  // File URLs
+  resumeUrl              String?
+  aadhaarUrl             String?
+  panUrl                 String?
+  bankPassbookUrl        String?
+  experienceCertificates Json? // Array of objects/strings stored as JSON
+  skillCertificates      Json? // Array of objects/strings stored as JSON
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -174,7 +349,7 @@ model Client {
   notes          String?
 
   // Future module relation placeholders (awaiting model implementation)
-  // jobRequirements  JobRequirement[]
+  jobRequirements JobRequirement[]
   // bookings         Booking[]
   // invoices         Invoice[]
   // payments         Payment[]
@@ -210,7 +385,7 @@ model Agency {
   notes          String?
 
   // Future module relation placeholders
-  // workers          AgencyWorker[]
+  workers AgencyWorker[]
   // assignments      Assignment[]
   // jobRequirements  JobRequirement[]
 
@@ -231,8 +406,8 @@ model Skill {
   isActive    Boolean @default(true)
 
   // Future module relation placeholders
-  // workers          WorkerSkill[]
-  // jobRequirements  JobRequirementSkill[]
+  workers WorkerSkill[]
+  jobRequirements  JobRequirementSkill[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -252,7 +427,7 @@ model Category {
 
   // Future module relation placeholders
   // workers          WorkerCategory[]
-  // jobRequirements  JobRequirementCategory[]
+  jobRequirements JobRequirement[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -271,8 +446,8 @@ model Language {
   isActive    Boolean @default(true)
 
   // Future module relation placeholders
-  // workers          WorkerLanguage[]
-  // jobRequirements  JobRequirementLanguage[]
+  workers WorkerLanguage[]
+  jobRequirements  JobRequirementLanguage[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -298,7 +473,7 @@ model Location {
   // workers          WorkerLocation[]
   // clients          ClientLocation[]
   // agencies         AgencyLocation[]
-  // jobRequirements  JobRequirementLocation[]
+  jobRequirements JobRequirement[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -308,3 +483,295 @@ model Location {
   @@index([isActive])
   @@index([deletedAt])
 }
+
+model WorkerSkill {
+  id               String           @id @default(uuid())
+  workerId         String
+  skillId          String
+  experienceYears  Int?
+  proficiencyLevel SkillProficiency
+  isPrimary        Boolean          @default(false)
+
+  worker Worker @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  skill  Skill  @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([workerId, skillId])
+  @@index([workerId])
+  @@index([skillId])
+}
+
+model WorkerLanguage {
+  id               String              @id @default(uuid())
+  workerId         String
+  languageId       String
+  proficiencyLevel LanguageProficiency
+  canRead          Boolean             @default(false)
+  canWrite         Boolean             @default(false)
+  canSpeak         Boolean             @default(false)
+  isPrimary        Boolean             @default(false)
+
+  worker   Worker   @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  language Language @relation(fields: [languageId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([workerId, languageId])
+  @@index([workerId])
+  @@index([languageId])
+}
+
+model AgencyWorker {
+  id         String             @id @default(uuid())
+  agencyId   String
+  workerId   String
+  assignedAt DateTime           @default(now())
+  status     AgencyWorkerStatus @default(ACTIVE)
+  notes      String?
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  worker Worker @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([agencyId, workerId])
+  @@index([agencyId])
+  @@index([workerId])
+}
+
+model JobRequirement {
+  id              String            @id @default(uuid())
+  requirementCode String            @unique
+  clientId        String
+  title           String
+  description     String?
+  categoryId      String?
+  locationId      String?
+  requiredWorkers Int               @default(1)
+  startDate       DateTime?
+  endDate         DateTime?
+  startTime       String?
+  endTime         String?
+  salaryType      SalaryType?
+  salaryAmount    Decimal?
+  priority             Priority          @default(MEDIUM)
+  status               RequirementStatus @default(DRAFT)
+  shift                ShiftType?
+  assignedCount        Int               @default(0)
+  cancellationReason   String?
+  notes                String?
+
+  client   Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  category Category? @relation(fields: [categoryId], references: [id])
+  location Location? @relation(fields: [locationId], references: [id])
+
+  // Future module relation placeholders
+  // bookings         Booking[]
+  // assignments      Assignment[]
+  requiredSkills      JobRequirementSkill[]
+  requiredLanguages   JobRequirementLanguage[]
+  applications        JobApplication[]
+  savedBy             SavedJob[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([clientId])
+  @@index([categoryId])
+  @@index([locationId])
+  @@index([status])
+  @@index([priority])
+  @@index([deletedAt])
+}
+
+model JobRequirementSkill {
+  id               String           @id @default(uuid())
+  jobRequirementId String
+  skillId          String
+  experienceYears  Int?
+  proficiencyLevel SkillProficiency
+  isMandatory      Boolean          @default(true)
+
+  jobRequirement JobRequirement @relation(fields: [jobRequirementId], references: [id], onDelete: Cascade)
+  skill          Skill          @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([jobRequirementId, skillId])
+  @@index([jobRequirementId])
+  @@index([skillId])
+}
+
+model JobRequirementLanguage {
+  id               String              @id @default(uuid())
+  jobRequirementId String
+  languageId       String
+  proficiencyLevel LanguageProficiency
+  isMandatory      Boolean             @default(true)
+
+  jobRequirement JobRequirement @relation(fields: [jobRequirementId], references: [id], onDelete: Cascade)
+  language       Language       @relation(fields: [languageId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([jobRequirementId, languageId])
+  @@index([jobRequirementId])
+  @@index([languageId])
+}
+
+model JobApplication {
+  id               String            @id @default(uuid())
+  jobRequirementId String
+  workerId         String
+  status           ApplicationStatus @default(APPLIED)
+  notes            String?
+  appliedAt        DateTime          @default(now())
+
+  jobRequirement   JobRequirement    @relation(fields: [jobRequirementId], references: [id], onDelete: Cascade)
+  worker           Worker            @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@unique([jobRequirementId, workerId])
+  @@index([jobRequirementId])
+  @@index([workerId])
+}
+
+model SavedJob {
+  id               String            @id @default(uuid())
+  jobRequirementId String
+  workerId         String
+
+  jobRequirement   JobRequirement    @relation(fields: [jobRequirementId], references: [id], onDelete: Cascade)
+  worker           Worker            @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime          @default(now())
+
+  @@unique([jobRequirementId, workerId])
+  @@index([jobRequirementId])
+  @@index([workerId])
+}
+
+model WorkerAttendance {
+  id            String           @id @default(uuid())
+  workerId      String
+  date          DateTime         @db.Date
+  checkInTime   DateTime?
+  checkOutTime  DateTime?
+  status        AttendanceStatus @default(PRESENT)
+  totalHours    Float?
+  overtimeHours Float?
+  notes         String?
+
+  worker        Worker           @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@unique([workerId, date])
+  @@index([workerId])
+  @@index([date])
+}
+
+model LeaveRequest {
+  id            String       @id @default(uuid())
+  workerId      String
+  startDate     DateTime     @db.Date
+  endDate       DateTime     @db.Date
+  leaveType     LeaveType
+  status        LeaveStatus  @default(PENDING)
+  reason        String
+  approvedBy    String?      // Admin or Agency ID who approved
+
+  worker        Worker       @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([workerId])
+  @@index([status])
+}
+
+model WorkerPayment {
+  id            String         @id @default(uuid())
+  workerId      String
+  amount        Float
+  paymentDate   DateTime?      @db.Date
+  periodStart   DateTime       @db.Date
+  periodEnd     DateTime       @db.Date
+  status        PaymentStatus  @default(PENDING)
+  paymentMethod PaymentMethod?
+  referenceNo   String?
+  notes         String?
+
+  worker        Worker         @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([workerId])
+  @@index([status])
+}
+model WorkerDocument {
+  id           String         @id @default(uuid())
+  workerId     String
+  documentType DocumentType
+  documentUrl  String         // Path or URL to the file
+  fileName     String         // Original file name
+  status       DocumentStatus @default(PENDING_VERIFICATION)
+  remarks      String?        // Admin remarks on verification
+
+  worker       Worker         @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([workerId])
+  @@index([documentType])
+}
+
+
+enum NotificationType {
+  APPROVAL
+  AGENCY_INVITE
+  JOB_ASSIGNMENT
+  ATTENDANCE_REMINDER
+  PAYMENT_PROCESSED
+  DOCUMENT_EXPIRY
+  PROFILE_ALERT
+  SYSTEM
+}
+
+enum WorkerProfileStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType @default(SYSTEM)
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  link      String?
+  
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  
+  @@index([userId])
+  @@index([isRead])
+}
+

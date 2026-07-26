@@ -5,17 +5,20 @@ import { registerSchema, loginSchema, changePasswordSchema, forgotPasswordSchema
 
 import validate from "../../middleware/validate.middleware.js";
 import authenticate from "../../middleware/auth.middleware.js";
+import { authRateLimiter } from "../../middleware/rate-limit.middleware.js";
 
 const router = Router();
 
 router.post(
   "/register",
+  authRateLimiter,
   validate(registerSchema),
   register
 );
 
 router.post(
   "/login",
+  authRateLimiter,
   validate(loginSchema),
   login
 );
@@ -35,6 +38,7 @@ router.patch(
 
 router.post(
   "/forgot-password",
+  authRateLimiter,
   validate(forgotPasswordSchema),
   forgotPassword
 );

@@ -6,6 +6,12 @@ import {
   getWorkerById,
   updateWorker,
   deleteWorker,
+  getMyWorkerProfile,
+  updateMyWorkerProfile,
+  getMyAgencies,
+  acceptAgencyInvitation,
+  rejectAgencyInvitation,
+  leaveAgency
 } from "./worker.controller.js";
 
 import {
@@ -37,6 +43,25 @@ router.get(
   validate(listWorkersQuerySchema, "query"),
   getWorkers
 );
+
+// Worker fetching their own profile
+router.get(
+  "/my-profile",
+  getMyWorkerProfile
+);
+
+// Worker updating their own profile
+router.patch(
+  "/my-profile",
+  validate(updateWorkerSchema),
+  updateMyWorkerProfile
+);
+
+// Worker Agency Relationship Endpoints
+router.get("/my-profile/agencies", getMyAgencies);
+router.post("/my-profile/agencies/:agencyId/accept", acceptAgencyInvitation);
+router.post("/my-profile/agencies/:agencyId/reject", rejectAgencyInvitation);
+router.post("/my-profile/agencies/:agencyId/leave", leaveAgency);
 
 router.get(
   "/:id",

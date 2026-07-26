@@ -6,40 +6,51 @@ import authConfig from "../../config/auth.config.js";
 import AppError from "../../shared/errors/app-error.js";
 import { generateAccessToken, generateRefreshToken, parseExpToMs, verifyRefreshToken } from "./auth.utils.js";
 
-const issueTokensAndUpdateUser = async (user) => {
+const issueTokensAndUpdateUser = async (user, meta, action = "LOGIN") => {
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
 
   const refreshTokenHash = await bcrypt.hash(refreshToken, authConfig.bcryptRounds);
   const refreshTokenExpiresAt = new Date(Date.now() + parseExpToMs(authConfig.refreshExpiresIn));
 
-  const updatedUser = await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      refreshTokenHash,
-      refreshTokenExpiresAt,
-      lastLoginAt: new Date(),
-      failedLoginAttempts: 0,
-    },
-    select: {
-      id: true,
-      email: true,
-      status: true,
-      profileType: true,
-      emailVerified: true,
-      emailVerifiedAt: true,
-      lastLoginAt: true,
-      role: {
-        select: {
-          id: true,
-          name: true,
-          displayName: true,
-        },
+  const [updatedUser] = await prisma.$transaction([
+    prisma.user.update({
+      where: { id: user.id },
+      data: {
+        refreshTokenHash,
+        refreshTokenExpiresAt,
+        lastLoginAt: new Date(),
+        failedLoginAttempts: 0,
+        lockedUntil: null,
       },
-      createdAt: true,
-      updatedAt: true,
-    },
-  });
+      select: {
+        id: true,
+        email: true,
+        status: true,
+        profileType: true,
+        emailVerified: true,
+        emailVerifiedAt: true,
+        lastLoginAt: true,
+        role: {
+          select: {
+            id: true,
+            name: true,
+            displayName: true,
+          },
+        },
+        createdAt: true,
+        updatedAt: true,
+      },
+    }),
+    prisma.authAuditLog.create({
+      data: {
+        userId: user.id,
+        action,
+        ipAddress: meta?.ipAddress,
+        userAgent: meta?.userAgent,
+      },
+    }),
+  ]);
 
   return { accessToken, refreshToken, user: updatedUser };
 };
@@ -68,7 +79,23 @@ export const register = async (data) => {
       email: data.email,
       passwordHash,
       profileType: data.accountType,
+      status: data.accountType === "CLIENT" ? "ACTIVE" : "PENDING",
       roleId: role.id,
+      worker: data.accountType === "WORKER" ? {
+        create: {
+          workerCode: `WRK-${crypto.randomBytes(4).toString("hex").toUpperCase()}`
+        }
+      } : undefined,
+      agency: data.accountType === "AGENCY" ? {
+        create: {
+          agencyCode: `AGC-${crypto.randomBytes(4).toString("hex").toUpperCase()}`
+        }
+      } : undefined,
+      client: data.accountType === "CLIENT" ? {
+        create: {
+          clientCode: `CLI-${crypto.randomBytes(4).toString("hex").toUpperCase()}`
+        }
+      } : undefined
     },
     select: {
       id: true,
@@ -82,14 +109,23 @@ export const register = async (data) => {
   return user;
 };
 
-export const login = async (data) => {
+export const login = async (data, meta) => {
+  console.log("\n=== LOGIN ATTEMPT ===");
+  console.log("Email received:", data.email);
+  console.log("Password received:", data.password);
+  console.log("=====================\n");
+
+  const normalizedEmail = data.email.trim().toLowerCase();
+
   const user = await prisma.user.findUnique({
-    where: { email: data.email },
+    where: { email: normalizedEmail },
     select: {
       id: true,
       passwordHash: true,
       status: true,
       profileType: true,
+      failedLoginAttempts: true,
+      lockedUntil: true,
       role: {
         select: {
           id: true,
@@ -101,35 +137,75 @@ export const login = async (data) => {
   });
 
   if (!user) {
-    // Dummy compare to prevent timing attacks for user enumeration
     await bcrypt.compare(data.password, "$2b$10$dummyHashThatIs60CharsLong12345678901234567890123456789");
     throw new AppError("Invalid email or password", 401);
   }
 
+  if (user.lockedUntil && user.lockedUntil > new Date()) {
+    throw new AppError(`Account is locked until ${user.lockedUntil.toISOString()}`, 403);
+  }
+
   const isPasswordValid = await bcrypt.compare(data.password, user.passwordHash);
   if (!isPasswordValid) {
+    const failedAttempts = user.failedLoginAttempts + 1;
+    const isLocked = failedAttempts >= 5;
+
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: user.id },
+        data: {
+          failedLoginAttempts: failedAttempts,
+          lockedUntil: isLocked ? new Date(Date.now() + 15 * 60 * 1000) : null,
+        },
+      }),
+      prisma.authAuditLog.create({
+        data: {
+          userId: user.id,
+          action: isLocked ? "ACCOUNT_LOCK" : "FAILED_LOGIN",
+          ipAddress: meta?.ipAddress,
+          userAgent: meta?.userAgent,
+        },
+      }),
+    ]);
+
     throw new AppError("Invalid email or password", 401);
   }
 
-  switch (user.status) {
-    case "PENDING":
-      throw new AppError("Your account is pending approval.", 403);
-    case "SUSPENDED":
-      throw new AppError("Your account has been suspended.", 403);
-    case "REJECTED":
-      throw new AppError("Your account has been rejected.", 403);
-    case "DELETED":
-      throw new AppError("Account not available.", 403);
-    case "ACTIVE":
-      break;
-    default:
-      throw new AppError("Invalid account status.", 403);
+  if (user.profileType === "WORKER" || user.profileType === "AGENCY") {
+    switch (user.status) {
+      case "SUSPENDED":
+        throw new AppError("Your account has been suspended.", 403);
+      case "REJECTED":
+        throw new AppError("Your account has been rejected.", 403);
+      case "DELETED":
+        throw new AppError("Account not available.", 403);
+      case "PENDING":
+      case "ACTIVE":
+        break;
+      default:
+        throw new AppError("Invalid account status.", 403);
+    }
+  } else {
+    switch (user.status) {
+      case "PENDING":
+        throw new AppError("Your account is pending approval.", 403);
+      case "SUSPENDED":
+        throw new AppError("Your account has been suspended.", 403);
+      case "REJECTED":
+        throw new AppError("Your account has been rejected.", 403);
+      case "DELETED":
+        throw new AppError("Account not available.", 403);
+      case "ACTIVE":
+        break;
+      default:
+        throw new AppError("Invalid account status.", 403);
+    }
   }
 
-  return issueTokensAndUpdateUser(user);
+  return issueTokensAndUpdateUser(user, meta, "LOGIN");
 };
 
-export const refreshToken = async (token) => {
+export const refreshToken = async (token, meta) => {
   const payload = verifyRefreshToken(token);
   if (!payload || !payload.sub) {
     throw new AppError("Unauthorized", 401);
@@ -166,10 +242,10 @@ export const refreshToken = async (token) => {
     throw new AppError("Unauthorized", 401);
   }
 
-  return issueTokensAndUpdateUser(user);
+  return issueTokensAndUpdateUser(user, meta, "REFRESH");
 };
 
-export const logout = async (token) => {
+export const logout = async (token, meta) => {
   if (!token) return;
 
   const payload = verifyRefreshToken(token);
@@ -181,13 +257,23 @@ export const logout = async (token) => {
   });
 
   if (user) {
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        refreshTokenHash: null,
-        refreshTokenExpiresAt: null,
-      },
-    });
+    await prisma.$transaction([
+      prisma.user.update({
+        where: { id: user.id },
+        data: {
+          refreshTokenHash: null,
+          refreshTokenExpiresAt: null,
+        },
+      }),
+      prisma.authAuditLog.create({
+        data: {
+          userId: user.id,
+          action: "LOGOUT",
+          ipAddress: meta?.ipAddress,
+          userAgent: meta?.userAgent,
+        },
+      }),
+    ]);
   }
 };
 
@@ -212,14 +298,24 @@ export const getCurrentUser = async (userId) => {
     },
   });
 
-  if (!user || user.status !== "ACTIVE") {
+  if (!user) {
     throw new AppError("Unauthorized", 401);
+  }
+
+  if (user.profileType === "WORKER" || user.profileType === "AGENCY") {
+    if (user.status !== "ACTIVE" && user.status !== "PENDING") {
+      throw new AppError("Unauthorized", 401);
+    }
+  } else {
+    if (user.status !== "ACTIVE") {
+      throw new AppError("Unauthorized", 401);
+    }
   }
 
   return user;
 };
 
-export const changePassword = async (userId, data) => {
+export const changePassword = async (userId, data, meta) => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { id: true, passwordHash: true },
@@ -241,14 +337,24 @@ export const changePassword = async (userId, data) => {
 
   const passwordHash = await bcrypt.hash(data.newPassword, authConfig.bcryptRounds);
 
-  await prisma.user.update({
-    where: { id: user.id },
-    data: {
-      passwordHash,
-      refreshTokenHash: null,
-      refreshTokenExpiresAt: null,
-    },
-  });
+  await prisma.$transaction([
+    prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordHash,
+        refreshTokenHash: null,
+        refreshTokenExpiresAt: null,
+      },
+    }),
+    prisma.authAuditLog.create({
+      data: {
+        userId: user.id,
+        action: "PASSWORD_CHANGE",
+        ipAddress: meta?.ipAddress,
+        userAgent: meta?.userAgent,
+      },
+    }),
+  ]);
 };
 
 export const forgotPassword = async (data) => {
