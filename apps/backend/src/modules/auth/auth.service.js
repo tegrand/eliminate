@@ -79,6 +79,7 @@ export const register = async (data) => {
       email: data.email,
       passwordHash,
       profileType: data.accountType,
+      status: data.accountType === "CLIENT" ? "ACTIVE" : "PENDING",
       roleId: role.id,
       worker: data.accountType === "WORKER" ? {
         create: {
