@@ -63,6 +63,13 @@ export const getWorkerDashboard = async (userId) => {
     dueDate: "May 30, 2025"
   };
 
+  const topStats = {
+    totalCompletedWork: 42,
+    totalRevenue: "₹84,500",
+    pendingAmount: "₹12,450",
+    totalHoursLogged: "320 hrs"
+  };
+
   const notifications = [
     { id: 1, text: "Your timesheet for last week was approved.", time: "2 hours ago", type: "success" },
     { id: 2, text: "New shift assigned for tomorrow.", time: "5 hours ago", type: "info" }
@@ -84,7 +91,8 @@ export const getWorkerDashboard = async (userId) => {
     todayAttendance,
     pendingPayments,
     notifications,
-    recentActivities
+    recentActivities,
+    topStats
   };
 };
 

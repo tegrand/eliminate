@@ -5,6 +5,7 @@ import WorkerProfileWidget from "./WorkerProfileWidget";
 import WorkerJobsWidget from "./WorkerJobsWidget";
 import WorkerStatsWidget from "./WorkerStatsWidget";
 import WorkerActivityWidget from "./WorkerActivityWidget";
+import WorkerTopStatsWidget from "./WorkerTopStatsWidget";
 import api from "../../../../api/axios";
 
 export default function WorkerDashboard() {
@@ -59,6 +60,8 @@ export default function WorkerDashboard() {
 
   return (
     <div className="w-full space-y-4 animate-fade-in">
+      <WorkerTopStatsWidget stats={data.topStats} />
+
       <WorkerStatsWidget 
         attendance={data.todayAttendance} 
         payments={data.pendingPayments} 
