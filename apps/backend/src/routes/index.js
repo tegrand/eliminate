@@ -1,6 +1,7 @@
 import { Router } from "express";
 import authRoutes from "../modules/auth/auth.routes.js";
 import usersRoutes from "../modules/users/users.routes.js";
+import dashboardRoutes from "../modules/dashboard/dashboard.routes.js";
 import workerRoutes from "../modules/workers/worker.routes.js";
 import workerSkillRoutes from "../modules/workers/worker-skill.routes.js";
 import workerLanguageRoutes from "../modules/workers/worker-language.routes.js";
@@ -18,6 +19,7 @@ const router = Router();
 // Core & Auth Routes
 router.use("/auth", authRoutes);
 router.use("/users", usersRoutes);
+router.use("/dashboard", dashboardRoutes);
 
 // Entity Routes
 router.use("/workers", workerRoutes);

@@ -13,12 +13,12 @@ export const getWorkers = asyncHandler(async (req, res) => {
 });
 
 export const getWorkerById = asyncHandler(async (req, res) => {
-  const worker = await workerService.getWorkerById(req.params.id);
+  const worker = await workerService.getWorkerById(req.params.id, req.user);
   return ApiResponse.success(res, "Worker retrieved successfully", worker, 200);
 });
 
 export const updateWorker = asyncHandler(async (req, res) => {
-  const worker = await workerService.updateWorker(req.params.id, req.validatedData);
+  const worker = await workerService.updateWorker(req.params.id, req.validatedData, req.user);
   return ApiResponse.success(res, "Worker updated successfully", worker, 200);
 });
 

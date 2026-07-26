@@ -106,7 +106,7 @@ export const getWorkers = async ({
   };
 };
 
-export const getWorkerById = async (id) => {
+export const getWorkerById = async (id, user) => {
   const worker = await prisma.worker.findFirst({
     where: { id, deletedAt: null },
     select: workerSelect,
@@ -116,16 +116,26 @@ export const getWorkerById = async (id) => {
     throw new AppError("Worker not found", 404);
   }
 
+  // RBAC Ownership Check
+  if (user?.profileType === "WORKER" && worker.userId !== user.id) {
+    throw new AppError("Forbidden: You cannot access another worker's profile.", 403);
+  }
+
   return worker;
 };
 
-export const updateWorker = async (id, data) => {
+export const updateWorker = async (id, data, user) => {
   const worker = await prisma.worker.findFirst({
     where: { id, deletedAt: null },
   });
 
   if (!worker) {
     throw new AppError("Worker not found", 404);
+  }
+
+  // RBAC Ownership Check
+  if (user?.profileType === "WORKER" && worker.userId !== user.id) {
+    throw new AppError("Forbidden: You cannot update another worker's profile.", 403);
   }
 
   const updatedWorker = await prisma.worker.update({
