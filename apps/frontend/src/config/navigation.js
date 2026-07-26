@@ -45,26 +45,7 @@ export const NAVIGATION_CONFIG = [
       }
     ]
   },
-  {
-    group: "Operations",
-    items: [
-      {
-        title: "Assignments",
-        path: ROUTES.ASSIGNMENTS,
-        icon: Briefcase,
-      },
-      {
-        title: "Attendance",
-        path: ROUTES.ATTENDANCE,
-        icon: Clock,
-      },
-      {
-        title: "Job Requirements",
-        path: ROUTES.JOB_REQUIREMENTS,
-        icon: FileText,
-      }
-    ]
-  },
+
   {
     group: "Finance & Operations",
     items: [
