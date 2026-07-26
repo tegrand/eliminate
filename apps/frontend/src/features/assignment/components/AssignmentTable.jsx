@@ -1,4 +1,4 @@
-import { Eye, Edit, UserCog } from "lucide-react";
+import { Eye, Edit, UserCog, Settings, MoreVertical } from "lucide-react";
 import { DataTable } from "../../../components/ui/data-table";
 import { Pagination } from "../../../components/ui/pagination";
 import AssignmentStatusBadge from "./AssignmentStatusBadge";
@@ -19,17 +19,14 @@ export default function AssignmentTable({ assignments, loading, page, totalPages
     },
     {
       key: "actions",
-      title: "Actions",
+      title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />ACTIONS</div>,
       render: () => (
         <div className="flex items-center gap-2">
-          <button className="p-1 text-gray-400 hover:text-blue-600 focus:outline-none" aria-label="View">
+          <button className="p-1.5 border border-gray-200 rounded-lg text-gray-400 hover:text-indigo-600 hover:border-indigo-200 focus:outline-none transition-colors" aria-label="View Details" title="View Details">
             <Eye className="h-4 w-4" />
           </button>
-          <button className="p-1 text-gray-400 hover:text-green-600 focus:outline-none" aria-label="Edit">
-            <Edit className="h-4 w-4" />
-          </button>
-          <button className="p-1 text-gray-400 hover:text-indigo-600 focus:outline-none" aria-label="Manage Workers" title="Manage Workers">
-            <UserCog className="h-4 w-4" />
+          <button className="p-1.5 border border-gray-200 rounded-lg text-gray-400 hover:text-indigo-600 hover:border-indigo-200 focus:outline-none transition-colors" aria-label="More Actions" title="More Actions">
+            <MoreVertical className="h-4 w-4" />
           </button>
         </div>
       )
@@ -37,16 +34,17 @@ export default function AssignmentTable({ assignments, loading, page, totalPages
   ];
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+    <div className="flex-1 flex flex-col min-h-0 bg-white">
       <DataTable 
         columns={columns} 
         data={assignments || []} 
         loading={loading}
         rowKey="id" 
-        hover 
+        hover
+        compact
       />
       {assignments && assignments.length > 0 && (
-        <div className="p-4 border-t border-gray-100 flex justify-end bg-gray-50/50">
+        <div className="p-3 border-t border-gray-100 flex justify-end bg-gray-50/50 mt-auto">
           <Pagination 
             currentPage={page}
             totalPages={totalPages}
