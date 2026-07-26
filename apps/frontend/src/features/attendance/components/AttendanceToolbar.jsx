@@ -4,7 +4,7 @@ import { Search, Download, Upload } from "lucide-react";
 
 export default function AttendanceToolbar({ totalRecords }) {
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-3">
       <div>
         <h2 className="text-2xl font-bold text-slate-800">Attendance Log</h2>
         <p className="text-sm text-gray-500 mt-1">
