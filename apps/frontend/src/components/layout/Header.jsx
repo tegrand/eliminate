@@ -68,8 +68,12 @@ export default function Header() {
               <User className="w-5 h-5" />
             </div>
             <div className="hidden md:flex flex-col text-left">
-              <span className="text-sm font-semibold text-gray-900 leading-tight">Super Admin</span>
-              <span className="text-xs text-gray-500 font-medium">Administrator</span>
+              <span className="text-sm font-semibold text-gray-900 leading-tight capitalize">
+                {user?.email?.split('@')[0] || "User"}
+              </span>
+              <span className="text-xs text-gray-500 font-medium capitalize">
+                {user?.profileType?.replace('_', ' ').toLowerCase() || "User"}
+              </span>
             </div>
             <div className="text-gray-400">
               <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} />

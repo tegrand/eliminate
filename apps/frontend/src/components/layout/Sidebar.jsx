@@ -1,7 +1,7 @@
 import { NAVIGATION_CONFIG } from "../../config/navigation";
 import SidebarLogo from "./sidebar/SidebarLogo";
 import SidebarGroup from "./sidebar/SidebarGroup";
-import { useAuth } from "../../../hooks/useAuth";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function Sidebar() {
   const { user } = useAuth();
