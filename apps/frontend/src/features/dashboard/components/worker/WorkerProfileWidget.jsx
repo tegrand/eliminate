@@ -54,6 +54,7 @@ export default function WorkerProfileWidget({ profile, onStatusChange }) {
                 Current Status
               </div>
               <Switch 
+                size="sm"
                 checked={isAvailable}
                 onChange={() => setConfirmModalOpen(true)}
               />
