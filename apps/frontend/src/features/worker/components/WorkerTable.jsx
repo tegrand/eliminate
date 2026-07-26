@@ -85,16 +85,18 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
   ];
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm">
-      <DataTable 
-        columns={columns} 
-        data={workers || []} 
-        loading={loading}
-        rowKey="id" 
-        hover 
-      />
+    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm flex flex-col h-full">
+      <div className="flex-1 overflow-auto">
+        <DataTable 
+          columns={columns} 
+          data={workers || []} 
+          loading={loading}
+          rowKey="id" 
+          hover 
+        />
+      </div>
       {workers && workers.length > 0 && (
-        <div className="p-4 border-t border-gray-100 flex justify-between items-center bg-white">
+        <div className="p-4 border-t border-gray-100 flex justify-between items-center bg-white flex-shrink-0">
           <span className="text-sm text-gray-500 font-medium">Showing 1 to {workers.length} of {workers.length} workers</span>
           <Pagination 
             currentPage={page}

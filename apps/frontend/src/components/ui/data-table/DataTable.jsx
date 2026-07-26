@@ -48,7 +48,7 @@ const DataTable = forwardRef(
     );
 
     return (
-      <div className={clsx("w-full overflow-x-auto", className)}>
+      <div className={clsx("w-full overflow-auto flex-1 min-h-0 relative", className)}>
         <table ref={ref} className={tableClasses} {...props}>
           <thead className={theadClasses}>
             <tr>
