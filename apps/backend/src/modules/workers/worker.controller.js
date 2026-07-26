@@ -36,3 +36,5 @@ export const deleteWorker = asyncHandler(async (req, res) => {
   await workerService.deleteWorker(req.params.id);
   return ApiResponse.success(res, "Worker deleted successfully", null, 200);
 });
+
+
