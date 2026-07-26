@@ -171,6 +171,14 @@ enum RequirementStatus {
   CANCELLED
 }
 
+enum ApplicationStatus {
+  APPLIED
+  UNDER_REVIEW
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
 enum ShiftType {
   MORNING
   EVENING
@@ -236,6 +244,8 @@ model Worker {
   skills    WorkerSkill[]
   languages WorkerLanguage[]
   agencies  AgencyWorker[]
+  jobApplications JobApplication[]
+  savedJobs       SavedJob[]
   // categories       WorkerCategory[]
   // documents        WorkerDocument[]
   // bookings         Booking[]
@@ -510,6 +520,8 @@ model JobRequirement {
   // assignments      Assignment[]
   requiredSkills      JobRequirementSkill[]
   requiredLanguages   JobRequirementLanguage[]
+  applications        JobApplication[]
+  savedBy             SavedJob[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -558,4 +570,38 @@ model JobRequirementLanguage {
   @@unique([jobRequirementId, languageId])
   @@index([jobRequirementId])
   @@index([languageId])
+}
+
+model JobApplication {
+  id               String            @id @default(uuid())
+  jobRequirementId String
+  workerId         String
+  status           ApplicationStatus @default(APPLIED)
+  notes            String?
+  appliedAt        DateTime          @default(now())
+
+  jobRequirement   JobRequirement    @relation(fields: [jobRequirementId], references: [id], onDelete: Cascade)
+  worker           Worker            @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@unique([jobRequirementId, workerId])
+  @@index([jobRequirementId])
+  @@index([workerId])
+}
+
+model SavedJob {
+  id               String            @id @default(uuid())
+  jobRequirementId String
+  workerId         String
+
+  jobRequirement   JobRequirement    @relation(fields: [jobRequirementId], references: [id], onDelete: Cascade)
+  worker           Worker            @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  createdAt        DateTime          @default(now())
+
+  @@unique([jobRequirementId, workerId])
+  @@index([jobRequirementId])
+  @@index([workerId])
 }

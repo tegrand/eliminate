@@ -29,6 +29,9 @@ import WorkerListPage from "../features/worker/pages/WorkerListPage";
 import WorkerDetailsPage from "../features/worker/pages/WorkerDetailsPage";
 import WorkerProfilePage from "../features/worker-profile/pages/WorkerProfilePage";
 
+import FindWorkPage from "../features/jobs/pages/FindWorkPage";
+import MyJobsPage from "../features/jobs/pages/MyJobsPage";
+
 import ClientListPage from "../features/client/pages/ClientListPage";
 import ClientDetailsPage from "../features/client/pages/ClientDetailsPage";
 
@@ -95,6 +98,8 @@ const AppRouter = () => {
             <Route path={ROUTES.WORKERS} element={<WorkerListPage />} />
             <Route path={ROUTES.WORKER_DETAILS} element={<WorkerDetailsPage />} />
             <Route path={ROUTES.WORKER_PROFILE} element={<WorkerProfilePage />} />
+            <Route path={ROUTES.FIND_WORK} element={<FindWorkPage />} />
+            <Route path={ROUTES.MY_JOBS} element={<MyJobsPage />} />
 
             {/* Clients */}
             <Route path={ROUTES.CLIENTS} element={<ClientListPage />} />

@@ -19,6 +19,8 @@ export const ROUTES = {
   WORKERS: "/workers",
   WORKER_DETAILS: "/workers/:id",
   WORKER_PROFILE: "/worker/profile",
+  FIND_WORK: "/find-work",
+  MY_JOBS: "/my-jobs",
 
   // Client
   CLIENTS: "/clients",

@@ -11,7 +11,9 @@ import {
   CreditCard, 
   FileText, 
   DollarSign,
-  UserCircle
+  UserCircle,
+  Briefcase,
+  Bookmark
 } from "lucide-react";
 
 const ALL_ROLES = ["SUPER_ADMIN", "CLIENT", "AGENCY", "WORKER"];
@@ -27,6 +29,24 @@ export const NAVIGATION_CONFIG = [
         path: ROUTES.DASHBOARD,
         icon: LayoutDashboard,
         roles: ALL_ROLES,
+      }
+    ]
+  },
+  {
+    group: "Job Opportunities",
+    roles: ["WORKER"],
+    items: [
+      {
+        title: "Find Work",
+        path: ROUTES.FIND_WORK,
+        icon: Briefcase,
+        roles: ["WORKER"],
+      },
+      {
+        title: "My Jobs",
+        path: ROUTES.MY_JOBS,
+        icon: Bookmark,
+        roles: ["WORKER"],
       }
     ]
   },

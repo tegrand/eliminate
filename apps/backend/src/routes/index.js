@@ -13,6 +13,7 @@ import categoryRoutes from "../modules/categories/category.routes.js";
 import languageRoutes from "../modules/languages/language.routes.js";
 import locationRoutes from "../modules/locations/location.routes.js";
 import jobRequirementRoutes from "../modules/job-requirement/job-requirement.routes.js";
+import jobRoutes from "../modules/jobs/job.routes.js";
 
 const router = Router();
 
@@ -26,6 +27,7 @@ router.use("/workers", workerRoutes);
 router.use("/clients", clientRoutes);
 router.use("/agencies", agencyRoutes);
 router.use("/job-requirements", jobRequirementRoutes);
+router.use("/jobs", jobRoutes);
 
 // Master Data Routes
 router.use("/skills", skillRoutes);
