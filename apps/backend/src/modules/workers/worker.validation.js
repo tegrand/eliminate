@@ -20,6 +20,7 @@ export const updateWorkerSchema = z.object({
   dateOfBirth: z.coerce.date().max(new Date(), "Birth date cannot be in the future").optional(),
   joiningDate: z.coerce.date().optional(),
   notes: z.string().trim().max(2000, "Notes are too long").optional(),
+  employmentStatus: z.enum(["ACTIVE", "INACTIVE", "ON_LEAVE", "TERMINATED"]).optional(),
   
   // Profile Additions
   addressLine1: z.string().trim().optional(),
