@@ -9,7 +9,7 @@ export default function AssignmentListPage() {
   const { data, isLoading } = useAssignments({ page });
 
   return (
-    <div className="w-full h-[calc(100vh-4rem)] px-4 pb-4 pt-8 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
+    <div className="w-full h-[calc(100vh-4rem)] px-4 pb-4 pt-4 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
       <AssignmentToolbar totalAssignments={data?.data?.total || 0} />
       <AssignmentStats />
       
