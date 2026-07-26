@@ -6,6 +6,8 @@ import {
   getWorkerById,
   updateWorker,
   deleteWorker,
+  getMyWorkerProfile,
+  updateMyWorkerProfile
 } from "./worker.controller.js";
 
 import {
@@ -36,6 +38,19 @@ router.get(
   requirePermission("worker:read"),
   validate(listWorkersQuerySchema, "query"),
   getWorkers
+);
+
+// Worker fetching their own profile
+router.get(
+  "/my-profile",
+  getMyWorkerProfile
+);
+
+// Worker updating their own profile
+router.patch(
+  "/my-profile",
+  validate(updateWorkerSchema),
+  updateMyWorkerProfile
 );
 
 router.get(

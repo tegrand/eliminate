@@ -10,7 +10,8 @@ import {
   MapPin, 
   CreditCard, 
   FileText, 
-  DollarSign
+  DollarSign,
+  UserCircle
 } from "lucide-react";
 
 const ALL_ROLES = ["SUPER_ADMIN", "CLIENT", "AGENCY", "WORKER"];
@@ -26,6 +27,12 @@ export const NAVIGATION_CONFIG = [
         path: ROUTES.DASHBOARD,
         icon: LayoutDashboard,
         roles: ALL_ROLES,
+      },
+      {
+        title: "My Profile",
+        path: ROUTES.WORKER_PROFILE,
+        icon: UserCircle,
+        roles: ["WORKER"],
       }
     ]
   },

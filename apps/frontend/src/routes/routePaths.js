@@ -18,6 +18,7 @@ export const ROUTES = {
   // Worker
   WORKERS: "/workers",
   WORKER_DETAILS: "/workers/:id",
+  WORKER_PROFILE: "/worker/profile",
 
   // Client
   CLIENTS: "/clients",

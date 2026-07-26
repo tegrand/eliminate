@@ -20,6 +20,34 @@ export const updateWorkerSchema = z.object({
   dateOfBirth: z.coerce.date().max(new Date(), "Birth date cannot be in the future").optional(),
   joiningDate: z.coerce.date().optional(),
   notes: z.string().trim().max(2000, "Notes are too long").optional(),
+  
+  // Profile Additions
+  addressLine1: z.string().trim().optional(),
+  addressLine2: z.string().trim().optional(),
+  city: z.string().trim().optional(),
+  state: z.string().trim().optional(),
+  country: z.string().trim().optional(),
+  postalCode: z.string().trim().optional(),
+  emergencyContactName: z.string().trim().optional(),
+  emergencyContactPhone: z.string().trim().optional(),
+  emergencyContactRelation: z.string().trim().optional(),
+  
+  experienceYears: z.number().int().min(0).optional().nullable(),
+  expectedSalary: z.string().trim().optional(),
+  preferredLocations: z.array(z.string()).optional().nullable(),
+  
+  aadhaarNumber: z.string().trim().optional(),
+  panNumber: z.string().trim().optional(),
+  bankAccountNumber: z.string().trim().optional(),
+  bankIfsc: z.string().trim().optional(),
+  bankName: z.string().trim().optional(),
+  
+  resumeUrl: z.string().url().optional().nullable(),
+  aadhaarUrl: z.string().url().optional().nullable(),
+  panUrl: z.string().url().optional().nullable(),
+  bankPassbookUrl: z.string().url().optional().nullable(),
+  experienceCertificates: z.any().optional().nullable(),
+  skillCertificates: z.any().optional().nullable(),
 }).strict("Unknown fields are not allowed").refine(
   (data) => Object.keys(data).length > 0,
   "Update payload cannot be empty"

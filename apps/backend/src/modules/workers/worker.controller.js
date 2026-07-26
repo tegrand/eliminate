@@ -12,6 +12,16 @@ export const getWorkers = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, "Workers retrieved successfully", result, 200);
 });
 
+export const getMyWorkerProfile = asyncHandler(async (req, res) => {
+  const worker = await workerService.getMyWorkerProfile(req.user.id);
+  return ApiResponse.success(res, "Worker profile retrieved successfully", worker, 200);
+});
+
+export const updateMyWorkerProfile = asyncHandler(async (req, res) => {
+  const worker = await workerService.updateMyWorkerProfile(req.user.id, req.validatedData);
+  return ApiResponse.success(res, "Worker profile updated successfully", worker, 200);
+});
+
 export const getWorkerById = asyncHandler(async (req, res) => {
   const worker = await workerService.getWorkerById(req.params.id, req.user);
   return ApiResponse.success(res, "Worker retrieved successfully", worker, 200);

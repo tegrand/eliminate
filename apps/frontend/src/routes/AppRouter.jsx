@@ -27,6 +27,7 @@ import DashboardPage from "../features/dashboard/pages/DashboardPage";
 
 import WorkerListPage from "../features/worker/pages/WorkerListPage";
 import WorkerDetailsPage from "../features/worker/pages/WorkerDetailsPage";
+import WorkerProfilePage from "../features/worker-profile/pages/WorkerProfilePage";
 
 import ClientListPage from "../features/client/pages/ClientListPage";
 import ClientDetailsPage from "../features/client/pages/ClientDetailsPage";
@@ -93,6 +94,7 @@ const AppRouter = () => {
             {/* Workers */}
             <Route path={ROUTES.WORKERS} element={<WorkerListPage />} />
             <Route path={ROUTES.WORKER_DETAILS} element={<WorkerDetailsPage />} />
+            <Route path={ROUTES.WORKER_PROFILE} element={<WorkerProfilePage />} />
 
             {/* Clients */}
             <Route path={ROUTES.CLIENTS} element={<ClientListPage />} />

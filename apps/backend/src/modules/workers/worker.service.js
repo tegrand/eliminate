@@ -20,6 +20,29 @@ const workerSelect = {
   employmentStatus: true,
   joiningDate: true,
   notes: true,
+  addressLine1: true,
+  addressLine2: true,
+  city: true,
+  state: true,
+  country: true,
+  postalCode: true,
+  emergencyContactName: true,
+  emergencyContactPhone: true,
+  emergencyContactRelation: true,
+  experienceYears: true,
+  expectedSalary: true,
+  preferredLocations: true,
+  aadhaarNumber: true,
+  panNumber: true,
+  bankAccountNumber: true,
+  bankIfsc: true,
+  bankName: true,
+  resumeUrl: true,
+  aadhaarUrl: true,
+  panUrl: true,
+  bankPassbookUrl: true,
+  experienceCertificates: true,
+  skillCertificates: true,
   createdAt: true,
   updatedAt: true,
   user: {
@@ -162,4 +185,35 @@ export const deleteWorker = async (id) => {
   });
 
   return true;
+};
+
+export const getMyWorkerProfile = async (userId) => {
+  const worker = await prisma.worker.findFirst({
+    where: { userId, deletedAt: null },
+    select: workerSelect,
+  });
+
+  if (!worker) {
+    throw new AppError("Worker profile not found", 404);
+  }
+
+  return worker;
+};
+
+export const updateMyWorkerProfile = async (userId, data) => {
+  const worker = await prisma.worker.findFirst({
+    where: { userId, deletedAt: null },
+  });
+
+  if (!worker) {
+    throw new AppError("Worker profile not found", 404);
+  }
+
+  const updatedWorker = await prisma.worker.update({
+    where: { id: worker.id },
+    data,
+    select: workerSelect,
+  });
+
+  return updatedWorker;
 };
