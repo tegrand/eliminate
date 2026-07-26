@@ -47,10 +47,10 @@ export default function WorkerProfileWidget({ profile, onStatusChange }) {
 
         <div className="grid grid-cols-2 gap-4 mt-auto">
           {/* Status */}
-          <div className="bg-slate-50/80 p-3 rounded-xl border border-slate-100">
-            <div className="flex items-center justify-between mb-1.5">
-              <div className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500">
-                <Activity className="w-3.5 h-3.5 text-emerald-500" />
+          <div className="bg-white p-4 rounded-xl border border-slate-100">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500">
+                <span className={`w-2 h-2 rounded-full ${isAvailable ? 'bg-emerald-500' : 'bg-amber-500'}`} />
                 Current Status
               </div>
               <Switch 
@@ -58,17 +58,14 @@ export default function WorkerProfileWidget({ profile, onStatusChange }) {
                 onChange={() => setConfirmModalOpen(true)}
               />
             </div>
-            <div className="flex items-center gap-1.5 mt-2">
-              <span className={`w-2 h-2 rounded-full ${isAvailable ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-              <span className="font-bold text-slate-900 capitalize text-[13px]">
-                {profile.status === "ACTIVE" ? "Available" : profile.status.replace("_", " ").toLowerCase()}
-              </span>
+            <div className="font-bold text-slate-900 capitalize text-[13px]">
+              {profile.status === "ACTIVE" ? "Available" : profile.status.replace("_", " ").toLowerCase()}
             </div>
           </div>
 
           {/* Agency */}
-          <div className="bg-slate-50/80 p-3 rounded-xl border border-slate-100">
-            <div className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500 mb-1.5">
+          <div className="bg-white p-4 rounded-xl border border-slate-100">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 mb-2">
               <Building className="w-3.5 h-3.5 text-blue-500" />
               Current Agency
             </div>
