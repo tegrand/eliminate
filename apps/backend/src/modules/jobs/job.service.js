@@ -42,7 +42,7 @@ export const getPublicJobs = async (userId, { page = 1, limit = 10, search }) =>
       orderBy: { createdAt: "desc" },
       include: {
         client: { select: { companyName: true, contactPerson: true } },
-        location: { select: { name: true, city: true, state: true } },
+        location: { select: { name: true, district: true, state: true } },
         category: { select: { name: true } }
       }
     }),
@@ -69,7 +69,7 @@ export const getSavedJobs = async (userId) => {
       jobRequirement: {
         include: {
           client: { select: { companyName: true } },
-          location: { select: { name: true, city: true } }
+          location: { select: { name: true, district: true } }
         }
       }
     },
@@ -117,7 +117,7 @@ export const getApplications = async (userId) => {
       jobRequirement: {
         include: {
           client: { select: { companyName: true } },
-          location: { select: { name: true, city: true } }
+          location: { select: { name: true, district: true } }
         }
       }
     },

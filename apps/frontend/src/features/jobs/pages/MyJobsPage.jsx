@@ -163,7 +163,7 @@ export default function MyJobsPage() {
                             </div>
                             <div className="flex items-center gap-1">
                               <MapPin className="w-4 h-4" />
-                              {app.jobRequirement?.location?.city || 'Location N/A'}
+                              {app.jobRequirement?.location?.district || 'Location N/A'}
                             </div>
                           </div>
                           <p className="text-xs text-slate-400">Applied on {new Date(app.appliedAt).toLocaleDateString()}</p>

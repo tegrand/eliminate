@@ -121,7 +121,7 @@ export default function FindWorkPage() {
               <div className="space-y-2 mb-6 flex-1">
                 <div className="flex items-center gap-2 text-sm text-slate-600">
                   <MapPin className="w-4 h-4 text-slate-400" />
-                  <span>{job.location?.city ? `${job.location.city}, ${job.location.state || ''}` : "Location not specified"}</span>
+                  <span>{job.location?.district ? `${job.location.district}, ${job.location.state || ''}` : "Location not specified"}</span>
                 </div>
                 {job.salaryAmount && (
                   <div className="flex items-center gap-2 text-sm text-slate-600">
