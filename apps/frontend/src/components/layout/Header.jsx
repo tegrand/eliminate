@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
+import { Link } from "react-router-dom";
+import { ROUTES } from "../../routes/routePaths";
 import { LogOut, Search, Bell, User, ChevronDown } from "lucide-react";
 
 export default function Header() {
@@ -92,6 +94,18 @@ export default function Header() {
                   {user?.email || "No email"}
                 </p>
               </div>
+
+              {/* Profile Link (Worker Only) */}
+              {user?.profileType === "WORKER" && (
+                <Link 
+                  to={ROUTES.WORKER_PROFILE}
+                  onClick={() => setIsProfileOpen(false)}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors mb-1"
+                >
+                  <User className="w-4 h-4" />
+                  <span>My Profile</span>
+                </Link>
+              )}
 
               {/* Logout Button */}
               <button 
