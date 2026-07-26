@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { User, Phone, Briefcase, FileText, Loader2, Save, Building } from "lucide-react";
+import { User, Phone, Briefcase, FileText, Loader2, Save, Building, ShieldCheck, AlertTriangle, Clock, XCircle } from "lucide-react";
 
 import { useAuth } from "../../../hooks/useAuth";
 import api from "../../../api/axios";
@@ -65,7 +65,13 @@ export default function WorkerProfilePage() {
     <div className="w-full max-w-5xl mx-auto pt-4 pb-8 space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Profile Management</h1>
+          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
+            Profile Management
+            {profileData?.profileStatus === 'APPROVED' && <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-700"><ShieldCheck className="w-4 h-4"/> Approved</span>}
+            {profileData?.profileStatus === 'PENDING' && <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-700"><Clock className="w-4 h-4"/> Pending Approval</span>}
+            {profileData?.profileStatus === 'REJECTED' && <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-red-100 text-red-700"><XCircle className="w-4 h-4"/> Rejected</span>}
+            {profileData?.profileStatus === 'SUSPENDED' && <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-slate-100 text-slate-700"><AlertTriangle className="w-4 h-4"/> Suspended</span>}
+          </h1>
           <p className="text-sm text-slate-500 mt-1">Manage your personal information and documents</p>
         </div>
         <div className="flex items-center gap-3">

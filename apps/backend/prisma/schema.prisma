@@ -109,6 +109,7 @@ model User {
   deletedAt DateTime?
   agency    Agency?
   authAuditLogs AuthAuditLog[]
+  notifications Notification[]
 
   @@index([email])
   @@index([roleId])
@@ -307,6 +308,8 @@ model Worker {
   bankAccountNumber      String?
   bankIfsc               String?
   bankName               String?
+  
+  profileStatus          WorkerProfileStatus @default(PENDING)
   
   // File URLs
   resumeUrl              String?
@@ -733,5 +736,42 @@ model WorkerDocument {
 
   @@index([workerId])
   @@index([documentType])
+}
+
+
+enum NotificationType {
+  APPROVAL
+  AGENCY_INVITE
+  JOB_ASSIGNMENT
+  ATTENDANCE_REMINDER
+  PAYMENT_PROCESSED
+  DOCUMENT_EXPIRY
+  PROFILE_ALERT
+  SYSTEM
+}
+
+enum WorkerProfileStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType @default(SYSTEM)
+  title     String
+  message   String
+  isRead    Boolean          @default(false)
+  link      String?
+  
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  
+  @@index([userId])
+  @@index([isRead])
 }
 

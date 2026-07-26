@@ -2,7 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../routes/routePaths";
-import { LogOut, Search, Bell, User, ChevronDown } from "lucide-react";
+import { LogOut, Search, User, ChevronDown } from "lucide-react";
+import NotificationBell from "../ui/notifications/NotificationBell";
 
 export default function Header() {
   const { logout, user } = useAuth();
@@ -52,13 +53,7 @@ export default function Header() {
 
       {/* Right Actions */}
       <div className="flex items-center space-x-5 ml-auto">
-        {/* Notifications */}
-        <button className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors relative" aria-label="Notifications">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-0 right-0.5 flex items-center justify-center w-3.5 h-3.5 bg-red-500 text-white text-[9px] font-bold rounded-full border border-white">
-            3
-          </span>
-        </button>
+        <NotificationBell />
         
         {/* Profile Section with Dropdown */}
         <div className="relative" ref={dropdownRef}>
