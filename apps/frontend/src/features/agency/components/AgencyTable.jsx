@@ -3,6 +3,7 @@ import { Eye, CreditCard, Building, User, Phone, MapPin, Users, Star, Ban, PlayC
 import { DataTable } from "../../../components/ui/data-table";
 import { Pagination } from "../../../components/ui/pagination";
 import { Link } from "react-router-dom";
+import AgencyStatusBadge from "./AgencyStatusBadge";
 import ApproveDialog from "../../../components/ui/action-dialogs/ApproveDialog";
 import RejectDialog from "../../../components/ui/action-dialogs/RejectDialog";
 import SuspendDialog from "../../../components/ui/action-dialogs/SuspendDialog";
@@ -29,15 +30,7 @@ export default function AgencyTable({ agencies, loading, page, totalPages }) {
     closeDialog();
   };
 
-  const getStatusBadge = (status) => {
-    if (status === 'ACTIVE' || status === 'APPROVED') {
-      return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-green-100 text-green-700"><span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>ACTIVE</span>;
-    }
-    if (status === 'ONBOARDING' || status === 'PENDING') {
-      return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-orange-100 text-orange-700"><span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span>{status}</span>;
-    }
-    return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold bg-gray-100 text-gray-700"><span className="w-1.5 h-1.5 rounded-full bg-gray-500"></span>Inactive</span>;
-  };
+
 
   const columns = [
     { key: "checkbox", title: <input type="checkbox" className="rounded border-gray-300" />, render: () => <input type="checkbox" className="rounded border-gray-300" /> },
@@ -50,29 +43,28 @@ export default function AgencyTable({ agencies, loading, page, totalPages }) {
     { 
       key: "status", 
       title: <div className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5" />STATUS</div>, 
-      render: (row) => getStatusBadge(row.status)
+      render: (row) => <AgencyStatusBadge status={row.status} />
     },
     {
       key: "actions",
       title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />ACTIONS</div>,
       render: (row) => (
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-semibold">
+          <Link to={`/agencies/${row.id}`} className="text-blue-600 hover:text-blue-800 transition-colors">
+            View Details
+          </Link>
+          {row.status === 'PENDING' && (
+            <>
+              <button onClick={() => handleAction(row, 'APPROVE')} className="text-green-600 hover:text-green-800 transition-colors">Approve</button>
+              <button onClick={() => handleAction(row, 'REJECT')} className="text-red-600 hover:text-red-800 transition-colors">Reject</button>
+            </>
+          )}
           {row.status === 'ACTIVE' && (
-            <button onClick={() => handleAction(row, 'SUSPEND')} className="p-1.5 border border-gray-200 rounded-lg text-gray-400 hover:text-orange-600 hover:border-orange-200 focus:outline-none transition-colors" aria-label="Suspend" title="Suspend">
-              <Ban className="h-4 w-4" />
-            </button>
+            <button onClick={() => handleAction(row, 'SUSPEND')} className="text-orange-600 hover:text-orange-800 transition-colors">Suspend</button>
           )}
           {row.status === 'SUSPENDED' && (
-            <button onClick={() => handleAction(row, 'REACTIVATE')} className="p-1.5 border border-gray-200 rounded-lg text-gray-400 hover:text-green-600 hover:border-green-200 focus:outline-none transition-colors" aria-label="Reactivate" title="Reactivate">
-              <PlayCircle className="h-4 w-4" />
-            </button>
+            <button onClick={() => handleAction(row, 'REACTIVATE')} className="text-indigo-600 hover:text-indigo-800 transition-colors">Reactivate</button>
           )}
-          <Link to={`/agencies/${row.id}`} className="p-1.5 border border-gray-200 rounded-lg text-gray-400 hover:text-indigo-600 hover:border-indigo-200 focus:outline-none transition-colors" aria-label="View Details" title="View Details">
-            <Eye className="h-4 w-4" />
-          </Link>
-          <button className="p-1.5 border border-gray-200 rounded-lg text-gray-400 hover:text-indigo-600 hover:border-indigo-200 focus:outline-none transition-colors" aria-label="More Actions" title="More Actions">
-            <MoreVertical className="h-4 w-4" />
-          </button>
         </div>
       )
     },

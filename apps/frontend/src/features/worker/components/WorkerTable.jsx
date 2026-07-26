@@ -63,13 +63,22 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
       key: "actions",
       title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />ACTIONS</div>,
       render: (row) => (
-        <div className="flex items-center gap-2">
-          <Link to={`/workers/${row.id}`} className="p-1.5 border border-gray-200 rounded-lg text-gray-400 hover:text-indigo-600 hover:border-indigo-200 focus:outline-none transition-colors" aria-label="View Details" title="View Details">
-            <Eye className="h-4 w-4" />
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-semibold">
+          <Link to={`/workers/${row.id}`} className="text-blue-600 hover:text-blue-800 transition-colors">
+            View Details
           </Link>
-          <button className="p-1.5 border border-gray-200 rounded-lg text-gray-400 hover:text-indigo-600 hover:border-indigo-200 focus:outline-none transition-colors" aria-label="More Actions" title="More Actions">
-            <MoreVertical className="h-4 w-4" />
-          </button>
+          {row.status === 'PENDING' && (
+            <>
+              <button onClick={() => handleAction(row, 'APPROVE')} className="text-green-600 hover:text-green-800 transition-colors">Approve</button>
+              <button onClick={() => handleAction(row, 'REJECT')} className="text-red-600 hover:text-red-800 transition-colors">Reject</button>
+            </>
+          )}
+          {row.status === 'APPROVED' && (
+            <button onClick={() => handleAction(row, 'SUSPEND')} className="text-orange-600 hover:text-orange-800 transition-colors">Suspend</button>
+          )}
+          {row.status === 'SUSPENDED' && (
+            <button onClick={() => handleAction(row, 'REACTIVATE')} className="text-blue-600 hover:text-blue-800 transition-colors">Reactivate</button>
+          )}
         </div>
       )
     },
