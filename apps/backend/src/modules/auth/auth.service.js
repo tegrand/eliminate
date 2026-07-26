@@ -80,6 +80,21 @@ export const register = async (data) => {
       passwordHash,
       profileType: data.accountType,
       roleId: role.id,
+      worker: data.accountType === "WORKER" ? {
+        create: {
+          workerCode: `WRK-${crypto.randomBytes(4).toString("hex").toUpperCase()}`
+        }
+      } : undefined,
+      agency: data.accountType === "AGENCY" ? {
+        create: {
+          agencyCode: `AGC-${crypto.randomBytes(4).toString("hex").toUpperCase()}`
+        }
+      } : undefined,
+      client: data.accountType === "CLIENT" ? {
+        create: {
+          clientCode: `CLI-${crypto.randomBytes(4).toString("hex").toUpperCase()}`
+        }
+      } : undefined
     },
     select: {
       id: true,

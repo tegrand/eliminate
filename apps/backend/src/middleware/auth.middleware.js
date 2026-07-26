@@ -22,8 +22,18 @@ const authenticate = asyncHandler(async (req, res, next) => {
     include: { role: true },
   });
 
-  if (!user || user.status !== "ACTIVE") {
+  if (!user) {
     throw new AppError("Unauthorized", 401);
+  }
+
+  if (user.profileType === "WORKER" || user.profileType === "AGENCY") {
+    if (user.status !== "ACTIVE" && user.status !== "PENDING") {
+      throw new AppError("Unauthorized", 401);
+    }
+  } else {
+    if (user.status !== "ACTIVE") {
+      throw new AppError("Unauthorized", 401);
+    }
   }
 
   req.user = {
