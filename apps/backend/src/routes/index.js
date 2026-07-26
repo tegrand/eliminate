@@ -14,6 +14,7 @@ import languageRoutes from "../modules/languages/language.routes.js";
 import locationRoutes from "../modules/locations/location.routes.js";
 import jobRequirementRoutes from "../modules/job-requirement/job-requirement.routes.js";
 import jobRoutes from "../modules/jobs/job.routes.js";
+import workerAttendanceRoutes from "../modules/worker-attendance/worker-attendance.routes.js";
 
 const router = Router();
 
@@ -28,6 +29,7 @@ router.use("/clients", clientRoutes);
 router.use("/agencies", agencyRoutes);
 router.use("/job-requirements", jobRequirementRoutes);
 router.use("/jobs", jobRoutes);
+router.use("/my-attendance", workerAttendanceRoutes);
 
 // Master Data Routes
 router.use("/skills", skillRoutes);
@@ -48,4 +50,5 @@ router.get("/health", (req, res) => {
   });
 });
 
-export default router;
+export default router; 
+ 

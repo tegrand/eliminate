@@ -179,6 +179,26 @@ enum ApplicationStatus {
   WITHDRAWN
 }
 
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  HALF_DAY
+  ON_LEAVE
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum LeaveType {
+  SICK
+  CASUAL
+  EARNED
+  UNPAID
+}
+
 enum ShiftType {
   MORNING
   EVENING
@@ -246,6 +266,8 @@ model Worker {
   agencies  AgencyWorker[]
   jobApplications JobApplication[]
   savedJobs       SavedJob[]
+  attendances     WorkerAttendance[]
+  leaveRequests   LeaveRequest[]
   // categories       WorkerCategory[]
   // documents        WorkerDocument[]
   // bookings         Booking[]
@@ -604,4 +626,44 @@ model SavedJob {
   @@unique([jobRequirementId, workerId])
   @@index([jobRequirementId])
   @@index([workerId])
+}
+
+model WorkerAttendance {
+  id            String           @id @default(uuid())
+  workerId      String
+  date          DateTime         @db.Date
+  checkInTime   DateTime?
+  checkOutTime  DateTime?
+  status        AttendanceStatus @default(PRESENT)
+  totalHours    Float?
+  overtimeHours Float?
+  notes         String?
+
+  worker        Worker           @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@unique([workerId, date])
+  @@index([workerId])
+  @@index([date])
+}
+
+model LeaveRequest {
+  id            String       @id @default(uuid())
+  workerId      String
+  startDate     DateTime     @db.Date
+  endDate       DateTime     @db.Date
+  leaveType     LeaveType
+  status        LeaveStatus  @default(PENDING)
+  reason        String
+  approvedBy    String?      // Admin or Agency ID who approved
+
+  worker        Worker       @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([workerId])
+  @@index([status])
 }

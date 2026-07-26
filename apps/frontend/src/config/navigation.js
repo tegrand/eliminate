@@ -13,7 +13,8 @@ import {
   DollarSign,
   UserCircle,
   Briefcase,
-  Bookmark
+  Bookmark,
+  CalendarCheck
 } from "lucide-react";
 
 const ALL_ROLES = ["SUPER_ADMIN", "CLIENT", "AGENCY", "WORKER"];
@@ -46,6 +47,12 @@ export const NAVIGATION_CONFIG = [
         title: "My Jobs",
         path: ROUTES.MY_JOBS,
         icon: Bookmark,
+        roles: ["WORKER"],
+      },
+      {
+        title: "My Attendance",
+        path: ROUTES.MY_ATTENDANCE,
+        icon: CalendarCheck,
         roles: ["WORKER"],
       }
     ]

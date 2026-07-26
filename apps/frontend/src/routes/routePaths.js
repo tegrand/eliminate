@@ -21,6 +21,7 @@ export const ROUTES = {
   WORKER_PROFILE: "/worker/profile",
   FIND_WORK: "/find-work",
   MY_JOBS: "/my-jobs",
+  MY_ATTENDANCE: "/my-attendance",
 
   // Client
   CLIENTS: "/clients",

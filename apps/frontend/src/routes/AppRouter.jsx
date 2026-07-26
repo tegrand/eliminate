@@ -51,6 +51,7 @@ import AssignmentListPage from "../features/assignment/pages/AssignmentListPage"
 import AttendanceListPage from "../features/attendance/pages/AttendanceListPage";
 import BulkAttendancePage from "../features/attendance/pages/BulkAttendancePage";
 import AttendanceVerificationPage from "../features/attendance/pages/AttendanceVerificationPage";
+import MyAttendancePage from "../features/attendance/pages/MyAttendancePage";
 
 import PayrollListPage from "../features/payroll/pages/PayrollListPage";
 import PayrollDetailsPage from "../features/payroll/pages/PayrollDetailsPage";
@@ -100,6 +101,7 @@ const AppRouter = () => {
             <Route path={ROUTES.WORKER_PROFILE} element={<WorkerProfilePage />} />
             <Route path={ROUTES.FIND_WORK} element={<FindWorkPage />} />
             <Route path={ROUTES.MY_JOBS} element={<MyJobsPage />} />
+            <Route path={ROUTES.MY_ATTENDANCE} element={<MyAttendancePage />} />
 
             {/* Clients */}
             <Route path={ROUTES.CLIENTS} element={<ClientListPage />} />
