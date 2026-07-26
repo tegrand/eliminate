@@ -191,6 +191,7 @@ enum Priority {
 
 enum EmploymentStatus {
   ACTIVE
+  BUSY
   INACTIVE
   ON_LEAVE
   TERMINATED

@@ -1,19 +1,32 @@
 import { useState } from "react";
 import { User, Activity, Building, MoreVertical } from "lucide-react";
-import Switch from "../../../../components/ui/switch/Switch";
 import { Modal } from "../../../../components/ui/modal/Modal";
 import Button from "../../../../components/ui/button/Button";
 
 export default function WorkerProfileWidget({ profile, onStatusChange }) {
-  const isAvailable = profile.status === "ACTIVE";
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState(profile.status);
 
   const handleStatusChange = async () => {
     setIsUpdating(true);
-    await onStatusChange(isAvailable ? "ON_LEAVE" : "ACTIVE");
+    await onStatusChange(pendingStatus);
     setIsUpdating(false);
     setConfirmModalOpen(false);
+  };
+
+  const statusColors = {
+    ACTIVE: 'bg-emerald-500',
+    BUSY: 'bg-amber-500',
+    ON_LEAVE: 'bg-blue-500',
+    INACTIVE: 'bg-gray-500'
+  };
+
+  const statusLabels = {
+    ACTIVE: 'Available',
+    BUSY: 'Busy',
+    ON_LEAVE: 'On Leave',
+    INACTIVE: 'Not Looking for Jobs'
   };
 
   return (
@@ -48,20 +61,23 @@ export default function WorkerProfileWidget({ profile, onStatusChange }) {
         <div className="grid grid-cols-2 gap-3 mt-auto">
           {/* Status */}
           <div className="bg-white p-3.5 rounded-xl border border-slate-100">
-            <div className="flex items-center justify-between mb-1.5">
-              <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
-                <span className={`w-2 h-2 rounded-full ${isAvailable ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                Current Status
-              </div>
-              <Switch 
-                size="sm"
-                checked={isAvailable}
-                onChange={() => setConfirmModalOpen(true)}
-              />
+            <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 mb-2">
+              <span className={`w-2 h-2 rounded-full ${statusColors[profile.status] || 'bg-gray-500'}`} />
+              Current Status
             </div>
-            <div className="font-bold text-slate-900 capitalize text-[13px]">
-              {profile.status === "ACTIVE" ? "Available" : profile.status.replace("_", " ").toLowerCase()}
-            </div>
+            <select
+              value={profile.status}
+              onChange={(e) => {
+                setPendingStatus(e.target.value);
+                setConfirmModalOpen(true);
+              }}
+              className="w-full font-bold text-slate-900 text-[12px] bg-transparent outline-none cursor-pointer focus:ring-2 focus:ring-indigo-100 rounded"
+            >
+              <option value="ACTIVE">Available</option>
+              <option value="BUSY">Busy</option>
+              <option value="ON_LEAVE">On Leave</option>
+              <option value="INACTIVE">Not Looking for Jobs</option>
+            </select>
           </div>
 
           {/* Agency */}
@@ -86,7 +102,7 @@ export default function WorkerProfileWidget({ profile, onStatusChange }) {
         <div className="space-y-4">
           <p className="text-sm text-gray-600">
             Are you sure you want to change your status to 
-            <span className="font-bold text-slate-900"> {isAvailable ? "Not Available (On Leave)" : "Available"}</span>?
+            <span className="font-bold text-slate-900"> {statusLabels[pendingStatus]}</span>?
           </p>
           <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
             <Button variant="outline" onClick={() => setConfirmModalOpen(false)}>Cancel</Button>

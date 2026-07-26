@@ -20,7 +20,7 @@ export const updateWorkerSchema = z.object({
   dateOfBirth: z.coerce.date().max(new Date(), "Birth date cannot be in the future").optional(),
   joiningDate: z.coerce.date().optional(),
   notes: z.string().trim().max(2000, "Notes are too long").optional(),
-  employmentStatus: z.enum(["ACTIVE", "INACTIVE", "ON_LEAVE", "TERMINATED"]).optional(),
+  employmentStatus: z.enum(["ACTIVE", "BUSY", "INACTIVE", "ON_LEAVE", "TERMINATED"]).optional(),
   
   // Profile Additions
   addressLine1: z.string().trim().optional(),
@@ -62,7 +62,7 @@ export const listWorkersQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(10),
   search: z.string().trim().optional(),
-  status: z.enum(["ACTIVE", "INACTIVE", "ON_LEAVE", "TERMINATED"]).optional(),
+  status: z.enum(["ACTIVE", "BUSY", "INACTIVE", "ON_LEAVE", "TERMINATED"]).optional(),
   sortBy: z.enum(["createdAt", "updatedAt", "firstName", "lastName", "joiningDate"]).default("createdAt"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 }).strict("Unknown query parameters are not allowed");
