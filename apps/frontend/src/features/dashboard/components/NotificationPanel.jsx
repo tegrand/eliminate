@@ -1,5 +1,4 @@
 import { Bell } from "lucide-react";
-import { Card, CardContent } from "../../../components/ui/card";
 
 export default function NotificationPanel() {
   const notifications = [
@@ -24,8 +23,8 @@ export default function NotificationPanel() {
   ];
 
   return (
-    <Card className="h-full border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
-      <CardContent className="p-5">
+    <div className="rounded-2xl bg-white h-full border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
+      <div className="p-5">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-base font-bold text-gray-900">Notifications</h3>
           <a href="#" className="text-xs font-semibold text-blue-600 hover:text-blue-700">View all</a>
@@ -45,7 +44,7 @@ export default function NotificationPanel() {
             </div>
           ))}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

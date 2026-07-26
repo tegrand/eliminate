@@ -1,4 +1,4 @@
-import { Card, CardContent } from "../../../components/ui/card";
+
 import { DataTable } from "../../../components/ui/data-table";
 import { Badge } from "../../../components/ui/badge";
 import { List, ArrowRight } from "lucide-react";
@@ -27,8 +27,8 @@ export default function UpcomingRequirements() {
   ];
 
   return (
-    <Card className="h-full border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col">
-      <CardContent className="p-0 flex-1 flex flex-col">
+    <div className="rounded-2xl bg-white h-full border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col">
+      <div className="p-0 flex-1 flex flex-col">
         <div className="p-5 border-b border-gray-50 flex items-center justify-between">
           <h3 className="text-lg font-bold text-gray-900">Upcoming Job Requirements</h3>
           <button className="p-1.5 border border-gray-200 rounded-md text-gray-500 hover:bg-gray-50 transition-colors">
@@ -50,7 +50,7 @@ export default function UpcomingRequirements() {
             View all requirements <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

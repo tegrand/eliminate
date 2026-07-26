@@ -1,4 +1,3 @@
-import { Card, CardContent } from "../../../components/ui/card";
 import { ChevronDown } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
@@ -12,8 +11,8 @@ const data = [
 
 export default function SystemOverview() {
   return (
-    <Card className="h-full border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col">
-      <CardContent className="p-5 flex-1 flex flex-col">
+    <div className="rounded-2xl bg-white h-full border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col">
+      <div className="p-5 flex-1 flex flex-col">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-bold text-gray-900">System Overview</h3>
           <button className="flex items-center gap-2 px-2.5 py-1 border border-gray-200 rounded-md text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors">
@@ -75,7 +74,7 @@ export default function SystemOverview() {
             <h4 className="text-lg font-bold text-gray-900">320</h4>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
