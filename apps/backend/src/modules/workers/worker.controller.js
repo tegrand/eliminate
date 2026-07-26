@@ -36,5 +36,22 @@ export const deleteWorker = asyncHandler(async (req, res) => {
   await workerService.deleteWorker(req.params.id);
   return ApiResponse.success(res, "Worker deleted successfully", null, 200);
 });
+export const getMyAgencies = asyncHandler(async (req, res) => {
+  const result = await workerService.getMyAgencies(req.user.id);
+  return ApiResponse.success(res, "Agencies retrieved successfully", result, 200);
+});
 
+export const acceptAgencyInvitation = asyncHandler(async (req, res) => {
+  const result = await workerService.acceptAgencyInvitation(req.user.id, req.params.agencyId);
+  return ApiResponse.success(res, "Invitation accepted successfully", result, 200);
+});
 
+export const rejectAgencyInvitation = asyncHandler(async (req, res) => {
+  const result = await workerService.rejectAgencyInvitation(req.user.id, req.params.agencyId);
+  return ApiResponse.success(res, "Invitation rejected successfully", result, 200);
+});
+
+export const leaveAgency = asyncHandler(async (req, res) => {
+  const result = await workerService.leaveAgency(req.user.id, req.params.agencyId);
+  return ApiResponse.success(res, "Left agency successfully", result, 200);
+});

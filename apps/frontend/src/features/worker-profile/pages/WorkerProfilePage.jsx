@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { User, Phone, Briefcase, FileText, Loader2, Save } from "lucide-react";
+import { User, Phone, Briefcase, FileText, Loader2, Save, Building } from "lucide-react";
 
 import { useAuth } from "../../../hooks/useAuth";
 import api from "../../../api/axios";
@@ -8,6 +8,7 @@ import PersonalInfoForm from "../components/PersonalInfoForm";
 import ContactInfoForm from "../components/ContactInfoForm";
 import ProfessionalInfoForm from "../components/ProfessionalInfoForm";
 import DocumentsForm from "../components/DocumentsForm";
+import AgencyInfoForm from "../components/AgencyInfoForm";
 
 export default function WorkerProfilePage() {
   const { user } = useAuth();
@@ -57,6 +58,7 @@ export default function WorkerProfilePage() {
     { id: "contact", label: "Contact Details", icon: Phone },
     { id: "professional", label: "Professional Details", icon: Briefcase },
     { id: "documents", label: "Documents", icon: FileText },
+    { id: "agency", label: "Agency", icon: Building },
   ];
 
   return (
@@ -104,6 +106,7 @@ export default function WorkerProfilePage() {
           {activeTab === "contact" && <ContactInfoForm data={profileData} onSave={handleSave} saving={saving} />}
           {activeTab === "professional" && <ProfessionalInfoForm data={profileData} onSave={handleSave} saving={saving} />}
           {activeTab === "documents" && <DocumentsForm data={profileData} onSave={handleSave} saving={saving} />}
+          {activeTab === "agency" && <AgencyInfoForm data={profileData} />}
         </div>
       </div>
     </div>

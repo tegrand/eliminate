@@ -217,3 +217,111 @@ export const updateMyWorkerProfile = async (userId, data) => {
 
   return updatedWorker;
 };
+
+export const getMyAgencies = async (userId) => {
+  const worker = await getMyWorkerProfile(userId);
+  
+  const agencyWorkers = await prisma.agencyWorker.findMany({
+    where: { workerId: worker.id },
+    include: {
+      agency: true
+    },
+    orderBy: { createdAt: 'desc' }
+  });
+  
+  const invitations = agencyWorkers.filter(aw => aw.status === "INVITED");
+  const activeAgencyWorker = agencyWorkers.find(aw => aw.status === "ACTIVE");
+  
+  return {
+    invitations: invitations.map(inv => ({
+      id: inv.id,
+      agencyId: inv.agencyId,
+      agencyName: inv.agency.agencyName,
+      agencyCode: inv.agency.agencyCode,
+      invitedAt: inv.createdAt
+    })),
+    activeAgency: activeAgencyWorker ? {
+      id: activeAgencyWorker.id,
+      agencyId: activeAgencyWorker.agencyId,
+      agencyName: activeAgencyWorker.agency.agencyName,
+      agencyCode: activeAgencyWorker.agency.agencyCode,
+      contactPerson: activeAgencyWorker.agency.contactPerson,
+      phone: activeAgencyWorker.agency.phone,
+      email: activeAgencyWorker.agency.email,
+      joinedAt: activeAgencyWorker.assignedAt
+    } : null
+  };
+};
+
+export const acceptAgencyInvitation = async (userId, agencyId) => {
+  const worker = await getMyWorkerProfile(userId);
+  
+  // Check if already active in another agency
+  const activeAgencyWorker = await prisma.agencyWorker.findFirst({
+    where: { workerId: worker.id, status: "ACTIVE" }
+  });
+  
+  if (activeAgencyWorker) {
+    throw new AppError("You must leave your current agency before joining another", 400);
+  }
+  
+  // Check if invitation exists
+  const invitation = await prisma.agencyWorker.findUnique({
+    where: { agencyId_workerId: { agencyId, workerId: worker.id } }
+  });
+  
+  if (!invitation || invitation.status !== "INVITED") {
+    throw new AppError("No valid invitation found for this agency", 404);
+  }
+  
+  // Accept invitation
+  await prisma.agencyWorker.update({
+    where: { id: invitation.id },
+    data: { 
+      status: "ACTIVE",
+      assignedAt: new Date()
+    }
+  });
+  
+  return getMyAgencies(userId);
+};
+
+export const rejectAgencyInvitation = async (userId, agencyId) => {
+  const worker = await getMyWorkerProfile(userId);
+  
+  const invitation = await prisma.agencyWorker.findUnique({
+    where: { agencyId_workerId: { agencyId, workerId: worker.id } }
+  });
+  
+  if (!invitation || invitation.status !== "INVITED") {
+    throw new AppError("No valid invitation found for this agency", 404);
+  }
+  
+  // Reject invitation
+  await prisma.agencyWorker.update({
+    where: { id: invitation.id },
+    data: { status: "REJECTED" }
+  });
+  
+  return getMyAgencies(userId);
+};
+
+export const leaveAgency = async (userId, agencyId) => {
+  const worker = await getMyWorkerProfile(userId);
+  
+  const activeAgencyWorker = await prisma.agencyWorker.findUnique({
+    where: { agencyId_workerId: { agencyId, workerId: worker.id } }
+  });
+  
+  if (!activeAgencyWorker || activeAgencyWorker.status !== "ACTIVE") {
+    throw new AppError("You are not active in this agency", 400);
+  }
+  
+  // Leave agency
+  await prisma.agencyWorker.update({
+    where: { id: activeAgencyWorker.id },
+    data: { status: "LEFT" }
+  });
+  
+  return getMyAgencies(userId);
+};

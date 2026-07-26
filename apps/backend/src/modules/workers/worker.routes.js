@@ -7,7 +7,11 @@ import {
   updateWorker,
   deleteWorker,
   getMyWorkerProfile,
-  updateMyWorkerProfile
+  updateMyWorkerProfile,
+  getMyAgencies,
+  acceptAgencyInvitation,
+  rejectAgencyInvitation,
+  leaveAgency
 } from "./worker.controller.js";
 
 import {
@@ -52,6 +56,12 @@ router.patch(
   validate(updateWorkerSchema),
   updateMyWorkerProfile
 );
+
+// Worker Agency Relationship Endpoints
+router.get("/my-profile/agencies", getMyAgencies);
+router.post("/my-profile/agencies/:agencyId/accept", acceptAgencyInvitation);
+router.post("/my-profile/agencies/:agencyId/reject", rejectAgencyInvitation);
+router.post("/my-profile/agencies/:agencyId/leave", leaveAgency);
 
 router.get(
   "/:id",

@@ -154,7 +154,10 @@ enum LanguageProficiency {
 }
 
 enum AgencyWorkerStatus {
+  INVITED
   ACTIVE
+  REJECTED
+  LEFT
   INACTIVE
   SUSPENDED
 }
