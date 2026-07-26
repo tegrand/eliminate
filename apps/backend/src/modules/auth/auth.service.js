@@ -155,19 +155,35 @@ export const login = async (data, meta) => {
     throw new AppError("Invalid email or password", 401);
   }
 
-  switch (user.status) {
-    case "PENDING":
-      throw new AppError("Your account is pending approval.", 403);
-    case "SUSPENDED":
-      throw new AppError("Your account has been suspended.", 403);
-    case "REJECTED":
-      throw new AppError("Your account has been rejected.", 403);
-    case "DELETED":
-      throw new AppError("Account not available.", 403);
-    case "ACTIVE":
-      break;
-    default:
-      throw new AppError("Invalid account status.", 403);
+  if (user.profileType === "WORKER") {
+    switch (user.status) {
+      case "SUSPENDED":
+        throw new AppError("Your account has been suspended.", 403);
+      case "REJECTED":
+        throw new AppError("Your account has been rejected.", 403);
+      case "DELETED":
+        throw new AppError("Account not available.", 403);
+      case "PENDING":
+      case "ACTIVE":
+        break;
+      default:
+        throw new AppError("Invalid account status.", 403);
+    }
+  } else {
+    switch (user.status) {
+      case "PENDING":
+        throw new AppError("Your account is pending approval.", 403);
+      case "SUSPENDED":
+        throw new AppError("Your account has been suspended.", 403);
+      case "REJECTED":
+        throw new AppError("Your account has been rejected.", 403);
+      case "DELETED":
+        throw new AppError("Account not available.", 403);
+      case "ACTIVE":
+        break;
+      default:
+        throw new AppError("Invalid account status.", 403);
+    }
   }
 
   return issueTokensAndUpdateUser(user, meta, "LOGIN");
@@ -266,8 +282,18 @@ export const getCurrentUser = async (userId) => {
     },
   });
 
-  if (!user || user.status !== "ACTIVE") {
+  if (!user) {
     throw new AppError("Unauthorized", 401);
+  }
+
+  if (user.profileType === "WORKER") {
+    if (user.status !== "ACTIVE" && user.status !== "PENDING") {
+      throw new AppError("Unauthorized", 401);
+    }
+  } else {
+    if (user.status !== "ACTIVE") {
+      throw new AppError("Unauthorized", 401);
+    }
   }
 
   return user;

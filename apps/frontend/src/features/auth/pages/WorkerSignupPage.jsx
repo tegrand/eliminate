@@ -6,16 +6,18 @@ import { Select } from "../../../components/ui/select";
 import { Button } from "../../../components/ui/button";
 import { ArrowLeft, Users, CheckCircle, Upload, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "../../../hooks/useAuth";
 
 export default function WorkerSignupPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
-  // Form state across 5 steps
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
+    password: "",
     phone: "",
     dateOfBirth: "",
     gender: "MALE",
@@ -42,8 +44,13 @@ export default function WorkerSignupPage() {
       try {
         const { authApi } = await import("../api/auth.api");
         await authApi.registerWorker(formData);
-        toast.success("Worker application submitted for Super Admin verification.");
-        navigate(ROUTES.PENDING_APPROVAL);
+        
+        // Auto-login the user
+        const response = await authApi.login({ email: formData.email, password: formData.password });
+        login(response.data.data.user, response.data.data.accessToken);
+        
+        toast.success("Registration successful! Welcome to your dashboard.");
+        navigate(ROUTES.DASHBOARD);
       } catch (error) {
         toast.error(error?.response?.data?.message || "Registration failed. Please try again.");
       } finally {
@@ -111,6 +118,17 @@ export default function WorkerSignupPage() {
                   placeholder="santhosh@example.com"
                   required
                 />
+                <Input
+                  type="password"
+                  label="Password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="At least 8 characters"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input
                   label="Mobile Phone Number"
                   name="phone"
@@ -231,25 +249,25 @@ export default function WorkerSignupPage() {
           {/* STEP 4: Documents & Bank */}
           {currentStep === 4 && (
             <div className="space-y-4 animate-fade-in">
-              <h3 className="text-sm font-semibold text-gray-900">Step 4: Identity & Bank Uploads</h3>
-              <p className="text-xs text-gray-500">Required for automated background checks and direct wage deposits.</p>
+              <h3 className="text-sm font-semibold text-gray-900">Step 4: Identity & Bank Uploads (Optional)</h3>
+              <p className="text-xs text-gray-500">You can skip this step and upload documents later from your dashboard.</p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                 <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-blue-500 transition-colors cursor-pointer bg-gray-50/50">
                   <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">Profile Photo *</p>
+                  <p className="text-xs font-semibold text-gray-700">Profile Photo (Optional)</p>
                   <p className="text-[10px] text-gray-400 mt-1">Clear headshot photo</p>
                 </div>
 
                 <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-blue-500 transition-colors cursor-pointer bg-gray-50/50">
                   <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">Govt ID (Aadhaar/National ID) *</p>
+                  <p className="text-xs font-semibold text-gray-700">Govt ID (Optional)</p>
                   <p className="text-[10px] text-gray-400 mt-1">Front & Back PDF/JPG</p>
                 </div>
 
                 <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-blue-500 transition-colors cursor-pointer bg-gray-50/50">
                   <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">Bank Passbook / Cancelled Cheque *</p>
+                  <p className="text-xs font-semibold text-gray-700">Bank Passbook (Optional)</p>
                   <p className="text-[10px] text-gray-400 mt-1">For direct wage deposits</p>
                 </div>
 
