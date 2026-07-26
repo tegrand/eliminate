@@ -1,4 +1,4 @@
-import { Building2, CheckCircle2, Clock, ShieldAlert } from "lucide-react";
+import { Building, Building2, CheckCircle2, Clock, ShieldAlert } from "lucide-react";
 
 export default function AgencyStats({ agencies }) {
   const total = agencies?.length || 0;
