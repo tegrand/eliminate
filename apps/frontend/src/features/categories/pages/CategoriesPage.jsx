@@ -37,11 +37,16 @@ export default function CategoriesPage() {
 
   const handleSubmit = async (formData) => {
     try {
+      const payload = {
+        ...formData,
+        slug: formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+      };
+      
       if (editingData) {
-        await updateMut.mutateAsync({ id: editingData.id, data: formData });
+        await updateMut.mutateAsync({ id: editingData.id, data: payload });
         toast.success("Category updated successfully");
       } else {
-        await createMut.mutateAsync(formData);
+        await createMut.mutateAsync(payload);
         toast.success("Category created successfully");
       }
       setIsModalOpen(false);
