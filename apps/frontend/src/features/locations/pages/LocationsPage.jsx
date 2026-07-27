@@ -37,11 +37,16 @@ export default function LocationsPage() {
 
   const handleSubmit = async (formData) => {
     try {
+      const payload = {
+        ...formData,
+        code: formData.name.toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/(^-|-$)/g, '').substring(0, 20)
+      };
+      
       if (editingData) {
-        await updateMut.mutateAsync({ id: editingData.id, data: formData });
+        await updateMut.mutateAsync({ id: editingData.id, data: payload });
         toast.success("Location updated successfully");
       } else {
-        await createMut.mutateAsync(formData);
+        await createMut.mutateAsync(payload);
         toast.success("Location created successfully");
       }
       setIsModalOpen(false);
@@ -52,9 +57,9 @@ export default function LocationsPage() {
 
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 animate-fade-in">
-      <LocationToolbar total={data?.data?.total} onAdd={handleOpenAdd} />
+      <LocationToolbar total={data?.data?.pagination?.total} onAdd={handleOpenAdd} />
       <LocationTable 
-        data={data?.data?.locations} 
+        data={data?.data?.items} 
         loading={isLoading} 
         onEdit={handleOpenEdit} 
         onDelete={handleDelete} 

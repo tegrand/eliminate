@@ -8,6 +8,7 @@ import { Modal } from "../../../components/ui/modal";
 import { useJobRequirements } from "../hooks/useJobRequirements";
 import { jobRequirementApi } from "../api/jobRequirement.api";
 import CategoriesPage from "../../categories/pages/CategoriesPage";
+import LocationsPage from "../../locations/pages/LocationsPage";
 
 export default function JobRequirementListPage() {
   const [page, setPage] = useState(1);
@@ -15,6 +16,7 @@ export default function JobRequirementListPage() {
   
   const [showForm, setShowForm] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
   const [editingRow, setEditingRow] = useState(null);
 
   const handleCreate = () => {
@@ -102,6 +104,12 @@ export default function JobRequirementListPage() {
             Manage Categories
           </button>
           <button 
+            onClick={() => setShowLocationModal(true)}
+            className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium shadow-sm transition-colors"
+          >
+            Manage Locations
+          </button>
+          <button 
             onClick={handleCreate}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-colors"
           >
@@ -143,6 +151,17 @@ export default function JobRequirementListPage() {
       >
         <div className="h-[70vh] overflow-y-auto">
           <CategoriesPage />
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+        title="Manage Locations"
+        className="max-w-6xl w-full"
+      >
+        <div className="h-[70vh] overflow-y-auto">
+          <LocationsPage />
         </div>
       </Modal>
     </div>

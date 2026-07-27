@@ -3,11 +3,7 @@ import { DataTable } from "../../../components/ui/data-table";
 
 export default function LocationTable({ data, loading, onEdit, onDelete }) {
   const columns = [
-    { key: "code", title: "Location Code", render: (row) => row.code },
     { key: "name", title: "Location Name", render: (row) => row.name },
-    { key: "district", title: "District", render: (row) => row.district },
-    { key: "state", title: "State", render: (row) => row.state },
-    { key: "status", title: "Status", render: (row) => row.status },
     {
       key: "actions",
       title: "Actions",
