@@ -15,6 +15,9 @@ const baseJobRequirementSchema = z.object({
   salaryAmount: z.number().positive("Salary must be positive").optional(),
   priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).default("MEDIUM"),
   notes: z.string().optional(),
+  genderPreference: z.string().optional(),
+  experienceRequired: z.string().optional(),
+  duration: z.string().optional(),
   requiredSkills: z
     .array(
       z.object({

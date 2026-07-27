@@ -146,5 +146,17 @@ export const NAVIGATION_CONFIG = [
         roles: ADMIN_ONLY,
       }
     ]
+  },
+  {
+    group: "Client Operations",
+    roles: ["SUPER_ADMIN", "CLIENT"],
+    items: [
+      {
+        title: "Job Requirements",
+        path: ROUTES.JOB_REQUIREMENTS,
+        icon: Briefcase,
+        roles: ["SUPER_ADMIN", "CLIENT"],
+      }
+    ]
   }
 ];

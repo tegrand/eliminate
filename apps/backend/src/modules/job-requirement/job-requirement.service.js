@@ -158,3 +158,77 @@ export const deleteJobRequirement = async (id, clientId) => {
     data: { deletedAt: new Date() },
   });
 };
+
+export const closeJobRequirement = async (id, clientId) => {
+  const existingJob = await getJobRequirementById(id, clientId);
+
+  if (existingJob.status === "CANCELLED" || existingJob.status === "COMPLETED") {
+    throw new AppError("Job requirement cannot be closed in its current status", 400);
+  }
+
+  const updatedJob = await prisma.jobRequirement.update({
+    where: { id },
+    data: { status: "COMPLETED" },
+  });
+
+  return updatedJob;
+};
+
+export const duplicateJobRequirement = async (id, clientId) => {
+  const existingJob = await getJobRequirementById(id, clientId);
+
+  const {
+    id: _id,
+    requirementCode: _requirementCode,
+    status: _status,
+    createdAt: _createdAt,
+    updatedAt: _updatedAt,
+    deletedAt: _deletedAt,
+    cancellationReason: _cancellationReason,
+    assignedCount: _assignedCount,
+    requiredSkills,
+    requiredLanguages,
+    category,
+    location,
+    ...jobData
+  } = existingJob;
+
+  const newRequirementCode = generateRequirementCode();
+
+  const newJob = await prisma.jobRequirement.create({
+    data: {
+      ...jobData,
+      title: `${jobData.title} (Copy)`,
+      clientId,
+      requirementCode: newRequirementCode,
+      status: "DRAFT",
+      requiredSkills: requiredSkills && requiredSkills.length > 0
+        ? {
+            create: requiredSkills.map((rs) => ({
+              skillId: rs.skillId,
+              experienceYears: rs.experienceYears,
+              proficiencyLevel: rs.proficiencyLevel,
+              isMandatory: rs.isMandatory,
+            })),
+          }
+        : undefined,
+      requiredLanguages: requiredLanguages && requiredLanguages.length > 0
+        ? {
+            create: requiredLanguages.map((rl) => ({
+              languageId: rl.languageId,
+              proficiencyLevel: rl.proficiencyLevel,
+              isMandatory: rl.isMandatory,
+            })),
+          }
+        : undefined,
+    },
+    include: {
+      requiredSkills: { include: { skill: true } },
+      requiredLanguages: { include: { language: true } },
+      category: true,
+      location: true,
+    },
+  });
+
+  return newJob;
+};

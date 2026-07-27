@@ -26,6 +26,14 @@ router
 
 router
   .route("/:id/cancel")
-  .post(validate(cancelJobRequirementSchema), JobRequirementController.cancelJobRequirement);
+  .patch(validate(cancelJobRequirementSchema), JobRequirementController.cancelJobRequirement);
+
+router
+  .route("/:id/close")
+  .patch(JobRequirementController.closeJobRequirement);
+
+router
+  .route("/:id/duplicate")
+  .post(JobRequirementController.duplicateJobRequirement);
 
 export default router;

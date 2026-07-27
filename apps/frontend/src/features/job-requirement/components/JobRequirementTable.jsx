@@ -4,7 +4,7 @@ import { Pagination } from "../../../components/ui/pagination";
 import JobRequirementStatusBadge from "./JobRequirementStatusBadge";
 import { Badge } from "../../../components/ui/badge";
 
-export default function JobRequirementTable({ requirements, loading, page, totalPages }) {
+export default function JobRequirementTable({ requirements, loading, page, totalPages, onEdit, onDuplicate, onCancel, onClose }) {
   const columns = [
     { key: "id", title: "Requirement ID", render: (row) => <span className="font-medium text-gray-900">{row.id}</span> },
     { key: "client", title: "Client", render: (row) => row.client },
@@ -40,20 +40,47 @@ export default function JobRequirementTable({ requirements, loading, page, total
     {
       key: "actions",
       title: "Actions",
-      render: () => (
+      render: (row) => (
         <div className="flex items-center gap-2">
-          <button className="p-1 text-gray-400 hover:text-blue-600 focus:outline-none" aria-label="View">
-            <Eye className="h-4 w-4" />
-          </button>
-          <button className="p-1 text-gray-400 hover:text-green-600 focus:outline-none" aria-label="Edit">
+          <button 
+            onClick={() => onEdit && onEdit(row)}
+            className="p-1 text-gray-400 hover:text-green-600 focus:outline-none" 
+            aria-label="Edit"
+            title="Edit"
+          >
             <Edit className="h-4 w-4" />
           </button>
-          <button className="p-1 text-gray-400 hover:text-indigo-600 focus:outline-none" aria-label="Assign Workers" title="Assign Workers">
-            <Users className="h-4 w-4" />
+          
+          <button 
+            onClick={() => onDuplicate && onDuplicate(row)}
+            className="p-1 text-gray-400 hover:text-blue-600 focus:outline-none" 
+            aria-label="Duplicate" 
+            title="Duplicate"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
           </button>
-          <button className="p-1 text-gray-400 hover:text-red-600 focus:outline-none" aria-label="Delete">
-            <Trash2 className="h-4 w-4" />
-          </button>
+
+          {(row.status === "OPEN" || row.status === "DRAFT" || row.status === "PARTIALLY_FILLED") && (
+            <button 
+              onClick={() => onClose && onClose(row)}
+              className="p-1 text-gray-400 hover:text-yellow-600 focus:outline-none" 
+              aria-label="Close" 
+              title="Close"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check-circle"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </button>
+          )}
+
+          {(row.status === "OPEN" || row.status === "DRAFT" || row.status === "PARTIALLY_FILLED" || row.status === "FILLED") && (
+            <button 
+              onClick={() => onCancel && onCancel(row)}
+              className="p-1 text-gray-400 hover:text-red-600 focus:outline-none" 
+              aria-label="Cancel" 
+              title="Cancel"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x-circle"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+            </button>
+          )}
         </div>
       )
     },

@@ -564,6 +564,9 @@ model JobRequirement {
   assignedCount        Int               @default(0)
   cancellationReason   String?
   notes                String?
+  genderPreference     String?
+  experienceRequired   String?
+  duration             String?
 
   client   Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
   category Category? @relation(fields: [categoryId], references: [id])
