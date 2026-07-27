@@ -6,6 +6,8 @@ import {
   getClientById,
   updateClient,
   deleteClient,
+  getMe,
+  updateMe,
 } from "./client.controller.js";
 
 import {
@@ -36,6 +38,17 @@ router.get(
   requirePermission("client:read"),
   validate(listClientsQuerySchema, "query"),
   getClients
+);
+
+router.get(
+  "/me",
+  getMe
+);
+
+router.patch(
+  "/me",
+  validate(updateClientSchema),
+  updateMe
 );
 
 router.get(

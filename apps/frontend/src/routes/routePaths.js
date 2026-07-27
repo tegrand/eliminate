@@ -28,6 +28,7 @@ export const ROUTES = {
   // Client
   CLIENTS: "/clients",
   CLIENT_DETAILS: "/clients/:id",
+  CLIENT_PROFILE: "/client/profile",
 
   // Agency
   AGENCIES: "/agencies",

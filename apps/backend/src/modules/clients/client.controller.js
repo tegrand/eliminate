@@ -26,3 +26,14 @@ export const deleteClient = asyncHandler(async (req, res) => {
   await clientService.deleteClient(req.params.id);
   return ApiResponse.success(res, "Client deleted successfully", null, 200);
 });
+
+export const getMe = asyncHandler(async (req, res) => {
+  const client = await clientService.getClientByUserId(req.user.id);
+  return ApiResponse.success(res, "Client profile retrieved successfully", client, 200);
+});
+
+export const updateMe = asyncHandler(async (req, res) => {
+  const client = await clientService.updateClientByUserId(req.user.id, req.validatedData);
+  return ApiResponse.success(res, "Client profile updated successfully", client, 200);
+});
+

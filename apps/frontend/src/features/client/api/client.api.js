@@ -24,5 +24,15 @@ export const clientApi = {
   deleteClient: async (id) => {
     const response = await api.delete(`/clients/${id}`);
     return response.data;
+  },
+
+  getMe: async () => {
+    const response = await api.get("/clients/me");
+    return response.data;
+  },
+
+  updateMe: async (data) => {
+    const response = await api.patch("/clients/me", data);
+    return response.data;
   }
 };

@@ -187,3 +187,76 @@ export const deleteClient = async (id) => {
 
   return true;
 };
+
+export const getClientByUserId = async (userId) => {
+  const client = await prisma.client.findUnique({
+    where: { userId },
+    select: {
+      ...clientSelect,
+      user: {
+        select: {
+          id: true,
+          email: true,
+          status: true,
+          profileType: true,
+          avatar: true,
+        },
+      },
+    }
+  });
+
+  if (!client) {
+    throw new AppError("Client profile not found", 404);
+  }
+
+  return client;
+};
+
+export const updateClientByUserId = async (userId, data) => {
+  const client = await prisma.client.findUnique({
+    where: { userId },
+  });
+
+  if (!client) {
+    throw new AppError("Client profile not found", 404);
+  }
+
+  if (data.email && data.email !== client.email) {
+    const existingEmail = await prisma.client.findFirst({
+      where: { email: data.email, id: { not: client.id } },
+    });
+    if (existingEmail) {
+      throw new AppError("A client with this email already exists", 409);
+    }
+  }
+  
+  // Extract user fields
+  const { avatar, ...clientData } = data;
+
+  const [updatedClient] = await prisma.$transaction([
+    prisma.client.update({
+      where: { id: client.id },
+      data: clientData,
+      select: {
+        ...clientSelect,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            status: true,
+            profileType: true,
+            avatar: true,
+          },
+        },
+      },
+    }),
+    ...(avatar ? [
+      prisma.user.update({
+        where: { id: userId },
+        data: { avatar },
+      })
+    ] : [])
+  ]);
+
+  return updatedClient;
+};
