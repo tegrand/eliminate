@@ -101,7 +101,7 @@ export default function JobRequirementForm({ mode = "create", initialValues, onS
           </button>
         </div>
 
-        <div className="p-6 sm:p-8 flex-1 overflow-y-auto">
+        <div className="p-6 sm:p-8 flex-1 overflow-y-auto min-h-[420px]">
           
           {/* Tab 1: Basic Details */}
           {activeTab === 1 && (
