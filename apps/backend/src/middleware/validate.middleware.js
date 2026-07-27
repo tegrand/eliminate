@@ -7,7 +7,11 @@ const validate = (schema, source = "body") => {
       if (source === "body") {
         req.validatedData = parsedData;
       } else {
-        req[source] = parsedData;
+        // Since req.query / req.params might be getter-only, mutate the object instead
+        for (const key in req[source]) {
+          delete req[source][key];
+        }
+        Object.assign(req[source], parsedData);
       }
       
       next();
