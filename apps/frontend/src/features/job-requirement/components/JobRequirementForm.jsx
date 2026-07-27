@@ -187,11 +187,20 @@ export default function JobRequirementForm({ mode = "create", initialValues, onS
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-100">
-          <Button type="button" variant="outline" onClick={onCancel}>
+        <div className="flex justify-end gap-4 mt-8 pt-6 border-t border-gray-100">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={onCancel}
+            className="min-w-[140px] py-2.5"
+          >
             Cancel
           </Button>
-          <Button type="submit" disabled={isLoading} className="min-w-[140px]">
+          <Button 
+            type="submit" 
+            disabled={isLoading} 
+            className="min-w-[160px] py-2.5"
+          >
             {isLoading ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
             ) : (
