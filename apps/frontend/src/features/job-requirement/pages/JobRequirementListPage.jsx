@@ -64,11 +64,11 @@ export default function JobRequirementListPage() {
     try {
       const payload = {
         title: data.title,
-        categoryId: data.categoryId || undefined,
+        categoryId: (data.categoryId && data.categoryId.trim() !== "") ? data.categoryId : null,
         requiredWorkers: Number(data.requiredWorkers) || 1,
         genderPreference: data.genderPreference,
         experienceRequired: data.experienceRequired,
-        locationId: data.locationId || undefined,
+        locationId: (data.locationId && data.locationId.trim() !== "") ? data.locationId : null,
         startDate: data.startDate ? new Date(data.startDate).toISOString() : undefined,
         shift: data.shift,
         duration: data.duration,
