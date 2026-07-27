@@ -26,7 +26,8 @@ export function Modal({ isOpen, onClose, title, children, className }) {
       
       <div 
         className={clsx(
-          "relative bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200",
+          "relative bg-white rounded-xl shadow-xl w-full overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200",
+          className?.includes("max-w-") ? "" : "max-w-lg",
           className
         )}
       >
