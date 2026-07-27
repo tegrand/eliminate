@@ -14,9 +14,9 @@ export default function JobRequirementForm({ mode = "create", initialValues, onS
   const [skills, setSkills] = useState([]);
   const [skillInput, setSkillInput] = useState("");
   const { data: categoriesData } = useCategories({ limit: 100 });
-  const categories = categoriesData?.data?.categories || [];
+  const categories = categoriesData?.data?.items || [];
   const { data: locationsData } = useLocations({ limit: 100 });
-  const locations = locationsData?.data?.locations || [];
+  const locations = locationsData?.data?.items || [];
   const defaultValues = {
     title: "",
     categoryId: "",

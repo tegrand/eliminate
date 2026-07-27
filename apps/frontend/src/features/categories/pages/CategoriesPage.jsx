@@ -57,9 +57,9 @@ export default function CategoriesPage() {
 
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 animate-fade-in">
-      <CategoryToolbar total={data?.data?.total} onAdd={handleOpenAdd} />
+      <CategoryToolbar total={data?.data?.pagination?.total} onAdd={handleOpenAdd} />
       <CategoryTable 
-        data={data?.data?.categories} 
+        data={data?.data?.items} 
         loading={isLoading} 
         onEdit={handleOpenEdit} 
         onDelete={handleDelete} 
