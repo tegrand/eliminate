@@ -5,6 +5,7 @@ import { Loader2, Save, X } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
+import api from "../../../api/axios";
 
 export default function JobRequirementForm({ mode = "create", initialValues, onSubmit, onCancel, isLoading }) {
   const [activeTab, setActiveTab] = useState(1);
@@ -48,10 +49,37 @@ export default function JobRequirementForm({ mode = "create", initialValues, onS
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm({
     values: preparedInitialValues || defaultValues,
   });
+
+  const handleCreateCategory = async () => {
+    const name = window.prompt("Enter new category name:");
+    if (!name) return;
+    try {
+      const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      const res = await api.post("/categories", { name, slug, isActive: true });
+      setValue("categoryId", res.data.data.id);
+      toast.success("Category created and selected!");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to create category");
+    }
+  };
+
+  const handleCreateLocation = async () => {
+    const name = window.prompt("Enter new location name (e.g. Ernakulam):");
+    if (!name) return;
+    try {
+      const code = name.toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/(^-|-$)/g, '').substring(0, 20);
+      const res = await api.post("/locations", { name, code, isActive: true });
+      setValue("locationId", res.data.data.id);
+      toast.success("Location created and selected!");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to create location");
+    }
+  };
 
   const handleAddSkill = (e) => {
     if (e.key === "Enter") {
@@ -113,11 +141,23 @@ export default function JobRequirementForm({ mode = "create", initialValues, onS
                 error={errors.title?.message}
               />
               
-              <Input
-                label="Category"
-                placeholder="e.g. Construction"
-                {...register("categoryId")}
-              />
+              <div className="flex items-end gap-2">
+                <div className="flex-1">
+                  <Input
+                    label="Category (ID)"
+                    placeholder="Enter UUID or Create..."
+                    {...register("categoryId")}
+                  />
+                </div>
+                <Button 
+                  type="button" 
+                  variant="outline"
+                  onClick={handleCreateCategory}
+                  className="mb-[2px] min-w-[80px]"
+                >
+                  + Create
+                </Button>
+              </div>
 
               <Input
                 label="Number of Workers"
@@ -155,11 +195,23 @@ export default function JobRequirementForm({ mode = "create", initialValues, onS
           {/* Tab 2: Work Details */}
           {activeTab === 2 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
-              <Input
-                label="Work Location"
-                placeholder="e.g. Ernakulam"
-                {...register("locationId")}
-              />
+              <div className="flex items-end gap-2">
+                <div className="flex-1">
+                  <Input
+                    label="Work Location (ID)"
+                    placeholder="Enter UUID or Create..."
+                    {...register("locationId")}
+                  />
+                </div>
+                <Button 
+                  type="button" 
+                  variant="outline"
+                  onClick={handleCreateLocation}
+                  className="mb-[2px] min-w-[80px]"
+                >
+                  + Create
+                </Button>
+              </div>
 
               <Input
                 label="Date"
