@@ -7,6 +7,7 @@ import SystemOverview from "../components/SystemOverview";
 import RecentActivity from "../components/RecentActivity";
 import NotificationPanel from "../components/NotificationPanel";
 import WorkerDashboard from "../components/worker/WorkerDashboard";
+import ClientDashboard from "../components/client/ClientDashboard";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -47,7 +48,13 @@ export default function DashboardPage() {
         </button>
       </div>
 
-      {user?.profileType === "WORKER" ? <WorkerDashboard /> : renderAdminDashboard()}
+      {user?.profileType === "WORKER" ? (
+        <WorkerDashboard />
+      ) : user?.profileType === "CLIENT" ? (
+        <ClientDashboard />
+      ) : (
+        renderAdminDashboard()
+      )}
     </div>
   );
 }

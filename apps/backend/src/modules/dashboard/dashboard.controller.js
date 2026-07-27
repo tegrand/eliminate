@@ -16,6 +16,11 @@ export const getDashboardData = asyncHandler(async (req, res) => {
     return ApiResponse.success(res, "Admin dashboard retrieved successfully", data, 200);
   }
 
-  // Fallback for CLIENT, AGENCY, etc. when built
+  if (profileType === "CLIENT") {
+    const data = await dashboardService.getClientDashboard(id);
+    return ApiResponse.success(res, "Client dashboard retrieved successfully", data, 200);
+  }
+
+  // Fallback for AGENCY, etc. when built
   throw new AppError(`Dashboard for profile type ${profileType} is not implemented yet.`, 501);
 });
