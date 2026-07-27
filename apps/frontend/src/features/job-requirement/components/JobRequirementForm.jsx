@@ -24,6 +24,7 @@ export default function JobRequirementForm({ mode = "create", initialValues, onS
     requiredWorkers: 1,
     genderPreference: "ANY",
     experienceRequired: "",
+    locationText: "",
     locationId: "",
     startDate: "",
     shift: "FLEXIBLE",
@@ -48,6 +49,7 @@ export default function JobRequirementForm({ mode = "create", initialValues, onS
   if (initialValues) {
     preparedInitialValues = {
       ...initialValues,
+      locationText: initialValues.location?.name || "",
       startDate: initialValues.startDate ? new Date(initialValues.startDate).toISOString().split('T')[0] : "",
     };
   }
@@ -101,9 +103,34 @@ export default function JobRequirementForm({ mode = "create", initialValues, onS
     setSkills(skills.filter(s => s !== skillToRemove));
   };
 
-  const handleFormSubmit = (data) => {
-    // Ensure title and requiredWorkers are present at minimum before submission
-    onSubmit({ ...data, requiredSkills: skills.join(", ") });
+  const handleFormSubmit = async (data) => {
+    let finalLocationId = data.locationId;
+    
+    if (data.locationText) {
+      try {
+        const searchRes = await api.get(`/locations?search=${encodeURIComponent(data.locationText)}`);
+        const existing = searchRes.data.data.items.find(l => l.name.toLowerCase() === data.locationText.toLowerCase());
+        
+        if (existing) {
+          finalLocationId = existing.id;
+        } else {
+          const code = data.locationText.toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/(^-|-$)/g, '').substring(0, 20);
+          const res = await api.post("/locations", { name: data.locationText, code, isActive: true });
+          finalLocationId = res.data.data.id;
+        }
+      } catch (err) {
+        console.error("Failed to process location", err);
+        toast.error("Failed to save work location");
+        return;
+      }
+    }
+    
+    const payload = { ...data, requiredSkills: skills.join(", ") };
+    if (finalLocationId) payload.locationId = finalLocationId;
+    else payload.locationId = null;
+    delete payload.locationText;
+    
+    onSubmit(payload);
   };
 
   return (
@@ -197,19 +224,11 @@ export default function JobRequirementForm({ mode = "create", initialValues, onS
           {/* Tab 2: Work Details */}
           {activeTab === 2 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-slate-700">Work Location</label>
-                <select
-                  {...register("locationId")}
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
-                >
-                  <option value="">Select a location...</option>
-                  {locations.map((loc) => (
-                    <option key={loc.id} value={loc.id}>{loc.name}</option>
-                  ))}
-                </select>
-                {errors.locationId && <p className="text-red-500 text-xs">{errors.locationId.message}</p>}
-              </div>
+              <Input
+                label="Work Location"
+                placeholder="e.g. Ernakulam"
+                {...register("locationText")}
+              />
 
               <Input
                 label="Date"
