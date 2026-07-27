@@ -6,11 +6,17 @@ import { toast } from "sonner";
 import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import api from "../../../api/axios";
+import { useCategories } from "../../categories/hooks/useCategories";
+import { useLocations } from "../../locations/hooks/useLocations";
 
 export default function JobRequirementForm({ mode = "create", initialValues, onSubmit, onCancel, isLoading }) {
   const [activeTab, setActiveTab] = useState(1);
   const [skills, setSkills] = useState([]);
   const [skillInput, setSkillInput] = useState("");
+  const { data: categoriesData } = useCategories({ limit: 100 });
+  const categories = categoriesData?.data?.categories || [];
+  const { data: locationsData } = useLocations({ limit: 100 });
+  const locations = locationsData?.data?.locations || [];
   const defaultValues = {
     title: "",
     categoryId: "",
@@ -141,28 +147,18 @@ export default function JobRequirementForm({ mode = "create", initialValues, onS
                 error={errors.title?.message}
               />
               
-              <div className="flex items-end gap-2">
-                <div className="flex-1">
-                  <Input
-                    label="Category (ID)"
-                    placeholder="Enter UUID or Create..."
-                    {...register("categoryId", {
-                      validate: (value) => {
-                        if (!value) return true;
-                        return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value.trim()) || "Please enter a valid UUID or use + Create";
-                      }
-                    })}
-                    error={errors.categoryId?.message}
-                  />
-                </div>
-                <Button 
-                  type="button" 
-                  variant="outline"
-                  onClick={handleCreateCategory}
-                  className="mb-[2px] min-w-[80px]"
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-slate-700">Category</label>
+                <select
+                  {...register("categoryId")}
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
                 >
-                  + Create
-                </Button>
+                  <option value="">Select a category...</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+                {errors.categoryId && <p className="text-red-500 text-xs">{errors.categoryId.message}</p>}
               </div>
 
               <Input
@@ -201,28 +197,18 @@ export default function JobRequirementForm({ mode = "create", initialValues, onS
           {/* Tab 2: Work Details */}
           {activeTab === 2 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
-              <div className="flex items-end gap-2">
-                <div className="flex-1">
-                  <Input
-                    label="Work Location (ID)"
-                    placeholder="Enter UUID or Create..."
-                    {...register("locationId", {
-                      validate: (value) => {
-                        if (!value) return true;
-                        return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value.trim()) || "Please enter a valid UUID or use + Create";
-                      }
-                    })}
-                    error={errors.locationId?.message}
-                  />
-                </div>
-                <Button 
-                  type="button" 
-                  variant="outline"
-                  onClick={handleCreateLocation}
-                  className="mb-[2px] min-w-[80px]"
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-slate-700">Work Location</label>
+                <select
+                  {...register("locationId")}
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
                 >
-                  + Create
-                </Button>
+                  <option value="">Select a location...</option>
+                  {locations.map((loc) => (
+                    <option key={loc.id} value={loc.id}>{loc.name}</option>
+                  ))}
+                </select>
+                {errors.locationId && <p className="text-red-500 text-xs">{errors.locationId.message}</p>}
               </div>
 
               <Input

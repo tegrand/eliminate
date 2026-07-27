@@ -156,12 +156,6 @@ export const NAVIGATION_CONFIG = [
         path: ROUTES.JOB_REQUIREMENTS,
         icon: Briefcase,
         roles: ALL_ROLES,
-      },
-      {
-        title: "Categories",
-        path: ROUTES.CATEGORIES,
-        icon: Tags,
-        roles: ["CLIENT"],
       }
     ]
   }

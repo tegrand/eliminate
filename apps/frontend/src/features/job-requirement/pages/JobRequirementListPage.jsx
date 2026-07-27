@@ -7,12 +7,14 @@ import JobRequirementForm from "../components/JobRequirementForm";
 import { Modal } from "../../../components/ui/modal";
 import { useJobRequirements } from "../hooks/useJobRequirements";
 import { jobRequirementApi } from "../api/jobRequirement.api";
+import CategoriesPage from "../../categories/pages/CategoriesPage";
 
 export default function JobRequirementListPage() {
   const [page, setPage] = useState(1);
   const { data, isLoading, refetch } = useJobRequirements({ page });
   
   const [showForm, setShowForm] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [editingRow, setEditingRow] = useState(null);
 
   const handleCreate = () => {
@@ -92,12 +94,20 @@ export default function JobRequirementListPage() {
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6 animate-fade-in">
       <div className="flex justify-between items-center">
         <JobRequirementToolbar totalRequirements={data?.data?.total} />
-        <button 
-          onClick={handleCreate}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-colors"
-        >
-          + Create Requirement
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setShowCategoryModal(true)}
+            className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg font-medium shadow-sm transition-colors"
+          >
+            Manage Categories
+          </button>
+          <button 
+            onClick={handleCreate}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-colors"
+          >
+            + Create Requirement
+          </button>
+        </div>
       </div>
       <JobRequirementFilters />
       <JobRequirementTable 
@@ -123,6 +133,17 @@ export default function JobRequirementListPage() {
           onSubmit={handleSubmitForm}
           onCancel={() => setShowForm(false)}
         />
+      </Modal>
+
+      <Modal
+        isOpen={showCategoryModal}
+        onClose={() => setShowCategoryModal(false)}
+        title="Manage Categories"
+        className="max-w-6xl w-full"
+      >
+        <div className="h-[70vh] overflow-y-auto">
+          <CategoriesPage />
+        </div>
       </Modal>
     </div>
   );
