@@ -146,7 +146,13 @@ export default function JobRequirementForm({ mode = "create", initialValues, onS
                   <Input
                     label="Category (ID)"
                     placeholder="Enter UUID or Create..."
-                    {...register("categoryId")}
+                    {...register("categoryId", {
+                      validate: (value) => {
+                        if (!value) return true;
+                        return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value.trim()) || "Please enter a valid UUID or use + Create";
+                      }
+                    })}
+                    error={errors.categoryId?.message}
                   />
                 </div>
                 <Button 
@@ -200,7 +206,13 @@ export default function JobRequirementForm({ mode = "create", initialValues, onS
                   <Input
                     label="Work Location (ID)"
                     placeholder="Enter UUID or Create..."
-                    {...register("locationId")}
+                    {...register("locationId", {
+                      validate: (value) => {
+                        if (!value) return true;
+                        return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value.trim()) || "Please enter a valid UUID or use + Create";
+                      }
+                    })}
+                    error={errors.locationId?.message}
                   />
                 </div>
                 <Button 
