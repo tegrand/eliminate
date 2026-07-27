@@ -115,7 +115,7 @@ export default function JobRequirementListPage() {
         isOpen={showForm}
         onClose={() => setShowForm(false)}
         title={editingRow ? "Edit Requirement" : "Create Requirement"}
-        className="max-w-3xl"
+        className="max-w-4xl w-full sm:max-w-5xl"
       >
         <JobRequirementForm 
           mode={editingRow ? "edit" : "create"} 
