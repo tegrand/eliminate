@@ -149,13 +149,13 @@ export const NAVIGATION_CONFIG = [
   },
   {
     group: "Client Operations",
-    roles: ["SUPER_ADMIN", "CLIENT"],
+    roles: ALL_ROLES,
     items: [
       {
         title: "Job Requirements",
         path: ROUTES.JOB_REQUIREMENTS,
         icon: Briefcase,
-        roles: ["SUPER_ADMIN", "CLIENT"],
+        roles: ALL_ROLES,
       }
     ]
   }
