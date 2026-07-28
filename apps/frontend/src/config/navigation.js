@@ -89,21 +89,6 @@ export const NAVIGATION_CONFIG = [
     ],
   },
 
-  // ─── CLIENT – INDIVIDUAL ──────────────────────────────────────────────────
-  {
-    group: "My Jobs",
-    roles: ["CLIENT"],
-    clientTypes: ["INDIVIDUAL"],
-    items: [
-      {
-        title: "Job Requirements",
-        path: ROUTES.JOB_REQUIREMENTS,
-        icon: ClipboardList,
-        roles: ["CLIENT"],
-        clientTypes: ["INDIVIDUAL"],
-      },
-    ],
-  },
 
   // ─── WORKER PORTAL ────────────────────────────────────────────────────────
   {
