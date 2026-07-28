@@ -46,11 +46,13 @@ export const ROUTES = {
 
   // Assignments
   ASSIGNMENTS: "/assignments",
+  ASSIGNMENT_DETAILS: "/assignments/:id",
 
   // Attendance
   ATTENDANCE: "/attendance",
   ATTENDANCE_BULK: "/attendance/bulk",
   ATTENDANCE_VERIFY: "/attendance/verify/:id",
+  ATTENDANCE_MISSING: "/attendance/missing/:id",
 
   // Payroll
   PAYROLLS: "/payrolls",
@@ -62,4 +64,5 @@ export const ROUTES = {
 
   // Payments
   PAYMENTS: "/payments",
+  PAYMENT_RECEIPT: "/payments/:id",
 };

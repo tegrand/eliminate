@@ -48,10 +48,12 @@ import JobRequirementListPage from "../features/job-requirement/pages/JobRequire
 import AssignWorkersPage from "../features/job-requirement/pages/AssignWorkersPage";
 
 import AssignmentListPage from "../features/assignment/pages/AssignmentListPage";
+import AssignmentDetailsPage from "../features/assignment/pages/AssignmentDetailsPage";
 
 import AttendanceListPage from "../features/attendance/pages/AttendanceListPage";
 import BulkAttendancePage from "../features/attendance/pages/BulkAttendancePage";
 import AttendanceVerificationPage from "../features/attendance/pages/AttendanceVerificationPage";
+import MissingAttendancePage from "../features/attendance/pages/MissingAttendancePage";
 import MyAttendancePage from "../features/attendance/pages/MyAttendancePage";
 
 import MyPaymentsPage from "../features/payments/pages/MyPaymentsPage";
@@ -64,6 +66,7 @@ import InvoiceListPage from "../features/invoice/pages/InvoiceListPage";
 import InvoiceDetailsPage from "../features/invoice/pages/InvoiceDetailsPage";
 
 import PaymentListPage from "../features/payment/pages/PaymentListPage";
+import PaymentReceiptPage from "../features/payment/pages/PaymentReceiptPage";
 
 const NotFoundPage = () => (
   <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
@@ -130,11 +133,13 @@ const AppRouter = () => {
 
             {/* Assignments */}
             <Route path={ROUTES.ASSIGNMENTS} element={<AssignmentListPage />} />
+            <Route path={ROUTES.ASSIGNMENT_DETAILS} element={<AssignmentDetailsPage />} />
 
             {/* Attendance */}
             <Route path={ROUTES.ATTENDANCE} element={<AttendanceListPage />} />
             <Route path={ROUTES.ATTENDANCE_BULK} element={<BulkAttendancePage />} />
             <Route path={ROUTES.ATTENDANCE_VERIFY} element={<AttendanceVerificationPage />} />
+            <Route path={ROUTES.ATTENDANCE_MISSING} element={<MissingAttendancePage />} />
 
             {/* Payroll */}
             <Route path={ROUTES.PAYROLLS} element={<PayrollListPage />} />
@@ -146,6 +151,8 @@ const AppRouter = () => {
 
             {/* Payments */}
             <Route path={ROUTES.PAYMENTS} element={<PaymentListPage />} />
+            <Route path={ROUTES.PAYMENT_RECEIPT} element={<PaymentReceiptPage />} />
+
           </Route>
         </Route>
 

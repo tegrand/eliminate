@@ -1,6 +1,7 @@
 import { Settings } from "lucide-react";
 import { DataTable } from "../../../components/ui/data-table";
 import { Pagination } from "../../../components/ui/pagination";
+import { Link } from "react-router-dom";
 import PaymentStatusBadge from "./PaymentStatusBadge";
 
 export default function PaymentTable({ payments, loading, page, totalPages }) {
@@ -16,11 +17,11 @@ export default function PaymentTable({ payments, loading, page, totalPages }) {
     {
       key: "actions",
       title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />ACTIONS</div>,
-      render: () => (
+      render: (row) => (
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-semibold">
-          <button className="text-blue-600 hover:text-blue-800 transition-colors">
-            View Receipt
-          </button>
+          <Link to={`/payments/${row.id}`} className="text-blue-600 hover:text-blue-800 transition-colors">
+            Payment Receipts
+          </Link>
         </div>
       )
     },

@@ -14,7 +14,8 @@ import {
   UserCircle,
   Briefcase,
   Bookmark,
-  CalendarCheck
+  CalendarCheck,
+  ShieldCheck,
 } from "lucide-react";
 
 const ALL_ROLES = ["SUPER_ADMIN", "CLIENT", "AGENCY", "WORKER"];
@@ -114,6 +115,12 @@ export const NAVIGATION_CONFIG = [
         path: ROUTES.PAYMENTS,
         icon: CreditCard,
         roles: ADMIN_ONLY,
+      },
+      {
+        title: "Attendance Monitoring",
+        path: ROUTES.ATTENDANCE,
+        icon: ShieldCheck,
+        roles: ADMIN_ONLY,
       }
     ]
   },
@@ -149,13 +156,13 @@ export const NAVIGATION_CONFIG = [
   },
   {
     group: "Client Operations",
-    roles: ALL_ROLES,
+    roles: ["SUPER_ADMIN", "CLIENT", "AGENCY"],
     items: [
       {
         title: "Job Requirements",
         path: ROUTES.JOB_REQUIREMENTS,
         icon: Briefcase,
-        roles: ALL_ROLES,
+        roles: ["SUPER_ADMIN", "CLIENT", "AGENCY"],
       }
     ]
   }

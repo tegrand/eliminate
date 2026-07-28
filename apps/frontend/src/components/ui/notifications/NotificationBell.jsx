@@ -1,8 +1,16 @@
 import { useState, useEffect, useRef } from "react";
-import { Bell, Check, Loader2 } from "lucide-react";
+import { Bell, Check, Loader2, UserPlus, RefreshCcw, CheckCircle2, Clock3, Wallet } from "lucide-react";
 import api from "../../../api/axios";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { Link } from "react-router-dom";
+
+const TYPE_META = {
+  WORKER_ASSIGNED: { label: "Worker Assigned", icon: UserPlus, tone: "text-blue-600 bg-blue-50" },
+  WORKER_REPLACED: { label: "Worker Replaced", icon: RefreshCcw, tone: "text-rose-600 bg-rose-50" },
+  REQUIREMENT_ACCEPTED: { label: "Requirement Accepted", icon: CheckCircle2, tone: "text-emerald-600 bg-emerald-50" },
+  ATTENDANCE_UPDATES: { label: "Attendance Updates", icon: Clock3, tone: "text-amber-600 bg-amber-50" },
+  PAYMENT_UPDATES: { label: "Payment Updates", icon: Wallet, tone: "text-violet-600 bg-violet-50" },
+};
 
 export default function NotificationBell() {
   const [notifications, setNotifications] = useState([]);
@@ -66,6 +74,8 @@ export default function NotificationBell() {
     }
   };
 
+  const getTypeMeta = (type) => TYPE_META[type] || { label: type || "Notification", icon: Bell, tone: "text-slate-600 bg-slate-50" };
+
   return (
     <div className="relative" ref={dropdownRef}>
       <button 
@@ -111,9 +121,25 @@ export default function NotificationBell() {
                     className={`p-3 hover:bg-slate-50 transition-colors cursor-pointer flex flex-col gap-1 ${!notif.isRead ? 'bg-indigo-50/50' : ''}`}
                   >
                     <div className="flex justify-between items-start gap-2">
-                      <h4 className={`text-sm ${!notif.isRead ? 'font-semibold text-slate-900' : 'font-medium text-slate-700'}`}>
-                        {notif.title}
-                      </h4>
+                      <div className="flex items-start gap-2">
+                        {(() => {
+                          const meta = getTypeMeta(notif.type);
+                          const Icon = meta.icon;
+                          return (
+                            <span className={`mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full ${meta.tone}`}>
+                              <Icon className="h-3.5 w-3.5" />
+                            </span>
+                          );
+                        })()}
+                        <div>
+                          <h4 className={`text-sm ${!notif.isRead ? 'font-semibold text-slate-900' : 'font-medium text-slate-700'}`}>
+                            {notif.title}
+                          </h4>
+                          <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                            {getTypeMeta(notif.type).label}
+                          </p>
+                        </div>
+                      </div>
                       {!notif.isRead && <span className="w-2 h-2 rounded-full bg-indigo-600 shrink-0 mt-1.5" />}
                     </div>
                     <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">

@@ -1,6 +1,7 @@
-import { Eye, Edit, UserCog, Settings, MoreVertical } from "lucide-react";
+import { Settings } from "lucide-react";
 import { DataTable } from "../../../components/ui/data-table";
 import { Pagination } from "../../../components/ui/pagination";
+import { Link } from "react-router-dom";
 import AssignmentStatusBadge from "./AssignmentStatusBadge";
 
 export default function AssignmentTable({ assignments, loading, page, totalPages }) {
@@ -20,14 +21,20 @@ export default function AssignmentTable({ assignments, loading, page, totalPages
     {
       key: "actions",
       title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />ACTIONS</div>,
-      render: () => (
-        <div className="flex items-center gap-2">
-          <button className="p-1.5 border border-gray-200 rounded-lg text-gray-400 hover:text-indigo-600 hover:border-indigo-200 focus:outline-none transition-colors" aria-label="View Details" title="View Details">
-            <Eye className="h-4 w-4" />
-          </button>
-          <button className="p-1.5 border border-gray-200 rounded-lg text-gray-400 hover:text-indigo-600 hover:border-indigo-200 focus:outline-none transition-colors" aria-label="More Actions" title="More Actions">
-            <MoreVertical className="h-4 w-4" />
-          </button>
+      render: (row) => (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-semibold">
+          <Link to={`/assignments/${row.id}`} className="text-indigo-600 hover:text-indigo-800 transition-colors">
+            View Assigned Workers
+          </Link>
+          <Link to={`/assignments/${row.id}`} className="text-blue-600 hover:text-blue-800 transition-colors">
+            Worker Details
+          </Link>
+          <Link to="/attendance" className="text-emerald-600 hover:text-emerald-800 transition-colors">
+            Attendance Status
+          </Link>
+          <Link to={`/assignments/${row.id}`} className="text-rose-600 hover:text-rose-800 transition-colors">
+            Replace Worker Request
+          </Link>
         </div>
       )
     },

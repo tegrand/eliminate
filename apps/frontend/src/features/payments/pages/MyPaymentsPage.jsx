@@ -230,7 +230,7 @@ export default function MyPaymentsPage() {
                           
                           {payment.status === 'COMPLETED' && (
                             <Button variant="outline" size="sm" onClick={() => handleDownloadPayslip(payment.id)}>
-                              <Download className="w-4 h-4 mr-2" /> Payslip
+                              <Download className="w-4 h-4 mr-2" /> Download Invoice
                             </Button>
                           )}
                         </div>

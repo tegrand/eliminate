@@ -1,8 +1,20 @@
-import { Bell, AlertCircle, CheckCircle, Info, Clock } from "lucide-react";
+import { Bell, AlertCircle, CheckCircle, Info, Clock, UserPlus, RefreshCcw, CheckCircle2, Wallet } from "lucide-react";
+
+const TYPE_META = {
+  WORKER_ASSIGNED: { icon: UserPlus, color: "text-blue-500" },
+  WORKER_REPLACED: { icon: RefreshCcw, color: "text-rose-500" },
+  REQUIREMENT_ACCEPTED: { icon: CheckCircle2, color: "text-emerald-500" },
+  ATTENDANCE_UPDATES: { icon: Clock, color: "text-amber-500" },
+  PAYMENT_UPDATES: { icon: Wallet, color: "text-violet-500" },
+};
 
 export default function ClientNotifications({ notifications = [] }) {
   
   const getIcon = (type) => {
+    if (TYPE_META[type]) {
+      const Icon = TYPE_META[type].icon;
+      return <Icon className={`w-5 h-5 ${TYPE_META[type].color}`} />;
+    }
     switch(type) {
       case 'ALERT': return <AlertCircle className="w-5 h-5 text-red-500" />;
       case 'SUCCESS': return <CheckCircle className="w-5 h-5 text-green-500" />;

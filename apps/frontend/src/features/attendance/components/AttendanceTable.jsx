@@ -1,6 +1,7 @@
-import { Eye, Edit, ShieldCheck, Settings, MoreVertical } from "lucide-react";
+import { Settings } from "lucide-react";
 import { DataTable } from "../../../components/ui/data-table";
 import { Pagination } from "../../../components/ui/pagination";
+import { Link } from "react-router-dom";
 import AttendanceStatusBadge from "./AttendanceStatusBadge";
 
 export default function AttendanceTable({ records, loading, page, totalPages }) {
@@ -22,18 +23,18 @@ export default function AttendanceTable({ records, loading, page, totalPages }) 
       key: "actions",
       title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />ACTIONS</div>,
       render: (row) => (
-        <div className="flex items-center gap-2">
-          <button className="p-1.5 border border-gray-200 rounded-lg text-gray-400 hover:text-indigo-600 hover:border-indigo-200 focus:outline-none transition-colors" aria-label="View Details" title="View Details">
-            <Eye className="h-4 w-4" />
-          </button>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-semibold">
+          <Link to="/attendance" className="text-indigo-600 hover:text-indigo-800 transition-colors">
+            View Attendance
+          </Link>
           {row.status === "PENDING" && (
-            <button className="p-1.5 border border-gray-200 rounded-lg text-gray-400 hover:text-indigo-600 hover:border-indigo-200 focus:outline-none transition-colors" aria-label="Verify" title="Verify Attendance">
-              <ShieldCheck className="h-4 w-4" />
-            </button>
+            <Link to={`/attendance/verify/${row.id}`} className="text-emerald-600 hover:text-emerald-800 transition-colors">
+              Approve Attendance
+            </Link>
           )}
-          <button className="p-1.5 border border-gray-200 rounded-lg text-gray-400 hover:text-indigo-600 hover:border-indigo-200 focus:outline-none transition-colors" aria-label="More Actions" title="More Actions">
-            <MoreVertical className="h-4 w-4" />
-          </button>
+          <Link to={`/attendance/missing/${row.id}`} className="text-rose-600 hover:text-rose-800 transition-colors">
+            Report Missing Attendance
+          </Link>
         </div>
       )
     },

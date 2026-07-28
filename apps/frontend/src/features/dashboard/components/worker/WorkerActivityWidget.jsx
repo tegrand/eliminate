@@ -1,4 +1,12 @@
-import { Bell, Activity, CheckCircle, Info } from "lucide-react";
+import { Bell, Activity, CheckCircle, Info, UserPlus, RefreshCcw, CheckCircle2, Clock3, Wallet } from "lucide-react";
+
+const TYPE_META = {
+  WORKER_ASSIGNED: { icon: UserPlus, color: "text-blue-500 bg-blue-50" },
+  WORKER_REPLACED: { icon: RefreshCcw, color: "text-rose-500 bg-rose-50" },
+  REQUIREMENT_ACCEPTED: { icon: CheckCircle2, color: "text-emerald-500 bg-emerald-50" },
+  ATTENDANCE_UPDATES: { icon: Clock3, color: "text-amber-500 bg-amber-50" },
+  PAYMENT_UPDATES: { icon: Wallet, color: "text-violet-500 bg-violet-50" },
+};
 
 export default function WorkerActivityWidget({ notifications, recentActivities }) {
   return (
@@ -22,15 +30,15 @@ export default function WorkerActivityWidget({ notifications, recentActivities }
             notifications.map((notif) => (
               <div key={notif.id} className="flex gap-2.5 p-2.5 rounded-xl bg-slate-50/50 border border-slate-100 hover:border-indigo-100 transition-colors group">
                 <div className="mt-0.5">
-                  {notif.type === "success" ? (
-                    <div className="bg-emerald-50 text-emerald-500 rounded-full p-1">
-                      <CheckCircle className="w-3 h-3" />
-                    </div>
-                  ) : (
-                    <div className="bg-blue-50 text-blue-500 rounded-full p-1">
-                      <Info className="w-3 h-3" />
-                    </div>
-                  )}
+                  {(() => {
+                    const meta = TYPE_META[notif.type];
+                    const Icon = meta?.icon || Info;
+                    return (
+                      <div className={`${meta?.color || "bg-blue-50 text-blue-500"} rounded-full p-1`}>
+                        <Icon className="w-3 h-3" />
+                      </div>
+                    );
+                  })()}
                 </div>
                 <div>
                   <p className="text-[11px] font-bold text-slate-800 mb-0.5 group-hover:text-indigo-900 transition-colors">{notif.text}</p>
