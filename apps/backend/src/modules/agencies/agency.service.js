@@ -96,6 +96,7 @@ export const createAgency = async (userId, data) => {
 export const getAgencies = async ({
   page = 1,
   limit = 10,
+  search,
   status,
   sortBy = "createdAt",
   sortOrder = "desc",
