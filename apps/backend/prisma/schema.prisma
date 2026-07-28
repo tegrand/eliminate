@@ -350,6 +350,7 @@ model Client {
   country        String?
   postalCode     String?
   notes          String?
+  profileStatus  ClientProfileStatus @default(ACTIVE)
 
   // Future module relation placeholders (awaiting model implementation)
   jobRequirements JobRequirement[]
@@ -792,6 +793,11 @@ enum AgencyProfileStatus {
   PENDING
   APPROVED
   REJECTED
+  SUSPENDED
+}
+
+enum ClientProfileStatus {
+  ACTIVE
   SUSPENDED
 }
 

@@ -5,6 +5,7 @@ import {
   getClients,
   getClientById,
   updateClient,
+  updateClientStatus,
   deleteClient,
   getMe,
   updateMe,
@@ -15,6 +16,7 @@ import {
   updateClientSchema,
   clientIdParamSchema,
   listClientsQuerySchema,
+  updateClientStatusSchema,
 } from "./client.validation.js";
 
 import validate from "../../middleware/validate.middleware.js";
@@ -64,6 +66,14 @@ router.patch(
   validate(clientIdParamSchema, "params"),
   validate(updateClientSchema),
   updateClient
+);
+
+router.patch(
+  "/:id/status",
+  requirePermission("client:update"),
+  validate(clientIdParamSchema, "params"),
+  validate(updateClientStatusSchema),
+  updateClientStatus
 );
 
 router.delete(

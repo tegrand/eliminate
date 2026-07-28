@@ -44,10 +44,17 @@ export const clientIdParamSchema = z.object({
   id: z.string().uuid("Invalid client ID format"),
 });
 
+export const updateClientStatusSchema = z.object({
+  status: z.enum(["ACTIVE", "SUSPENDED"], {
+    errorMap: () => ({ message: "Invalid status value" })
+  })
+}).strict();
+
 export const listClientsQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(10),
   search: z.string().trim().optional(),
+  status: z.enum(["ACTIVE", "SUSPENDED", "ALL"]).optional(),
   sortBy: z.enum(["createdAt", "updatedAt", "companyName", "contactPerson"]).default("createdAt"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 }).strict("Unknown query parameters are not allowed");

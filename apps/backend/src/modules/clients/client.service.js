@@ -24,6 +24,7 @@ const clientSelect = {
   country: true,
   postalCode: true,
   notes: true,
+  profileStatus: true,
   createdAt: true,
   updatedAt: true,
   user: {
@@ -81,6 +82,7 @@ export const getClients = async ({
   page = 1,
   limit = 10,
   search,
+  status,
   sortBy = "createdAt",
   sortOrder = "desc",
 }) => {
@@ -89,6 +91,10 @@ export const getClients = async ({
   const where = {
     deletedAt: null,
   };
+
+  if (status) {
+    where.profileStatus = status;
+  }
 
   if (search) {
     where.OR = [
@@ -165,6 +171,24 @@ export const updateClient = async (id, data) => {
   const updatedClient = await prisma.client.update({
     where: { id },
     data,
+    select: clientSelect,
+  });
+
+  return updatedClient;
+};
+
+export const updateClientStatus = async (id, status) => {
+  const client = await prisma.client.findFirst({
+    where: { id, deletedAt: null },
+  });
+
+  if (!client) {
+    throw new AppError("Client not found", 404);
+  }
+
+  const updatedClient = await prisma.client.update({
+    where: { id },
+    data: { profileStatus: status },
     select: clientSelect,
   });
 

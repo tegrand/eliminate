@@ -16,17 +16,21 @@ export default function ClientListPage() {
 
   const districtFilter = searchParams.get("district") || "";
 
-  // Normalize backend shape: { items, pagination } → flat list
   const rawClients = data?.data?.items || data?.data?.clients || [];
   const pagination = data?.data?.pagination || {};
 
-  let displayedClients = rawClients;
+  const normalizedClients = rawClients.map(c => ({
+    ...c,
+    status: c.profileStatus || "ACTIVE",
+  }));
+
+  let displayedClients = normalizedClients;
 
   if (districtFilter) {
     displayedClients = displayedClients.filter(c => c.district === districtFilter);
   }
   if (currentStatus !== "ALL") {
-    displayedClients = displayedClients.filter(c => c.user?.status === currentStatus || c.status === currentStatus);
+    displayedClients = displayedClients.filter(c => c.status === currentStatus);
   }
 
   const tabs = [
