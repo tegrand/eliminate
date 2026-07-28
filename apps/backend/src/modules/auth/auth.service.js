@@ -52,7 +52,20 @@ const issueTokensAndUpdateUser = async (user, meta, action = "LOGIN") => {
     }),
   ]);
 
-  return { accessToken, refreshToken, user: updatedUser };
+  let userWithProfile = { ...updatedUser };
+
+  // If user is a CLIENT, attach clientType so the frontend can show "My Profile" vs "Company Profile"
+  if (updatedUser.profileType === "CLIENT") {
+    const clientProfile = await prisma.client.findUnique({
+      where: { userId: updatedUser.id },
+      select: { clientType: true, companyName: true, contactPerson: true },
+    });
+    if (clientProfile) {
+      userWithProfile = { ...userWithProfile, ...clientProfile };
+    }
+  }
+
+  return { accessToken, refreshToken, user: userWithProfile };
 };
 
 export const register = async (data) => {
