@@ -17,7 +17,12 @@ export const agencyApi = {
   },
   
   updateAgency: async (id, data) => {
-    const response = await api.put(`/agencies/${id}`, data);
+    const response = await api.patch(`/agencies/${id}`, data);
+    return response.data;
+  },
+
+  updateAgencyStatus: async (id, status) => {
+    const response = await api.patch(`/agencies/${id}/status`, { status });
     return response.data;
   },
   

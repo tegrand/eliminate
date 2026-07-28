@@ -22,6 +22,11 @@ export const updateAgency = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, "Agency updated successfully", agency, 200);
 });
 
+export const updateAgencyStatus = asyncHandler(async (req, res) => {
+  const agency = await agencyService.updateAgencyStatus(req.params.id, req.validatedData.status);
+  return ApiResponse.success(res, "Agency status updated successfully", agency, 200);
+});
+
 export const deleteAgency = asyncHandler(async (req, res) => {
   await agencyService.deleteAgency(req.params.id);
   return ApiResponse.success(res, "Agency deleted successfully", null, 200);

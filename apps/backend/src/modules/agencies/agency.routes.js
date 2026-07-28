@@ -5,6 +5,7 @@ import {
   getAgencies,
   getAgencyById,
   updateAgency,
+  updateAgencyStatus,
   deleteAgency,
 } from "./agency.controller.js";
 
@@ -13,6 +14,7 @@ import {
   updateAgencySchema,
   agencyIdParamSchema,
   listAgenciesQuerySchema,
+  updateAgencyStatusSchema,
 } from "./agency.validation.js";
 
 import validate from "../../middleware/validate.middleware.js";
@@ -51,6 +53,14 @@ router.patch(
   validate(agencyIdParamSchema, "params"),
   validate(updateAgencySchema),
   updateAgency
+);
+
+router.patch(
+  "/:id/status",
+  requirePermission("agency:update"),
+  validate(agencyIdParamSchema, "params"),
+  validate(updateAgencyStatusSchema),
+  updateAgencyStatus
 );
 
 router.delete(

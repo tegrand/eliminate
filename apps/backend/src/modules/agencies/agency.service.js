@@ -27,6 +27,21 @@ const agencySelect = {
   notes: true,
   createdAt: true,
   updatedAt: true,
+  profileStatus: true,
+  licenseUrl: true,
+  gstCertificateUrl: true,
+  panUrl: true,
+  documents: {
+    select: {
+      id: true,
+      documentType: true,
+      documentUrl: true,
+      fileName: true,
+      status: true,
+      remarks: true,
+      updatedAt: true
+    }
+  },
   user: {
     select: {
       id: true,
@@ -81,7 +96,7 @@ export const createAgency = async (userId, data) => {
 export const getAgencies = async ({
   page = 1,
   limit = 10,
-  search,
+  status,
   sortBy = "createdAt",
   sortOrder = "desc",
 }) => {
@@ -90,6 +105,10 @@ export const getAgencies = async ({
   const where = {
     deletedAt: null,
   };
+
+  if (status) {
+    where.profileStatus = status;
+  }
 
   if (search) {
     where.OR = [
@@ -166,6 +185,24 @@ export const updateAgency = async (id, data) => {
   const updatedAgency = await prisma.agency.update({
     where: { id },
     data,
+    select: agencySelect,
+  });
+
+  return updatedAgency;
+};
+
+export const updateAgencyStatus = async (id, status) => {
+  const agency = await prisma.agency.findFirst({
+    where: { id, deletedAt: null },
+  });
+
+  if (!agency) {
+    throw new AppError("Agency not found", 404);
+  }
+
+  const updatedAgency = await prisma.agency.update({
+    where: { id },
+    data: { profileStatus: status },
     select: agencySelect,
   });
 

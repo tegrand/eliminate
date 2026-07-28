@@ -45,10 +45,17 @@ export const agencyIdParamSchema = z.object({
   id: z.string().uuid("Invalid agency ID format"),
 });
 
+export const updateAgencyStatusSchema = z.object({
+  status: z.enum(["PENDING", "APPROVED", "REJECTED", "SUSPENDED"], {
+    errorMap: () => ({ message: "Invalid status value" })
+  })
+}).strict();
+
 export const listAgenciesQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(10),
   search: z.string().trim().optional(),
+  status: z.enum(["PENDING", "APPROVED", "REJECTED", "SUSPENDED", "ALL"]).optional(),
   sortBy: z.enum(["createdAt", "updatedAt", "agencyName", "contactPerson"]).default("createdAt"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 }).strict("Unknown query parameters are not allowed");

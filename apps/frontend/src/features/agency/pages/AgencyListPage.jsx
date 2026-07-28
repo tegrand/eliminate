@@ -15,11 +15,19 @@ export default function AgencyListPage() {
   const { data, isLoading } = useAgencies({ page, status: currentStatus !== "ALL" ? currentStatus : undefined });
 
   const districtFilter = searchParams.get("district") || "";
-  let displayedAgencies = data?.data?.agencies || [];
+  const rawAgencies = data?.data?.items || [];
+  
+  const normalizedAgencies = rawAgencies.map(a => ({
+    ...a,
+    status: a.profileStatus || "PENDING",
+  }));
+
+  let displayedAgencies = normalizedAgencies;
 
   if (districtFilter) {
     displayedAgencies = displayedAgencies.filter(a => a.district === districtFilter);
   }
+  // The API already filters by status if currentStatus !== "ALL", but we can keep client side filtering as fallback
   if (currentStatus !== "ALL") {
     displayedAgencies = displayedAgencies.filter(a => a.status === currentStatus);
   }
@@ -36,7 +44,7 @@ export default function AgencyListPage() {
     <div className="w-full h-[calc(100vh-4rem)] px-4 pb-4 pt-4 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
       <AgencyToolbar totalAgencies={displayedAgencies.length} />
       
-      <AgencyStats agencies={data?.data?.agencies || []} />
+      <AgencyStats agencies={normalizedAgencies} />
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col flex-1 overflow-hidden">
         <div className="border-b border-gray-100 px-6 pt-1 flex-shrink-0">

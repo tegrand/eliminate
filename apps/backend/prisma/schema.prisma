@@ -385,10 +385,16 @@ model Agency {
   state          String?
   country        String?
   postalCode     String?
-  notes          String?
+  profileStatus  AgencyProfileStatus @default(PENDING)
+
+  // Document URLs (Optional if using AgencyDocument model)
+  licenseUrl     String?
+  gstCertificateUrl String?
+  panUrl         String?
 
   // Future module relation placeholders
   workers AgencyWorker[]
+  documents AgencyDocument[]
   // assignments      Assignment[]
   // jobRequirements  JobRequirement[]
 
@@ -744,6 +750,24 @@ model WorkerDocument {
   @@index([documentType])
 }
 
+model AgencyDocument {
+  id           String         @id @default(uuid())
+  agencyId     String
+  documentType DocumentType
+  documentUrl  String
+  fileName     String
+  status       DocumentStatus @default(PENDING_VERIFICATION)
+  remarks      String?
+
+  agency       Agency         @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([agencyId])
+  @@index([documentType])
+}
+
 
 enum NotificationType {
   APPROVAL
@@ -757,6 +781,13 @@ enum NotificationType {
 }
 
 enum WorkerProfileStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum AgencyProfileStatus {
   PENDING
   APPROVED
   REJECTED

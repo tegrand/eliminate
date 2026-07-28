@@ -8,6 +8,8 @@ import ApproveDialog from "../../../components/ui/action-dialogs/ApproveDialog";
 import RejectDialog from "../../../components/ui/action-dialogs/RejectDialog";
 import SuspendDialog from "../../../components/ui/action-dialogs/SuspendDialog";
 import ReactivateDialog from "../../../components/ui/action-dialogs/ReactivateDialog";
+import { useQueryClient } from "@tanstack/react-query";
+import { agencyApi } from "../api/agency.api";
 import toast from "react-hot-toast";
 
 export default function AgencyTable({ agencies, loading, page, totalPages }) {
@@ -24,10 +26,20 @@ export default function AgencyTable({ agencies, loading, page, totalPages }) {
     setActionType(null);
   };
 
-  const handleConfirmAction = (reasonOrNote) => {
-    console.log(`Action: ${actionType} on Agency: ${selectedAgency.agencyName}, Reason/Note: ${reasonOrNote}`);
-    toast.success(`Agency ${actionType.toLowerCase()}d successfully.`);
-    closeDialog();
+  const queryClient = useQueryClient();
+
+  const handleConfirmAction = async (reasonOrNote) => {
+    try {
+      let status = actionType;
+      if (actionType === 'REACTIVATE') status = 'APPROVED';
+      await agencyApi.updateAgencyStatus(selectedAgency.id, status);
+      toast.success(`Agency ${actionType.toLowerCase()}d successfully.`);
+      queryClient.invalidateQueries({ queryKey: ["agencies"] });
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to update status");
+    } finally {
+      closeDialog();
+    }
   };
 
 
@@ -49,22 +61,32 @@ export default function AgencyTable({ agencies, loading, page, totalPages }) {
       key: "actions",
       title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />ACTIONS</div>,
       render: (row) => (
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-semibold">
-          <Link to={`/agencies/${row.id}`} className="text-blue-600 hover:text-blue-800 transition-colors">
+        <div className="flex items-center gap-3 text-sm font-semibold relative">
+          <Link to={`/agencies/${row.id}`} className="text-blue-600 hover:text-blue-800 transition-colors whitespace-nowrap">
             View Details
           </Link>
-          {row.status === 'PENDING' && (
-            <>
-              <button onClick={() => handleAction(row, 'APPROVE')} className="text-green-600 hover:text-green-800 transition-colors">Approve</button>
-              <button onClick={() => handleAction(row, 'REJECT')} className="text-red-600 hover:text-red-800 transition-colors">Reject</button>
-            </>
-          )}
-          {row.status === 'ACTIVE' && (
-            <button onClick={() => handleAction(row, 'SUSPEND')} className="text-orange-600 hover:text-orange-800 transition-colors">Suspend</button>
-          )}
-          {row.status === 'SUSPENDED' && (
-            <button onClick={() => handleAction(row, 'REACTIVATE')} className="text-indigo-600 hover:text-indigo-800 transition-colors">Reactivate</button>
-          )}
+          <div className="relative group">
+            <button className="p-1 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded focus:outline-none">
+              <MoreVertical className="w-4 h-4" />
+            </button>
+            <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-100 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 flex flex-col">
+              {row.status === 'PENDING' && (
+                <>
+                  <button onClick={() => handleAction(row, 'APPROVE')} className="text-left px-4 py-2 text-sm text-green-600 hover:bg-green-50 w-full transition-colors">Approve</button>
+                  <button onClick={() => handleAction(row, 'REJECT')} className="text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full transition-colors">Reject</button>
+                </>
+              )}
+              {row.status === 'APPROVED' && (
+                <button onClick={() => handleAction(row, 'SUSPEND')} className="text-left px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 w-full transition-colors">Suspend</button>
+              )}
+              {row.status === 'SUSPENDED' && (
+                <button onClick={() => handleAction(row, 'REACTIVATE')} className="text-left px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 w-full transition-colors">Reactivate</button>
+              )}
+              {row.status === 'REJECTED' && (
+                <div className="px-4 py-2 text-sm text-gray-400 italic text-center">No actions</div>
+              )}
+            </div>
+          </div>
         </div>
       )
     },
