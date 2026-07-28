@@ -42,6 +42,7 @@ export const ROUTES = {
 
   // Job Requirements
   JOB_REQUIREMENTS: "/job-requirements",
+  JOB_REQUIREMENT_DETAILS: "/job-requirements/:id",
   ASSIGN_WORKERS: "/job-requirements/:id/assign",
 
   // Assignments

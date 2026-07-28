@@ -16,12 +16,15 @@ import {
   Bookmark,
   CalendarCheck,
   ShieldCheck,
+  ClipboardList,
+  UserCheck,
 } from "lucide-react";
 
 const ALL_ROLES = ["SUPER_ADMIN", "CLIENT", "AGENCY", "WORKER"];
 const ADMIN_ONLY = ["SUPER_ADMIN"];
 
 export const NAVIGATION_CONFIG = [
+  // ─── OVERVIEW ────────────────────────────────────────────────────────────
   {
     group: "Overview",
     roles: ALL_ROLES,
@@ -31,9 +34,54 @@ export const NAVIGATION_CONFIG = [
         path: ROUTES.DASHBOARD,
         icon: LayoutDashboard,
         roles: ALL_ROLES,
-      }
-    ]
+      },
+    ],
   },
+
+  // ─── CLIENT PORTAL ───────────────────────────────────────────────────────
+  {
+    group: "Job Management",
+    roles: ["CLIENT"],
+    items: [
+      {
+        title: "Job Requirements",
+        path: ROUTES.JOB_REQUIREMENTS,
+        icon: ClipboardList,
+        roles: ["CLIENT"],
+      },
+    ],
+  },
+  {
+    group: "My Workers",
+    roles: ["CLIENT"],
+    items: [
+      {
+        title: "Assigned Workers",
+        path: ROUTES.WORKERS,
+        icon: Users,
+        roles: ["CLIENT"],
+      },
+      {
+        title: "Attendance",
+        path: ROUTES.ATTENDANCE,
+        icon: CalendarCheck,
+        roles: ["CLIENT"],
+      },
+    ],
+  },
+  {
+    group: "My Agencies",
+    roles: ["CLIENT"],
+    items: [
+      {
+        title: "Agencies",
+        path: ROUTES.AGENCIES,
+        icon: Building2,
+        roles: ["CLIENT"],
+      },
+    ],
+  },
+  // ─── WORKER PORTAL ───────────────────────────────────────────────────────
   {
     group: "Job Opportunities",
     roles: ["WORKER"],
@@ -67,9 +115,10 @@ export const NAVIGATION_CONFIG = [
         path: ROUTES.MY_DOCUMENTS,
         icon: FileText,
         roles: ["WORKER"],
-      }
-    ]
+      },
+    ],
   },
+  // ─── SUPER ADMIN PORTAL ──────────────────────────────────────────────────
   {
     group: "User Management",
     roles: ADMIN_ONLY,
@@ -91,11 +140,29 @@ export const NAVIGATION_CONFIG = [
         path: ROUTES.CLIENTS,
         icon: Building2,
         roles: ADMIN_ONLY,
-      }
-    ]
+      },
+    ],
   },
   {
-    group: "Finance & Operations",
+    group: "Operations",
+    roles: ADMIN_ONLY,
+    items: [
+      {
+        title: "Job Requirements",
+        path: ROUTES.JOB_REQUIREMENTS,
+        icon: ClipboardList,
+        roles: ADMIN_ONLY,
+      },
+      {
+        title: "Attendance Monitor",
+        path: ROUTES.ATTENDANCE,
+        icon: ShieldCheck,
+        roles: ADMIN_ONLY,
+      },
+    ],
+  },
+  {
+    group: "Finance",
     roles: ADMIN_ONLY,
     items: [
       {
@@ -116,13 +183,7 @@ export const NAVIGATION_CONFIG = [
         icon: CreditCard,
         roles: ADMIN_ONLY,
       },
-      {
-        title: "Attendance Monitoring",
-        path: ROUTES.ATTENDANCE,
-        icon: ShieldCheck,
-        roles: ADMIN_ONLY,
-      }
-    ]
+    ],
   },
   {
     group: "Master Data",
@@ -151,19 +212,7 @@ export const NAVIGATION_CONFIG = [
         path: ROUTES.LOCATIONS,
         icon: MapPin,
         roles: ADMIN_ONLY,
-      }
-    ]
+      },
+    ],
   },
-  {
-    group: "Client Operations",
-    roles: ["SUPER_ADMIN", "CLIENT", "AGENCY"],
-    items: [
-      {
-        title: "Job Requirements",
-        path: ROUTES.JOB_REQUIREMENTS,
-        icon: Briefcase,
-        roles: ["SUPER_ADMIN", "CLIENT", "AGENCY"],
-      }
-    ]
-  }
 ];

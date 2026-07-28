@@ -45,6 +45,7 @@ import LanguageListPage from "../features/master-data/language/pages/LanguageLis
 import LocationListPage from "../features/master-data/location/pages/LocationListPage";
 
 import JobRequirementListPage from "../features/job-requirement/pages/JobRequirementListPage";
+import JobRequirementDetailsPage from "../features/job-requirement/pages/JobRequirementDetailsPage";
 import AssignWorkersPage from "../features/job-requirement/pages/AssignWorkersPage";
 
 import AssignmentListPage from "../features/assignment/pages/AssignmentListPage";
@@ -129,6 +130,7 @@ const AppRouter = () => {
 
             {/* Job Requirements */}
             <Route path={ROUTES.JOB_REQUIREMENTS} element={<JobRequirementListPage />} />
+            <Route path={ROUTES.JOB_REQUIREMENT_DETAILS} element={<JobRequirementDetailsPage />} />
             <Route path={ROUTES.ASSIGN_WORKERS} element={<AssignWorkersPage />} />
 
             {/* Assignments */}

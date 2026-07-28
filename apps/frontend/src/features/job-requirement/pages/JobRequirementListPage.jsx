@@ -60,6 +60,27 @@ export default function JobRequirementListPage() {
     }
   };
 
+  const handleReopen = async (row) => {
+    try {
+      await jobRequirementApi.reopenJobRequirement(row.id);
+      toast.success("Job Requirement reopened successfully");
+      refetch();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to reopen");
+    }
+  };
+
+  const handleArchive = async (row) => {
+    if (!window.confirm("Are you sure you want to archive this requirement?")) return;
+    try {
+      await jobRequirementApi.deleteJobRequirement(row.id);
+      toast.success("Job Requirement archived successfully");
+      refetch();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to archive");
+    }
+  };
+
   const handleSubmitForm = async (data) => {
     try {
       const payload = {
@@ -119,6 +140,8 @@ export default function JobRequirementListPage() {
         onDuplicate={handleDuplicate}
         onCancel={handleCancel}
         onClose={handleClose}
+        onReopen={handleReopen}
+        onArchive={handleArchive}
       />
 
       <Modal

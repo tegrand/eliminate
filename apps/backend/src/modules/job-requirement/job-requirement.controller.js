@@ -105,3 +105,33 @@ export const duplicateJobRequirement = asyncHandler(async (req, res) => {
     data: { jobRequirement },
   });
 });
+
+export const requestWorkerReplacement = asyncHandler(async (req, res) => {
+  const clientId = await getClientId(req.user.id);
+  const application = await JobRequirementService.requestWorkerReplacement(
+    req.params.id, 
+    req.params.applicationId, 
+    clientId, 
+    req.body.reason
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: { application },
+  });
+});
+
+export const requestWorkerRemoval = asyncHandler(async (req, res) => {
+  const clientId = await getClientId(req.user.id);
+  const application = await JobRequirementService.requestWorkerRemoval(
+    req.params.id, 
+    req.params.applicationId, 
+    clientId, 
+    req.body.reason
+  );
+
+  res.status(200).json({
+    status: "success",
+    data: { application },
+  });
+});

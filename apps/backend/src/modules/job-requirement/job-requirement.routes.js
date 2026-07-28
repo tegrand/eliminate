@@ -40,4 +40,12 @@ router
   .route("/:id/duplicate")
   .post(JobRequirementController.duplicateJobRequirement);
 
+router
+  .route("/:id/applications/:applicationId/request-replacement")
+  .patch(JobRequirementController.requestWorkerReplacement);
+
+router
+  .route("/:id/applications/:applicationId/request-removal")
+  .patch(JobRequirementController.requestWorkerRemoval);
+
 export default router;

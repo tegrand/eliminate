@@ -4,7 +4,7 @@ import { Pagination } from "../../../components/ui/pagination";
 import JobRequirementStatusBadge from "./JobRequirementStatusBadge";
 import { Badge } from "../../../components/ui/badge";
 
-export default function JobRequirementTable({ requirements, loading, page, totalPages, onEdit, onDuplicate, onCancel, onClose }) {
+export default function JobRequirementTable({ requirements, loading, page, totalPages, onEdit, onDuplicate, onCancel, onClose, onReopen, onArchive }) {
   const columns = [
     { key: "id", title: "Requirement ID", render: (row) => <span className="font-medium text-gray-900">{row.id}</span> },
     { key: "client", title: "Client", render: (row) => row.client },
@@ -79,6 +79,28 @@ export default function JobRequirementTable({ requirements, loading, page, total
               title="Cancel"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x-circle"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+            </button>
+          )}
+
+          {(row.status === "CANCELLED" || row.status === "COMPLETED") && (
+            <button 
+              onClick={() => onReopen && onReopen(row)}
+              className="p-1 text-gray-400 hover:text-green-600 focus:outline-none" 
+              aria-label="Reopen" 
+              title="Reopen"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            </button>
+          )}
+
+          {(row.status === "DRAFT" || row.status === "OPEN") && (
+            <button 
+              onClick={() => onArchive && onArchive(row)}
+              className="p-1 text-gray-400 hover:text-red-600 focus:outline-none" 
+              aria-label="Archive / Delete" 
+              title="Archive / Delete"
+            >
+              <Trash2 className="h-4 w-4" />
             </button>
           )}
         </div>

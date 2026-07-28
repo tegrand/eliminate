@@ -85,6 +85,13 @@ export const getJobRequirementById = async (id, clientId) => {
       requiredLanguages: { include: { language: true } },
       category: true,
       location: true,
+      applications: {
+        include: {
+          worker: {
+            include: { user: true }
+          }
+        }
+      }
     },
   });
 
@@ -249,4 +256,58 @@ export const duplicateJobRequirement = async (id, clientId) => {
   });
 
   return newJob;
+};
+
+export const requestWorkerReplacement = async (jobRequirementId, applicationId, clientId, reason) => {
+  // Verify job requirement belongs to client
+  await getJobRequirementById(jobRequirementId, clientId);
+
+  const application = await prisma.jobApplication.findUnique({
+    where: { id: applicationId },
+  });
+
+  if (!application || application.jobRequirementId !== jobRequirementId) {
+    throw new AppError("Application not found for this job requirement", 404);
+  }
+
+  if (application.status !== "ACCEPTED") {
+    throw new AppError("Can only request replacement for currently assigned workers", 400);
+  }
+
+  const updatedApplication = await prisma.jobApplication.update({
+    where: { id: applicationId },
+    data: {
+      status: "REPLACEMENT_REQUESTED",
+      notes: reason ? `${application.notes ? application.notes + '\n' : ''}Replacement Request: ${reason}` : application.notes,
+    },
+  });
+
+  return updatedApplication;
+};
+
+export const requestWorkerRemoval = async (jobRequirementId, applicationId, clientId, reason) => {
+  // Verify job requirement belongs to client
+  await getJobRequirementById(jobRequirementId, clientId);
+
+  const application = await prisma.jobApplication.findUnique({
+    where: { id: applicationId },
+  });
+
+  if (!application || application.jobRequirementId !== jobRequirementId) {
+    throw new AppError("Application not found for this job requirement", 404);
+  }
+
+  if (application.status !== "ACCEPTED") {
+    throw new AppError("Can only request removal for currently assigned workers", 400);
+  }
+
+  const updatedApplication = await prisma.jobApplication.update({
+    where: { id: applicationId },
+    data: {
+      status: "REMOVAL_REQUESTED",
+      notes: reason ? `${application.notes ? application.notes + '\n' : ''}Removal Request: ${reason}` : application.notes,
+    },
+  });
+
+  return updatedApplication;
 };
