@@ -17,14 +17,14 @@ import {
   CalendarCheck,
   ShieldCheck,
   ClipboardList,
+  UserCheck,
 } from "lucide-react";
 
 const ALL_ROLES = ["SUPER_ADMIN", "CLIENT", "AGENCY", "WORKER"];
 const ADMIN_ONLY = ["SUPER_ADMIN"];
 
-// clientType is derived from the user object: "COMPANY" | "INDIVIDUAL" | undefined
 export const NAVIGATION_CONFIG = [
-  // ─── OVERVIEW (all roles) ─────────────────────────────────────────────────
+  // ─── OVERVIEW ────────────────────────────────────────────────────────────
   {
     group: "Overview",
     roles: ALL_ROLES,
@@ -38,59 +38,50 @@ export const NAVIGATION_CONFIG = [
     ],
   },
 
-  // ─── CLIENT – COMPANY ─────────────────────────────────────────────────────
+  // ─── CLIENT PORTAL ───────────────────────────────────────────────────────
   {
     group: "Job Management",
     roles: ["CLIENT"],
-    clientTypes: ["COMPANY"],
     items: [
       {
         title: "Job Requirements",
         path: ROUTES.JOB_REQUIREMENTS,
         icon: ClipboardList,
         roles: ["CLIENT"],
-        clientTypes: ["COMPANY"],
       },
     ],
   },
   {
     group: "My Workers",
     roles: ["CLIENT"],
-    clientTypes: ["COMPANY"],
     items: [
       {
         title: "Assigned Workers",
         path: ROUTES.WORKERS,
         icon: Users,
         roles: ["CLIENT"],
-        clientTypes: ["COMPANY"],
       },
       {
         title: "Attendance",
         path: ROUTES.ATTENDANCE,
         icon: CalendarCheck,
         roles: ["CLIENT"],
-        clientTypes: ["COMPANY"],
       },
     ],
   },
   {
     group: "My Agencies",
     roles: ["CLIENT"],
-    clientTypes: ["COMPANY"],
     items: [
       {
         title: "Agencies",
         path: ROUTES.AGENCIES,
         icon: Building2,
         roles: ["CLIENT"],
-        clientTypes: ["COMPANY"],
       },
     ],
   },
-
-
-  // ─── WORKER PORTAL ────────────────────────────────────────────────────────
+  // ─── WORKER PORTAL ───────────────────────────────────────────────────────
   {
     group: "Job Opportunities",
     roles: ["WORKER"],
@@ -127,8 +118,7 @@ export const NAVIGATION_CONFIG = [
       },
     ],
   },
-
-  // ─── SUPER ADMIN PORTAL ───────────────────────────────────────────────────
+  // ─── SUPER ADMIN PORTAL ──────────────────────────────────────────────────
   {
     group: "User Management",
     roles: ADMIN_ONLY,

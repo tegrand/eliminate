@@ -16,7 +16,7 @@ export default function ClientSignupPage() {
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
     resolver: zodResolver(clientSignupSchema),
     defaultValues: {
-      clientType: "COMPANY"
+      clientType: "INDIVIDUAL"
     }
   });
 
@@ -25,10 +25,9 @@ export default function ClientSignupPage() {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      // Dynamic import to avoid circular dependency issues if any
       const { authApi } = await import("../api/auth.api");
       await authApi.registerClient(data);
-      toast.success("Client account created successfully! Please log in.");
+      toast.success("Account created successfully! Please log in.");
       navigate(ROUTES.LOGIN);
     } catch (error) {
       toast.error(error?.response?.data?.message || "Registration failed. Please try again.");
@@ -50,61 +49,102 @@ export default function ClientSignupPage() {
           </div>
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Client Registration</h2>
-            <p className="text-xs text-gray-500">Instant access for employers and enterprise businesses.</p>
+            <p className="text-xs text-gray-500">Create your account to start hiring workers.</p>
+          </div>
+        </div>
+
+        {/* Client Type Selector */}
+        <div className="mb-6">
+          <p className="text-sm font-semibold text-gray-700 mb-3">I am registering as a</p>
+          <div className="grid grid-cols-2 gap-3">
+            {/* Individual Option */}
+            <button
+              type="button"
+              onClick={() => setValue("clientType", "INDIVIDUAL")}
+              className={`relative flex flex-col items-center justify-center gap-2 p-5 rounded-xl border-2 transition-all cursor-pointer ${
+                clientType === "INDIVIDUAL"
+                  ? "border-blue-600 bg-blue-50 text-blue-700 shadow-sm"
+                  : "border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50"
+              }`}
+            >
+              {clientType === "INDIVIDUAL" && (
+                <span className="absolute top-2 right-2 w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
+                  <CheckCircle2 className="w-3 h-3 text-white" />
+                </span>
+              )}
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                clientType === "INDIVIDUAL" ? "bg-blue-100" : "bg-gray-100"
+              }`}>
+                <User className="w-6 h-6" />
+              </div>
+              <div className="text-center">
+                <p className="font-semibold text-sm">Individual</p>
+                <p className="text-xs opacity-70 mt-0.5">Personal hiring</p>
+              </div>
+            </button>
+
+            {/* Company Option */}
+            <button
+              type="button"
+              onClick={() => setValue("clientType", "COMPANY")}
+              className={`relative flex flex-col items-center justify-center gap-2 p-5 rounded-xl border-2 transition-all cursor-pointer ${
+                clientType === "COMPANY"
+                  ? "border-blue-600 bg-blue-50 text-blue-700 shadow-sm"
+                  : "border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50"
+              }`}
+            >
+              {clientType === "COMPANY" && (
+                <span className="absolute top-2 right-2 w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
+                  <CheckCircle2 className="w-3 h-3 text-white" />
+                </span>
+              )}
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                clientType === "COMPANY" ? "bg-blue-100" : "bg-gray-100"
+              }`}>
+                <Building2 className="w-6 h-6" />
+              </div>
+              <div className="text-center">
+                <p className="font-semibold text-sm">Company</p>
+                <p className="text-xs opacity-70 mt-0.5">Business hiring</p>
+              </div>
+            </button>
           </div>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="flex bg-gray-100 p-1 rounded-xl mb-4">
-            <button
-              type="button"
-              onClick={() => setValue("clientType", "INDIVIDUAL")}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-lg transition-colors ${
-                clientType === "INDIVIDUAL" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              <User className="w-4 h-4" /> Individual
-            </button>
-            <button
-              type="button"
-              onClick={() => setValue("clientType", "COMPANY")}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 text-sm font-medium rounded-lg transition-colors ${
-                clientType === "COMPANY" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              <Building2 className="w-4 h-4" /> Company
-            </button>
-          </div>
-
+          {/* Company Name - only for COMPANY type */}
           {clientType === "COMPANY" && (
             <Input
               label="Company Name"
-              placeholder="e.g. Acme Corp Inc."
+              placeholder="e.g. Acme Corporation Pvt. Ltd."
               error={errors.companyName?.message}
               {...register("companyName")}
             />
           )}
+
           <Input
-            label="Contact Person Name"
-            placeholder="e.g. John Doe"
+            label={clientType === "INDIVIDUAL" ? "Your Full Name" : "Contact Person Name"}
+            placeholder={clientType === "INDIVIDUAL" ? "e.g. Rahul Sharma" : "e.g. John Doe"}
             error={errors.contactPerson?.message}
             {...register("contactPerson")}
           />
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
               type="email"
-              label="Work Email"
-              placeholder="john@company.com"
+              label="Email Address"
+              placeholder="you@example.com"
               error={errors.email?.message}
               {...register("email")}
             />
             <Input
               label="Phone Number"
-              placeholder="+1 234 567 8900"
+              placeholder="+91 98765 43210"
               error={errors.phone?.message}
               {...register("phone")}
             />
           </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
               type="password"
@@ -136,8 +176,13 @@ export default function ClientSignupPage() {
           {errors.acceptTerms && <p className="text-xs text-red-500 mt-1">{errors.acceptTerms.message}</p>}
 
           <Button type="submit" loading={loading} className="w-full mt-6 bg-gray-900 hover:bg-gray-800">
-            <CheckCircle2 className="mr-2 h-4 w-4" /> Create Client Account
+            <CheckCircle2 className="mr-2 h-4 w-4" /> Create Account
           </Button>
+
+          <p className="text-center text-xs text-gray-500 mt-4">
+            Already have an account?{" "}
+            <Link to={ROUTES.LOGIN} className="text-blue-600 font-semibold hover:underline">Sign in</Link>
+          </p>
         </form>
       </div>
     </div>

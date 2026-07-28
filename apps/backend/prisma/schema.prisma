@@ -336,6 +336,7 @@ model Client {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   clientCode     String? @unique
+  clientType     String  @default("INDIVIDUAL") // INDIVIDUAL or COMPANY
   companyName    String?
   contactPerson  String?
   phone          String?
