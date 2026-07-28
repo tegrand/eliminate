@@ -31,11 +31,20 @@ const issueTokensAndUpdateUser = async (user, meta, action = "LOGIN") => {
         emailVerified: true,
         emailVerifiedAt: true,
         lastLoginAt: true,
+        firstName: true,
+        lastName: true,
         role: {
           select: {
             id: true,
             name: true,
             displayName: true,
+          },
+        },
+        client: {
+          select: {
+            id: true,
+            companyName: true,
+            contactPerson: true,
           },
         },
         createdAt: true,
@@ -51,6 +60,11 @@ const issueTokensAndUpdateUser = async (user, meta, action = "LOGIN") => {
       },
     }),
   ]);
+
+  // Derive clientType from companyName presence
+  if (updatedUser.profileType === "CLIENT" && updatedUser.client) {
+    updatedUser.clientType = updatedUser.client.companyName ? "COMPANY" : "INDIVIDUAL";
+  }
 
   return { accessToken, refreshToken, user: updatedUser };
 };

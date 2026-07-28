@@ -6,13 +6,19 @@ import { useAuth } from "../../hooks/useAuth";
 export default function Sidebar() {
   const { user } = useAuth();
   const profileType = user?.profileType;
+  const clientType = user?.clientType; // "COMPANY" | "INDIVIDUAL" | undefined
 
   const filteredNavigation = NAVIGATION_CONFIG.map(group => {
+    // Check role
     if (group.roles && !group.roles.includes(profileType)) return null;
 
+    // Check clientType at group level (if defined)
+    if (group.clientTypes && clientType && !group.clientTypes.includes(clientType)) return null;
+
     const filteredItems = group.items.filter(item => {
-      if (!item.roles) return true;
-      return item.roles.includes(profileType);
+      if (item.roles && !item.roles.includes(profileType)) return false;
+      if (item.clientTypes && clientType && !item.clientTypes.includes(clientType)) return false;
+      return true;
     });
 
     if (filteredItems.length === 0) return null;
