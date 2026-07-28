@@ -22,6 +22,11 @@ export const requirePermission = (...permissions) => {
       throw new AppError("Forbidden", 403);
     }
 
+    // SUPER_ADMIN has implicit access to all routes — skip permission check
+    if (req.user.role?.name === "SUPER_ADMIN") {
+      return next();
+    }
+
     const userRecord = await prisma.user.findUnique({
       where: { id: req.user.id },
       select: {

@@ -1,6 +1,5 @@
 import crypto from "crypto";
 import prisma from "../../config/prisma.js";
-import AppError from "../../shared/errors/app-error.js";
 
 export const getWorkerDashboard = async (userId) => {
   let worker = await prisma.worker.findUnique({
@@ -15,42 +14,21 @@ export const getWorkerDashboard = async (userId) => {
   });
 
   if (!worker) {
-    // Auto-heal: create the worker profile if missing
     worker = await prisma.worker.create({
       data: {
         userId,
         workerCode: `WRK-${crypto.randomBytes(4).toString("hex").toUpperCase()}`
       },
       include: {
-        agencies: {
-          include: { agency: true }
-        },
+        agencies: { include: { agency: true } },
       }
     });
   }
 
-  // Calculate Profile Completion %
-  const fieldsToCheck = [
-    'firstName', 'lastName', 'phone', 'gender', 'dateOfBirth', 'profilePhoto', 'joiningDate'
-  ];
+  const fieldsToCheck = ['firstName', 'lastName', 'phone', 'gender', 'dateOfBirth', 'profilePhoto', 'joiningDate'];
   const filledFields = fieldsToCheck.filter(field => worker[field]);
   const profileCompletion = Math.round((filledFields.length / fieldsToCheck.length) * 100);
-
   const currentAgency = worker.agencies[0]?.agency || null;
-
-  // No fake data as per request
-  const activeJob = null;
-  const upcomingJobs = [];
-  const todayAttendance = null;
-  const pendingPayments = null;
-  const topStats = {
-    totalCompletedWork: 0,
-    totalRevenue: "₹0",
-    pendingAmount: "₹0",
-    totalHoursLogged: "0 hrs"
-  };
-  const notifications = [];
-  const recentActivities = [];
 
   return {
     profile: {
@@ -58,31 +36,57 @@ export const getWorkerDashboard = async (userId) => {
       status: worker.employmentStatus,
       currentAgency: currentAgency ? currentAgency.agencyName : "Independent Worker",
     },
-    activeJob,
-    upcomingJobs,
-    todayAttendance,
-    pendingPayments,
-    notifications,
-    recentActivities,
-    topStats
+    activeJob: null,
+    upcomingJobs: [],
+    todayAttendance: null,
+    pendingPayments: null,
+    notifications: [],
+    recentActivities: [],
+    topStats: {
+      totalCompletedWork: 0,
+      totalRevenue: "₹0",
+      pendingAmount: "₹0",
+      totalHoursLogged: "0 hrs"
+    }
   };
 };
 
 export const getSuperAdminDashboard = async () => {
-  // Placeholder for when we move Super Admin stats to backend
-  // For now, returning empty so frontend uses its hardcoded stats
+  const [
+    totalWorkers,
+    totalClients,
+    totalAgencies,
+    activeRequirements,
+    openRequirements,
+    completedRequirements,
+    totalApplications
+  ] = await Promise.all([
+    prisma.worker.count({ where: { deletedAt: null } }),
+    prisma.client.count({ where: { deletedAt: null } }),
+    prisma.agency.count({ where: { deletedAt: null } }),
+    prisma.jobRequirement.count({ where: { deletedAt: null, status: { in: ["OPEN", "PARTIALLY_FILLED"] } } }),
+    prisma.jobRequirement.count({ where: { deletedAt: null, status: "OPEN" } }),
+    prisma.jobRequirement.count({ where: { deletedAt: null, status: "COMPLETED" } }),
+    prisma.jobApplication.count(),
+  ]);
+
   return {
-    message: "Super Admin dashboard data would go here"
+    topStats: {
+      totalWorkers,
+      totalClients,
+      totalAgencies,
+      activeRequirements,
+      openRequirements,
+      completedRequirements,
+      totalApplications,
+    }
   };
 };
 
 export const getClientDashboard = async (userId) => {
-  let client = await prisma.client.findUnique({
-    where: { userId },
-  });
+  let client = await prisma.client.findUnique({ where: { userId } });
 
   if (!client) {
-    // Auto-heal: create the client profile if missing
     client = await prisma.client.create({
       data: {
         userId,
@@ -91,70 +95,103 @@ export const getClientDashboard = async (userId) => {
     });
   }
 
-  // Get active requirements
-  const activeRequirements = await prisma.jobRequirement.count({
-    where: {
-      clientId: client.id,
-      status: { in: ["OPEN", "PARTIALLY_FILLED"] }
-    }
-  });
-
-  // Get assigned workers
-  const jobRequirements = await prisma.jobRequirement.findMany({
-    where: { clientId: client.id },
-    select: { assignedCount: true }
-  });
-  const assignedWorkers = jobRequirements.reduce((sum, req) => sum + (req.assignedCount || 0), 0);
-
-  // Get upcoming jobs
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const upcomingJobsCount = await prisma.jobRequirement.count({
-    where: {
-      clientId: client.id,
-      startDate: { gte: today },
-      status: { notIn: ["CANCELLED", "COMPLETED", "DRAFT"] }
-    }
-  });
+  // Run all DB queries in parallel for performance
+  const [
+    activeRequirements,
+    openRequirements,
+    ongoingJobs,
+    completedJobs,
+    allRequirementsForWorkers,
+    upcomingJobsCount,
+    recentActivitiesList,
+    notifications
+  ] = await Promise.all([
+    // Active = OPEN + PARTIALLY_FILLED
+    prisma.jobRequirement.count({
+      where: { clientId: client.id, deletedAt: null, status: { in: ["OPEN", "PARTIALLY_FILLED"] } }
+    }),
+    // Open = only OPEN
+    prisma.jobRequirement.count({
+      where: { clientId: client.id, deletedAt: null, status: "OPEN" }
+    }),
+    // Ongoing = PARTIALLY_FILLED (workers assigned, job running)
+    prisma.jobRequirement.count({
+      where: { clientId: client.id, deletedAt: null, status: "PARTIALLY_FILLED" }
+    }),
+    // Completed jobs
+    prisma.jobRequirement.count({
+      where: { clientId: client.id, deletedAt: null, status: "COMPLETED" }
+    }),
+    // For counting assigned workers
+    prisma.jobRequirement.findMany({
+      where: { clientId: client.id, deletedAt: null },
+      select: { assignedCount: true }
+    }),
+    // Upcoming = future start date, not cancelled/completed/draft
+    prisma.jobRequirement.count({
+      where: {
+        clientId: client.id,
+        deletedAt: null,
+        startDate: { gte: today },
+        status: { notIn: ["CANCELLED", "COMPLETED", "DRAFT"] }
+      }
+    }),
+    // Recent activities from requirements (last 8)
+    prisma.jobRequirement.findMany({
+      where: { clientId: client.id, deletedAt: null },
+      orderBy: { updatedAt: "desc" },
+      take: 8,
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        priority: true,
+        assignedCount: true,
+        requiredWorkers: true,
+        createdAt: true,
+        updatedAt: true,
+        location: { select: { name: true } },
+        category: { select: { name: true } }
+      }
+    }),
+    // Notifications (last 6)
+    prisma.notification.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      take: 6
+    })
+  ]);
 
-  // Recent activities
-  const recentActivitiesList = await prisma.jobRequirement.findMany({
-    where: { clientId: client.id },
-    orderBy: { createdAt: 'desc' },
-    take: 5,
-    select: {
-      id: true,
-      title: true,
-      status: true,
-      createdAt: true
-    }
-  });
+  const assignedWorkers = allRequirementsForWorkers.reduce((sum, r) => sum + (r.assignedCount || 0), 0);
 
+  // Map activities with richer info
   const recentActivities = recentActivitiesList.map(req => ({
     id: req.id,
-    title: `Requirement "${req.title}" is now ${req.status}`,
-    type: "REQUIREMENT_UPDATE",
-    timestamp: req.createdAt
+    title: req.title,
+    status: req.status,
+    priority: req.priority,
+    assignedCount: req.assignedCount,
+    requiredWorkers: req.requiredWorkers,
+    location: req.location?.name || null,
+    category: req.category?.name || null,
+    timestamp: req.updatedAt,
+    createdAt: req.createdAt
   }));
-
-  // Notifications
-  const notifications = await prisma.notification.findMany({
-    where: { userId },
-    orderBy: { createdAt: 'desc' },
-    take: 5
-  });
 
   return {
     topStats: {
       activeRequirements,
+      openRequirements,
       assignedWorkers,
+      ongoingJobs,
+      completedJobs,
       upcomingJobs: upcomingJobsCount,
-      pendingPayments: "₹0"
+      pendingPayments: "₹0"   // payment module pending
     },
     recentActivities,
     notifications,
-    upcomingJobs: [],
-    activeJob: null
   };
 };

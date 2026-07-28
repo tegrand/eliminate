@@ -15,13 +15,18 @@ export default function ClientListPage() {
   const { data, isLoading } = useClients({ page, status: currentStatus !== "ALL" ? currentStatus : undefined });
 
   const districtFilter = searchParams.get("district") || "";
-  let displayedClients = data?.data?.clients || [];
+
+  // Normalize backend shape: { items, pagination } → flat list
+  const rawClients = data?.data?.items || data?.data?.clients || [];
+  const pagination = data?.data?.pagination || {};
+
+  let displayedClients = rawClients;
 
   if (districtFilter) {
     displayedClients = displayedClients.filter(c => c.district === districtFilter);
   }
   if (currentStatus !== "ALL") {
-    displayedClients = displayedClients.filter(c => c.status === currentStatus);
+    displayedClients = displayedClients.filter(c => c.user?.status === currentStatus || c.status === currentStatus);
   }
 
   const tabs = [
@@ -32,9 +37,9 @@ export default function ClientListPage() {
 
   return (
     <div className="w-full h-[calc(100vh-4rem)] px-4 pb-4 pt-4 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
-      <ClientToolbar totalClients={data?.data?.total || 0} />
+      <ClientToolbar totalClients={pagination.total || 0} />
       
-      <ClientStats clients={data?.data?.clients || []} />
+      <ClientStats clients={rawClients} />
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col flex-1 overflow-hidden">
         <div className="border-b border-gray-100 px-6 pt-1 flex-shrink-0">
@@ -63,8 +68,8 @@ export default function ClientListPage() {
             <ClientTable 
               clients={displayedClients} 
               loading={isLoading} 
-              page={data?.data?.page || 1}
-              totalPages={data?.data?.totalPages || 1}
+              page={pagination.page || 1}
+              totalPages={pagination.totalPages || 1}
             />
           </div>
         </div>

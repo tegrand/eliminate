@@ -17,7 +17,17 @@ export default function WorkerListPage() {
   const agencyFilter = searchParams.get("agency") || "";
   const skillFilter = searchParams.get("skill") || "";
 
-  let displayedWorkers = data?.data?.workers || [];
+  // Normalize backend shape: { items, pagination } → flat worker list with UI-friendly fields
+  const rawWorkers = data?.data?.items || data?.data?.workers || [];
+  const pagination = data?.data?.pagination || {};
+
+  const normalizedWorkers = rawWorkers.map((w) => ({
+    ...w,
+    name: `${w.firstName || ""} ${w.lastName || ""}`.trim() || w.name || "—",
+    status: w.employmentStatus ?? w.status,
+  }));
+
+  let displayedWorkers = normalizedWorkers;
   
   if (agencyFilter) {
     displayedWorkers = displayedWorkers.filter(w => w.agency === agencyFilter);
@@ -41,7 +51,7 @@ export default function WorkerListPage() {
     <div className="w-full h-[calc(100vh-4rem)] px-4 pb-4 pt-4 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
       <WorkerToolbar totalWorkers={displayedWorkers.length} />
       
-      <WorkerStats workers={data?.data?.workers || []} />
+      <WorkerStats workers={normalizedWorkers} />
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col flex-1 overflow-hidden">
         <div className="border-b border-gray-100 px-6 pt-1 flex-shrink-0">
@@ -70,8 +80,8 @@ export default function WorkerListPage() {
             <WorkerTable 
               workers={displayedWorkers} 
               loading={isLoading} 
-              page={data?.data?.page || 1}
-              totalPages={data?.data?.totalPages || 1}
+              page={pagination.page || 1}
+              totalPages={pagination.totalPages || 1}
             />
           </div>
         </div>
