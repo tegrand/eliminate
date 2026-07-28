@@ -5,6 +5,7 @@ import {
   getWorkers,
   getWorkerById,
   updateWorker,
+  updateWorkerStatus,
   deleteWorker,
   getMyWorkerProfile,
   updateMyWorkerProfile,
@@ -19,6 +20,7 @@ import {
   updateWorkerSchema,
   workerIdParamSchema,
   listWorkersQuerySchema,
+  updateWorkerStatusSchema,
 } from "./worker.validation.js";
 
 import validate from "../../middleware/validate.middleware.js";
@@ -75,6 +77,14 @@ router.patch(
   requirePermission("worker:update"),
   validate(updateWorkerSchema),
   updateWorker
+);
+
+router.patch(
+  "/:id/status",
+  requirePermission("worker:update"),
+  validate(workerIdParamSchema, "params"),
+  validate(updateWorkerStatusSchema),
+  updateWorkerStatus
 );
 
 router.delete(

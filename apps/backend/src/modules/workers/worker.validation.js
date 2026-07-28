@@ -58,11 +58,17 @@ export const workerIdParamSchema = z.object({
   id: z.string().uuid("Invalid worker ID format"),
 });
 
+export const updateWorkerStatusSchema = z.object({
+  status: z.enum(["PENDING", "APPROVED", "REJECTED", "SUSPENDED"], {
+    errorMap: () => ({ message: "Invalid status value" })
+  })
+}).strict();
+
 export const listWorkersQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(10),
   search: z.string().trim().optional(),
-  status: z.enum(["ACTIVE", "BUSY", "INACTIVE", "ON_LEAVE", "TERMINATED"]).optional(),
+  status: z.enum(["PENDING", "APPROVED", "REJECTED", "SUSPENDED", "ALL"]).optional(),
   sortBy: z.enum(["createdAt", "updatedAt", "firstName", "lastName", "joiningDate"]).default("createdAt"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 }).strict("Unknown query parameters are not allowed");

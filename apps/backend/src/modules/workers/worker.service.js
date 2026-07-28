@@ -45,6 +45,18 @@ const workerSelect = {
   skillCertificates: true,
   createdAt: true,
   updatedAt: true,
+  profileStatus: true,
+  documents: {
+    select: {
+      id: true,
+      documentType: true,
+      documentUrl: true,
+      fileName: true,
+      status: true,
+      remarks: true,
+      updatedAt: true
+    }
+  },
   user: {
     select: {
       id: true,
@@ -95,7 +107,7 @@ export const getWorkers = async ({
   };
 
   if (status) {
-    where.employmentStatus = status;
+    where.profileStatus = status;
   }
 
   if (search) {
@@ -166,6 +178,35 @@ export const updateWorker = async (id, data, user) => {
     data,
     select: workerSelect,
   });
+
+  return updatedWorker;
+};
+
+export const updateWorkerStatus = async (id, status) => {
+  const worker = await prisma.worker.findFirst({
+    where: { id, deletedAt: null },
+  });
+
+  if (!worker) {
+    throw new AppError("Worker not found", 404);
+  }
+
+  const updatedWorker = await prisma.worker.update({
+    where: { id },
+    data: { profileStatus: status },
+    select: workerSelect,
+  });
+  
+  // Optionally sync with User status
+  // let userStatus = "PENDING";
+  // if (status === "APPROVED") userStatus = "ACTIVE";
+  // else if (status === "REJECTED") userStatus = "REJECTED";
+  // else if (status === "SUSPENDED") userStatus = "SUSPENDED";
+  // 
+  // await prisma.user.update({
+  //   where: { id: worker.userId },
+  //   data: { status: userStatus }
+  // });
 
   return updatedWorker;
 };

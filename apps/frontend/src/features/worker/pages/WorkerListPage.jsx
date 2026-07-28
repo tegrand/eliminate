@@ -24,7 +24,7 @@ export default function WorkerListPage() {
   const normalizedWorkers = rawWorkers.map((w) => ({
     ...w,
     name: `${w.firstName || ""} ${w.lastName || ""}`.trim() || w.name || "—",
-    status: w.employmentStatus ?? w.status,
+    status: w.profileStatus || "PENDING",
   }));
 
   let displayedWorkers = normalizedWorkers;

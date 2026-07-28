@@ -32,6 +32,11 @@ export const updateWorker = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, "Worker updated successfully", worker, 200);
 });
 
+export const updateWorkerStatus = asyncHandler(async (req, res) => {
+  const worker = await workerService.updateWorkerStatus(req.params.id, req.validatedData.status);
+  return ApiResponse.success(res, "Worker status updated successfully", worker, 200);
+});
+
 export const deleteWorker = asyncHandler(async (req, res) => {
   await workerService.deleteWorker(req.params.id);
   return ApiResponse.success(res, "Worker deleted successfully", null, 200);

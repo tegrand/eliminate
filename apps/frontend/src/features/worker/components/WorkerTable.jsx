@@ -8,6 +8,8 @@ import ApproveDialog from "../../../components/ui/action-dialogs/ApproveDialog";
 import RejectDialog from "../../../components/ui/action-dialogs/RejectDialog";
 import SuspendDialog from "../../../components/ui/action-dialogs/SuspendDialog";
 import ReactivateDialog from "../../../components/ui/action-dialogs/ReactivateDialog";
+import { useQueryClient } from "@tanstack/react-query";
+import { workerApi } from "../api/worker.api";
 import toast from "react-hot-toast";
 
 export default function WorkerTable({ workers, loading, page, totalPages }) {
@@ -24,10 +26,20 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
     setActionType(null);
   };
 
-  const handleConfirmAction = (reasonOrNote) => {
-    console.log(`Action: ${actionType} on Worker: ${selectedWorker.name}, Reason/Note: ${reasonOrNote}`);
-    toast.success(`Worker ${actionType.toLowerCase()}d successfully.`);
-    closeDialog();
+  const queryClient = useQueryClient();
+
+  const handleConfirmAction = async (reasonOrNote) => {
+    try {
+      let status = actionType;
+      if (actionType === 'REACTIVATE') status = 'APPROVED';
+      await workerApi.updateWorkerStatus(selectedWorker.id, status);
+      toast.success(`Worker ${actionType.toLowerCase()}d successfully.`);
+      queryClient.invalidateQueries({ queryKey: ["workers"] });
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to update status");
+    } finally {
+      closeDialog();
+    }
   };
 
   const getInitials = (name) => {
