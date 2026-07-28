@@ -385,6 +385,7 @@ model Agency {
   state          String?
   country        String?
   postalCode     String?
+  notes          String?
   profileStatus  AgencyProfileStatus @default(PENDING)
 
   // Document URLs (Optional if using AgencyDocument model)
