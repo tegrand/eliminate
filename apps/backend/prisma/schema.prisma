@@ -178,6 +178,8 @@ enum ApplicationStatus {
   ACCEPTED
   REJECTED
   WITHDRAWN
+  REPLACEMENT_REQUESTED
+  REMOVAL_REQUESTED
 }
 
 enum AttendanceStatus {

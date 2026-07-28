@@ -33,6 +33,10 @@ router
   .patch(JobRequirementController.closeJobRequirement);
 
 router
+  .route("/:id/reopen")
+  .patch(JobRequirementController.reopenJobRequirement);
+
+router
   .route("/:id/duplicate")
   .post(JobRequirementController.duplicateJobRequirement);
 

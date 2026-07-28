@@ -174,6 +174,24 @@ export const closeJobRequirement = async (id, clientId) => {
   return updatedJob;
 };
 
+export const reopenJobRequirement = async (id, clientId) => {
+  const existingJob = await getJobRequirementById(id, clientId);
+
+  if (!["CANCELLED", "COMPLETED"].includes(existingJob.status)) {
+    throw new AppError("Only cancelled or completed requirements can be reopened", 400);
+  }
+
+  const updatedJob = await prisma.jobRequirement.update({
+    where: { id },
+    data: { 
+      status: "OPEN",
+      cancellationReason: null, // Clear cancellation reason if any
+    },
+  });
+
+  return updatedJob;
+};
+
 export const duplicateJobRequirement = async (id, clientId) => {
   const existingJob = await getJobRequirementById(id, clientId);
 

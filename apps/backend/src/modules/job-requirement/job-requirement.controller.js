@@ -86,6 +86,16 @@ export const closeJobRequirement = asyncHandler(async (req, res) => {
   });
 });
 
+export const reopenJobRequirement = asyncHandler(async (req, res) => {
+  const clientId = await getClientId(req.user.id);
+  const jobRequirement = await JobRequirementService.reopenJobRequirement(req.params.id, clientId);
+
+  res.status(200).json({
+    status: "success",
+    data: { jobRequirement },
+  });
+});
+
 export const duplicateJobRequirement = asyncHandler(async (req, res) => {
   const clientId = await getClientId(req.user.id);
   const jobRequirement = await JobRequirementService.duplicateJobRequirement(req.params.id, clientId);
