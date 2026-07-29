@@ -57,8 +57,8 @@ export const NAVIGATION_CONFIG = [
         roles: ["CLIENT"],
       },
       {
-        title: "Post a Job",
-        path: ROUTES.CREATE_JOB,
+        title: "My Jobs",
+        path: ROUTES.CLIENT_JOBS,
         icon: FileText,
         roles: ["CLIENT"],
       },

@@ -19,7 +19,16 @@ export const createJobRequirement = asyncHandler(async (req, res) => {
 });
 
 export const listJobRequirements = asyncHandler(async (req, res) => {
-  const result = await jobRequirementService.listJobRequirements(req.validatedData);
+  const query = { ...req.validatedData };
+  
+  if (req.user?.profileType === "CLIENT") {
+    const client = await prisma.client.findUnique({ where: { userId: req.user.id } });
+    if (client) {
+      query.clientId = client.id;
+    }
+  }
+
+  const result = await jobRequirementService.listJobRequirements(query);
   return ApiResponse.success(res, "Job requirements retrieved successfully", result.data, 200, result.meta);
 });
 

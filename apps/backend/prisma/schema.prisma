@@ -303,6 +303,8 @@ model Worker {
   documents       WorkerDocument[]
   // categories       WorkerCategory[]
   // bookings         Booking[]
+  hiringRequests    HiringRequest[]
+  assignments       AssignmentWorker[]
 
   // Documents & Financial
   aadhaarNumber          String?
@@ -357,6 +359,8 @@ model Client {
   // bookings         Booking[]
   // invoices         Invoice[]
   // payments         Payment[]
+  hiringRequests   HiringRequest[]
+  assignments      Assignment[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -397,8 +401,9 @@ model Agency {
   // Future module relation placeholders
   workers AgencyWorker[]
   documents AgencyDocument[]
-  // assignments      Assignment[]
   // jobRequirements  JobRequirement[]
+  hiringRequests HiringRequest[]
+  assignments    Assignment[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -589,7 +594,7 @@ model JobRequirement {
 
   // Future module relation placeholders
   // bookings         Booking[]
-  // assignments      Assignment[]
+  hiringRequests      HiringRequest[]
   requiredSkills      JobRequirementSkill[]
   requiredLanguages   JobRequirementLanguage[]
   applications        JobApplication[]
@@ -823,3 +828,92 @@ model Notification {
   @@index([isRead])
 }
 
+enum HiringRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+}
+
+model HiringRequest {
+  id               String   @id @default(uuid())
+  clientId         String
+  targetAgencyId   String?
+  targetWorkerId   String?
+  jobRequirementId String?  
+  
+  title            String
+  description      String?
+  proposedRate     Decimal?
+  startDate        DateTime?
+  endDate          DateTime?
+  notes            String?
+  
+  status           HiringRequestStatus @default(PENDING)
+  
+  client           Client   @relation(fields: [clientId], references: [id])
+  agency           Agency?  @relation(fields: [targetAgencyId], references: [id])
+  worker           Worker?  @relation(fields: [targetWorkerId], references: [id])
+  jobRequirement   JobRequirement? @relation(fields: [jobRequirementId], references: [id])
+  
+  assignment       Assignment?
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([targetAgencyId])
+  @@index([targetWorkerId])
+  @@index([status])
+}
+
+enum AssignmentStatus {
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+  CANCELLED
+}
+
+model Assignment {
+  id               String   @id @default(uuid())
+  assignmentCode   String   @unique
+  hiringRequestId  String?  @unique
+  clientId         String
+  agencyId         String?
+  
+  title            String
+  description      String?
+  agreedRate       Decimal?
+  startDate        DateTime?
+  endDate          DateTime?
+  
+  status           AssignmentStatus @default(ACTIVE)
+  
+  hiringRequest    HiringRequest? @relation(fields: [hiringRequestId], references: [id])
+  client           Client   @relation(fields: [clientId], references: [id])
+  agency           Agency?  @relation(fields: [agencyId], references: [id])
+  
+  assignedWorkers  AssignmentWorker[]
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([agencyId])
+  @@index([status])
+}
+
+model AssignmentWorker {
+  id           String     @id @default(uuid())
+  assignmentId String
+  workerId     String
+  assignedAt   DateTime   @default(now())
+  status       String     @default("ACTIVE") // ACTIVE, REMOVED
+
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  worker       Worker     @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  @@unique([assignmentId, workerId])
+  @@index([assignmentId])
+  @@index([workerId])
+}
