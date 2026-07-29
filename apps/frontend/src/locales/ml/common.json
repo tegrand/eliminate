@@ -1,0 +1,12 @@
+{
+  "nav": {
+    "dashboard": "ഡാഷ്ബോർഡ്",
+    "findWork": "ജോലി കണ്ടെത്തുക",
+    "myJobs": "എൻ്റെ ജോലികൾ",
+    "attendance": "ഹാജർ",
+    "workHistory": "ജോലിയുടെ ചരിത്രം",
+    "complaints": "പരാതികൾ",
+    "settings": "ക്രമീകരണങ്ങൾ",
+    "logout": "ലോഗ് ഔട്ട്"
+  }
+}

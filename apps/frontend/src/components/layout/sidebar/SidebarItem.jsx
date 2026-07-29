@@ -1,9 +1,25 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import clsx from "clsx";
 
+const getI18nKey = (title) => {
+  const map = {
+    "Dashboard": "nav.dashboard",
+    "Find Work": "nav.findWork",
+    "My Jobs": "nav.myJobs",
+    "Attendance": "nav.attendance",
+    "Work History": "nav.workHistory",
+    "Complaints": "nav.complaints",
+    "Settings": "nav.settings",
+    "Log out": "nav.logout"
+  };
+  return map[title];
+};
+
 export default function SidebarItem({ item }) {
+  const { t } = useTranslation();
   const Icon = item.icon;
   const location = useLocation();
   const hasSubItems = item.subItems && item.subItems.length > 0;
@@ -25,7 +41,7 @@ export default function SidebarItem({ item }) {
     return (
       <div className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-normal text-gray-400 opacity-60 cursor-not-allowed">
         {Icon && <Icon className="h-5 w-5 flex-shrink-0" />}
-        <span className="truncate">{item.title}</span>
+        <span className="truncate">{getI18nKey(item.title) ? t(getI18nKey(item.title)) : item.title}</span>
         <span className="ml-auto text-[10px] uppercase tracking-wider text-gray-400 font-semibold">Soon</span>
       </div>
     );
@@ -45,7 +61,7 @@ export default function SidebarItem({ item }) {
         >
           <div className="flex items-center gap-3">
             {Icon && <Icon className="h-5 w-5 flex-shrink-0" />}
-            <span className="truncate">{item.title}</span>
+            <span className="truncate">{getI18nKey(item.title) ? t(getI18nKey(item.title)) : item.title}</span>
           </div>
           <ChevronDown className={clsx("h-4 w-4 transition-transform", isOpen && "rotate-180")} />
         </button>
@@ -65,7 +81,7 @@ export default function SidebarItem({ item }) {
                   )
                 }
               >
-                {sub.title}
+                {getI18nKey(sub.title) ? t(getI18nKey(sub.title)) : sub.title}
               </NavLink>
             ))}
           </div>
@@ -87,7 +103,7 @@ export default function SidebarItem({ item }) {
       }
     >
       {Icon && <Icon className="h-5 w-5 flex-shrink-0" />}
-      <span className="truncate">{item.title}</span>
+      <span className="truncate">{getI18nKey(item.title) ? t(getI18nKey(item.title)) : item.title}</span>
     </NavLink>
   );
 }

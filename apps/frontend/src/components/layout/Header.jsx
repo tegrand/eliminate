@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { ROUTES } from "../../routes/routePaths";
 import { LogOut, Search, User, ChevronDown } from "lucide-react";
 import NotificationBell from "../ui/notifications/NotificationBell";
+import LanguageSwitcher from "../ui/LanguageSwitcher";
 
 export default function Header() {
   const { logout, user } = useAuth();
@@ -57,7 +58,8 @@ export default function Header() {
       </div>
 
       {/* Right Actions */}
-      <div className="flex items-center space-x-5 ml-auto">
+      <div className="flex items-center space-x-3 sm:space-x-5 ml-auto">
+        <LanguageSwitcher />
         <NotificationBell />
         
         {/* Profile Section with Dropdown */}

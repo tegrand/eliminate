@@ -1,0 +1,12 @@
+{
+  "nav": {
+    "dashboard": "டேஷ்போர்டு",
+    "findWork": "வேலை தேடுங்கள்",
+    "myJobs": "என் வேலைகள்",
+    "attendance": "வருகை",
+    "workHistory": "வேலை வரலாறு",
+    "complaints": "புகார்கள்",
+    "settings": "அமைப்புகள்",
+    "logout": "வெளியேறு"
+  }
+}

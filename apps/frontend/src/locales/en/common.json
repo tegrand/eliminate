@@ -1,0 +1,12 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "findWork": "Find Work",
+    "myJobs": "My Jobs",
+    "attendance": "Attendance",
+    "workHistory": "Work History",
+    "complaints": "Complaints",
+    "settings": "Settings",
+    "logout": "Log out"
+  }
+}
