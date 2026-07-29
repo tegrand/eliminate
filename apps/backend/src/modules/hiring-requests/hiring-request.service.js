@@ -1,5 +1,5 @@
 import prisma from "../../config/prisma.js";
-import AppError from "../../shared/utils/app-error.js";
+import AppError from "../../shared/errors/app-error.js";
 
 export const createHiringRequest = async (clientId, data) => {
   return await prisma.hiringRequest.create({

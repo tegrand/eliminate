@@ -6,9 +6,12 @@ import {
   CheckCircle2, Languages, Building2, UserCircle,
   MessageSquare, CalendarCheck
 } from "lucide-react";
+import { useState } from "react";
+import ClientHiringModal from "../components/ClientHiringModal";
 
 export default function ClientWorkerProfilePage() {
   const { id } = useParams();
+  const [isHireModalOpen, setIsHireModalOpen] = useState(false);
 
   const { data: workerData, isLoading, error } = useQuery({
     queryKey: ["workerForClient", id],
@@ -105,10 +108,19 @@ export default function ClientWorkerProfilePage() {
                   <p className="text-lg font-medium text-blue-600 mt-1">{skillName}</p>
                 </div>
                 
-                <button className="px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 shrink-0">
-                  <MessageSquare className="w-4 h-4" />
-                  Contact Worker
-                </button>
+                <div className="flex items-center gap-3 shrink-0">
+                  <button className="px-5 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2">
+                    <MessageSquare className="w-4 h-4" />
+                    Message
+                  </button>
+                  <button 
+                    onClick={() => setIsHireModalOpen(true)}
+                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-sm shadow-blue-200 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Briefcase className="w-4 h-4" />
+                    Hire Worker
+                  </button>
+                </div>
               </div>
 
               <div className="mt-5 flex flex-wrap items-center gap-4 text-sm text-gray-600">
@@ -247,6 +259,15 @@ export default function ClientWorkerProfilePage() {
         </div>
 
       </div>
+      
+      {/* Hiring Modal */}
+      <ClientHiringModal 
+        isOpen={isHireModalOpen} 
+        onClose={() => setIsHireModalOpen(false)} 
+        targetId={worker.id}
+        targetType="WORKER"
+        targetName={name}
+      />
     </div>
   );
 }

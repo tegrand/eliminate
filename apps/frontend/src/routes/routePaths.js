@@ -49,6 +49,9 @@ export const ROUTES = {
   JOB_REQUIREMENT_DETAILS: "/job-requirements/:id",
   ASSIGN_WORKERS: "/job-requirements/:id/assign",
 
+  // Hiring Requests
+  HIRING_REQUESTS: "/hiring-requests",
+
   // Assignments
   ASSIGNMENTS: "/assignments",
   ASSIGNMENT_DETAILS: "/assignments/:id",

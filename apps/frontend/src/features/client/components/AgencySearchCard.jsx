@@ -1,6 +1,9 @@
-import { MapPin, Star, Building2, CheckCircle2, XCircle } from "lucide-react";
+import { MapPin, Star, Building2, CheckCircle2, XCircle, Briefcase } from "lucide-react";
+import { useState } from "react";
+import ClientHiringModal from "./ClientHiringModal";
 
 export default function AgencySearchCard({ agency }) {
+  const [isHireModalOpen, setIsHireModalOpen] = useState(false);
   // Use a mock rating since rating is not implemented in DB
   const rating = 5.0; 
   const isVerified = agency.verificationStatus === "VERIFIED";
@@ -72,9 +75,26 @@ export default function AgencySearchCard({ agency }) {
       </div>
       
       {/* Absolute contact button for desktop hover */}
-      <button className="w-full mt-5 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-colors">
-        View Profile
-      </button>
+      <div className="flex items-center gap-3 mt-5 w-full">
+        <button className="flex-1 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-colors">
+          View Profile
+        </button>
+        <button 
+          onClick={() => setIsHireModalOpen(true)}
+          className="flex-1 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 shadow-sm shadow-blue-200 transition-colors flex items-center justify-center gap-2"
+        >
+          <Briefcase className="w-4 h-4" />
+          Hire Agency
+        </button>
+      </div>
+
+      <ClientHiringModal 
+        isOpen={isHireModalOpen} 
+        onClose={() => setIsHireModalOpen(false)} 
+        targetId={agency.id}
+        targetType="AGENCY"
+        targetName={agency.companyName || "Unnamed Agency"}
+      />
     </div>
   );
 }

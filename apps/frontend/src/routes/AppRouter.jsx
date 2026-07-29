@@ -46,6 +46,8 @@ import JobRequirementListPage from "../features/job-requirement/pages/JobRequire
 import JobRequirementDetailsPage from "../features/job-requirement/pages/JobRequirementDetailsPage";
 import AssignWorkersPage from "../features/job-requirement/pages/AssignWorkersPage";
 
+import HiringRequestsPage from "../features/hiring-requests/pages/HiringRequestsPage";
+
 import AssignmentListPage from "../features/assignment/pages/AssignmentListPage";
 import AssignmentDetailsPage from "../features/assignment/pages/AssignmentDetailsPage";
 
@@ -123,6 +125,9 @@ const AppRouter = () => {
             <Route path={ROUTES.JOB_REQUIREMENTS} element={<JobRequirementListPage />} />
             <Route path={ROUTES.JOB_REQUIREMENT_DETAILS} element={<JobRequirementDetailsPage />} />
             <Route path={ROUTES.ASSIGN_WORKERS} element={<AssignWorkersPage />} />
+            
+            {/* Hiring Requests */}
+            <Route path={ROUTES.HIRING_REQUESTS} element={<HiringRequestsPage />} />
 
             {/* Assignments */}
             <Route path={ROUTES.ASSIGNMENTS} element={<AssignmentListPage />} />

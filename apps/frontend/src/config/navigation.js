@@ -88,6 +88,18 @@ export const NAVIGATION_CONFIG = [
         icon: Building2,
         roles: ADMIN_ONLY,
       },
+      {
+        title: "Assignments",
+        path: ROUTES.ASSIGNMENTS,
+        icon: UserCheck,
+        roles: ["SUPER_ADMIN", "AGENCY", "WORKER", "CLIENT"],
+      },
+      {
+        title: "Hiring Requests",
+        path: ROUTES.HIRING_REQUESTS,
+        icon: Briefcase,
+        roles: ["AGENCY", "WORKER", "CLIENT"],
+      },
     ],
   },
 ];
