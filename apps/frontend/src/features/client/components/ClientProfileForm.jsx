@@ -84,7 +84,7 @@ export default function ClientProfileForm({ clientData, refetchClient }) {
           <div>
             <div className="flex items-center gap-3">
               <h3 className="text-xl font-bold text-gray-900">
-                {isCompany && clientData?.companyName ? clientData.companyName : clientData?.contactPerson || "My Profile"}
+                {isCompany && clientData?.companyName ? clientData.companyName : clientData?.contactPerson || (isCompany ? "Company Profile" : "My Profile")}
               </h3>
               {getStatusBadge(clientData?.profileStatus)}
             </div>

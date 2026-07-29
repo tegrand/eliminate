@@ -279,7 +279,9 @@ export default function ClientProfilePage() {
     <div className="w-full max-w-4xl mx-auto pt-4 pb-12 space-y-6 animate-fade-in">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
+        <h1 className="text-2xl font-bold text-gray-900">
+          {clientData?.clientType === "COMPANY" ? "Company Profile" : "My Profile"}
+        </h1>
         <p className="text-sm text-gray-500 mt-1">Manage your account details, password, and security settings</p>
       </div>
 
