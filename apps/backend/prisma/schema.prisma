@@ -293,7 +293,14 @@ model Worker {
   // Professional Info
   experienceYears    Int?
   expectedSalary     String?
-  preferredLocations Json? // Array of strings stored as JSON
+  preferredLocations Json? // Keep as legacy/array or repurpose
+  
+  // Work Preferences & Location settings
+  workPreferences    Json? // Array of strings (e.g. Daily Work, Contract Work)
+  preferredDistrict  String?
+  preferredState     String?
+  maxTravelDistance  Int?
+  willingToRelocate  Boolean @default(false)
 
   // Future module relation placeholders (awaiting model implementation)
   skills          WorkerSkill[]

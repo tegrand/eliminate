@@ -37,6 +37,13 @@ export const updateWorkerSchema = z.object({
   expectedSalary: z.string().trim().optional(),
   preferredLocations: z.array(z.string()).optional().nullable(),
   
+  // Work Preferences & Location settings
+  workPreferences: z.array(z.string()).optional().nullable(),
+  preferredDistrict: z.string().trim().optional().nullable(),
+  preferredState: z.string().trim().optional().nullable(),
+  maxTravelDistance: z.coerce.number().int().min(0).optional().nullable(),
+  willingToRelocate: z.boolean().optional(),
+  
   aadhaarNumber: z.string().trim().optional(),
   panNumber: z.string().trim().optional(),
   bankAccountNumber: z.string().trim().optional(),

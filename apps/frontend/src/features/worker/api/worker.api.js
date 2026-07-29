@@ -13,6 +13,10 @@ export const workerApi = {
     const response = await api.get("/workers/my-profile");
     return response.data;
   },
+  updateMyWorkerProfile: async (data) => {
+    const response = await api.patch("/workers/my-profile", data);
+    return response.data;
+  },
   updateWorkerStatus: async (id, status) => {
     const response = await api.patch(`/workers/${id}/status`, { status });
     return response.data;
