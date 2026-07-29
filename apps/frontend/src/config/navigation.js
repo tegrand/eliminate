@@ -69,6 +69,18 @@ export const NAVIGATION_CONFIG = [
         icon: Search,
         roles: ["WORKER"],
       },
+      {
+        title: "My Jobs",
+        path: ROUTES.MY_JOBS,
+        icon: Briefcase,
+        roles: ["WORKER"],
+      },
+      {
+        title: "Attendance",
+        path: ROUTES.MY_ATTENDANCE,
+        icon: Clock,
+        roles: ["WORKER"],
+      },
     ],
   },
 

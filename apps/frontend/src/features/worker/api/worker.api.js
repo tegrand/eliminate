@@ -88,5 +88,30 @@ export const workerApi = {
   ignoreMarketplaceJob: async (jobId) => {
     const response = await api.post(`/workers/marketplace/jobs/${jobId}/ignore`);
     return response.data;
+  },
+
+  // Assignments
+  getMyAssignments: async (filters = {}) => {
+    // Backend uses generic `/assignments` endpoint that filters by logged-in worker
+    const response = await api.get("/assignments", { params: filters });
+    return response.data;
+  },
+
+  // Attendance
+  checkIn: async () => {
+    const response = await api.post("/my-attendance/check-in");
+    return response.data;
+  },
+  checkOut: async () => {
+    const response = await api.post("/my-attendance/check-out");
+    return response.data;
+  },
+  getAttendanceHistory: async (filters = {}) => {
+    const response = await api.get("/my-attendance/history", { params: filters });
+    return response.data;
+  },
+  getAttendanceSummary: async (filters = {}) => {
+    const response = await api.get("/my-attendance/summary", { params: filters });
+    return response.data;
   }
 };
