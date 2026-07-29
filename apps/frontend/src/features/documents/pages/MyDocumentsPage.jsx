@@ -7,13 +7,18 @@ import { Modal } from "../../../components/ui/modal/Modal";
 import { format, parseISO } from "date-fns";
 
 const DOCUMENT_TYPES = [
-  "AADHAAR",
-  "PAN",
-  "PASSPORT",
-  "DRIVING_LICENSE",
-  "CERTIFICATE",
-  "OTHER"
+  { value: "AADHAAR", label: "Aadhaar" },
+  { value: "PAN", label: "PAN (Optional)" },
+  { value: "DRIVING_LICENSE", label: "Driving License (If applicable)" },
+  { value: "EXPERIENCE_CERTIFICATE", label: "Experience Certificate" },
+  { value: "SKILL_CERTIFICATE", label: "Skill Certificate" },
+  { value: "PHOTO", label: "Passport Size Photo" }
 ];
+
+const getDocumentLabel = (type) => {
+  const found = DOCUMENT_TYPES.find(d => d.value === type);
+  return found ? found.label : type.replace('_', ' ');
+};
 
 export default function MyDocumentsPage() {
   const [documents, setDocuments] = useState([]);
@@ -168,8 +173,8 @@ export default function MyDocumentsPage() {
                   <FileText className="w-6 h-6" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-slate-900 truncate" title={doc.documentType}>
-                    {doc.documentType.replace('_', ' ')}
+                  <h3 className="font-bold text-slate-900 truncate" title={getDocumentLabel(doc.documentType)}>
+                    {getDocumentLabel(doc.documentType)}
                   </h3>
                   <p className="text-xs text-slate-500 truncate mt-0.5" title={doc.fileName}>{doc.fileName}</p>
                   
@@ -225,7 +230,7 @@ export default function MyDocumentsPage() {
                 className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               >
                 {DOCUMENT_TYPES.map(type => (
-                  <option key={type} value={type}>{type.replace('_', ' ')}</option>
+                  <option key={type.value} value={type.value}>{type.label}</option>
                 ))}
               </select>
             </div>
@@ -233,7 +238,7 @@ export default function MyDocumentsPage() {
 
           {modalMode === 'replace' && (
             <div className="p-3 bg-blue-50 text-blue-800 rounded-lg text-sm border border-blue-100">
-              Replacing <strong>{docType.replace('_', ' ')}</strong>. The old file will be overwritten and status will reset to pending.
+              Replacing <strong>{getDocumentLabel(docType)}</strong>. The old file will be overwritten and status will reset to pending.
             </div>
           )}
 
