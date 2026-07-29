@@ -11,6 +11,7 @@ const clientSelect = {
   id: true,
   userId: true,
   clientCode: true,
+  clientType: true,
   companyName: true,
   contactPerson: true,
   phone: true,

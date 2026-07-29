@@ -22,6 +22,7 @@ export const createClientSchema = z.object({
 }).strict("Unknown fields are not allowed");
 
 export const updateClientSchema = z.object({
+  clientType: z.enum(["INDIVIDUAL", "COMPANY"]).optional(),
   companyName: z.string().trim().min(1, "Company name cannot be empty").max(200).optional(),
   contactPerson: z.string().trim().min(1, "Contact person cannot be empty").max(100).optional(),
   phone: z.string().trim().regex(phoneRegex, "Invalid phone number format").optional(),

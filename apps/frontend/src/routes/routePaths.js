@@ -33,6 +33,12 @@ export const ROUTES = {
   WORKFORCE_PROFILE: "/search-workers/:id",
   AGENCY_SEARCH: "/search-agencies",
   CLIENT_JOBS: "/jobs",
+  
+  // Client (Company Features)
+  COMPANY_PROJECTS: "/company/projects",
+  COMPANY_SITES: "/company/sites",
+  COMPANY_DEPARTMENTS: "/company/departments",
+  COMPANY_TEAMS: "/company/teams",
 
   // Agency
   AGENCIES: "/agencies",

@@ -34,6 +34,11 @@ import ClientWorkerProfilePage from "../features/client/pages/ClientWorkerProfil
 import ClientAgencySearchPage from "../features/client/pages/ClientAgencySearchPage";
 import ClientJobsPage from "../features/job-requirement/pages/ClientJobsPage";
 
+import ProjectsPage from "../features/client/pages/ProjectsPage";
+import SiteLocationsPage from "../features/client/pages/SiteLocationsPage";
+import DepartmentsPage from "../features/client/pages/DepartmentsPage";
+import TeamsPage from "../features/client/pages/TeamsPage";
+
 import AgencyListPage from "../features/agency/pages/AgencyListPage";
 import AgencyDetailsPage from "../features/agency/pages/AgencyDetailsPage";
 
@@ -110,6 +115,12 @@ const AppRouter = () => {
             <Route path={ROUTES.CLIENTS} element={<ClientListPage />} />
             <Route path={ROUTES.CLIENT_DETAILS} element={<ClientDetailsPage />} />
             <Route path={ROUTES.CLIENT_JOBS} element={<ClientJobsPage />} />
+            
+            {/* Client (Company) Features */}
+            <Route path={ROUTES.COMPANY_PROJECTS} element={<ProjectsPage />} />
+            <Route path={ROUTES.COMPANY_SITES} element={<SiteLocationsPage />} />
+            <Route path={ROUTES.COMPANY_DEPARTMENTS} element={<DepartmentsPage />} />
+            <Route path={ROUTES.COMPANY_TEAMS} element={<TeamsPage />} />
 
             {/* Agencies */}
             <Route path={ROUTES.AGENCIES} element={<AgencyListPage />} />

@@ -65,6 +65,39 @@ export const NAVIGATION_CONFIG = [
     ],
   },
 
+  // ─── COMPANY TOOLS ───────────────────────────────────────────────────────
+  {
+    group: "Enterprise Tools",
+    roles: ["CLIENT"],
+    clientType: "COMPANY", // Special flag for Sidebar.jsx to check
+    items: [
+      {
+        title: "Projects",
+        path: ROUTES.COMPANY_PROJECTS,
+        icon: Building2,
+        roles: ["CLIENT"],
+      },
+      {
+        title: "Sites",
+        path: ROUTES.COMPANY_SITES,
+        icon: MapPin,
+        roles: ["CLIENT"],
+      },
+      {
+        title: "Departments",
+        path: ROUTES.COMPANY_DEPARTMENTS,
+        icon: Users,
+        roles: ["CLIENT"],
+      },
+      {
+        title: "Teams",
+        path: ROUTES.COMPANY_TEAMS,
+        icon: Users,
+        roles: ["CLIENT"],
+      },
+    ],
+  },
+
   // ─── SUPER ADMIN PORTAL ──────────────────────────────────────────────────
   {
     group: "User Management",

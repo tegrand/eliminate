@@ -5,6 +5,8 @@ import toast from "react-hot-toast";
 import { jobRequirementApi } from "../../job-requirement/api/jobRequirement.api";
 import ClientJobCreationModal from "../components/ClientJobCreationModal";
 import ClientCategoryManagerModal from "../components/ClientCategoryManagerModal";
+import { useAuth } from "../../../hooks/useAuth";
+import { companyApi } from "../../client/api/company.api";
 
 // A small component to render each job card beautifully
 // A small component to render each job card beautifully
@@ -93,10 +95,30 @@ function JobCard({ job, onDelete, onUpdateStatus, onEdit }) {
 }
 
 export default function ClientJobsPage() {
+  const { user } = useAuth();
+  const isCompany = user?.clientProfile?.clientType === "COMPANY";
+
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [selectedDept, setSelectedDept] = useState("");
+  const [selectedSite, setSelectedSite] = useState("");
 
   const queryClient = useQueryClient();
+
+  const { data: deptsRes } = useQuery({
+    queryKey: ["company", "departments"],
+    queryFn: () => companyApi.getDepartments(),
+    enabled: isCompany,
+  });
+  
+  const { data: sitesRes } = useQuery({
+    queryKey: ["company", "sites"],
+    queryFn: () => companyApi.getSites(),
+    enabled: isCompany,
+  });
+
+  const departments = deptsRes?.data?.data || [];
+  const sites = sitesRes?.data?.data || [];
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["clientJobs"],
@@ -147,7 +169,15 @@ export default function ClientJobsPage() {
     toast.error("Edit form feature coming soon! You can use status update instead.");
   };
 
-  const jobs = Array.isArray(data) ? data : data?.data || [];
+  let jobs = Array.isArray(data) ? data : data?.data || [];
+  
+  // Apply local filtering if company selected dept/site
+  if (selectedDept) {
+    jobs = jobs.filter(j => j.departmentId === selectedDept);
+  }
+  if (selectedSite) {
+    jobs = jobs.filter(j => j.siteId === selectedSite);
+  }
 
   return (
     <div className="w-full flex flex-col animate-fade-in h-[calc(100vh-4rem)] overflow-y-auto scrollbar-hide px-4 sm:px-6 lg:px-8 py-8">
@@ -163,6 +193,15 @@ export default function ClientJobsPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          {isCompany && (
+            <button 
+              type="button"
+              onClick={() => toast.success("Bulk Hire coming soon")}
+              className="px-4 py-2.5 bg-indigo-100 text-indigo-700 font-semibold rounded-xl hover:bg-indigo-200 transition-colors shadow-sm flex items-center gap-2 text-sm"
+            >
+              <Users className="w-4 h-4" /> Bulk Hire
+            </button>
+          )}
           <button 
             type="button"
             onClick={() => setIsCategoryModalOpen(true)}
@@ -179,6 +218,34 @@ export default function ClientJobsPage() {
           </button>
         </div>
       </div>
+
+      {/* Filters for Company */}
+      {isCompany && (
+        <div className="mb-6 flex gap-4 p-4 bg-white rounded-xl border border-gray-200 shadow-sm">
+          <div className="flex-1 max-w-xs">
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Department</label>
+            <select
+              value={selectedDept}
+              onChange={e => setSelectedDept(e.target.value)}
+              className="w-full text-sm border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">All Departments</option>
+              {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+            </select>
+          </div>
+          <div className="flex-1 max-w-xs">
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Site Location</label>
+            <select
+              value={selectedSite}
+              onChange={e => setSelectedSite(e.target.value)}
+              className="w-full text-sm border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">All Sites</option>
+              {sites.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </select>
+          </div>
+        </div>
+      )}
 
       {/* Content Area */}
       {isLoading ? (
