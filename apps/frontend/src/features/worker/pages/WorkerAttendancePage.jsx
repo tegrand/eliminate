@@ -71,7 +71,7 @@ export default function WorkerAttendancePage() {
                 <Button 
                   className="w-full py-4 text-lg bg-indigo-600 hover:bg-indigo-700" 
                   onClick={() => checkInMutation.mutate()}
-                  isLoading={checkInMutation.isPending}
+                  loading={checkInMutation.isPending}
                 >
                   <CheckCircle className="w-5 h-5 mr-2" />
                   Check In Now
@@ -88,7 +88,7 @@ export default function WorkerAttendancePage() {
                     variant="outline"
                     className="w-full py-4 text-lg border-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
                     onClick={() => checkOutMutation.mutate()}
-                    isLoading={checkOutMutation.isPending}
+                    loading={checkOutMutation.isPending}
                   >
                     <LogOut className="w-5 h-5 mr-2" />
                     Check Out

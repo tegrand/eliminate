@@ -147,7 +147,7 @@ export default function WorkerInvitationsPage() {
                     variant="outline"
                     className="text-red-600 hover:bg-red-50 border-red-200 hover:border-red-300"
                     onClick={() => rejectJobMutation.mutate(invite.id)}
-                    isLoading={rejectJobMutation.isPending && rejectJobMutation.variables === invite.id}
+                    loading={rejectJobMutation.isPending && rejectJobMutation.variables === invite.id}
                     disabled={acceptJobMutation.isPending || rejectJobMutation.isPending}
                   >
                     <XCircle className="w-4 h-4 mr-1.5" />
@@ -156,7 +156,7 @@ export default function WorkerInvitationsPage() {
                   <Button 
                     className="bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600"
                     onClick={() => acceptJobMutation.mutate(invite.id)}
-                    isLoading={acceptJobMutation.isPending && acceptJobMutation.variables === invite.id}
+                    loading={acceptJobMutation.isPending && acceptJobMutation.variables === invite.id}
                     disabled={acceptJobMutation.isPending || rejectJobMutation.isPending}
                   >
                     <CheckCircle2 className="w-4 h-4 mr-1.5" />
@@ -192,7 +192,7 @@ export default function WorkerInvitationsPage() {
                     variant="outline"
                     className="text-red-600 hover:bg-red-50 border-red-200 hover:border-red-300"
                     onClick={() => rejectAgencyMutation.mutate(invite.agencyId)}
-                    isLoading={rejectAgencyMutation.isPending && rejectAgencyMutation.variables === invite.agencyId}
+                    loading={rejectAgencyMutation.isPending && rejectAgencyMutation.variables === invite.agencyId}
                     disabled={acceptAgencyMutation.isPending || rejectAgencyMutation.isPending}
                   >
                     <XCircle className="w-4 h-4 mr-1.5" />
@@ -201,7 +201,7 @@ export default function WorkerInvitationsPage() {
                   <Button 
                     className="bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600"
                     onClick={() => acceptAgencyMutation.mutate(invite.agencyId)}
-                    isLoading={acceptAgencyMutation.isPending && acceptAgencyMutation.variables === invite.agencyId}
+                    loading={acceptAgencyMutation.isPending && acceptAgencyMutation.variables === invite.agencyId}
                     disabled={acceptAgencyMutation.isPending || rejectAgencyMutation.isPending}
                   >
                     <CheckCircle2 className="w-4 h-4 mr-1.5" />

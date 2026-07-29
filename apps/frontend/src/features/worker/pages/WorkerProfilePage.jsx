@@ -247,7 +247,7 @@ export default function WorkerProfilePage() {
         <div className="flex justify-end pt-4">
           <Button 
             type="submit" 
-            isLoading={updateMutation.isPending}
+            loading={updateMutation.isPending}
             className="px-8"
           >
             <Save className="w-4 h-4 mr-2" />

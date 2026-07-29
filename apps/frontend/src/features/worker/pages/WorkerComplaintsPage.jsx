@@ -186,7 +186,7 @@ export default function WorkerComplaintsPage() {
           
           <div className="pt-4 flex justify-end gap-2">
             <Button variant="outline" type="button" onClick={() => setIsModalOpen(false)}>Cancel</Button>
-            <Button type="submit" isLoading={createMutation.isPending} className="bg-red-600 hover:bg-red-700 text-white">
+            <Button type="submit" loading={createMutation.isPending} className="bg-red-600 hover:bg-red-700 text-white">
               Submit Complaint
             </Button>
           </div>

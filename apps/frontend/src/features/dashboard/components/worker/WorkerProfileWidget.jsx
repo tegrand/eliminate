@@ -165,7 +165,7 @@ export default function WorkerProfileWidget({ profile, onStatusChange }) {
           </p>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => setConfirmModalOpen(false)} className="w-full">Cancel</Button>
-            <Button onClick={handleStatusChange} isLoading={isUpdating} className="w-full">
+            <Button onClick={handleStatusChange} loading={isUpdating} className="w-full">
               Confirm Change
             </Button>
           </div>

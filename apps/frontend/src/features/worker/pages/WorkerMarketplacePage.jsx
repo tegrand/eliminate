@@ -195,7 +195,7 @@ export default function WorkerMarketplacePage() {
                       variant="outline"
                       className="flex-1 hover:bg-rose-50 text-slate-600 hover:text-rose-600 hover:border-rose-200"
                       onClick={() => saveMutation.mutate(job.id)}
-                      isLoading={saveMutation.isPending && saveMutation.variables === job.id}
+                      loading={saveMutation.isPending && saveMutation.variables === job.id}
                       disabled={applyMutation.isPending || saveMutation.isPending || ignoreMutation.isPending}
                     >
                       <Heart className="w-4 h-4 mr-1.5" />
@@ -204,7 +204,7 @@ export default function WorkerMarketplacePage() {
                     <Button 
                       className="flex-1"
                       onClick={() => applyMutation.mutate(job.id)}
-                      isLoading={applyMutation.isPending && applyMutation.variables === job.id}
+                      loading={applyMutation.isPending && applyMutation.variables === job.id}
                       disabled={applyMutation.isPending || saveMutation.isPending || ignoreMutation.isPending}
                     >
                       <CheckCircle2 className="w-4 h-4 mr-1.5" />

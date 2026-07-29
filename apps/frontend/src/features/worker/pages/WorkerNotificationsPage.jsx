@@ -71,7 +71,7 @@ export default function WorkerNotificationsPage() {
           <Button 
             variant="outline" 
             onClick={() => markAllReadMutation.mutate()}
-            isLoading={markAllReadMutation.isPending}
+            loading={markAllReadMutation.isPending}
             className="text-sm"
           >
             <Check className="w-4 h-4 mr-2" />
