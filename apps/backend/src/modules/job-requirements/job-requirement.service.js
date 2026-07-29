@@ -69,12 +69,25 @@ export const createJobRequirement = async (data) => {
   await validateRelations(data.clientId, data.categoryId, data.locationId);
 
   const requirementCode = generateRequirementCode();
+  const { requiredSkillIds, ...restData } = data;
+
+  const createData = {
+    ...restData,
+    requirementCode,
+  };
+
+  if (requiredSkillIds && requiredSkillIds.length > 0) {
+    createData.requiredSkills = {
+      create: requiredSkillIds.map((skillId) => ({
+        skill: { connect: { id: skillId } },
+        proficiencyLevel: "BEGINNER", // Default or extract from a detailed object later
+        isMandatory: true,
+      })),
+    };
+  }
 
   return await prisma.jobRequirement.create({
-    data: {
-      ...data,
-      requirementCode,
-    },
+    data: createData,
     select: jobRequirementSelect,
   });
 };

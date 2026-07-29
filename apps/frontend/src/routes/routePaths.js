@@ -30,7 +30,9 @@ export const ROUTES = {
   CLIENT_DETAILS: "/clients/:id",
   CLIENT_PROFILE: "/client/profile",
   WORKFORCE_SEARCH: "/search-workers",
+  WORKFORCE_PROFILE: "/search-workers/:id",
   AGENCY_SEARCH: "/search-agencies",
+  CREATE_JOB: "/jobs/create",
 
   // Agency
   AGENCIES: "/agencies",

@@ -30,7 +30,9 @@ import WorkerDetailsPage from "../features/worker/pages/WorkerDetailsPage";
 import ClientListPage from "../features/client/pages/ClientListPage";
 import ClientDetailsPage from "../features/client/pages/ClientDetailsPage";
 import ClientWorkerSearchPage from "../features/client/pages/ClientWorkerSearchPage";
+import ClientWorkerProfilePage from "../features/client/pages/ClientWorkerProfilePage";
 import ClientAgencySearchPage from "../features/client/pages/ClientAgencySearchPage";
+import ClientJobCreationPage from "../features/job-requirement/pages/ClientJobCreationPage";
 
 import AgencyListPage from "../features/agency/pages/AgencyListPage";
 import AgencyDetailsPage from "../features/agency/pages/AgencyDetailsPage";
@@ -99,11 +101,13 @@ const AppRouter = () => {
             <Route path={ROUTES.WORKERS} element={<WorkerListPage />} />
             <Route path={ROUTES.WORKER_DETAILS} element={<WorkerDetailsPage />} />
             <Route path={ROUTES.WORKFORCE_SEARCH} element={<ClientWorkerSearchPage />} />
+            <Route path={ROUTES.WORKFORCE_PROFILE} element={<ClientWorkerProfilePage />} />
             <Route path={ROUTES.AGENCY_SEARCH} element={<ClientAgencySearchPage />} />
 
             {/* Clients */}
             <Route path={ROUTES.CLIENTS} element={<ClientListPage />} />
             <Route path={ROUTES.CLIENT_DETAILS} element={<ClientDetailsPage />} />
+            <Route path={ROUTES.CREATE_JOB} element={<ClientJobCreationPage />} />
 
             {/* Agencies */}
             <Route path={ROUTES.AGENCIES} element={<AgencyListPage />} />

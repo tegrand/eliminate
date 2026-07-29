@@ -2,8 +2,19 @@ import asyncHandler from "../../shared/helpers/async-handler.js";
 import ApiResponse from "../../shared/responses/api-response.js";
 import * as jobRequirementService from "./job-requirement.service.js";
 
+import prisma from "../../config/prisma.js";
+
 export const createJobRequirement = asyncHandler(async (req, res) => {
-  const jobRequirement = await jobRequirementService.createJobRequirement(req.validatedData);
+  let { clientId, ...rest } = req.validatedData;
+  
+  if (req.user?.profileType === "CLIENT") {
+    const client = await prisma.client.findUnique({ where: { userId: req.user.id } });
+    if (client) {
+      clientId = client.id;
+    }
+  }
+
+  const jobRequirement = await jobRequirementService.createJobRequirement({ clientId, ...rest });
   return ApiResponse.success(res, "Job requirement created successfully", jobRequirement, 201);
 });
 

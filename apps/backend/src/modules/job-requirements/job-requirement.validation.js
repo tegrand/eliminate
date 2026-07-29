@@ -3,7 +3,7 @@ import { z } from "zod";
 const timeFormatRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
 const baseSchema = {
-  clientId: z.string().uuid("Invalid client ID format"),
+  clientId: z.string().uuid("Invalid client ID format").optional(),
   title: z.string().trim().min(3).max(255),
   description: z.string().trim().max(5000).optional().nullable(),
   categoryId: z.string().uuid("Invalid category ID format").optional().nullable(),
@@ -18,9 +18,18 @@ const baseSchema = {
   priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).default("MEDIUM"),
   status: z.enum(["DRAFT", "OPEN", "PARTIALLY_FILLED", "FILLED", "COMPLETED", "CANCELLED"]).default("DRAFT"),
   notes: z.string().trim().max(2000).optional().nullable(),
+  genderPreference: z.string().optional().nullable(),
+  experienceRequired: z.string().optional().nullable(),
+  duration: z.string().optional().nullable(),
+  accommodation: z.boolean().optional().default(false),
+  food: z.boolean().optional().default(false),
+  transport: z.boolean().optional().default(false),
 };
 
-export const createJobRequirementSchema = z.object(baseSchema).strict("Unknown fields are not allowed")
+export const createJobRequirementSchema = z.object({
+  ...baseSchema,
+  requiredSkillIds: z.array(z.string().uuid("Invalid skill ID format")).optional(),
+}).strict("Unknown fields are not allowed")
   .refine(
     (data) => {
       if (data.startDate && data.endDate) {
@@ -56,6 +65,13 @@ export const updateJobRequirementSchema = z.object({
   priority: baseSchema.priority.optional(),
   status: baseSchema.status.optional(),
   notes: baseSchema.notes,
+  genderPreference: baseSchema.genderPreference,
+  experienceRequired: baseSchema.experienceRequired,
+  duration: baseSchema.duration,
+  accommodation: baseSchema.accommodation,
+  food: baseSchema.food,
+  transport: baseSchema.transport,
+  requiredSkillIds: z.array(z.string().uuid("Invalid skill ID format")).optional(),
 }).strict("Unknown fields are not allowed")
   .refine(
     (data) => Object.keys(data).length > 0,

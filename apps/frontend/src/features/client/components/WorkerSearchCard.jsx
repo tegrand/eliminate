@@ -72,7 +72,7 @@ export default function WorkerSearchCard({ worker }) {
 
       <div className="mt-auto pt-5">
         <Link 
-          to={`/workers/${worker.id}`}
+          to={`/search-workers/${worker.id}`}
           className="block w-full py-2.5 text-center text-sm font-semibold text-gray-700 bg-gray-50 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-200 rounded-xl transition-all"
         >
           View Full Profile
