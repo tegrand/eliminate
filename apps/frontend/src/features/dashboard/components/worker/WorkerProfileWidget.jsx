@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { User, Activity, Building, MoreVertical, LogOut, Loader2 } from "lucide-react";
 import { Modal } from "../../../../components/ui/modal/Modal";
 import Button from "../../../../components/ui/button/Button";
