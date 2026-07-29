@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { User, Activity, Building, MoreVertical, LogOut, Loader2 } from "lucide-react";
+import { User, Activity, Building, MoreVertical, LogOut, Loader2, Star, CheckCircle, MessageSquare } from "lucide-react";
 import { Modal } from "../../../../components/ui/modal/Modal";
 import Button from "../../../../components/ui/button/Button";
 import { toast } from "sonner";
@@ -53,6 +53,25 @@ export default function WorkerProfileWidget({ profile, onStatusChange }) {
       </div>
 
       <div className="space-y-5 flex-1">
+        {/* Stats Row */}
+        <div className="grid grid-cols-3 gap-2 py-3 border-y border-gray-100">
+          <div className="flex flex-col items-center justify-center text-center">
+            <span className="text-lg font-black text-slate-900 flex items-center gap-1">
+              {profile.averageRating > 0 ? profile.averageRating : "-"}
+              <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
+            </span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">Rating</span>
+          </div>
+          <div className="flex flex-col items-center justify-center text-center border-l border-gray-100">
+            <span className="text-lg font-black text-slate-900">{profile.totalReviews}</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">Reviews</span>
+          </div>
+          <div className="flex flex-col items-center justify-center text-center border-l border-gray-100">
+            <span className="text-lg font-black text-slate-900">{profile.completedJobs}</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">Jobs</span>
+          </div>
+        </div>
+
         {/* Profile Completion */}
         <div className="space-y-4">
           <div>

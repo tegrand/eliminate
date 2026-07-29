@@ -27,6 +27,7 @@ import workerDocumentsRoutes from "../modules/worker-documents/worker-documents.
 import notificationsRoutes from "../modules/notifications/notifications.routes.js";
 import reviewRoutes from "../modules/reviews/review.routes.js";
 import reportsRoutes from "../modules/reports/reports.routes.js";
+import complaintsRoutes from "../modules/complaints/complaints.routes.js";
 
 const router = Router();
 
@@ -54,6 +55,7 @@ router.use("/my-payments", workerPaymentsRoutes);
 router.use("/my-documents", workerDocumentsRoutes);
 router.use("/reviews", reviewRoutes);
 router.use("/reports", reportsRoutes);
+router.use("/complaints", complaintsRoutes);
 
 // Master Data Routes
 router.use("/skills", skillRoutes);

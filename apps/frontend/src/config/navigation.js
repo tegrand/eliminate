@@ -81,6 +81,18 @@ export const NAVIGATION_CONFIG = [
         icon: Clock,
         roles: ["WORKER"],
       },
+      {
+        title: "Work History",
+        path: "/worker/history",
+        icon: FileText,
+        roles: ["WORKER"],
+      },
+      {
+        title: "Complaints",
+        path: "/worker/complaints",
+        icon: Bookmark,
+        roles: ["WORKER"],
+      },
     ],
   },
 

@@ -32,6 +32,9 @@ import WorkerInvitationsPage from "../features/worker/pages/WorkerInvitationsPag
 import WorkerMarketplacePage from "../features/worker/pages/WorkerMarketplacePage";
 import WorkerAssignmentsPage from "../features/worker/pages/WorkerAssignmentsPage";
 import WorkerAttendancePage from "../features/worker/pages/WorkerAttendancePage";
+import WorkerNotificationsPage from "../features/worker/pages/WorkerNotificationsPage";
+import WorkerComplaintsPage from "../features/worker/pages/WorkerComplaintsPage";
+import WorkerHistoryPage from "../features/worker/pages/WorkerHistoryPage";
 import MyDocumentsPage from "../features/documents/pages/MyDocumentsPage";
 import ClientListPage from "../features/client/pages/ClientListPage";
 import ClientDetailsPage from "../features/client/pages/ClientDetailsPage";
@@ -122,6 +125,9 @@ const AppRouter = () => {
             <Route path={ROUTES.FIND_WORK} element={<WorkerMarketplacePage />} />
             <Route path={ROUTES.MY_JOBS} element={<WorkerAssignmentsPage />} />
             <Route path={ROUTES.MY_ATTENDANCE} element={<WorkerAttendancePage />} />
+            <Route path="/worker/notifications" element={<WorkerNotificationsPage />} />
+            <Route path="/worker/complaints" element={<WorkerComplaintsPage />} />
+            <Route path="/worker/history" element={<WorkerHistoryPage />} />
             <Route path={ROUTES.WORKFORCE_SEARCH} element={<ClientWorkerSearchPage />} />
             <Route path={ROUTES.WORKFORCE_PROFILE} element={<ClientWorkerProfilePage />} />
             <Route path={ROUTES.AGENCY_SEARCH} element={<ClientAgencySearchPage />} />

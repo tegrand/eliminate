@@ -4,21 +4,30 @@ import * as complaintsService from "./complaints.service.js";
 import prisma from "../../config/prisma.js";
 import AppError from "../../shared/errors/app-error.js";
 
-const getClientId = async (userId) => {
-  const client = await prisma.client.findUnique({ where: { userId } });
-  if (!client) throw new AppError("Only clients can access complaints right now", 403);
-  return client.id;
+const getComplainantIds = async (userId) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { client: true, worker: true, agency: true }
+  });
+  
+  if (!user) throw new AppError("User not found", 404);
+  
+  return {
+    clientId: user.client?.id,
+    workerId: user.worker?.id,
+    agencyId: user.agency?.id
+  };
 };
 
 export const createComplaint = asyncHandler(async (req, res) => {
-  const clientId = await getClientId(req.user.id);
-  const complaint = await complaintsService.createComplaint(clientId, req.body);
+  const ids = await getComplainantIds(req.user.id);
+  const complaint = await complaintsService.createComplaint(ids, req.body);
   return ApiResponse.success(res, "Complaint filed successfully", complaint, 201);
 });
 
 export const getComplaints = asyncHandler(async (req, res) => {
-  const clientId = await getClientId(req.user.id);
-  const complaints = await complaintsService.getComplaints(clientId, req.query);
+  const ids = await getComplainantIds(req.user.id);
+  const complaints = await complaintsService.getComplaints(ids, req.query);
   return ApiResponse.success(res, "Complaints retrieved", complaints, 200);
 });
 

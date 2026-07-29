@@ -21,6 +21,8 @@ export const getWorkerDashboard = async (userId) => {
       },
       include: {
         agencies: { include: { agency: true } },
+        reviews: true,
+        assignments: { where: { status: "COMPLETED" } }
       }
     });
   }
@@ -30,6 +32,11 @@ export const getWorkerDashboard = async (userId) => {
   const profileCompletion = Math.round((filledFields.length / fieldsToCheck.length) * 100);
   const currentAgency = worker.agencies[0]?.agency || null;
 
+  const totalReviews = worker.reviews?.length || 0;
+  const averageRating = totalReviews > 0 
+    ? (worker.reviews.reduce((acc, rev) => acc + rev.rating, 0) / totalReviews).toFixed(1)
+    : 0;
+
   return {
     profile: {
       completion: profileCompletion,
@@ -37,6 +44,9 @@ export const getWorkerDashboard = async (userId) => {
       verificationStatus: worker.profileStatus,
       currentAgency: currentAgency ? currentAgency.agencyName : "Independent Worker",
       currentAgencyId: currentAgency ? currentAgency.id : null,
+      averageRating: parseFloat(averageRating),
+      totalReviews,
+      completedJobs: worker.assignments?.length || 0
     },
     activeJob: {
       title: "Plumbing Repair - City Center",

@@ -340,7 +340,8 @@ model Worker {
   updatedAt   DateTime     @updatedAt
   deletedAt   DateTime?
   reviews     Review[]
-  complaints  Complaint[]
+  complaintsFiled  Complaint[] @relation("WorkerComplaints")
+  complaintsAgainst Complaint[] @relation("WorkerTargetComplaints")
   teamMembers TeamMember[]
 
   @@index([userId])
@@ -382,7 +383,8 @@ model Client {
   updatedAt       DateTime         @updatedAt
   deletedAt       DateTime?
   reviews         Review[]
-  complaints      Complaint[]
+  complaintsFiled  Complaint[] @relation("ClientComplaints")
+  complaintsAgainst Complaint[] @relation("ClientTargetComplaints")
   jobTemplates    JobTemplate[]
   projects        Project[]
   siteLocations   SiteLocation[]
@@ -433,7 +435,8 @@ model Agency {
   updatedAt  DateTime    @updatedAt
   deletedAt  DateTime?
   reviews    Review[]
-  complaints Complaint[]
+  complaintsFiled Complaint[] @relation("AgencyComplaints")
+  complaintsAgainst Complaint[] @relation("AgencyTargetComplaints")
   teams      Team[]
 
   @@index([userId])
@@ -1008,26 +1011,37 @@ enum ComplaintStatus {
 
 model Complaint {
   id             String  @id @default(uuid())
-  complainantId  String
+  complainantClientId  String?
+  complainantWorkerId  String?
+  complainantAgencyId  String?
+  
   targetWorkerId String?
   targetAgencyId String?
+  targetClientId String?
   assignmentId   String?
 
   title       String
   description String
   status      ComplaintStatus @default(PENDING)
 
-  complainant  Client      @relation(fields: [complainantId], references: [id])
-  targetWorker Worker?     @relation(fields: [targetWorkerId], references: [id])
-  targetAgency Agency?     @relation(fields: [targetAgencyId], references: [id])
+  complainantClient  Client?      @relation("ClientComplaints", fields: [complainantClientId], references: [id])
+  complainantWorker  Worker?      @relation("WorkerComplaints", fields: [complainantWorkerId], references: [id])
+  complainantAgency  Agency?      @relation("AgencyComplaints", fields: [complainantAgencyId], references: [id])
+  
+  targetWorker Worker?     @relation("WorkerTargetComplaints", fields: [targetWorkerId], references: [id])
+  targetAgency Agency?     @relation("AgencyTargetComplaints", fields: [targetAgencyId], references: [id])
+  targetClient Client?     @relation("ClientTargetComplaints", fields: [targetClientId], references: [id])
   assignment   Assignment? @relation(fields: [assignmentId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([complainantId])
+  @@index([complainantClientId])
+  @@index([complainantWorkerId])
+  @@index([complainantAgencyId])
   @@index([targetWorkerId])
   @@index([targetAgencyId])
+  @@index([targetClientId])
   @@index([status])
 }
 
