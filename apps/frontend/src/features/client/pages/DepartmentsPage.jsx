@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { companyApi } from "../api/company.api";
 import { Users, Plus, Trash2, Edit, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../../../components/ui/dialog";
+import { Modal } from "../../../components/ui/modal/Modal";
 
 export default function DepartmentsPage() {
   const queryClient = useQueryClient();
@@ -122,12 +122,13 @@ export default function DepartmentsPage() {
         </div>
       )}
 
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-[400px]">
-          <DialogHeader>
-            <DialogTitle>{editingDept ? "Edit Department" : "Create New Department"}</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+      <Modal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)}
+        title={editingDept ? "Edit Department" : "Create New Department"}
+        className="sm:max-w-[400px]"
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Department Name <span className="text-red-500">*</span></label>
               <input
@@ -140,7 +141,7 @@ export default function DepartmentsPage() {
               />
             </div>
             
-            <DialogFooter className="mt-6">
+            <div className="mt-6 flex justify-end gap-3 border-t pt-4">
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
@@ -156,10 +157,9 @@ export default function DepartmentsPage() {
                 {(createMutation.isPending || updateMutation.isPending) && <Loader2 className="w-4 h-4 animate-spin" />}
                 {editingDept ? "Save Changes" : "Create"}
               </button>
-            </DialogFooter>
+            </div>
           </form>
-        </DialogContent>
-      </Dialog>
+      </Modal>
     </div>
   );
 }
