@@ -62,7 +62,7 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
         <span className="text-sm font-semibold text-gray-900">{row.name}</span>
       </div>
     )},
-    { key: "gender", title: <div className="flex items-center gap-1.5">GENDER</div>, render: (row) => <span className="text-sm text-gray-600">-</span> },
+    { key: "gender", title: <div className="flex items-center gap-1.5">GENDER</div>, render: (row) => <span className="text-sm text-gray-600 capitalize">{row.gender && row.gender !== "—" ? row.gender : "-"}</span> },
     { key: "phone", title: <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />PHONE</div>, render: (row) => <span className="text-sm text-gray-600">{row.phone}</span> },
     { key: "agency", title: <div className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" />AGENCY</div>, render: (row) => <span className="text-sm text-gray-600">{row.agency}</span> },
     { key: "primarySkill", title: <div className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5" />PRIMARY SKILL</div>, render: (row) => <span className="text-sm text-gray-600">{row.primarySkill}</span> },

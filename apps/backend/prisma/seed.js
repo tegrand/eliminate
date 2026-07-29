@@ -40,6 +40,36 @@ async function main() {
   }
 
   console.log("✅ Roles seeded successfully.");
+
+  // Create Super Admin
+  const superAdminRole = await prisma.role.findUnique({ where: { name: "SUPER_ADMIN" } });
+  
+  if (superAdminRole) {
+    const email = "javid.prsnl.act@gmail.com";
+    const password = "Pass123@";
+    const bcrypt = await import("bcrypt");
+    const passwordHash = await bcrypt.default.hash(password, 10);
+    
+    await prisma.user.upsert({
+      where: { email },
+      update: {
+        passwordHash,
+        status: "ACTIVE",
+        roleId: superAdminRole.id,
+      },
+      create: {
+        email,
+        passwordHash,
+        status: "ACTIVE",
+        profileType: "SUPER_ADMIN",
+        firstName: "Javid",
+        lastName: "Admin",
+        emailVerified: true,
+        roleId: superAdminRole.id,
+      }
+    });
+    console.log("✅ Super Admin created successfully:", email);
+  }
 }
 
 main()

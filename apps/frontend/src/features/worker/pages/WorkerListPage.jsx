@@ -21,11 +21,22 @@ export default function WorkerListPage() {
   const rawWorkers = data?.data?.items || data?.data?.workers || [];
   const pagination = data?.data?.pagination || {};
 
-  const normalizedWorkers = rawWorkers.map((w) => ({
-    ...w,
-    name: `${w.firstName || ""} ${w.lastName || ""}`.trim() || w.name || "—",
-    status: w.profileStatus || "PENDING",
-  }));
+  const normalizedWorkers = rawWorkers.map((w) => {
+    const firstName = w.user?.firstName || w.firstName || "";
+    const lastName = w.user?.lastName || w.lastName || "";
+    const fullName = `${firstName} ${lastName}`.trim() || w.user?.name || w.name;
+    
+    return {
+      ...w,
+      id: w.workerCode || w.id,
+      name: fullName || "—",
+      gender: w.user?.gender || w.gender || "—",
+      phone: w.user?.phone || w.phone || "-",
+      agency: w.agency?.name || w.agencyProfile?.name || (typeof w.agency === 'string' ? w.agency : "—"),
+      primarySkill: w.primarySkill?.name || (typeof w.primarySkill === 'string' ? w.primarySkill : "—") || w.skills?.[0]?.name || "—",
+      status: w.profileStatus || w.status || "PENDING",
+    };
+  });
 
   let displayedWorkers = normalizedWorkers;
   

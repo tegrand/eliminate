@@ -27,14 +27,8 @@ import DashboardPage from "../features/dashboard/pages/DashboardPage";
 
 import WorkerListPage from "../features/worker/pages/WorkerListPage";
 import WorkerDetailsPage from "../features/worker/pages/WorkerDetailsPage";
-import WorkerProfilePage from "../features/worker-profile/pages/WorkerProfilePage";
-
-import FindWorkPage from "../features/jobs/pages/FindWorkPage";
-import MyJobsPage from "../features/jobs/pages/MyJobsPage";
-
 import ClientListPage from "../features/client/pages/ClientListPage";
 import ClientDetailsPage from "../features/client/pages/ClientDetailsPage";
-import ClientProfilePage from "../features/client/pages/ClientProfilePage";
 
 import AgencyListPage from "../features/agency/pages/AgencyListPage";
 import AgencyDetailsPage from "../features/agency/pages/AgencyDetailsPage";
@@ -55,10 +49,6 @@ import AttendanceListPage from "../features/attendance/pages/AttendanceListPage"
 import BulkAttendancePage from "../features/attendance/pages/BulkAttendancePage";
 import AttendanceVerificationPage from "../features/attendance/pages/AttendanceVerificationPage";
 import MissingAttendancePage from "../features/attendance/pages/MissingAttendancePage";
-import MyAttendancePage from "../features/attendance/pages/MyAttendancePage";
-
-import MyPaymentsPage from "../features/payments/pages/MyPaymentsPage";
-import MyDocumentsPage from "../features/documents/pages/MyDocumentsPage";
 
 import PayrollListPage from "../features/payroll/pages/PayrollListPage";
 import PayrollDetailsPage from "../features/payroll/pages/PayrollDetailsPage";
@@ -106,17 +96,10 @@ const AppRouter = () => {
             {/* Workers */}
             <Route path={ROUTES.WORKERS} element={<WorkerListPage />} />
             <Route path={ROUTES.WORKER_DETAILS} element={<WorkerDetailsPage />} />
-            <Route path={ROUTES.WORKER_PROFILE} element={<WorkerProfilePage />} />
-            <Route path={ROUTES.FIND_WORK} element={<FindWorkPage />} />
-            <Route path={ROUTES.MY_JOBS} element={<MyJobsPage />} />
-            <Route path={ROUTES.MY_ATTENDANCE} element={<MyAttendancePage />} />
-            <Route path={ROUTES.MY_PAYMENTS} element={<MyPaymentsPage />} />
-            <Route path={ROUTES.MY_DOCUMENTS} element={<MyDocumentsPage />} />
 
             {/* Clients */}
             <Route path={ROUTES.CLIENTS} element={<ClientListPage />} />
             <Route path={ROUTES.CLIENT_DETAILS} element={<ClientDetailsPage />} />
-            <Route path={ROUTES.CLIENT_PROFILE} element={<ClientProfilePage />} />
 
             {/* Agencies */}
             <Route path={ROUTES.AGENCIES} element={<AgencyListPage />} />
