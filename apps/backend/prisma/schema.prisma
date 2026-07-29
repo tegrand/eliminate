@@ -313,6 +313,7 @@ model Worker {
   leaveRequests   LeaveRequest[]
   payments        WorkerPayment[]
   documents       WorkerDocument[]
+  ignoredJobs     IgnoredJob[]
   // categories       WorkerCategory[]
   // bookings         Booking[]
   hiringRequests  HiringRequest[]
@@ -626,6 +627,7 @@ model JobRequirement {
   requiredLanguages JobRequirementLanguage[]
   applications      JobApplication[]
   savedBy           SavedJob[]
+  ignoredBy         IgnoredJob[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -696,6 +698,21 @@ model JobApplication {
 }
 
 model SavedJob {
+  id               String @id @default(uuid())
+  jobRequirementId String
+  workerId         String
+
+  jobRequirement JobRequirement @relation(fields: [jobRequirementId], references: [id], onDelete: Cascade)
+  worker         Worker         @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([jobRequirementId, workerId])
+  @@index([jobRequirementId])
+  @@index([workerId])
+}
+
+model IgnoredJob {
   id               String @id @default(uuid())
   jobRequirementId String
   workerId         String

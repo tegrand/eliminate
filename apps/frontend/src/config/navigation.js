@@ -63,6 +63,12 @@ export const NAVIGATION_CONFIG = [
         icon: Bell,
         roles: ["WORKER"],
       },
+      {
+        title: "Find Work",
+        path: ROUTES.FIND_WORK,
+        icon: Search,
+        roles: ["WORKER"],
+      },
     ],
   },
 

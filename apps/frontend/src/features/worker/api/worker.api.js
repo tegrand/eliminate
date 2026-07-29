@@ -70,5 +70,23 @@ export const workerApi = {
   rejectJobInvitation: async (id) => {
     const response = await api.post(`/workers/my-profile/invitations/${id}/reject`);
     return response.data;
+  },
+
+  // Marketplace
+  getMarketplaceJobs: async (filters = {}) => {
+    const response = await api.get("/workers/marketplace/jobs", { params: filters });
+    return response.data;
+  },
+  applyForMarketplaceJob: async (jobId) => {
+    const response = await api.post(`/workers/marketplace/jobs/${jobId}/apply`);
+    return response.data;
+  },
+  saveMarketplaceJob: async (jobId) => {
+    const response = await api.post(`/workers/marketplace/jobs/${jobId}/save`);
+    return response.data;
+  },
+  ignoreMarketplaceJob: async (jobId) => {
+    const response = await api.post(`/workers/marketplace/jobs/${jobId}/ignore`);
+    return response.data;
   }
 };

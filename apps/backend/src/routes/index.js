@@ -3,6 +3,7 @@ import authRoutes from "../modules/auth/auth.routes.js";
 import usersRoutes from "../modules/users/users.routes.js";
 import dashboardRoutes from "../modules/dashboard/dashboard.routes.js";
 import workerRoutes from "../modules/workers/worker.routes.js";
+import workerMarketplaceRoutes from "../modules/workers/worker-marketplace.routes.js";
 import workerSkillRoutes from "../modules/workers/worker-skill.routes.js";
 import workerLanguageRoutes from "../modules/workers/worker-language.routes.js";
 import clientRoutes from "../modules/clients/client.routes.js";
@@ -35,6 +36,7 @@ router.use("/users", usersRoutes);
 router.use("/dashboard", dashboardRoutes);
 
 // Entity Routes
+router.use("/workers/marketplace", workerMarketplaceRoutes);
 router.use("/workers", workerRoutes);
 router.use("/clients/company/projects", companyProjectRoutes);
 router.use("/clients/company/sites", companySiteRoutes);
