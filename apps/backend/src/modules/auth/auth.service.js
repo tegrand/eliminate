@@ -54,14 +54,14 @@ const issueTokensAndUpdateUser = async (user, meta, action = "LOGIN") => {
 
   let userWithProfile = { ...updatedUser };
 
-  // If user is a CLIENT, attach clientType so the frontend can show "My Profile" vs "Company Profile"
+  // If user is a CLIENT, attach clientProfile so the frontend can show "My Profile" vs "Company Profile"
   if (updatedUser.profileType === "CLIENT") {
     const clientProfile = await prisma.client.findUnique({
       where: { userId: updatedUser.id },
       select: { clientType: true, companyName: true, contactPerson: true },
     });
     if (clientProfile) {
-      userWithProfile = { ...userWithProfile, ...clientProfile };
+      userWithProfile.clientProfile = clientProfile;
     }
   }
 
@@ -330,7 +330,18 @@ export const getCurrentUser = async (userId) => {
     }
   }
 
-  return user;
+  let userWithProfile = { ...user };
+  if (user.profileType === "CLIENT") {
+    const clientProfile = await prisma.client.findUnique({
+      where: { userId: user.id },
+      select: { clientType: true, companyName: true, contactPerson: true },
+    });
+    if (clientProfile) {
+      userWithProfile.clientProfile = clientProfile;
+    }
+  }
+
+  return userWithProfile;
 };
 
 export const changePassword = async (userId, data, meta) => {
