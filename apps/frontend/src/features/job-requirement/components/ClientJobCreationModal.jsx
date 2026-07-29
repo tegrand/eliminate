@@ -24,6 +24,7 @@ export default function ClientJobCreationModal({ isOpen, onClose }) {
       locationId: "",
       startDate: "",
       endDate: "",
+      locationText: "",
       accommodation: false,
       food: false,
       transport: false,
@@ -53,7 +54,28 @@ export default function ClientJobCreationModal({ isOpen, onClose }) {
     }
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
+    let finalLocationId = data.locationId;
+    
+    if (data.locationText) {
+      try {
+        const searchRes = await api.get(`/locations?search=${encodeURIComponent(data.locationText)}`);
+        const existing = searchRes.data.data.items.find(l => l.name.toLowerCase() === data.locationText.toLowerCase());
+        
+        if (existing) {
+          finalLocationId = existing.id;
+        } else {
+          const code = data.locationText.toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/(^-|-$)/g, '').substring(0, 20);
+          const res = await api.post("/locations", { name: data.locationText, code, isActive: true });
+          finalLocationId = res.data.data.id;
+        }
+      } catch (err) {
+        console.error("Failed to process location", err);
+        toast.error("Failed to save work location");
+        return;
+      }
+    }
+
     const payload = {
       ...data,
       requiredWorkers: parseInt(data.requiredWorkers, 10),
@@ -61,7 +83,10 @@ export default function ClientJobCreationModal({ isOpen, onClose }) {
       requiredSkillIds: data.requiredSkillIds.filter(Boolean),
       startDate: data.startDate ? new Date(data.startDate).toISOString() : null,
       endDate: data.endDate ? new Date(data.endDate).toISOString() : null,
+      locationId: finalLocationId || null
     };
+    
+    delete payload.locationText;
 
     if (!payload.categoryId) delete payload.categoryId;
     if (!payload.locationId) delete payload.locationId;
@@ -264,13 +289,12 @@ export default function ClientJobCreationModal({ isOpen, onClose }) {
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-gray-400" /> Location
                   </label>
-                  <select 
-                    {...register("locationId")}
-                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 bg-white"
-                  >
-                    <option value="">Select Location</option>
-                    {locations.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
-                  </select>
+                  <input 
+                    type="text"
+                    {...register("locationText")}
+                    placeholder="e.g. Ernakulam"
+                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 bg-white outline-none transition-all"
+                  />
                 </div>
 
                 <div>
