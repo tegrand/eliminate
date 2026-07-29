@@ -323,10 +323,11 @@ model Worker {
   experienceCertificates Json? // Array of objects/strings stored as JSON
   skillCertificates      Json? // Array of objects/strings stored as JSON
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  reviews   Review[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  deletedAt  DateTime?
+  reviews    Review[]
+  complaints Complaint[]
 
   @@index([userId])
   @@index([workerCode])
@@ -363,10 +364,12 @@ model Client {
   hiringRequests  HiringRequest[]
   assignments     Assignment[]
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  reviews   Review[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  deletedAt    DateTime?
+  reviews      Review[]
+  complaints   Complaint[]
+  jobTemplates JobTemplate[]
 
   @@index([userId])
   @@index([clientCode])
@@ -407,10 +410,11 @@ model Agency {
   hiringRequests HiringRequest[]
   assignments    Assignment[]
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  reviews   Review[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  deletedAt  DateTime?
+  reviews    Review[]
+  complaints Complaint[]
 
   @@index([userId])
   @@index([agencyCode])
@@ -448,9 +452,10 @@ model Category {
   // workers          WorkerCategory[]
   jobRequirements JobRequirement[]
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  deletedAt        DateTime?
+  jobTemplateItems JobTemplateItem[]
 
   @@index([slug])
   @@index([isActive])
@@ -902,9 +907,10 @@ model Assignment {
 
   assignedWorkers AssignmentWorker[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  reviews   Review[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  reviews    Review[]
+  complaints Complaint[]
 
   @@index([clientId])
   @@index([agencyId])
@@ -948,4 +954,65 @@ model Review {
   @@index([targetWorkerId])
   @@index([targetAgencyId])
   @@index([assignmentId])
+}
+
+enum ComplaintStatus {
+  PENDING
+  REVIEWING
+  RESOLVED
+  DISMISSED
+}
+
+model Complaint {
+  id             String  @id @default(uuid())
+  complainantId  String
+  targetWorkerId String?
+  targetAgencyId String?
+  assignmentId   String?
+
+  title       String
+  description String
+  status      ComplaintStatus @default(PENDING)
+
+  complainant  Client      @relation(fields: [complainantId], references: [id])
+  targetWorker Worker?     @relation(fields: [targetWorkerId], references: [id])
+  targetAgency Agency?     @relation(fields: [targetAgencyId], references: [id])
+  assignment   Assignment? @relation(fields: [assignmentId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([complainantId])
+  @@index([targetWorkerId])
+  @@index([targetAgencyId])
+  @@index([status])
+}
+
+model JobTemplate {
+  id          String  @id @default(uuid())
+  clientId    String
+  name        String
+  description String?
+
+  items JobTemplateItem[]
+
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clientId])
+}
+
+model JobTemplateItem {
+  id              String  @id @default(uuid())
+  templateId      String
+  categoryId      String?
+  title           String // e.g., "Mason", "Helper"
+  requiredWorkers Int     @default(1)
+
+  template JobTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  category Category?   @relation(fields: [categoryId], references: [id])
+
+  @@index([templateId])
+  @@index([categoryId])
 }
