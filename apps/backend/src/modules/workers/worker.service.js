@@ -57,6 +57,23 @@ const workerSelect = {
       updatedAt: true
     }
   },
+  skills: {
+    select: {
+      id: true,
+      proficiencyLevel: true,
+      isPrimary: true,
+      experienceYears: true,
+      skill: { select: { id: true, name: true, slug: true } }
+    },
+    orderBy: [{ isPrimary: "desc" }]
+  },
+  languages: {
+    select: {
+      id: true,
+      proficiencyLevel: true,
+      language: { select: { id: true, name: true } }
+    }
+  },
   user: {
     select: {
       id: true,

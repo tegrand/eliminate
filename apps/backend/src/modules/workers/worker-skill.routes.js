@@ -15,7 +15,7 @@ import {
 
 import validate from "../../middleware/validate.middleware.js";
 import authenticate from "../../middleware/auth.middleware.js";
-import { requirePermission } from "../../middleware/authorize.middleware.js";
+import { requirePermission, authorize } from "../../middleware/authorize.middleware.js";
 
 const router = Router();
 
@@ -23,20 +23,20 @@ router.use(authenticate);
 
 router.post(
   "/workers/:workerId/skills",
-  requirePermission("worker-skill:create"),
+  authorize("SUPER_ADMIN", "AGENCY", "WORKER"),
   validate(assignSkillSchema),
   assignSkill
 );
 
 router.get(
   "/workers/:workerId/skills",
-  requirePermission("worker-skill:read"),
+  authorize("SUPER_ADMIN", "AGENCY", "WORKER", "CLIENT"),
   getWorkerSkills
 );
 
 router.patch(
   "/workers/:workerId/skills/:skillId",
-  requirePermission("worker-skill:update"),
+  authorize("SUPER_ADMIN", "AGENCY", "WORKER"),
   validate(deleteWorkerSkillSchema, "params"),
   validate(updateWorkerSkillSchema),
   updateWorkerSkill
@@ -44,7 +44,7 @@ router.patch(
 
 router.delete(
   "/workers/:workerId/skills/:skillId",
-  requirePermission("worker-skill:delete"),
+  authorize("SUPER_ADMIN", "AGENCY", "WORKER"),
   validate(deleteWorkerSkillSchema, "params"),
   deleteWorkerSkill
 );
