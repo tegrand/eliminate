@@ -1,12 +1,26 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Plus, LayoutGrid, Calendar, Users, MapPin, Loader2, Briefcase } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Plus, LayoutGrid, Calendar, Users, MapPin, Loader2, Briefcase, MoreVertical, Edit2, Trash2, XCircle, CheckCircle, RotateCcw } from "lucide-react";
+import toast from "react-hot-toast";
 import { jobRequirementApi } from "../../job-requirement/api/jobRequirement.api";
 import ClientJobCreationModal from "../components/ClientJobCreationModal";
 import ClientCategoryManagerModal from "../components/ClientCategoryManagerModal";
 
 // A small component to render each job card beautifully
-function JobCard({ job }) {
+function JobCard({ job, onDelete, onUpdateStatus, onEdit }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const getStatusColor = (status) => {
     switch (status) {
       case "OPEN": return "bg-green-100 text-green-700";
@@ -20,12 +34,70 @@ function JobCard({ job }) {
   };
 
   return (
-    <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-all group flex flex-col h-full">
+    <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-all group flex flex-col h-full relative">
       <div className="flex items-start justify-between mb-4">
-        <div>
+        <div className="pr-8">
           <span className="text-xs font-bold text-gray-400 mb-1 block uppercase tracking-wider">{job.requirementCode}</span>
           <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">{job.title}</h3>
         </div>
+        
+        {/* Actions Menu */}
+        <div className="absolute top-4 right-4" ref={menuRef}>
+          <button 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <MoreVertical className="w-5 h-5" />
+          </button>
+          
+          {isMenuOpen && (
+            <div className="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1.5 z-10 animate-fade-in-up">
+              <button 
+                onClick={() => { setIsMenuOpen(false); onEdit(job); }}
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+              >
+                <Edit2 className="w-4 h-4 text-blue-500" /> Edit Details
+              </button>
+              
+              {job.status === "OPEN" && (
+                <>
+                  <button 
+                    onClick={() => { setIsMenuOpen(false); onUpdateStatus(job.id, "COMPLETED"); }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                  >
+                    <CheckCircle className="w-4 h-4 text-emerald-500" /> Mark Completed
+                  </button>
+                  <button 
+                    onClick={() => { setIsMenuOpen(false); onUpdateStatus(job.id, "CANCELLED"); }}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                  >
+                    <XCircle className="w-4 h-4 text-orange-500" /> Cancel Job
+                  </button>
+                </>
+              )}
+              
+              {(job.status === "CANCELLED" || job.status === "COMPLETED") && (
+                <button 
+                  onClick={() => { setIsMenuOpen(false); onUpdateStatus(job.id, "OPEN"); }}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                >
+                  <RotateCcw className="w-4 h-4 text-blue-500" /> Reopen Job
+                </button>
+              )}
+              
+              <div className="h-px bg-gray-100 my-1"></div>
+              <button 
+                onClick={() => { setIsMenuOpen(false); onDelete(job.id); }}
+                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium flex items-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" /> Delete
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="mb-4">
         <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${getStatusColor(job.status)}`}>
           {job.status.replace("_", " ")}
         </span>
@@ -53,6 +125,8 @@ export default function ClientJobsPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
+  const queryClient = useQueryClient();
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["clientJobs"],
     queryFn: async () => {
@@ -60,6 +134,47 @@ export default function ClientJobsPage() {
       return res.data?.items || res.data || [];
     },
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => jobRequirementApi.deleteJobRequirement(id),
+    onSuccess: () => {
+      toast.success("Job deleted successfully");
+      queryClient.invalidateQueries(["clientJobs"]);
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || "Failed to delete job");
+    }
+  });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: ({ id, status }) => {
+      if (status === "CANCELLED") return jobRequirementApi.cancelJobRequirement(id, "Cancelled by user");
+      if (status === "COMPLETED") return jobRequirementApi.closeJobRequirement(id);
+      if (status === "OPEN") return jobRequirementApi.reopenJobRequirement(id);
+      return jobRequirementApi.updateJobRequirement(id, { status });
+    },
+    onSuccess: () => {
+      toast.success("Job status updated");
+      queryClient.invalidateQueries(["clientJobs"]);
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || "Failed to update status");
+    }
+  });
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this job requirement?")) {
+      deleteMutation.mutate(id);
+    }
+  };
+
+  const handleUpdateStatus = (id, status) => {
+    updateStatusMutation.mutate({ id, status });
+  };
+
+  const handleEdit = (job) => {
+    toast.error("Edit form feature coming soon! You can use status update instead.");
+  };
 
   const jobs = Array.isArray(data) ? data : data?.data || [];
 
@@ -119,9 +234,15 @@ export default function ClientJobsPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 pb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-10">
           {jobs.map((job) => (
-            <JobCard key={job.id} job={job} />
+            <JobCard 
+              key={job.id} 
+              job={job} 
+              onDelete={handleDelete}
+              onUpdateStatus={handleUpdateStatus}
+              onEdit={handleEdit}
+            />
           ))}
         </div>
       )}
