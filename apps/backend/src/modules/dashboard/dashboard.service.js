@@ -10,6 +10,8 @@ export const getWorkerDashboard = async (userId) => {
         include: { agency: true },
         take: 1
       },
+      reviews: true,
+      assignments: { where: { status: "COMPLETED" } }
     }
   });
 
@@ -37,6 +39,74 @@ export const getWorkerDashboard = async (userId) => {
     ? (worker.reviews.reduce((acc, rev) => acc + rev.rating, 0) / totalReviews).toFixed(1)
     : 0;
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Fetch assignments, attendance, payments
+  const [activeJobs, upcomingJobs, attendanceRecords, payments, notificationsList] = await Promise.all([
+    prisma.assignmentWorker.findMany({
+      where: {
+        workerId: worker.id,
+        status: "ACTIVE",
+        assignment: {
+          startDate: { lte: new Date() },
+          endDate: { gte: today }
+        }
+      },
+      include: {
+        assignment: { include: { siteLocation: true } }
+      },
+      take: 1
+    }),
+    prisma.assignmentWorker.findMany({
+      where: {
+        workerId: worker.id,
+        status: "ACTIVE",
+        assignment: {
+          startDate: { gt: new Date() }
+        }
+      },
+      include: {
+        assignment: { include: { siteLocation: true } }
+      },
+      take: 2,
+      orderBy: { assignment: { startDate: 'asc' } }
+    }),
+    prisma.workerAttendance.findMany({
+      where: { workerId: worker.id }
+    }),
+    prisma.workerPayment.findMany({
+      where: { workerId: worker.id }
+    }),
+    prisma.notification.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
+      take: 5
+    })
+  ]);
+
+  const activeJob = activeJobs.length > 0 ? {
+    title: activeJobs[0].assignment.title,
+    location: activeJobs[0].assignment.siteLocation?.name || "Multiple / On-site",
+    date: activeJobs[0].assignment.startDate,
+    duration: "Ongoing"
+  } : null;
+
+  const upcomingJobsMapped = upcomingJobs.map(job => ({
+    id: job.id,
+    title: job.assignment.title,
+    date: job.assignment.startDate,
+    location: job.assignment.siteLocation?.name || "Multiple / On-site"
+  }));
+
+  const totalHoursLogged = attendanceRecords.reduce((sum, rec) => sum + (rec.totalHours || 0), 0);
+  const presentCount = attendanceRecords.filter(rec => rec.status === 'PRESENT').length;
+  const absentCount = attendanceRecords.filter(rec => rec.status === 'ABSENT').length;
+  const onLeaveCount = attendanceRecords.filter(rec => rec.status === 'ON_LEAVE').length;
+
+  const totalRevenue = payments.filter(p => p.status === 'PAID').reduce((sum, p) => sum + (p.amount || 0), 0);
+  const pendingAmount = payments.filter(p => p.status === 'PENDING').reduce((sum, p) => sum + (p.amount || 0), 0);
+
   return {
     profile: {
       completion: profileCompletion,
@@ -48,39 +118,21 @@ export const getWorkerDashboard = async (userId) => {
       totalReviews,
       completedJobs: worker.assignments?.length || 0
     },
-    activeJob: {
-      title: "Plumbing Repair - City Center",
-      location: "City Center Mall",
-      date: new Date().toISOString(),
-      duration: "4 Days"
-    },
-    upcomingJobs: [
-      {
-        id: "1",
-        title: "Electrical Maintenance",
-        date: new Date(Date.now() + 86400000 * 2).toISOString(),
-        location: "Tech Park, Phase 1"
-      },
-      {
-        id: "2",
-        title: "HVAC Installation",
-        date: new Date(Date.now() + 86400000 * 5).toISOString(),
-        location: "New Hospital Wing"
-      }
-    ],
+    activeJob,
+    upcomingJobs: upcomingJobsMapped,
     todayAttendance: null,
-    pendingPayments: null,
-    notifications: [],
+    pendingPayments: pendingAmount > 0 ? `₹${pendingAmount}` : null,
+    notifications: notificationsList,
     recentActivities: [],
     topStats: {
-      totalCompletedWork: 0,
-      totalRevenue: "₹12,400",
-      pendingAmount: "₹2,000",
-      totalHoursLogged: "142 hrs",
+      totalCompletedWork: worker.assignments?.length || 0,
+      totalRevenue: totalRevenue > 0 ? `₹${totalRevenue}` : "₹0",
+      pendingAmount: pendingAmount > 0 ? `₹${pendingAmount}` : "₹0",
+      totalHoursLogged: `${totalHoursLogged} hrs`,
       attendanceSummary: {
-        present: 22,
-        absent: 2,
-        onLeave: 1
+        present: presentCount,
+        absent: absentCount,
+        onLeave: onLeaveCount
       }
     }
   };
