@@ -1,6 +1,5 @@
 import { Bell, Activity, CheckCircle, Info, UserPlus, RefreshCcw, CheckCircle2, Clock3, Wallet } from "lucide-react";
 import { useState } from "react";
-import { Bell, Activity, Info, UserPlus, RefreshCcw, CheckCircle2, Clock3, Wallet } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 const TYPE_META = {

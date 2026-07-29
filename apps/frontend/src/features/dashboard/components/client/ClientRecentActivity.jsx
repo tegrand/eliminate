@@ -1,14 +1,16 @@
 import { Clock, Activity } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function ClientRecentActivity({ activities = [] }) {
+  const { t } = useTranslation();
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] p-6 animate-fade-in" style={{ animationDelay: '0.2s' }}>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
           <Activity className="w-5 h-5 text-blue-500" />
-          Recent Activities
+          {t('clientDashboard.recentActivities')}
         </h2>
-        <button className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">View All</button>
+        <button className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">{t('clientDashboard.viewAll')}</button>
       </div>
 
       <div className="space-y-6">

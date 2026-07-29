@@ -8,12 +8,13 @@ import {
   CalendarClock,
   TrendingUp,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
-const cards = (stats) => [
+const cards = (stats, t) => [
   {
-    label: "Active Jobs",
+    label: t('clientDashboard.activeJobs'),
     value: stats?.activeJobs ?? "—",
-    sub: "Currently ongoing",
+    sub: t('clientDashboard.activeJobsSub'),
     icon: TrendingUp,
     gradient: "from-blue-500 to-blue-600",
     lightBg: "bg-blue-50",
@@ -21,9 +22,9 @@ const cards = (stats) => [
     ring: "ring-blue-100",
   },
   {
-    label: "Pending Requests",
+    label: t('clientDashboard.pendingRequests'),
     value: stats?.pendingRequests ?? "—",
-    sub: "Awaiting workers",
+    sub: t('clientDashboard.pendingRequestsSub'),
     icon: FolderOpen,
     gradient: "from-orange-500 to-orange-600",
     lightBg: "bg-orange-50",
@@ -31,9 +32,9 @@ const cards = (stats) => [
     ring: "ring-orange-100",
   },
   {
-    label: "Completed Jobs",
+    label: t('clientDashboard.completedJobs'),
     value: stats?.completedJobs ?? "—",
-    sub: "Successfully finished",
+    sub: t('clientDashboard.completedJobsSub'),
     icon: CheckCircle2,
     gradient: "from-teal-500 to-teal-600",
     lightBg: "bg-teal-50",
@@ -41,9 +42,9 @@ const cards = (stats) => [
     ring: "ring-teal-100",
   },
   {
-    label: "Assigned Workers",
+    label: t('clientDashboard.assignedWorkers'),
     value: stats?.assignedWorkers ?? "—",
-    sub: "Working right now",
+    sub: t('clientDashboard.assignedWorkersSub'),
     icon: Users,
     gradient: "from-emerald-500 to-emerald-600",
     lightBg: "bg-emerald-50",
@@ -53,13 +54,14 @@ const cards = (stats) => [
 ];
 
 export default function ClientOverviewCards({ stats }) {
-  const items = cards(stats);
+  const { t } = useTranslation();
+  const items = cards(stats, t);
 
   return (
     <div>
       <h2 className="text-[13px] font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
         <span className="inline-block w-4 h-px bg-gray-300" />
-        Overview
+        {t('clientDashboard.overview')}
         <span className="inline-block flex-1 h-px bg-gray-100" />
       </h2>
 

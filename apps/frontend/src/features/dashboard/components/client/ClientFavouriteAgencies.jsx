@@ -1,7 +1,9 @@
 import { Building2, ChevronRight, Users, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function ClientFavouriteAgencies({ agencies = [] }) {
+  const { t } = useTranslation();
   // Use mock data if API doesn't provide
   const displayAgencies = agencies?.length > 0 ? agencies : [
     { id: 1, name: "Alpha Staffing", rating: 4.9, activeWorkers: 24, completed: 156, logo: "A" },
@@ -15,12 +17,12 @@ export default function ClientFavouriteAgencies({ agencies = [] }) {
         <div>
           <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
             <Building2 className="w-5 h-5 text-indigo-500" />
-            Favourite Agencies
+            {t('clientDashboard.favouriteAgencies')}
           </h2>
-          <p className="text-sm text-gray-500 mt-0.5">Your top rated staffing partners</p>
+          <p className="text-sm text-gray-500 mt-0.5">{t('clientDashboard.topRatedPartners')}</p>
         </div>
         <button className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1">
-          View all <ChevronRight className="w-4 h-4" />
+          {t('clientDashboard.viewAllLower')} <ChevronRight className="w-4 h-4" />
         </button>
       </div>
 
@@ -34,8 +36,8 @@ export default function ClientFavouriteAgencies({ agencies = [] }) {
             <div className="flex-1 min-w-0">
               <h3 className="text-sm font-bold text-gray-900 truncate">{agency.name}</h3>
               <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
-                <span className="flex items-center gap-1"><Users className="w-3.5 h-3.5 text-gray-400" />{agency.activeWorkers} Workers</span>
-                <span className="flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5 text-teal-400" />{agency.completed} Jobs</span>
+                <span className="flex items-center gap-1"><Users className="w-3.5 h-3.5 text-gray-400" />{agency.activeWorkers} {t('clientDashboard.workersCount')}</span>
+                <span className="flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5 text-teal-400" />{agency.completed} {t('clientDashboard.jobsCount')}</span>
               </div>
             </div>
 
@@ -44,7 +46,7 @@ export default function ClientFavouriteAgencies({ agencies = [] }) {
                 ★ {agency.rating}
               </div>
               <button className="text-xs font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                Post Job
+                {t('clientDashboard.postJob')}
               </button>
             </div>
           </div>

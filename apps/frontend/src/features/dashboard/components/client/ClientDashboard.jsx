@@ -5,8 +5,10 @@ import ClientQuickActions from "./ClientQuickActions";
 import ClientRecentActivity from "./ClientRecentActivity";
 import ClientNotifications from "./ClientNotifications";
 import { Loader2, AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function ClientDashboard() {
+  const { t } = useTranslation();
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ["clientDashboard"],
     queryFn: async () => {
@@ -27,7 +29,7 @@ export default function ClientDashboard() {
     return (
       <div className="flex items-center gap-3 text-red-600 bg-red-50 p-4 rounded-xl border border-red-100">
         <AlertCircle className="w-5 h-5" />
-        <p className="text-sm font-medium">Failed to load dashboard data. Please try again.</p>
+        <p className="text-sm font-medium">{t('clientDashboard.failedToLoadData')}</p>
       </div>
     );
   }

@@ -1,4 +1,5 @@
 import { Bell, AlertCircle, CheckCircle, Info, Clock, UserPlus, RefreshCcw, CheckCircle2, Wallet } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const TYPE_META = {
   WORKER_ASSIGNED: { icon: UserPlus, color: "text-blue-500" },
@@ -9,6 +10,7 @@ const TYPE_META = {
 };
 
 export default function ClientNotifications({ notifications = [] }) {
+  const { t } = useTranslation();
   
   const getIcon = (type) => {
     if (TYPE_META[type]) {
@@ -27,9 +29,9 @@ export default function ClientNotifications({ notifications = [] }) {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
           <Bell className="w-5 h-5 text-orange-500" />
-          Notifications
+          {t('clientDashboard.notifications')}
         </h2>
-        <button className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">Mark all read</button>
+        <button className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">{t('clientDashboard.markAllRead')}</button>
       </div>
 
       <div className="space-y-4">

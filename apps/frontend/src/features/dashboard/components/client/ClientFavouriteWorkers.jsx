@@ -1,7 +1,9 @@
 import { Star, ChevronRight, MapPin, Briefcase } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function ClientFavouriteWorkers({ workers = [] }) {
+  const { t } = useTranslation();
   // Use mock data if API doesn't provide
   const displayWorkers = workers?.length > 0 ? workers : [
     { id: 1, name: "Rahul Sharma", role: "Electrician", location: "Kochi, Kerala", rating: 4.8, jobs: 12, image: "https://i.pravatar.cc/150?u=1" },
@@ -15,12 +17,12 @@ export default function ClientFavouriteWorkers({ workers = [] }) {
         <div>
           <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
             <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
-            Favourite Workers
+            {t('clientDashboard.favouriteWorkers')}
           </h2>
-          <p className="text-sm text-gray-500 mt-0.5">Your most trusted professionals</p>
+          <p className="text-sm text-gray-500 mt-0.5">{t('clientDashboard.trustedProfessionals')}</p>
         </div>
         <button className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center gap-1">
-          View all <ChevronRight className="w-4 h-4" />
+          {t('clientDashboard.viewAllLower')} <ChevronRight className="w-4 h-4" />
         </button>
       </div>
 
@@ -42,7 +44,7 @@ export default function ClientFavouriteWorkers({ workers = [] }) {
                 <Star className="w-3 h-3 fill-amber-500 text-amber-500" /> {worker.rating}
               </div>
               <button className="text-xs font-semibold text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                Request
+                {t('clientDashboard.request')}
               </button>
             </div>
           </div>
