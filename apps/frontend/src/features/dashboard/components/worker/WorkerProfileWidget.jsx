@@ -18,12 +18,14 @@ export default function WorkerProfileWidget({ profile, onStatusChange }) {
   const statusColors = {
     ACTIVE: 'bg-emerald-500',
     BUSY: 'bg-amber-500',
+    ON_LEAVE: 'bg-orange-500',
     INACTIVE: 'bg-gray-500' // Offline
   };
 
   const statusLabels = {
     ACTIVE: 'Available',
     BUSY: 'Busy',
+    ON_LEAVE: 'On Leave',
     INACTIVE: 'Offline'
   };
 
@@ -88,6 +90,7 @@ export default function WorkerProfileWidget({ profile, onStatusChange }) {
             >
               <option value="ACTIVE">Available</option>
               <option value="BUSY">Busy</option>
+              <option value="ON_LEAVE">On Leave</option>
               <option value="INACTIVE">Offline</option>
             </select>
           </div>
@@ -116,14 +119,10 @@ export default function WorkerProfileWidget({ profile, onStatusChange }) {
             Are you sure you want to change your status to 
             <span className="font-bold text-slate-900"> {statusLabels[pendingStatus]}</span>?
           </p>
-          <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
-            <Button variant="outline" onClick={() => setConfirmModalOpen(false)}>Cancel</Button>
-            <Button 
-              variant="primary"
-              loading={isUpdating} 
-              onClick={handleStatusChange}
-            >
-              Yes, Change Status
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setConfirmModalOpen(false)} className="w-full">Cancel</Button>
+            <Button onClick={handleStatusChange} isLoading={isUpdating} className="w-full">
+              Confirm Change
             </Button>
           </div>
         </div>

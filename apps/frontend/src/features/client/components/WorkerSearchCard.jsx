@@ -19,8 +19,23 @@ export default function WorkerSearchCard({ worker }) {
   const isVerified = worker.profileStatus === "APPROVED";
   const isAgency = !!(worker.agency || worker.agencyProfile);
   const avatar = worker.user?.avatar || worker.profilePhoto;
+  const status = worker.employmentStatus || "ACTIVE";
   
   const initials = name !== "Unknown" ? name.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase() : "W";
+
+  const statusColors = {
+    ACTIVE: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+    BUSY: 'bg-amber-50 text-amber-700 border-amber-200',
+    ON_LEAVE: 'bg-orange-50 text-orange-700 border-orange-200',
+    INACTIVE: 'bg-gray-50 text-gray-700 border-gray-200'
+  };
+
+  const statusLabels = {
+    ACTIVE: 'Available',
+    BUSY: 'Busy',
+    ON_LEAVE: 'On Leave',
+    INACTIVE: 'Offline'
+  };
 
   return (
     <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full animate-fade-in group">
@@ -70,7 +85,13 @@ export default function WorkerSearchCard({ worker }) {
         </div>
       </div>
 
-      <div className="mt-auto pt-5">
+      <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
+        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border ${statusColors[status] || statusColors.ACTIVE}`}>
+          {statusLabels[status] || statusLabels.ACTIVE}
+        </span>
+      </div>
+
+      <div className="mt-4">
         <Link 
           to={`/search-workers/${worker.id}`}
           className="block w-full py-2.5 text-center text-sm font-semibold text-gray-700 bg-gray-50 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-200 rounded-xl transition-all"
