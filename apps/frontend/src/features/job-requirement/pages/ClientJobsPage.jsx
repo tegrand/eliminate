@@ -34,8 +34,8 @@ function JobCard({ job, onDelete, onUpdateStatus, onEdit }) {
   };
 
   return (
-    <div className="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-all group flex flex-col h-full relative">
-      <div className="flex items-start justify-between mb-4">
+    <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all group flex flex-col h-full relative">
+      <div className="flex items-start justify-between mb-3">
         <div className="pr-8">
           <span className="text-xs font-bold text-gray-400 mb-1 block uppercase tracking-wider">{job.requirementCode}</span>
           <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">{job.title}</h3>
@@ -97,13 +97,13 @@ function JobCard({ job, onDelete, onUpdateStatus, onEdit }) {
         </div>
       </div>
 
-      <div className="mb-4">
+      <div className="mb-3">
         <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${getStatusColor(job.status)}`}>
           {job.status.replace("_", " ")}
         </span>
       </div>
 
-      <div className="flex flex-col gap-2.5 mt-auto">
+      <div className="flex flex-col gap-2 mt-auto">
         <div className="flex items-center gap-2 text-sm text-gray-600">
           <Calendar className="w-4 h-4 text-orange-400" />
           <span>{job.startDate ? new Date(job.startDate).toLocaleDateString() : "Not Specified"}</span>
