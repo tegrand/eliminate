@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { X, Search, UserCheck, Loader2 } from "lucide-react";
 import api from "../../../api/axios";
 import toast from "react-hot-toast";
-import { useAuth } from "../../auth/hooks/useAuth";
+import { useAuth } from "../../../hooks/useAuth";
 
 export default function AssignWorkerModal({ isOpen, onClose, assignmentId }) {
   const queryClient = useQueryClient();

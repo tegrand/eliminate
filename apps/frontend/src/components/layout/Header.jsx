@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
+import { useSidebar } from "../../contexts/SidebarContext";
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../routes/routePaths";
 import { LogOut, Search, User, ChevronDown } from "lucide-react";
@@ -7,6 +8,7 @@ import NotificationBell from "../ui/notifications/NotificationBell";
 
 export default function Header() {
   const { logout, user } = useAuth();
+  const { toggleSidebar } = useSidebar();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -25,7 +27,10 @@ export default function Header() {
     <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 lg:px-8 sticky top-0 z-10 flex-shrink-0">
       {/* Mobile/Tablet Menu Button */}
       <div className="flex items-center lg:hidden">
-        <button className="p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-md transition-colors" aria-label="Open sidebar">
+        <button 
+          onClick={toggleSidebar}
+          className="p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-md transition-colors" aria-label="Open sidebar"
+        >
           <div className="w-5 flex flex-col gap-1">
             <span className="block w-full h-0.5 bg-gray-500 rounded-full"></span>
             <span className="block w-full h-0.5 bg-gray-500 rounded-full"></span>
