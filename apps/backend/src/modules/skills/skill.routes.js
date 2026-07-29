@@ -25,21 +25,18 @@ router.use(authenticate);
 
 router.post(
   "/",
-  requirePermission("skill:create"),
   validate(createSkillSchema),
   createSkill
 );
 
 router.get(
   "/",
-  requirePermission("skill:read"),
   validate(listSkillsQuerySchema, "query"),
   getSkills
 );
 
 router.get(
   "/:id",
-  requirePermission("skill:read"),
   validate(skillIdParamSchema, "params"),
   getSkillById
 );
