@@ -62,7 +62,10 @@ export const getHiringRequest = async (id, user) => {
 };
 
 export const updateHiringRequestStatus = async (id, status, user) => {
-  const request = await prisma.hiringRequest.findUnique({ where: { id } });
+  const request = await prisma.hiringRequest.findUnique({ 
+    where: { id },
+    include: { client: true }
+  });
   if (!request) throw new AppError("Hiring Request not found", 404);
 
   // If accepting, we need to create an Assignment
@@ -95,14 +98,39 @@ export const updateHiringRequestStatus = async (id, status, user) => {
       // If independent worker, auto-assign them to this assignment?
       // For now, the assignment is created. We will handle the worker linking in Assignment module.
 
+      // Create Notification
+      await tx.notification.create({
+        data: {
+          userId: request.client.userId,
+          type: "HIRING_ACCEPTED",
+          title: "Hiring Request Accepted",
+          message: `Your hiring request "${req.title}" has been accepted and an assignment has been created.`,
+          link: "/assignments"
+        }
+      });
+
       return req;
     });
 
     return updatedRequest;
   } else {
-    return await prisma.hiringRequest.update({
+    const updatedRequest = await prisma.hiringRequest.update({
       where: { id },
       data: { status }
     });
+
+    if (status === "REJECTED") {
+      await prisma.notification.create({
+        data: {
+          userId: request.client.userId,
+          type: "HIRING_REJECTED",
+          title: "Hiring Request Rejected",
+          message: `Your hiring request "${request.title}" was declined.`,
+          link: "/hiring-requests"
+        }
+      });
+    }
+
+    return updatedRequest;
   }
 };

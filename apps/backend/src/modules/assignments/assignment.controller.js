@@ -12,6 +12,11 @@ export const getAssignment = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, "Assignment retrieved successfully", assignment, 200);
 });
 
+export const getAssignmentAttendance = asyncHandler(async (req, res) => {
+  const attendance = await assignmentService.getAssignmentAttendance(req.params.id, req.user);
+  return ApiResponse.success(res, "Assignment attendance retrieved successfully", attendance, 200);
+});
+
 export const updateAssignmentStatus = asyncHandler(async (req, res) => {
   const { status } = req.validatedData;
   const assignment = await assignmentService.updateAssignmentStatus(req.params.id, status, req.user);

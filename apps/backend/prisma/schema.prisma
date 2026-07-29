@@ -104,10 +104,10 @@ model User {
   worker Worker?
   client Client?
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  agency    Agency?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  deletedAt     DateTime?
+  agency        Agency?
   authAuditLogs AuthAuditLog[]
   notifications Notification[]
 
@@ -276,25 +276,25 @@ model Worker {
   notes            String?
 
   // Contact Info
-  addressLine1           String?
-  addressLine2           String?
-  city                   String?
-  state                  String?
-  country                String?
-  postalCode             String?
-  emergencyContactName   String?
-  emergencyContactPhone  String?
+  addressLine1             String?
+  addressLine2             String?
+  city                     String?
+  state                    String?
+  country                  String?
+  postalCode               String?
+  emergencyContactName     String?
+  emergencyContactPhone    String?
   emergencyContactRelation String?
 
   // Professional Info
-  experienceYears        Int?
-  expectedSalary         String?
-  preferredLocations     Json? // Array of strings stored as JSON
-  
+  experienceYears    Int?
+  expectedSalary     String?
+  preferredLocations Json? // Array of strings stored as JSON
+
   // Future module relation placeholders (awaiting model implementation)
-  skills    WorkerSkill[]
-  languages WorkerLanguage[]
-  agencies  AgencyWorker[]
+  skills          WorkerSkill[]
+  languages       WorkerLanguage[]
+  agencies        AgencyWorker[]
   jobApplications JobApplication[]
   savedJobs       SavedJob[]
   attendances     WorkerAttendance[]
@@ -303,18 +303,18 @@ model Worker {
   documents       WorkerDocument[]
   // categories       WorkerCategory[]
   // bookings         Booking[]
-  hiringRequests    HiringRequest[]
-  assignments       AssignmentWorker[]
+  hiringRequests  HiringRequest[]
+  assignments     AssignmentWorker[]
 
   // Documents & Financial
-  aadhaarNumber          String?
-  panNumber              String?
-  bankAccountNumber      String?
-  bankIfsc               String?
-  bankName               String?
-  
-  profileStatus          WorkerProfileStatus @default(PENDING)
-  
+  aadhaarNumber     String?
+  panNumber         String?
+  bankAccountNumber String?
+  bankIfsc          String?
+  bankName          String?
+
+  profileStatus WorkerProfileStatus @default(PENDING)
+
   // File URLs
   resumeUrl              String?
   aadhaarUrl             String?
@@ -326,6 +326,7 @@ model Worker {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+  reviews   Review[]
 
   @@index([userId])
   @@index([workerCode])
@@ -337,8 +338,8 @@ model Client {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  clientCode     String? @unique
-  clientType     String  @default("INDIVIDUAL") // INDIVIDUAL or COMPANY
+  clientCode     String?             @unique
+  clientType     String              @default("INDIVIDUAL") // INDIVIDUAL or COMPANY
   companyName    String?
   contactPerson  String?
   phone          String?
@@ -359,12 +360,13 @@ model Client {
   // bookings         Booking[]
   // invoices         Invoice[]
   // payments         Payment[]
-  hiringRequests   HiringRequest[]
-  assignments      Assignment[]
+  hiringRequests  HiringRequest[]
+  assignments     Assignment[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+  reviews   Review[]
 
   @@index([userId])
   @@index([clientCode])
@@ -376,7 +378,7 @@ model Agency {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  agencyCode     String? @unique
+  agencyCode     String?             @unique
   agencyName     String?
   contactPerson  String?
   phone          String?
@@ -394,13 +396,13 @@ model Agency {
   profileStatus  AgencyProfileStatus @default(PENDING)
 
   // Document URLs (Optional if using AgencyDocument model)
-  licenseUrl     String?
+  licenseUrl        String?
   gstCertificateUrl String?
-  panUrl         String?
+  panUrl            String?
 
   // Future module relation placeholders
-  workers AgencyWorker[]
-  documents AgencyDocument[]
+  workers        AgencyWorker[]
+  documents      AgencyDocument[]
   // jobRequirements  JobRequirement[]
   hiringRequests HiringRequest[]
   assignments    Assignment[]
@@ -408,6 +410,7 @@ model Agency {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+  reviews   Review[]
 
   @@index([userId])
   @@index([agencyCode])
@@ -422,8 +425,8 @@ model Skill {
   isActive    Boolean @default(true)
 
   // Future module relation placeholders
-  workers WorkerSkill[]
-  jobRequirements  JobRequirementSkill[]
+  workers         WorkerSkill[]
+  jobRequirements JobRequirementSkill[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -462,8 +465,8 @@ model Language {
   isActive    Boolean @default(true)
 
   // Future module relation placeholders
-  workers WorkerLanguage[]
-  jobRequirements  JobRequirementLanguage[]
+  workers         WorkerLanguage[]
+  jobRequirements JobRequirementLanguage[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -560,33 +563,33 @@ model AgencyWorker {
 }
 
 model JobRequirement {
-  id              String            @id @default(uuid())
-  requirementCode String            @unique
-  clientId        String
-  title           String
-  description     String?
-  categoryId      String?
-  locationId      String?
-  requiredWorkers Int               @default(1)
-  startDate       DateTime?
-  endDate         DateTime?
-  startTime       String?
-  endTime         String?
-  salaryType      SalaryType?
-  salaryAmount    Decimal?
-  priority             Priority          @default(MEDIUM)
-  status               RequirementStatus @default(DRAFT)
-  shift                ShiftType?
-  assignedCount        Int               @default(0)
-  cancellationReason   String?
-  notes                String?
-  genderPreference     String?
-  experienceRequired   String?
-  duration             String?
+  id                 String            @id @default(uuid())
+  requirementCode    String            @unique
+  clientId           String
+  title              String
+  description        String?
+  categoryId         String?
+  locationId         String?
+  requiredWorkers    Int               @default(1)
+  startDate          DateTime?
+  endDate            DateTime?
+  startTime          String?
+  endTime            String?
+  salaryType         SalaryType?
+  salaryAmount       Decimal?
+  priority           Priority          @default(MEDIUM)
+  status             RequirementStatus @default(DRAFT)
+  shift              ShiftType?
+  assignedCount      Int               @default(0)
+  cancellationReason String?
+  notes              String?
+  genderPreference   String?
+  experienceRequired String?
+  duration           String?
 
-  accommodation        Boolean           @default(false)
-  food                 Boolean           @default(false)
-  transport            Boolean           @default(false)
+  accommodation Boolean @default(false)
+  food          Boolean @default(false)
+  transport     Boolean @default(false)
 
   client   Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
   category Category? @relation(fields: [categoryId], references: [id])
@@ -594,11 +597,11 @@ model JobRequirement {
 
   // Future module relation placeholders
   // bookings         Booking[]
-  hiringRequests      HiringRequest[]
-  requiredSkills      JobRequirementSkill[]
-  requiredLanguages   JobRequirementLanguage[]
-  applications        JobApplication[]
-  savedBy             SavedJob[]
+  hiringRequests    HiringRequest[]
+  requiredSkills    JobRequirementSkill[]
+  requiredLanguages JobRequirementLanguage[]
+  applications      JobApplication[]
+  savedBy           SavedJob[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -657,11 +660,11 @@ model JobApplication {
   notes            String?
   appliedAt        DateTime          @default(now())
 
-  jobRequirement   JobRequirement    @relation(fields: [jobRequirementId], references: [id], onDelete: Cascade)
-  worker           Worker            @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  jobRequirement JobRequirement @relation(fields: [jobRequirementId], references: [id], onDelete: Cascade)
+  worker         Worker         @relation(fields: [workerId], references: [id], onDelete: Cascade)
 
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([jobRequirementId, workerId])
   @@index([jobRequirementId])
@@ -669,14 +672,14 @@ model JobApplication {
 }
 
 model SavedJob {
-  id               String            @id @default(uuid())
+  id               String @id @default(uuid())
   jobRequirementId String
   workerId         String
 
-  jobRequirement   JobRequirement    @relation(fields: [jobRequirementId], references: [id], onDelete: Cascade)
-  worker           Worker            @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  jobRequirement JobRequirement @relation(fields: [jobRequirementId], references: [id], onDelete: Cascade)
+  worker         Worker         @relation(fields: [workerId], references: [id], onDelete: Cascade)
 
-  createdAt        DateTime          @default(now())
+  createdAt DateTime @default(now())
 
   @@unique([jobRequirementId, workerId])
   @@index([jobRequirementId])
@@ -694,10 +697,10 @@ model WorkerAttendance {
   overtimeHours Float?
   notes         String?
 
-  worker        Worker           @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  worker Worker @relation(fields: [workerId], references: [id], onDelete: Cascade)
 
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([workerId, date])
   @@index([workerId])
@@ -705,19 +708,19 @@ model WorkerAttendance {
 }
 
 model LeaveRequest {
-  id            String       @id @default(uuid())
-  workerId      String
-  startDate     DateTime     @db.Date
-  endDate       DateTime     @db.Date
-  leaveType     LeaveType
-  status        LeaveStatus  @default(PENDING)
-  reason        String
-  approvedBy    String?      // Admin or Agency ID who approved
+  id         String      @id @default(uuid())
+  workerId   String
+  startDate  DateTime    @db.Date
+  endDate    DateTime    @db.Date
+  leaveType  LeaveType
+  status     LeaveStatus @default(PENDING)
+  reason     String
+  approvedBy String? // Admin or Agency ID who approved
 
-  worker        Worker       @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  worker Worker @relation(fields: [workerId], references: [id], onDelete: Cascade)
 
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([workerId])
   @@index([status])
@@ -735,27 +738,28 @@ model WorkerPayment {
   referenceNo   String?
   notes         String?
 
-  worker        Worker         @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  worker Worker @relation(fields: [workerId], references: [id], onDelete: Cascade)
 
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([workerId])
   @@index([status])
 }
+
 model WorkerDocument {
   id           String         @id @default(uuid())
   workerId     String
   documentType DocumentType
-  documentUrl  String         // Path or URL to the file
-  fileName     String         // Original file name
+  documentUrl  String // Path or URL to the file
+  fileName     String // Original file name
   status       DocumentStatus @default(PENDING_VERIFICATION)
-  remarks      String?        // Admin remarks on verification
+  remarks      String? // Admin remarks on verification
 
-  worker       Worker         @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  worker Worker @relation(fields: [workerId], references: [id], onDelete: Cascade)
 
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([workerId])
   @@index([documentType])
@@ -770,15 +774,14 @@ model AgencyDocument {
   status       DocumentStatus @default(PENDING_VERIFICATION)
   remarks      String?
 
-  agency       Agency         @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
 
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([agencyId])
   @@index([documentType])
 }
-
 
 enum NotificationType {
   APPROVAL
@@ -789,6 +792,10 @@ enum NotificationType {
   DOCUMENT_EXPIRY
   PROFILE_ALERT
   SYSTEM
+  HIRING_ACCEPTED
+  HIRING_REJECTED
+  ASSIGNMENT_STARTED
+  ASSIGNMENT_COMPLETED
 }
 
 enum WorkerProfileStatus {
@@ -811,19 +818,19 @@ enum ClientProfileStatus {
 }
 
 model Notification {
-  id        String           @id @default(uuid())
-  userId    String
-  type      NotificationType @default(SYSTEM)
-  title     String
-  message   String
-  isRead    Boolean          @default(false)
-  link      String?
-  
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-  
+  id      String           @id @default(uuid())
+  userId  String
+  type    NotificationType @default(SYSTEM)
+  title   String
+  message String
+  isRead  Boolean          @default(false)
+  link    String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@index([userId])
   @@index([isRead])
 }
@@ -836,30 +843,30 @@ enum HiringRequestStatus {
 }
 
 model HiringRequest {
-  id               String   @id @default(uuid())
+  id               String  @id @default(uuid())
   clientId         String
   targetAgencyId   String?
   targetWorkerId   String?
-  jobRequirementId String?  
-  
-  title            String
-  description      String?
-  proposedRate     Decimal?
-  startDate        DateTime?
-  endDate          DateTime?
-  notes            String?
-  
-  status           HiringRequestStatus @default(PENDING)
-  
-  client           Client   @relation(fields: [clientId], references: [id])
-  agency           Agency?  @relation(fields: [targetAgencyId], references: [id])
-  worker           Worker?  @relation(fields: [targetWorkerId], references: [id])
-  jobRequirement   JobRequirement? @relation(fields: [jobRequirementId], references: [id])
-  
-  assignment       Assignment?
+  jobRequirementId String?
 
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  title        String
+  description  String?
+  proposedRate Decimal?
+  startDate    DateTime?
+  endDate      DateTime?
+  notes        String?
+
+  status HiringRequestStatus @default(PENDING)
+
+  client         Client          @relation(fields: [clientId], references: [id])
+  agency         Agency?         @relation(fields: [targetAgencyId], references: [id])
+  worker         Worker?         @relation(fields: [targetWorkerId], references: [id])
+  jobRequirement JobRequirement? @relation(fields: [jobRequirementId], references: [id])
+
+  assignment Assignment?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([clientId])
   @@index([targetAgencyId])
@@ -875,28 +882,29 @@ enum AssignmentStatus {
 }
 
 model Assignment {
-  id               String   @id @default(uuid())
-  assignmentCode   String   @unique
-  hiringRequestId  String?  @unique
-  clientId         String
-  agencyId         String?
-  
-  title            String
-  description      String?
-  agreedRate       Decimal?
-  startDate        DateTime?
-  endDate          DateTime?
-  
-  status           AssignmentStatus @default(ACTIVE)
-  
-  hiringRequest    HiringRequest? @relation(fields: [hiringRequestId], references: [id])
-  client           Client   @relation(fields: [clientId], references: [id])
-  agency           Agency?  @relation(fields: [agencyId], references: [id])
-  
-  assignedWorkers  AssignmentWorker[]
+  id              String  @id @default(uuid())
+  assignmentCode  String  @unique
+  hiringRequestId String? @unique
+  clientId        String
+  agencyId        String?
 
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  title       String
+  description String?
+  agreedRate  Decimal?
+  startDate   DateTime?
+  endDate     DateTime?
+
+  status AssignmentStatus @default(ACTIVE)
+
+  hiringRequest HiringRequest? @relation(fields: [hiringRequestId], references: [id])
+  client        Client         @relation(fields: [clientId], references: [id])
+  agency        Agency?        @relation(fields: [agencyId], references: [id])
+
+  assignedWorkers AssignmentWorker[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  reviews   Review[]
 
   @@index([clientId])
   @@index([agencyId])
@@ -904,16 +912,40 @@ model Assignment {
 }
 
 model AssignmentWorker {
-  id           String     @id @default(uuid())
+  id           String   @id @default(uuid())
   assignmentId String
   workerId     String
-  assignedAt   DateTime   @default(now())
-  status       String     @default("ACTIVE") // ACTIVE, REMOVED
+  assignedAt   DateTime @default(now())
+  status       String   @default("ACTIVE") // ACTIVE, REMOVED
 
-  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-  worker       Worker     @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  assignment Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  worker     Worker     @relation(fields: [workerId], references: [id], onDelete: Cascade)
 
   @@unique([assignmentId, workerId])
   @@index([assignmentId])
   @@index([workerId])
+}
+
+model Review {
+  id             String  @id @default(uuid())
+  reviewerId     String
+  targetWorkerId String?
+  targetAgencyId String?
+  assignmentId   String?
+
+  rating  Int
+  comment String?
+
+  reviewer     Client      @relation(fields: [reviewerId], references: [id])
+  targetWorker Worker?     @relation(fields: [targetWorkerId], references: [id])
+  targetAgency Agency?     @relation(fields: [targetAgencyId], references: [id])
+  assignment   Assignment? @relation(fields: [assignmentId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([reviewerId])
+  @@index([targetWorkerId])
+  @@index([targetAgencyId])
+  @@index([assignmentId])
 }

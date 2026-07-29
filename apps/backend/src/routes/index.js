@@ -20,6 +20,7 @@ import workerAttendanceRoutes from "../modules/worker-attendance/worker-attendan
 import workerPaymentsRoutes from "../modules/worker-payments/worker-payments.routes.js";
 import workerDocumentsRoutes from "../modules/worker-documents/worker-documents.routes.js";
 import notificationsRoutes from "../modules/notifications/notifications.routes.js";
+import reviewRoutes from "../modules/reviews/review.routes.js";
 
 const router = Router();
 
@@ -40,6 +41,7 @@ router.use("/my-attendance", workerAttendanceRoutes);
 router.use("/notifications", notificationsRoutes);
 router.use("/my-payments", workerPaymentsRoutes);
 router.use("/my-documents", workerDocumentsRoutes);
+router.use("/reviews", reviewRoutes);
 
 // Master Data Routes
 router.use("/skills", skillRoutes);

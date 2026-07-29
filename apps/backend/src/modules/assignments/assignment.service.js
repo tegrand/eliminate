@@ -50,7 +50,7 @@ export const getAssignment = async (id, user) => {
       agency: { include: { user: { select: { firstName: true, lastName: true } } } },
       assignedWorkers: {
         include: {
-          worker: { include: { user: { select: { firstName: true, lastName: true } } } }
+          worker: { include: { user: { select: { firstName: true, lastName: true, avatar: true } } } }
         }
       }
     }
@@ -61,14 +61,69 @@ export const getAssignment = async (id, user) => {
   return assignment;
 };
 
-export const updateAssignmentStatus = async (id, status, user) => {
-  const assignment = await prisma.assignment.findUnique({ where: { id } });
+export const getAssignmentAttendance = async (id, user) => {
+  const assignment = await prisma.assignment.findUnique({
+    where: { id },
+    include: { assignedWorkers: true }
+  });
+
   if (!assignment) throw new AppError("Assignment not found", 404);
 
-  return await prisma.assignment.update({
+  const workerIds = assignment.assignedWorkers.map(aw => aw.workerId);
+  if (workerIds.length === 0) return [];
+
+  // Assuming attendance falls roughly in the assignment dates
+  const where = { workerId: { in: workerIds } };
+  if (assignment.startDate) where.date = { gte: assignment.startDate };
+  
+  const attendance = await prisma.workerAttendance.findMany({
+    where,
+    include: {
+      worker: {
+        include: { user: { select: { firstName: true, lastName: true } } }
+      }
+    },
+    orderBy: { date: 'desc' }
+  });
+
+  return attendance;
+};
+
+export const updateAssignmentStatus = async (id, status, user) => {
+  const assignment = await prisma.assignment.findUnique({ 
+    where: { id },
+    include: { client: true }
+  });
+  if (!assignment) throw new AppError("Assignment not found", 404);
+
+  const updated = await prisma.assignment.update({
     where: { id },
     data: { status }
   });
+
+  if (status === "COMPLETED") {
+    await prisma.notification.create({
+      data: {
+        userId: assignment.client.userId,
+        type: "ASSIGNMENT_COMPLETED",
+        title: "Assignment Completed",
+        message: `Your assignment "${assignment.title}" has been marked as completed.`,
+        link: `/assignments/${assignment.id}`
+      }
+    });
+  } else if (status === "ACTIVE") {
+    await prisma.notification.create({
+      data: {
+        userId: assignment.client.userId,
+        type: "ASSIGNMENT_STARTED",
+        title: "Assignment Started",
+        message: `Your assignment "${assignment.title}" is now active.`,
+        link: `/assignments/${assignment.id}`
+      }
+    });
+  }
+
+  return updated;
 };
 
 export const assignWorker = async (assignmentId, workerId, user) => {

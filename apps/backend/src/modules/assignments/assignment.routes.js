@@ -3,6 +3,7 @@ import { Router } from "express";
 import {
   listAssignments,
   getAssignment,
+  getAssignmentAttendance,
   updateAssignmentStatus,
   assignWorker,
   removeWorker
@@ -27,6 +28,12 @@ router.get(
   "/:id",
   validate(assignmentIdParamSchema, "params"),
   getAssignment
+);
+
+router.get(
+  "/:id/attendance",
+  validate(assignmentIdParamSchema, "params"),
+  getAssignmentAttendance
 );
 
 router.patch(

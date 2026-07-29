@@ -1,14 +1,21 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Users, UserRound, Clock3, CalendarCheck, CalendarDays, Activity, UserPlus, Loader2, Building2, CheckCircle } from "lucide-react";
+import { ArrowLeft, Users, UserRound, Clock3, CalendarCheck, CalendarDays, Activity, UserPlus, Loader2, Building2, CheckCircle, Star } from "lucide-react";
 import api from "../../../api/axios";
+import { useAuth } from "../../../hooks/useAuth";
 import AssignWorkerModal from "../components/AssignWorkerModal";
+import ReviewModal from "../components/ReviewModal";
 
 export default function AssignmentDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isClient = user?.profileType === "CLIENT";
+
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [reviewTarget, setReviewTarget] = useState(null); // { workerId, agencyId, name }
 
   const { data: assignment, isLoading, error } = useQuery({
     queryKey: ["assignment", id],
@@ -16,6 +23,15 @@ export default function AssignmentDetailsPage() {
       const res = await api.get(`/assignments/${id}`);
       return res.data?.data || res.data;
     }
+  });
+
+  const { data: attendanceData } = useQuery({
+    queryKey: ["assignmentAttendance", id],
+    queryFn: async () => {
+      const res = await api.get(`/assignments/${id}/attendance`);
+      return res.data?.data || res.data || [];
+    },
+    enabled: !!assignment
   });
 
   if (isLoading) {
@@ -45,8 +61,13 @@ export default function AssignmentDetailsPage() {
   } else if (assignment.status === 'COMPLETED') {
     progress = 100;
   } else if (assignment.status === 'ACTIVE') {
-    progress = 50; // default indeterminate progress
+    progress = 50;
   }
+
+  const handleOpenReview = (workerId, agencyId, name) => {
+    setReviewTarget({ workerId, agencyId, name });
+    setIsReviewModalOpen(true);
+  };
 
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 animate-fade-in space-y-6 h-[calc(100vh-4rem)] overflow-y-auto scrollbar-hide">
@@ -77,18 +98,30 @@ export default function AssignmentDetailsPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <button 
-            onClick={() => setIsAssignModalOpen(true)}
-            className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold text-sm px-4 py-2.5 rounded-xl shadow-sm transition-colors flex items-center gap-2"
-          >
-            <UserPlus className="w-4 h-4" /> Assign Worker
-          </button>
-          <button 
-            onClick={() => navigate("/attendance/bulk")} 
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-sm shadow-indigo-200 transition-colors flex items-center gap-2"
-          >
-            <Clock3 className="w-4 h-4" /> Mark Attendance
-          </button>
+          {!isClient && (
+            <>
+              <button 
+                onClick={() => setIsAssignModalOpen(true)}
+                className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold text-sm px-4 py-2.5 rounded-xl shadow-sm transition-colors flex items-center gap-2"
+              >
+                <UserPlus className="w-4 h-4" /> Assign Worker
+              </button>
+              <button 
+                onClick={() => navigate("/attendance/bulk")} 
+                className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-sm shadow-indigo-200 transition-colors flex items-center gap-2"
+              >
+                <Clock3 className="w-4 h-4" /> Mark Attendance
+              </button>
+            </>
+          )}
+          {isClient && assignment.status === 'COMPLETED' && (
+            <button 
+              onClick={() => handleOpenReview(null, assignment.agencyId, assignment.agency?.agencyName || 'Agency')}
+              className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-sm shadow-amber-200 transition-colors flex items-center gap-2"
+            >
+              <Star className="w-4 h-4 fill-current" /> Rate Project
+            </button>
+          )}
         </div>
       </div>
 
@@ -139,46 +172,95 @@ export default function AssignmentDetailsPage() {
           </div>
         </section>
 
-        {/* Overview & Attendance (Spans 1 column on lg) */}
-        <div className="space-y-6">
-          <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Overview</h2>
-            <div className="space-y-4">
-              {assignment.client && (
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                  <span className="text-sm font-semibold text-gray-500 flex items-center gap-2"><Building2 className="w-4 h-4" /> Client</span>
-                  <span className="text-sm font-bold text-gray-900">{assignment.client.companyName || assignment.client.user?.firstName}</span>
-                </div>
-              )}
-              {assignment.agency && (
-                <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                  <span className="text-sm font-semibold text-gray-500 flex items-center gap-2"><Users className="w-4 h-4" /> Agency</span>
-                  <span className="text-sm font-bold text-gray-900">{assignment.agency.agencyName || assignment.agency.user?.firstName}</span>
-                </div>
-              )}
+        {/* Overview (Spans 1 column on lg) */}
+        <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <h2 className="text-lg font-bold text-gray-900 mb-4">Overview</h2>
+          <div className="space-y-4">
+            {assignment.client && (
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                <span className="text-sm font-semibold text-gray-500">Agreed Rate</span>
-                <span className="text-sm font-bold text-emerald-600">{assignment.agreedRate ? `₹${assignment.agreedRate}` : 'TBD'}</span>
+                <span className="text-sm font-semibold text-gray-500 flex items-center gap-2"><Building2 className="w-4 h-4" /> Client</span>
+                <span className="text-sm font-bold text-gray-900">{assignment.client.companyName || assignment.client.user?.firstName}</span>
+              </div>
+            )}
+            {assignment.agency && (
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                <span className="text-sm font-semibold text-gray-500 flex items-center gap-2"><Users className="w-4 h-4" /> Agency</span>
+                <span className="text-sm font-bold text-gray-900">{assignment.agency.agencyName || assignment.agency.user?.firstName}</span>
+              </div>
+            )}
+            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+              <span className="text-sm font-semibold text-gray-500">Agreed Rate</span>
+              <span className="text-sm font-bold text-emerald-600">{assignment.agreedRate ? `₹${assignment.agreedRate}` : 'TBD'}</span>
+            </div>
+          </div>
+        </section>
+
+        {/* Attendance (Full width) */}
+        <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm lg:col-span-3">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                <Clock3 className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">Worker Attendance Tracker</h2>
+                <p className="text-sm text-gray-500">View daily attendance (Present, Absent, Half Day, Overtime).</p>
               </div>
             </div>
-          </section>
+          </div>
 
-          <section className="rounded-2xl border border-gray-100 bg-indigo-50 p-6 shadow-sm border-indigo-100 relative overflow-hidden">
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-              <Clock3 className="w-24 h-24 text-indigo-600" />
-            </div>
-            <h2 className="text-lg font-bold text-indigo-900 mb-2 relative z-10">Attendance</h2>
-            <p className="text-sm text-indigo-700/80 mb-4 relative z-10">Track daily attendance for workers assigned to this project.</p>
-            <button 
-              onClick={() => navigate("/attendance/bulk")}
-              className="w-full bg-white text-indigo-600 hover:bg-indigo-600 hover:text-white border border-indigo-200 transition-colors font-bold text-sm px-4 py-2.5 rounded-xl shadow-sm relative z-10 flex items-center justify-center gap-2"
-            >
-              <CheckCircle className="w-4 h-4" /> View Attendance
-            </button>
-          </section>
-        </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-gray-50 text-gray-700 font-semibold border-b border-gray-200">
+                <tr>
+                  <th className="px-4 py-3">Date</th>
+                  <th className="px-4 py-3">Worker Name</th>
+                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">In - Out</th>
+                  <th className="px-4 py-3">Overtime</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {attendanceData && attendanceData.length > 0 ? (
+                  attendanceData.map((att) => {
+                    const workerName = `${att.worker?.user?.firstName} ${att.worker?.user?.lastName || ''}`.trim();
+                    return (
+                      <tr key={att.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 font-medium text-gray-900">{new Date(att.date).toLocaleDateString()}</td>
+                        <td className="px-4 py-3 text-gray-700">{workerName}</td>
+                        <td className="px-4 py-3">
+                          <span className={`px-2 py-1 rounded text-xs font-bold ${
+                            att.status === 'PRESENT' ? 'bg-emerald-100 text-emerald-700' :
+                            att.status === 'ABSENT' ? 'bg-red-100 text-red-700' :
+                            att.status === 'HALF_DAY' ? 'bg-amber-100 text-amber-700' :
+                            'bg-gray-100 text-gray-700'
+                          }`}>
+                            {att.status.replace("_", " ")}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-gray-500 font-mono text-xs">
+                          {att.checkInTime ? new Date(att.checkInTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '--'} - 
+                          {att.checkOutTime ? new Date(att.checkOutTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '--'}
+                        </td>
+                        <td className="px-4 py-3 font-medium text-gray-900">
+                          {att.overtimeHours ? `${att.overtimeHours} hrs` : '-'}
+                        </td>
+                      </tr>
+                    )
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
+                      No attendance records found for this assignment yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
 
-        {/* Assigned Workers (Full width below) */}
+        {/* Assigned Workers */}
         <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm lg:col-span-3">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -216,9 +298,21 @@ export default function AssignmentDetailsPage() {
                         </div>
                       </div>
                     </div>
-                    <Link to={`/workers/${w.id}`} className="text-sm font-semibold text-emerald-600 hover:text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                      View
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      {!isClient && (
+                        <Link to={`/workers/${w.id}`} className="text-sm font-semibold text-emerald-600 hover:text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                          View
+                        </Link>
+                      )}
+                      {isClient && assignment.status === 'COMPLETED' && (
+                        <button 
+                          onClick={() => handleOpenReview(w.id, null, name)}
+                          className="text-amber-500 hover:text-amber-600 bg-amber-50 px-2 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 text-xs font-bold"
+                        >
+                          <Star className="w-3.5 h-3.5 fill-current" /> Rate
+                        </button>
+                      )}
+                    </div>
                   </div>
                 );
               })
@@ -228,11 +322,22 @@ export default function AssignmentDetailsPage() {
 
       </div>
       
-      <AssignWorkerModal 
-        isOpen={isAssignModalOpen} 
-        onClose={() => setIsAssignModalOpen(false)} 
-        assignmentId={id} 
-      />
+      {!isClient && (
+        <AssignWorkerModal 
+          isOpen={isAssignModalOpen} 
+          onClose={() => setIsAssignModalOpen(false)} 
+          assignmentId={id} 
+        />
+      )}
+
+      {isReviewModalOpen && (
+        <ReviewModal 
+          isOpen={isReviewModalOpen}
+          onClose={() => setIsReviewModalOpen(false)}
+          target={reviewTarget}
+          assignmentId={id}
+        />
+      )}
     </div>
   );
 }
