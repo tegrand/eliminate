@@ -36,6 +36,7 @@ export const getWorkerDashboard = async (userId) => {
       status: worker.employmentStatus,
       verificationStatus: worker.profileStatus,
       currentAgency: currentAgency ? currentAgency.agencyName : "Independent Worker",
+      currentAgencyId: currentAgency ? currentAgency.id : null,
     },
     activeJob: {
       title: "Plumbing Repair - City Center",

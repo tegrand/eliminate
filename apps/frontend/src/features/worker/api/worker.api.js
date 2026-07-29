@@ -38,5 +38,37 @@ export const workerApi = {
   deleteWorkerSkill: async (workerId, skillId) => {
     const response = await api.delete(`/workers/${workerId}/skills/${skillId}`);
     return response.data;
+  },
+
+  // Agency Relationship Management
+  getMyAgencies: async () => {
+    const response = await api.get("/workers/my-profile/agencies");
+    return response.data;
+  },
+  acceptAgencyInvitation: async (agencyId) => {
+    const response = await api.post(`/workers/my-profile/agencies/${agencyId}/accept`);
+    return response.data;
+  },
+  rejectAgencyInvitation: async (agencyId) => {
+    const response = await api.post(`/workers/my-profile/agencies/${agencyId}/reject`);
+    return response.data;
+  },
+  leaveAgency: async (agencyId) => {
+    const response = await api.post(`/workers/my-profile/agencies/${agencyId}/leave`);
+    return response.data;
+  },
+
+  // Job Invitations Management
+  getMyJobInvitations: async () => {
+    const response = await api.get("/workers/my-profile/invitations");
+    return response.data;
+  },
+  acceptJobInvitation: async (id) => {
+    const response = await api.post(`/workers/my-profile/invitations/${id}/accept`);
+    return response.data;
+  },
+  rejectJobInvitation: async (id) => {
+    const response = await api.post(`/workers/my-profile/invitations/${id}/reject`);
+    return response.data;
   }
 };

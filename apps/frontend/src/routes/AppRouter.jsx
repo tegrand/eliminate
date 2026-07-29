@@ -28,6 +28,7 @@ import WorkerListPage from "../features/worker/pages/WorkerListPage";
 import WorkerDetailsPage from "../features/worker/pages/WorkerDetailsPage";
 import WorkerSkillsPage from "../features/worker/pages/WorkerSkillsPage";
 import WorkerProfilePage from "../features/worker/pages/WorkerProfilePage";
+import WorkerInvitationsPage from "../features/worker/pages/WorkerInvitationsPage";
 import MyDocumentsPage from "../features/documents/pages/MyDocumentsPage";
 import ClientListPage from "../features/client/pages/ClientListPage";
 import ClientDetailsPage from "../features/client/pages/ClientDetailsPage";
@@ -114,6 +115,7 @@ const AppRouter = () => {
             <Route path={ROUTES.WORKER_PROFILE} element={<WorkerProfilePage />} />
             <Route path={ROUTES.MY_DOCUMENTS} element={<MyDocumentsPage />} />
             <Route path={ROUTES.MY_SKILLS} element={<WorkerSkillsPage />} />
+            <Route path={ROUTES.MY_INVITATIONS} element={<WorkerInvitationsPage />} />
             <Route path={ROUTES.WORKFORCE_SEARCH} element={<ClientWorkerSearchPage />} />
             <Route path={ROUTES.WORKFORCE_PROFILE} element={<ClientWorkerProfilePage />} />
             <Route path={ROUTES.AGENCY_SEARCH} element={<ClientAgencySearchPage />} />

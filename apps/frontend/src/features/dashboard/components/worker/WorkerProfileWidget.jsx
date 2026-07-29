@@ -1,11 +1,13 @@
-import { useState } from "react";
-import { User, Activity, Building, MoreVertical } from "lucide-react";
+import { User, Activity, Building, MoreVertical, LogOut, Loader2 } from "lucide-react";
 import { Modal } from "../../../../components/ui/modal/Modal";
 import Button from "../../../../components/ui/button/Button";
+import { toast } from "sonner";
+import { workerApi } from "../../../../features/worker/api/worker.api";
 
 export default function WorkerProfileWidget({ profile, onStatusChange }) {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
   const [pendingStatus, setPendingStatus] = useState(profile.status);
 
   const handleStatusChange = async () => {
@@ -104,6 +106,28 @@ export default function WorkerProfileWidget({ profile, onStatusChange }) {
             <div className="font-bold text-slate-900 text-[13px] truncate" title={profile.currentAgency}>
               {profile.currentAgency}
             </div>
+            {profile.currentAgencyId && (
+              <button
+                onClick={async () => {
+                  if (window.confirm("Are you sure you want to request to leave this agency?")) {
+                    setIsLeaving(true);
+                    try {
+                      await workerApi.leaveAgency(profile.currentAgencyId);
+                      toast.success("Leave request sent to agency");
+                    } catch (error) {
+                      toast.error("Failed to request leave");
+                    } finally {
+                      setIsLeaving(false);
+                    }
+                  }
+                }}
+                disabled={isLeaving}
+                className="mt-2 text-[10px] flex items-center justify-center gap-1 w-full py-1.5 bg-red-50 text-red-600 rounded font-semibold hover:bg-red-100 transition-colors disabled:opacity-50"
+              >
+                {isLeaving ? <Loader2 className="w-3 h-3 animate-spin" /> : <LogOut className="w-3 h-3" />}
+                Leave Agency
+              </button>
+            )}
           </div>
         </div>
       </div>

@@ -12,7 +12,10 @@ import {
   getMyAgencies,
   acceptAgencyInvitation,
   rejectAgencyInvitation,
-  leaveAgency
+  leaveAgency,
+  getMyJobInvitations,
+  acceptJobInvitation,
+  rejectJobInvitation
 } from "./worker.controller.js";
 
 import {
@@ -65,6 +68,11 @@ router.get("/my-profile/agencies", getMyAgencies);
 router.post("/my-profile/agencies/:agencyId/accept", acceptAgencyInvitation);
 router.post("/my-profile/agencies/:agencyId/reject", rejectAgencyInvitation);
 router.post("/my-profile/agencies/:agencyId/leave", leaveAgency);
+
+// Worker Job Invitations Endpoints
+router.get("/my-profile/invitations", getMyJobInvitations);
+router.post("/my-profile/invitations/:id/accept", acceptJobInvitation);
+router.post("/my-profile/invitations/:id/reject", rejectJobInvitation);
 
 router.get(
   "/:id",
