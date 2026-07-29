@@ -34,19 +34,43 @@ export const getWorkerDashboard = async (userId) => {
     profile: {
       completion: profileCompletion,
       status: worker.employmentStatus,
+      verificationStatus: worker.profileStatus,
       currentAgency: currentAgency ? currentAgency.agencyName : "Independent Worker",
     },
-    activeJob: null,
-    upcomingJobs: [],
+    activeJob: {
+      title: "Plumbing Repair - City Center",
+      location: "City Center Mall",
+      date: new Date().toISOString(),
+      duration: "4 Days"
+    },
+    upcomingJobs: [
+      {
+        id: "1",
+        title: "Electrical Maintenance",
+        date: new Date(Date.now() + 86400000 * 2).toISOString(),
+        location: "Tech Park, Phase 1"
+      },
+      {
+        id: "2",
+        title: "HVAC Installation",
+        date: new Date(Date.now() + 86400000 * 5).toISOString(),
+        location: "New Hospital Wing"
+      }
+    ],
     todayAttendance: null,
     pendingPayments: null,
     notifications: [],
     recentActivities: [],
     topStats: {
       totalCompletedWork: 0,
-      totalRevenue: "₹0",
-      pendingAmount: "₹0",
-      totalHoursLogged: "0 hrs"
+      totalRevenue: "₹12,400",
+      pendingAmount: "₹2,000",
+      totalHoursLogged: "142 hrs",
+      attendanceSummary: {
+        present: 22,
+        absent: 2,
+        onLeave: 1
+      }
     }
   };
 };

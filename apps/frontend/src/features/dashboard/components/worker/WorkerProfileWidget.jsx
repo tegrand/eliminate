@@ -18,15 +18,19 @@ export default function WorkerProfileWidget({ profile, onStatusChange }) {
   const statusColors = {
     ACTIVE: 'bg-emerald-500',
     BUSY: 'bg-amber-500',
-    ON_LEAVE: 'bg-blue-500',
-    INACTIVE: 'bg-gray-500'
+    INACTIVE: 'bg-gray-500' // Offline
   };
 
   const statusLabels = {
     ACTIVE: 'Available',
     BUSY: 'Busy',
-    ON_LEAVE: 'On Leave',
-    INACTIVE: 'Not Looking for Jobs'
+    INACTIVE: 'Offline'
+  };
+
+  const verificationColors = {
+    VERIFIED: 'bg-emerald-50 text-emerald-600 border-emerald-200',
+    PENDING: 'bg-amber-50 text-amber-600 border-amber-200',
+    REJECTED: 'bg-red-50 text-red-600 border-red-200'
   };
 
   return (
@@ -45,16 +49,25 @@ export default function WorkerProfileWidget({ profile, onStatusChange }) {
 
       <div className="space-y-5 flex-1">
         {/* Profile Completion */}
-        <div>
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs font-medium text-slate-700">Profile Completion</span>
-            <span className="text-base font-bold text-slate-900">{profile.completion}%</span>
+        <div className="space-y-4">
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-xs font-medium text-slate-700">Profile Completion</span>
+              <span className="text-base font-bold text-slate-900">{profile.completion}%</span>
+            </div>
+            <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-indigo-600 rounded-full transition-all duration-1000 ease-out"
+                style={{ width: `${profile.completion}%` }}
+              />
+            </div>
           </div>
-          <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-indigo-600 rounded-full transition-all duration-1000 ease-out"
-              style={{ width: `${profile.completion}%` }}
-            />
+          
+          <div className="flex justify-between items-center bg-gray-50 p-3 rounded-lg border border-gray-100">
+            <span className="text-xs font-semibold text-gray-600">Verification Status</span>
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded border uppercase ${verificationColors[profile.verificationStatus] || 'bg-gray-50 text-gray-600 border-gray-200'}`}>
+              {profile.verificationStatus || 'PENDING'}
+            </span>
           </div>
         </div>
 
@@ -75,8 +88,7 @@ export default function WorkerProfileWidget({ profile, onStatusChange }) {
             >
               <option value="ACTIVE">Available</option>
               <option value="BUSY">Busy</option>
-              <option value="ON_LEAVE">On Leave</option>
-              <option value="INACTIVE">Not Looking for Jobs</option>
+              <option value="INACTIVE">Offline</option>
             </select>
           </div>
 

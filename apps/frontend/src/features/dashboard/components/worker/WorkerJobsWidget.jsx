@@ -32,7 +32,7 @@ export default function WorkerJobsWidget({ activeJob, upcomingJobs }) {
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Clock className="w-3 h-3 text-slate-400" />
-                  {activeJob.shift}
+                  {new Date(activeJob.date).toLocaleDateString()} ({activeJob.duration})
                 </div>
               </div>
             </div>
@@ -63,7 +63,7 @@ export default function WorkerJobsWidget({ activeJob, upcomingJobs }) {
                 <div>
                   <h6 className="font-bold text-slate-900 text-[11px] mb-0.5">{job.title}</h6>
                   <div className="flex items-center gap-1.5 text-[9px] font-medium text-slate-500">
-                    <span className="text-slate-700">{job.date}</span>
+                    <span className="text-slate-700">{new Date(job.date).toLocaleDateString()}</span>
                     <span className="w-1 h-1 rounded-full bg-slate-300" />
                     <span>{job.location}</span>
                   </div>
