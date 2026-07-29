@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import { usersApi } from "../../../api/users.api";
 import { useAuth } from "../../../hooks/useAuth";
 import { clientApi } from "../api/client.api";
+import ClientProfileForm from "../components/ClientProfileForm";
 
 const TABS = [
   { id: "profile", label: "Edit Profile", icon: User },
@@ -39,100 +40,6 @@ function parseUserAgent(ua = "") {
 }
 
 // ── Sub-sections ─────────────────────────────────────────────────────────────
-
-function EditProfileTab({ clientData, refetchClient }) {
-  const queryClient = useQueryClient();
-
-  const { register, handleSubmit, formState: { errors, isDirty } } = useForm({
-    defaultValues: {
-      contactPerson: clientData?.contactPerson || "",
-      phone:         clientData?.phone         || "",
-      email:         clientData?.email         || clientData?.user?.email || "",
-      addressLine1:  clientData?.addressLine1  || "",
-      city:          clientData?.city          || "",
-      postalCode:    clientData?.postalCode    || "",
-    },
-  });
-
-  const { mutate: save, isPending: saving } = useMutation({
-    mutationFn: (d) => clientApi.updateMe(d),
-    onSuccess: () => {
-      toast.success("Profile updated!");
-      refetchClient();
-    },
-    onError: (e) => toast.error(e.response?.data?.message || "Failed to update profile"),
-  });
-
-  const initials = clientData?.contactPerson
-    ? clientData.contactPerson.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase()
-    : (clientData?.user?.email?.[0] || "U").toUpperCase();
-
-  return (
-    <form onSubmit={handleSubmit(save)} className="space-y-6">
-      {/* Avatar */}
-      <div className="flex items-center gap-5 p-5 bg-gray-50 rounded-2xl border border-gray-100">
-        <div className="relative shrink-0">
-          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg text-white text-2xl font-bold">
-            {clientData?.user?.avatar
-              ? <img src={clientData.user.avatar} alt="" className="w-full h-full object-cover rounded-2xl" />
-              : initials}
-          </div>
-          <button type="button" title="Upload photo (coming soon)" className="absolute -bottom-1 -right-1 w-7 h-7 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm hover:bg-blue-50 transition-colors">
-            <Camera className="w-3.5 h-3.5 text-blue-600" />
-          </button>
-        </div>
-        <div>
-          <p className="font-semibold text-gray-900">{clientData?.contactPerson || "—"}</p>
-          <p className="text-sm text-gray-500">{clientData?.user?.email}</p>
-          <span className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-            <CheckCircle2 className="w-3 h-3" /> Active
-          </span>
-        </div>
-      </div>
-
-      {/* Fields */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Field label="Full Name" icon={User} error={errors.contactPerson?.message}>
-          <input {...register("contactPerson", { required: "Full name is required" })}
-            className="field-input" placeholder="John Doe" />
-        </Field>
-
-        <Field label="Mobile Number" icon={Phone} error={errors.phone?.message}>
-          <input {...register("phone", { required: "Mobile number is required" })}
-            className="field-input" placeholder="+91 9876543210" />
-        </Field>
-
-        <Field label="Email Address" icon={Mail} error={errors.email?.message}>
-          <input {...register("email", { required: "Email is required" })}
-            type="email" className="field-input" placeholder="you@example.com" />
-        </Field>
-
-        <Field label="District" icon={Globe} error={errors.city?.message}>
-          <input {...register("city", { required: "District is required" })}
-            className="field-input" placeholder="e.g. Ernakulam" />
-        </Field>
-
-        <Field label="Address" icon={MapPin} className="md:col-span-2">
-          <input {...register("addressLine1")}
-            className="field-input" placeholder="House / Street / Area" />
-        </Field>
-
-        <Field label="Pincode" icon={Hash} error={errors.postalCode?.message}>
-          <input {...register("postalCode", { required: "Pincode is required" })}
-            className="field-input" placeholder="682001" />
-        </Field>
-      </div>
-
-      <div className="flex justify-end pt-4 border-t border-gray-100">
-        <button type="submit" disabled={saving || !isDirty}
-          className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm">
-          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-          {saving ? "Saving…" : "Save Changes"}
-        </button>
-      </div>
-    </form>
-  );
-}
 
 function ChangePasswordTab() {
   const [show, setShow] = useState({ current: false, new: false, confirm: false });
@@ -407,7 +314,7 @@ export default function ClientProfilePage() {
 
         {/* Tab content */}
         <div className="p-6 sm:p-8">
-          {activeTab === "profile"  && <EditProfileTab clientData={clientData} refetchClient={refetch} />}
+          {activeTab === "profile"  && <ClientProfileForm clientData={clientData} refetchClient={refetch} />}
           {activeTab === "password" && <ChangePasswordTab />}
           {activeTab === "history"  && <LoginHistoryTab />}
           {activeTab === "sessions" && <ActiveSessionsTab />}

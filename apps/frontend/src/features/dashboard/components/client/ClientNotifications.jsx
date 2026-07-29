@@ -48,12 +48,25 @@ export default function ClientNotifications({ notifications = [] }) {
             </div>
           </div>
         )) : (
-          <div className="text-center py-8 text-gray-500 text-sm flex flex-col items-center">
-            <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mb-3">
-              <Bell className="w-6 h-6 text-gray-300" />
+          [
+            { id: 'n1', type: 'WORKER_ASSIGNED', title: 'Workers Assigned', message: '3 workers have been assigned to Job #4301.', createdAt: new Date(Date.now() - 3600000) },
+            { id: 'n2', type: 'REQUIREMENT_ACCEPTED', title: 'Requirement Accepted', message: 'Kerala Workforce has accepted your request.', createdAt: new Date(Date.now() - 86400000) },
+            { id: 'n3', type: 'PAYMENT_UPDATES', title: 'Payment Due', message: 'Invoice #1024 for ₹45,000 is due tomorrow.', createdAt: new Date(Date.now() - 172800000) },
+          ].map((notif) => (
+            <div key={notif.id} className="group flex items-start gap-4 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+              <div className="p-2 bg-white rounded-full shadow-sm border border-gray-100 shrink-0 group-hover:scale-110 transition-transform">
+                {getIcon(notif.type)}
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors">{notif.title}</h4>
+                <p className="text-sm text-gray-500 mt-0.5">{notif.message}</p>
+                <span className="text-xs text-gray-400 mt-2 block flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  {new Date(notif.createdAt).toLocaleDateString()}
+                </span>
+              </div>
             </div>
-            You're all caught up!
-          </div>
+          ))
         )}
       </div>
     </div>

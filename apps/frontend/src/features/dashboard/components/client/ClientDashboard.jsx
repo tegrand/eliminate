@@ -32,7 +32,7 @@ export default function ClientDashboard() {
     );
   }
 
-  const { topStats, recentActivities, notifications } = dashboardData || {};
+  const { topStats, recentActivities, notifications, favouriteWorkers, favouriteAgencies } = dashboardData || {};
 
   return (
     <div className="space-y-6">
