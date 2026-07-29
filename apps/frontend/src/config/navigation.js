@@ -39,6 +39,26 @@ export const NAVIGATION_CONFIG = [
   },
 
 
+  // ─── CLIENT PORTAL ───────────────────────────────────────────────────────
+  {
+    group: "Recruitment",
+    roles: ["CLIENT"],
+    items: [
+      {
+        title: "Find Workers",
+        path: ROUTES.WORKFORCE_SEARCH,
+        icon: Users,
+        roles: ["CLIENT"],
+      },
+      {
+        title: "Find Agencies",
+        path: ROUTES.AGENCY_SEARCH,
+        icon: Building2,
+        roles: ["CLIENT"],
+      },
+    ],
+  },
+
   // ─── SUPER ADMIN PORTAL ──────────────────────────────────────────────────
   {
     group: "User Management",

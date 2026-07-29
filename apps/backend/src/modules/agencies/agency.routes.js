@@ -19,7 +19,7 @@ import {
 
 import validate from "../../middleware/validate.middleware.js";
 import authenticate from "../../middleware/auth.middleware.js";
-import { requirePermission } from "../../middleware/authorize.middleware.js";
+import { requirePermission, authorize } from "../../middleware/authorize.middleware.js";
 
 const router = Router();
 
@@ -35,7 +35,7 @@ router.post(
 
 router.get(
   "/",
-  requirePermission("agency:read"),
+  authorize("SUPER_ADMIN", "CLIENT", "WORKER"),
   validate(listAgenciesQuerySchema, "query"),
   getAgencies
 );

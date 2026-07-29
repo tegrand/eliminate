@@ -25,7 +25,7 @@ import {
 
 import validate from "../../middleware/validate.middleware.js";
 import authenticate from "../../middleware/auth.middleware.js";
-import { requirePermission } from "../../middleware/authorize.middleware.js";
+import { requirePermission, authorize } from "../../middleware/authorize.middleware.js";
 
 const router = Router();
 
@@ -41,7 +41,8 @@ router.post(
 
 router.get(
   "/",
-  requirePermission("worker:read"),
+  // Allow these roles instead of just checking a permission that might not be seeded
+  authorize("SUPER_ADMIN", "CLIENT", "AGENCY"),
   validate(listWorkersQuerySchema, "query"),
   getWorkers
 );
