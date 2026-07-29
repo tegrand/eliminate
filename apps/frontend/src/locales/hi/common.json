@@ -8,5 +8,29 @@
     "complaints": "शिकायतें",
     "settings": "सेटिंग्स",
     "logout": "लॉग आउट"
+  },
+  "workerDashboard": {
+    "completedWork": "पूरा किया गया काम",
+    "tasksCompleted": "कार्य पूरे हुए",
+    "totalRevenue": "कुल आय",
+    "thisMonth": "इस महीने",
+    "pendingAmount": "बकाया राशि",
+    "attendance": "उपस्थिति",
+    "jobAssignments": "काम",
+    "currentActiveJob": "वर्तमान काम",
+    "noActiveJob": "अभी कोई काम नहीं है। आपको Available के रूप में चिह्नित किया गया है।",
+    "upcomingShifts": "आने वाले काम",
+    "viewAll": "सभी देखें",
+    "noUpcomingShifts": "कोई काम निर्धारित नहीं है।",
+    "workerProfile": "प्रोफ़ाइल",
+    "performance": "प्रदर्शन",
+    "avgRating": "औसत रेटिंग",
+    "reviews": "समीक्षा",
+    "jobsDone": "किए गए काम",
+    "recentActivity": "हाल की गतिविधि",
+    "notifications": "सूचनाएं",
+    "markAllAsRead": "सभी को पढ़ा हुआ चिह्नित करें",
+    "noNotifications": "कोई सूचना नहीं",
+    "noActivity": "कोई हालिया गतिविधि नहीं"
   }
 }

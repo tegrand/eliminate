@@ -4,8 +4,10 @@ import { Modal } from "../../../../components/ui/modal/Modal";
 import Button from "../../../../components/ui/button/Button";
 import { toast } from "sonner";
 import { workerApi } from "../../../../features/worker/api/worker.api";
+import { useTranslation } from "react-i18next";
 
 export default function WorkerProfileWidget({ profile, onStatusChange }) {
+  const { t } = useTranslation();
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
@@ -45,7 +47,7 @@ export default function WorkerProfileWidget({ profile, onStatusChange }) {
           <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
             <User className="w-3.5 h-3.5" />
           </div>
-          Worker Profile
+          {t('workerDashboard.workerProfile')}
         </h3>
         <button className="text-gray-400 hover:text-gray-600 transition-colors">
           <MoreVertical className="w-3.5 h-3.5" />
@@ -60,15 +62,15 @@ export default function WorkerProfileWidget({ profile, onStatusChange }) {
               {profile.averageRating > 0 ? profile.averageRating : "-"}
               <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
             </span>
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">Rating</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">{t('workerDashboard.avgRating')}</span>
           </div>
           <div className="flex flex-col items-center justify-center text-center border-l border-gray-100">
             <span className="text-lg font-black text-slate-900">{profile.totalReviews}</span>
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">Reviews</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">{t('workerDashboard.reviews')}</span>
           </div>
           <div className="flex flex-col items-center justify-center text-center border-l border-gray-100">
             <span className="text-lg font-black text-slate-900">{profile.completedJobs}</span>
-            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">Jobs</span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-0.5">{t('workerDashboard.jobsDone')}</span>
           </div>
         </div>
 

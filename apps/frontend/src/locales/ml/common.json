@@ -8,5 +8,29 @@
     "complaints": "പരാതികൾ",
     "settings": "ക്രമീകരണങ്ങൾ",
     "logout": "ലോഗ് ഔട്ട്"
+  },
+  "workerDashboard": {
+    "completedWork": "പൂർത്തിയാക്കിയ ജോലികൾ",
+    "tasksCompleted": "ജോലികൾ പൂർത്തിയായി",
+    "totalRevenue": "മൊത്തം വരുമാനം",
+    "thisMonth": "ഈ മാസം",
+    "pendingAmount": "ലഭിക്കാനുള്ള തുക",
+    "attendance": "ഹാജർ",
+    "jobAssignments": "ജോലികൾ",
+    "currentActiveJob": "നിലവിലുള്ള ജോലി",
+    "noActiveJob": "നിലവിൽ ജോലികളൊന്നുമില്ല. നിങ്ങളെ Available ആയി അടയാളപ്പെടുത്തിയിരിക്കുന്നു.",
+    "upcomingShifts": "വരാനിരിക്കുന്ന ജോലികൾ",
+    "viewAll": "എല്ലാം കാണുക",
+    "noUpcomingShifts": "പുതിയ ജോലികളൊന്നും ഷെഡ്യൂൾ ചെയ്തിട്ടില്ല.",
+    "workerProfile": "പ്രൊഫൈൽ",
+    "performance": "പ്രകടനം",
+    "avgRating": "ശരാശരി റേറ്റിംഗ്",
+    "reviews": "റിവ്യൂകൾ",
+    "jobsDone": "പൂർത്തിയാക്കിയത്",
+    "recentActivity": "സമീപകാല വിവരങ്ങൾ",
+    "notifications": "അറിയിപ്പുകൾ",
+    "markAllAsRead": "എല്ലാം വായിച്ചതായി രേഖപ്പെടുത്തുക",
+    "noNotifications": "പുതിയ അറിയിപ്പുകളില്ല",
+    "noActivity": "പുതിയ വിവരങ്ങളില്ല"
   }
 }
