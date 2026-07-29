@@ -383,5 +383,29 @@ export const leaveAgency = async (userId, agencyId) => {
   
   return getMyAgencies(userId);
 };
-\ n e x p o r t   c o n s t   g e t M y J o b I n v i t a t i o n s   =   a s y n c   ( u s e r I d )   = >   { \ n     c o n s t   w o r k e r   =   a w a i t   g e t M y W o r k e r P r o f i l e ( u s e r I d ) ; \ n     r e t u r n   p r i s m a . h i r i n g R e q u e s t . f i n d M a n y ( { \ n         w h e r e :   {   t a r g e t W o r k e r I d :   w o r k e r . i d ,   s t a t u s :   ' P E N D I N G '   } , \ n         i n c l u d e :   { \ n             c l i e n t :   t r u e , \ n             a g e n c y :   t r u e , \ n             j o b R e q u i r e m e n t :   t r u e \ n         } \ n     } ) ; \ n } ; \ n \ n e x p o r t   c o n s t   a c c e p t J o b I n v i t a t i o n   =   a s y n c   ( u s e r I d ,   i d )   = >   { \ n     c o n s t   w o r k e r   =   a w a i t   g e t M y W o r k e r P r o f i l e ( u s e r I d ) ; \ n     c o n s t   r e q   =   a w a i t   p r i s m a . h i r i n g R e q u e s t . f i n d F i r s t ( {   w h e r e :   {   i d ,   t a r g e t W o r k e r I d :   w o r k e r . i d ,   s t a t u s :   ' P E N D I N G '   }   } ) ; \ n     i f   ( ! r e q )   t h r o w   n e w   A p p E r r o r ( ' I n v i t a t i o n   n o t   f o u n d ' ,   4 0 4 ) ; \ n     r e t u r n   p r i s m a . h i r i n g R e q u e s t . u p d a t e ( {   w h e r e :   {   i d   } ,   d a t a :   {   s t a t u s :   ' A C C E P T E D '   }   } ) ; \ n } ; \ n \ n e x p o r t   c o n s t   r e j e c t J o b I n v i t a t i o n   =   a s y n c   ( u s e r I d ,   i d )   = >   { \ n     c o n s t   w o r k e r   =   a w a i t   g e t M y W o r k e r P r o f i l e ( u s e r I d ) ; \ n     c o n s t   r e q   =   a w a i t   p r i s m a . h i r i n g R e q u e s t . f i n d F i r s t ( {   w h e r e :   {   i d ,   t a r g e t W o r k e r I d :   w o r k e r . i d ,   s t a t u s :   ' P E N D I N G '   }   } ) ; \ n     i f   ( ! r e q )   t h r o w   n e w   A p p E r r o r ( ' I n v i t a t i o n   n o t   f o u n d ' ,   4 0 4 ) ; \ n     r e t u r n   p r i s m a . h i r i n g R e q u e s t . u p d a t e ( {   w h e r e :   {   i d   } ,   d a t a :   {   s t a t u s :   ' R E J E C T E D '   }   } ) ; \ n } ; \ n  
- 
+
+export const getMyJobInvitations = async (userId) => {
+  const worker = await getMyWorkerProfile(userId);
+  return prisma.hiringRequest.findMany({
+    where: { targetWorkerId: worker.id, status: 'PENDING' },
+    include: {
+      client: true,
+      agency: true,
+      jobRequirement: true
+    }
+  });
+};
+
+export const acceptJobInvitation = async (userId, id) => {
+  const worker = await getMyWorkerProfile(userId);
+  const req = await prisma.hiringRequest.findFirst({ where: { id, targetWorkerId: worker.id, status: 'PENDING' } });
+  if (!req) throw new AppError('Invitation not found', 404);
+  return prisma.hiringRequest.update({ where: { id }, data: { status: 'ACCEPTED' } });
+};
+
+export const rejectJobInvitation = async (userId, id) => {
+  const worker = await getMyWorkerProfile(userId);
+  const req = await prisma.hiringRequest.findFirst({ where: { id, targetWorkerId: worker.id, status: 'PENDING' } });
+  if (!req) throw new AppError('Invitation not found', 404);
+  return prisma.hiringRequest.update({ where: { id }, data: { status: 'REJECTED' } });
+};
