@@ -61,5 +61,25 @@
     "savedSuccess": "सफलतापूर्वक सहेजा गया!",
     "failedToSave": "सहेजने में विफल",
     "failedToLoad": "काम लोड करने में विफल। कृपया पुन: प्रयास करें।"
+  },
+  "workerAttendance": {
+    "title": "उपस्थिति",
+    "subtitle": "अपने दैनिक काम के घंटे लॉग करें और इतिहास देखें।",
+    "today": "आज",
+    "checkInNow": "अभी चेक इन करें",
+    "checkedInAt": "चेक इन समय",
+    "checkOut": "चेक आउट",
+    "shiftCompleted": "शिफ्ट पूरी हुई",
+    "total": "कुल",
+    "recentHistory": "हाल का इतिहास",
+    "noHistory": "कोई उपस्थिति इतिहास नहीं मिला।",
+    "date": "दिनांक",
+    "timeLog": "समय लॉग",
+    "totalHrs": "कुल घंटे",
+    "noTimeLogged": "कोई समय लॉग नहीं किया गया",
+    "checkInSuccess": "सफलतापूर्वक चेक इन किया गया!",
+    "checkInFailed": "चेक इन करने में विफल",
+    "checkOutSuccess": "सफलतापूर्वक चेक आउट किया गया!",
+    "checkOutFailed": "चेक आउट करने में विफल"
   }
 }

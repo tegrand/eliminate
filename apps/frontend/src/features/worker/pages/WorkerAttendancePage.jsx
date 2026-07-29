@@ -5,8 +5,10 @@ import { toast } from "sonner";
 import { workerApi } from "../api/worker.api";
 import { format, parseISO } from "date-fns";
 import Button from "../../../components/ui/button/Button";
+import { useTranslation } from "react-i18next";
 
 export default function WorkerAttendancePage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const todayStr = format(new Date(), "yyyy-MM-dd");
 
@@ -33,28 +35,28 @@ export default function WorkerAttendancePage() {
   const checkInMutation = useMutation({
     mutationFn: () => workerApi.checkIn(),
     onSuccess: () => {
-      toast.success("Checked in successfully!");
+      toast.success(t('workerAttendance.checkInSuccess'));
       queryClient.invalidateQueries(["workerAttendanceHistory"]);
       queryClient.invalidateQueries(["dashboard"]); // update dashboard stats
     },
-    onError: (e) => toast.error(e.response?.data?.message || "Failed to check in")
+    onError: (e) => toast.error(e.response?.data?.message || t('workerAttendance.checkInFailed'))
   });
 
   const checkOutMutation = useMutation({
     mutationFn: () => workerApi.checkOut(),
     onSuccess: () => {
-      toast.success("Checked out successfully!");
+      toast.success(t('workerAttendance.checkOutSuccess'));
       queryClient.invalidateQueries(["workerAttendanceHistory"]);
       queryClient.invalidateQueries(["dashboard"]);
     },
-    onError: (e) => toast.error(e.response?.data?.message || "Failed to check out")
+    onError: (e) => toast.error(e.response?.data?.message || t('workerAttendance.checkOutFailed'))
   });
 
   return (
     <div className="w-full max-w-5xl mx-auto py-8 space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Attendance</h1>
-        <p className="text-sm text-slate-500 mt-1">Log your daily working hours and view history.</p>
+        <h1 className="text-2xl font-bold text-slate-900">{t('workerAttendance.title')}</h1>
+        <p className="text-sm text-slate-500 mt-1">{t('workerAttendance.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -63,7 +65,7 @@ export default function WorkerAttendancePage() {
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
             <h2 className="text-lg font-bold text-slate-900 mb-4 flex items-center">
               <Calendar className="w-5 h-5 mr-2 text-indigo-500" />
-              Today: {format(new Date(), "MMM dd, yyyy")}
+              {t('workerAttendance.today')}: {format(new Date(), "MMM dd, yyyy")}
             </h2>
             
             <div className="space-y-4">
@@ -74,12 +76,12 @@ export default function WorkerAttendancePage() {
                   loading={checkInMutation.isPending}
                 >
                   <CheckCircle className="w-5 h-5 mr-2" />
-                  Check In Now
+                  {t('workerAttendance.checkInNow')}
                 </Button>
               ) : !isCheckedOut ? (
                 <>
                   <div className="p-3 bg-emerald-50 text-emerald-700 rounded-xl border border-emerald-100 flex flex-col items-center justify-center mb-4">
-                    <span className="text-xs uppercase font-bold tracking-wide">Checked In At</span>
+                    <span className="text-xs uppercase font-bold tracking-wide">{t('workerAttendance.checkedInAt')}</span>
                     <span className="text-xl font-bold mt-1">
                       {format(new Date(todayAttendance.checkInTime), "hh:mm a")}
                     </span>
@@ -91,19 +93,19 @@ export default function WorkerAttendancePage() {
                     loading={checkOutMutation.isPending}
                   >
                     <LogOut className="w-5 h-5 mr-2" />
-                    Check Out
+                    {t('workerAttendance.checkOut')}
                   </Button>
                 </>
               ) : (
                 <div className="p-4 bg-slate-50 text-slate-600 rounded-xl border border-slate-200 text-center">
                   <CheckCircle className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
-                  <p className="font-bold text-slate-900">Shift Completed</p>
+                  <p className="font-bold text-slate-900">{t('workerAttendance.shiftCompleted')}</p>
                   <p className="text-sm mt-1">
                     {format(new Date(todayAttendance.checkInTime), "hh:mm a")} - {format(new Date(todayAttendance.checkOutTime), "hh:mm a")}
                   </p>
                   {todayAttendance.totalHours && (
                     <p className="text-xs font-bold text-indigo-600 uppercase mt-2">
-                      Total: {todayAttendance.totalHours} hrs
+                      {t('workerAttendance.total')}: {todayAttendance.totalHours} hrs
                     </p>
                   )}
                 </div>
@@ -118,7 +120,7 @@ export default function WorkerAttendancePage() {
             <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h2 className="text-lg font-bold text-slate-900 flex items-center">
                 <Clock className="w-5 h-5 mr-2 text-indigo-500" />
-                Recent History
+                {t('workerAttendance.recentHistory')}
               </h2>
             </div>
             
@@ -130,15 +132,15 @@ export default function WorkerAttendancePage() {
               ) : history.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-48 text-slate-400">
                   <Calendar className="w-10 h-10 mb-3 opacity-20" />
-                  <p>No attendance history found.</p>
+                  <p>{t('workerAttendance.noHistory')}</p>
                 </div>
               ) : (
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-slate-50 border-b border-slate-100 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                      <th className="p-4 w-1/3">Date</th>
-                      <th className="p-4">Time Log</th>
-                      <th className="p-4 text-right">Total Hrs</th>
+                      <th className="p-4 w-1/3">{t('workerAttendance.date')}</th>
+                      <th className="p-4">{t('workerAttendance.timeLog')}</th>
+                      <th className="p-4 text-right">{t('workerAttendance.totalHrs')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -161,7 +163,7 @@ export default function WorkerAttendancePage() {
                               )}
                             </div>
                           ) : (
-                            <span className="text-sm text-slate-400 italic">No time logged</span>
+                            <span className="text-sm text-slate-400 italic">{t('workerAttendance.noTimeLogged')}</span>
                           )}
                         </td>
                         <td className="p-4 text-right">

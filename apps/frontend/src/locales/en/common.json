@@ -61,5 +61,25 @@
     "savedSuccess": "Job saved successfully!",
     "failedToSave": "Failed to save job",
     "failedToLoad": "Failed to load jobs. Please try again."
+  },
+  "workerAttendance": {
+    "title": "Attendance",
+    "subtitle": "Log your daily working hours and view history.",
+    "today": "Today",
+    "checkInNow": "Check In Now",
+    "checkedInAt": "Checked In At",
+    "checkOut": "Check Out",
+    "shiftCompleted": "Shift Completed",
+    "total": "Total",
+    "recentHistory": "Recent History",
+    "noHistory": "No attendance history found.",
+    "date": "Date",
+    "timeLog": "Time Log",
+    "totalHrs": "Total Hrs",
+    "noTimeLogged": "No time logged",
+    "checkInSuccess": "Checked in successfully!",
+    "checkInFailed": "Failed to check in",
+    "checkOutSuccess": "Checked out successfully!",
+    "checkOutFailed": "Failed to check out"
   }
 }
