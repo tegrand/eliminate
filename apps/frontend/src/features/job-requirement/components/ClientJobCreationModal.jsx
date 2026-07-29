@@ -35,9 +35,9 @@ export default function ClientJobCreationModal({ isOpen, onClose }) {
   const { data: skillsData } = useQuery({ queryKey: ["skills"], queryFn: async () => (await api.get("/skills")).data });
   const { data: locationsData } = useQuery({ queryKey: ["locations"], queryFn: async () => (await api.get("/locations")).data });
 
-  const categories = categoriesData?.data || [];
-  const skills = skillsData?.data || [];
-  const locations = locationsData?.data || [];
+  const categories = Array.isArray(categoriesData?.data?.items) ? categoriesData.data.items : (Array.isArray(categoriesData?.data) ? categoriesData.data : (Array.isArray(categoriesData) ? categoriesData : []));
+  const skills = Array.isArray(skillsData?.data?.items) ? skillsData.data.items : (Array.isArray(skillsData?.data) ? skillsData.data : (Array.isArray(skillsData) ? skillsData : []));
+  const locations = Array.isArray(locationsData?.data?.items) ? locationsData.data.items : (Array.isArray(locationsData?.data) ? locationsData.data : (Array.isArray(locationsData) ? locationsData : []));
 
   const createJobMutation = useMutation({
     mutationFn: (data) => jobRequirementApi.createJobRequirement(data),

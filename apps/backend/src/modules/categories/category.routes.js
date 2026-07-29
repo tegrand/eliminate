@@ -31,14 +31,12 @@ router.post(
 
 router.get(
   "/",
-  requirePermission("category:read"),
   validate(listCategoriesQuerySchema, "query"),
   getCategories
 );
 
 router.get(
   "/:id",
-  requirePermission("category:read"),
   validate(categoryIdParamSchema, "params"),
   getCategoryById
 );

@@ -35,7 +35,7 @@ export default function ClientCategoryManagerModal({ isOpen, onClose }) {
     enabled: isOpen
   });
 
-  const categories = data?.data?.items || data?.data || [];
+  const categories = Array.isArray(data?.data?.items) ? data.data.items : (Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []));
 
   const createMutation = useMutation({
     mutationFn: (data) => api.post("/categories", data),
