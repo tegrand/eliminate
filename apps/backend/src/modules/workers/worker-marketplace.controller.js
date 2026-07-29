@@ -1,6 +1,6 @@
 import * as marketplaceService from "./worker-marketplace.service.js";
-import ApiResponse from "../../../utils/apiResponse.js";
-import asyncHandler from "../../../utils/asyncHandler.js";
+import ApiResponse from "../../shared/responses/api-response.js";
+import asyncHandler from "../../shared/helpers/async-handler.js";
 
 export const getMarketplaceJobs = asyncHandler(async (req, res) => {
   const result = await marketplaceService.getMarketplaceJobs(req.user.id, req.query);

@@ -1,5 +1,5 @@
-import prisma from "../../../config/prisma.js";
-import AppError from "../../../utils/appError.js";
+import prisma from "../../config/prisma.js";
+import AppError from "../../shared/errors/app-error.js";
 
 // Ensure worker is verified before accessing marketplace
 const ensureVerified = async (userId) => {
