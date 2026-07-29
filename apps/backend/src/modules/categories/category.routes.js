@@ -25,7 +25,6 @@ router.use(authenticate);
 
 router.post(
   "/",
-  requirePermission("category:create"),
   validate(createCategorySchema),
   createCategory
 );
@@ -46,7 +45,6 @@ router.get(
 
 router.patch(
   "/:id",
-  requirePermission("category:update"),
   validate(categoryIdParamSchema, "params"),
   validate(updateCategorySchema),
   updateCategory
@@ -54,7 +52,6 @@ router.patch(
 
 router.delete(
   "/:id",
-  requirePermission("category:delete"),
   validate(categoryIdParamSchema, "params"),
   deleteCategory
 );
