@@ -104,12 +104,13 @@ model User {
   worker Worker?
   client Client?
 
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  deletedAt     DateTime?
-  agency        Agency?
-  authAuditLogs AuthAuditLog[]
-  notifications Notification[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  deletedAt      DateTime?
+  agency         Agency?
+  authAuditLogs  AuthAuditLog[]
+  notifications  Notification[]
+  siteSupervisor SiteSupervisor?
 
   @@index([email])
   @@index([roleId])
@@ -323,11 +324,12 @@ model Worker {
   experienceCertificates Json? // Array of objects/strings stored as JSON
   skillCertificates      Json? // Array of objects/strings stored as JSON
 
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  deletedAt  DateTime?
-  reviews    Review[]
-  complaints Complaint[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
+  reviews     Review[]
+  complaints  Complaint[]
+  teamMembers TeamMember[]
 
   @@index([userId])
   @@index([workerCode])
@@ -364,12 +366,17 @@ model Client {
   hiringRequests  HiringRequest[]
   assignments     Assignment[]
 
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  deletedAt    DateTime?
-  reviews      Review[]
-  complaints   Complaint[]
-  jobTemplates JobTemplate[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  deletedAt       DateTime?
+  reviews         Review[]
+  complaints      Complaint[]
+  jobTemplates    JobTemplate[]
+  projects        Project[]
+  siteLocations   SiteLocation[]
+  departments     Department[]
+  siteSupervisors SiteSupervisor[]
+  teams           Team[]
 
   @@index([userId])
   @@index([clientCode])
@@ -415,6 +422,7 @@ model Agency {
   deletedAt  DateTime?
   reviews    Review[]
   complaints Complaint[]
+  teams      Team[]
 
   @@index([userId])
   @@index([agencyCode])
@@ -870,8 +878,10 @@ model HiringRequest {
 
   assignment Assignment?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  department   Department? @relation(fields: [departmentId], references: [id])
+  departmentId String?
 
   @@index([clientId])
   @@index([targetAgencyId])
@@ -907,10 +917,15 @@ model Assignment {
 
   assignedWorkers AssignmentWorker[]
 
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  reviews    Review[]
-  complaints Complaint[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  reviews         Review[]
+  complaints      Complaint[]
+  project         Project?         @relation(fields: [projectId], references: [id])
+  projectId       String?
+  siteLocation    SiteLocation?    @relation(fields: [siteLocationId], references: [id])
+  siteLocationId  String?
+  assignmentTeams AssignmentTeam[]
 
   @@index([clientId])
   @@index([agencyId])
@@ -1015,4 +1030,125 @@ model JobTemplateItem {
 
   @@index([templateId])
   @@index([categoryId])
+}
+
+model Project {
+  id          String        @id @default(uuid())
+  clientId    String
+  name        String
+  description String?
+  status      ProjectStatus @default(ACTIVE)
+
+  client      Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  sites       SiteLocation[]
+  assignments Assignment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clientId])
+}
+
+enum ProjectStatus {
+  ACTIVE
+  ON_HOLD
+  COMPLETED
+  CANCELLED
+}
+
+model SiteLocation {
+  id        String  @id @default(uuid())
+  projectId String?
+  clientId  String
+  name      String
+  address   String?
+  city      String?
+  state     String?
+
+  project     Project?         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  client      Client           @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  supervisors SiteSupervisor[]
+  assignments Assignment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+  @@index([clientId])
+}
+
+model Department {
+  id       String @id @default(uuid())
+  clientId String
+  name     String
+
+  client         Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  hiringRequests HiringRequest[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clientId])
+}
+
+model SiteSupervisor {
+  id       String  @id @default(uuid())
+  userId   String  @unique
+  clientId String
+  siteId   String?
+
+  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  site   SiteLocation? @relation(fields: [siteId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([siteId])
+}
+
+model Team {
+  id       String  @id @default(uuid())
+  name     String
+  agencyId String?
+  clientId String?
+
+  members     TeamMember[]
+  assignments AssignmentTeam[]
+
+  agency Agency? @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  client Client? @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([agencyId])
+  @@index([clientId])
+}
+
+model TeamMember {
+  id       String @id @default(uuid())
+  teamId   String
+  workerId String
+
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  worker Worker @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, workerId])
+  @@index([teamId])
+  @@index([workerId])
+}
+
+model AssignmentTeam {
+  id           String @id @default(uuid())
+  assignmentId String
+  teamId       String
+
+  assignment Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  team       Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([assignmentId, teamId])
+  @@index([assignmentId])
+  @@index([teamId])
 }
