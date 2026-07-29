@@ -38,6 +38,25 @@ export const NAVIGATION_CONFIG = [
     ],
   },
 
+  // ─── WORKER PORTAL ───────────────────────────────────────────────────────
+  {
+    group: "My Workspace",
+    roles: ["WORKER"],
+    items: [
+      {
+        title: "My Skills",
+        path: ROUTES.MY_SKILLS,
+        icon: UserCheck, // Will import if needed, or use a general one like FileText. Let's use Tags
+        roles: ["WORKER"],
+      },
+      {
+        title: "My Documents",
+        path: ROUTES.MY_DOCUMENTS,
+        icon: FileText,
+        roles: ["WORKER"],
+      },
+    ],
+  },
 
   // ─── CLIENT PORTAL ───────────────────────────────────────────────────────
   {

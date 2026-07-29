@@ -24,9 +24,10 @@ import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
 
 // Dashboard & Feature Pages
 import DashboardPage from "../features/dashboard/pages/DashboardPage";
-
 import WorkerListPage from "../features/worker/pages/WorkerListPage";
 import WorkerDetailsPage from "../features/worker/pages/WorkerDetailsPage";
+import WorkerSkillsPage from "../features/worker/pages/WorkerSkillsPage";
+import MyDocumentsPage from "../features/documents/pages/MyDocumentsPage";
 import ClientListPage from "../features/client/pages/ClientListPage";
 import ClientDetailsPage from "../features/client/pages/ClientDetailsPage";
 import ClientWorkerSearchPage from "../features/client/pages/ClientWorkerSearchPage";
@@ -107,6 +108,10 @@ const AppRouter = () => {
             {/* Workers */}
             <Route path={ROUTES.WORKERS} element={<WorkerListPage />} />
             <Route path={ROUTES.WORKER_DETAILS} element={<WorkerDetailsPage />} />
+            
+            {/* Worker Only Routes */}
+            <Route path={ROUTES.MY_DOCUMENTS} element={<MyDocumentsPage />} />
+            <Route path={ROUTES.MY_SKILLS} element={<WorkerSkillsPage />} />
             <Route path={ROUTES.WORKFORCE_SEARCH} element={<ClientWorkerSearchPage />} />
             <Route path={ROUTES.WORKFORCE_PROFILE} element={<ClientWorkerProfilePage />} />
             <Route path={ROUTES.AGENCY_SEARCH} element={<ClientAgencySearchPage />} />
