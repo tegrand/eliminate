@@ -24,10 +24,47 @@ function JobCard({ job, onDelete, onUpdateStatus, onEdit }) {
 
   return (
     <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all group flex flex-col h-full relative">
-      <div className="flex items-start justify-between mb-3">
-        <div className="pr-2">
+      <div className="flex items-start justify-between mb-3 relative">
+        <div className="pr-20">
           <span className="text-xs font-bold text-gray-400 mb-1 block uppercase tracking-wider">{job.requirementCode}</span>
           <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">{job.title}</h3>
+        </div>
+        
+        {/* Top-Right Action Icons (Neutral/Monochrome) */}
+        <div className="absolute top-0 right-0 flex items-center gap-1">
+          <button 
+            onClick={() => onEdit(job)}
+            className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+            title="Edit Details"
+          >
+            <Edit2 className="w-4 h-4" />
+          </button>
+          
+          {(job.status === "OPEN" || job.status === "DRAFT") ? (
+            <button 
+              onClick={() => onUpdateStatus(job.id, "CANCELLED")}
+              className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+              title="Cancel Job"
+            >
+              <XCircle className="w-4 h-4" />
+            </button>
+          ) : (
+            <button 
+              onClick={() => onUpdateStatus(job.id, "OPEN")}
+              className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+              title="Reopen Job"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+          )}
+          
+          <button 
+            onClick={() => onDelete(job.id)}
+            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+            title="Delete Job"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
         </div>
       </div>
 
@@ -50,54 +87,6 @@ function JobCard({ job, onDelete, onUpdateStatus, onEdit }) {
           <Users className="w-4 h-4 text-blue-400" />
           <span>{job.requiredWorkers} Worker{job.requiredWorkers > 1 ? "s" : ""} Required</span>
         </div>
-      </div>
-
-      {/* Inline Actions */}
-      <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-100 justify-end">
-        <button 
-          onClick={() => onEdit(job)}
-          className="p-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
-          title="Edit Details"
-        >
-          <Edit2 className="w-4 h-4" />
-        </button>
-        
-        {job.status === "OPEN" && (
-          <>
-            <button 
-              onClick={() => onUpdateStatus(job.id, "COMPLETED")}
-              className="p-1.5 text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors"
-              title="Mark Completed"
-            >
-              <CheckCircle className="w-4 h-4" />
-            </button>
-            <button 
-              onClick={() => onUpdateStatus(job.id, "CANCELLED")}
-              className="p-1.5 text-orange-600 bg-orange-50 hover:bg-orange-100 rounded-lg transition-colors"
-              title="Cancel Job"
-            >
-              <XCircle className="w-4 h-4" />
-            </button>
-          </>
-        )}
-        
-        {(job.status === "CANCELLED" || job.status === "COMPLETED") && (
-          <button 
-            onClick={() => onUpdateStatus(job.id, "OPEN")}
-            className="p-1.5 text-purple-600 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
-            title="Reopen Job"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        )}
-        
-        <button 
-          onClick={() => onDelete(job.id)}
-          className="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
-          title="Delete Job"
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
       </div>
     </div>
   );
