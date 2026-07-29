@@ -8,7 +8,7 @@ const generateRequirementCode = () => {
 
 export const createJobRequirement = async (clientId, data) => {
   // Extract relations
-  const { requiredSkills, requiredLanguages, ...requirementData } = data;
+  const { requiredSkills, requiredLanguages, requiredSkillIds, ...requirementData } = data;
 
   const jobRequirement = await prisma.jobRequirement.create({
     data: {
@@ -23,6 +23,14 @@ export const createJobRequirement = async (clientId, data) => {
               experienceYears: skill.experienceYears,
               proficiencyLevel: skill.proficiencyLevel,
               isMandatory: skill.isMandatory,
+            })),
+          }
+        : (requiredSkillIds && requiredSkillIds.length > 0)
+        ? {
+            create: requiredSkillIds.map((skillId) => ({
+              skillId: skillId,
+              proficiencyLevel: "BEGINNER",
+              isMandatory: true,
             })),
           }
         : undefined,
@@ -116,7 +124,19 @@ export const updateJobRequirement = async (id, clientId, data) => {
     }
   }
 
-  const { requiredSkills, requiredLanguages, ...updateData } = data;
+  const { requiredSkills, requiredLanguages, requiredSkillIds, ...updateData } = data;
+
+  // Handle requiredSkillIds mapping
+  if (requiredSkillIds && requiredSkillIds.length > 0) {
+    updateData.requiredSkills = {
+      deleteMany: {},
+      create: requiredSkillIds.map((skillId) => ({
+        skillId: skillId,
+        proficiencyLevel: "BEGINNER",
+        isMandatory: true,
+      })),
+    };
+  }
 
   // For complex relation updates, usually we delete and recreate or use a transaction.
   // For simplicity, we only update the main requirement fields here.

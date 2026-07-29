@@ -25,28 +25,25 @@ router.use(authenticate);
 
 router.post(
   "/",
-  requirePermission("location:create"),
   validate(createLocationSchema),
   createLocation
 );
 
 router.get(
   "/",
-  requirePermission("location:read"),
   validate(listLocationsQuerySchema, "query"),
   getLocations
 );
 
 router.get(
   "/:id",
-  requirePermission("location:read"),
   validate(locationIdParamSchema, "params"),
   getLocationById
 );
 
 router.patch(
   "/:id",
-  requirePermission("location:update"),
+  requirePermission("location:update"), // keep update restricted
   validate(locationIdParamSchema, "params"),
   validate(updateLocationSchema),
   updateLocation
@@ -54,7 +51,7 @@ router.patch(
 
 router.delete(
   "/:id",
-  requirePermission("location:delete"),
+  requirePermission("location:delete"), // keep delete restricted
   validate(locationIdParamSchema, "params"),
   deleteLocation
 );

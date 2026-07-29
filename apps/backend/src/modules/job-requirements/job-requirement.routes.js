@@ -17,7 +17,7 @@ import {
 
 import validate from "../../middleware/validate.middleware.js";
 import authenticate from "../../middleware/auth.middleware.js";
-import { requirePermission } from "../../middleware/authorize.middleware.js";
+import { authorize } from "../../middleware/authorize.middleware.js";
 
 const router = Router();
 
@@ -25,28 +25,26 @@ router.use(authenticate);
 
 router.post(
   "/",
-  requirePermission("job-requirement:create"),
+  authorize("CLIENT", "SUPER_ADMIN", "AGENCY"),
   validate(createJobRequirementSchema),
   createJobRequirement
 );
 
 router.get(
   "/",
-  requirePermission("job-requirement:read"),
   validate(jobRequirementListQuerySchema, "query"),
   listJobRequirements
 );
 
 router.get(
   "/:id",
-  requirePermission("job-requirement:read"),
   validate(jobRequirementIdParamSchema, "params"),
   getJobRequirement
 );
 
 router.patch(
   "/:id",
-  requirePermission("job-requirement:update"),
+  authorize("CLIENT", "SUPER_ADMIN", "AGENCY"),
   validate(jobRequirementIdParamSchema, "params"),
   validate(updateJobRequirementSchema),
   updateJobRequirement
@@ -54,7 +52,7 @@ router.patch(
 
 router.delete(
   "/:id",
-  requirePermission("job-requirement:delete"),
+  authorize("CLIENT", "SUPER_ADMIN", "AGENCY"),
   validate(jobRequirementIdParamSchema, "params"),
   deleteJobRequirement
 );

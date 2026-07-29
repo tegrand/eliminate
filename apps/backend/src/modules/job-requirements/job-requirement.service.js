@@ -76,6 +76,8 @@ export const createJobRequirement = async (data) => {
     requirementCode,
   };
 
+  delete createData.requiredSkillIds;
+
   if (requiredSkillIds && requiredSkillIds.length > 0) {
     createData.requiredSkills = {
       create: requiredSkillIds.map((skillId) => ({
@@ -158,9 +160,23 @@ export const updateJobRequirement = async (id, data) => {
   // Validate relationships if they are being updated
   await validateRelations(null, data.categoryId, data.locationId);
 
+  const { requiredSkillIds, ...updateData } = data;
+  delete updateData.requiredSkillIds;
+
+  if (requiredSkillIds) {
+    updateData.requiredSkills = {
+      deleteMany: {},
+      create: requiredSkillIds.map((skillId) => ({
+        skill: { connect: { id: skillId } },
+        proficiencyLevel: "BEGINNER",
+        isMandatory: true,
+      })),
+    };
+  }
+
   return await prisma.jobRequirement.update({
     where: { id },
-    data,
+    data: updateData,
     select: jobRequirementSelect,
   });
 };
