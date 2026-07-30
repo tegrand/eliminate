@@ -9,6 +9,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import StatCard from "../StatCard";
 
 const cards = (stats, t) => [
   {
@@ -66,25 +67,17 @@ export default function ClientOverviewCards({ stats }) {
       </h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {items.map((card) => {
-          const Icon = card.icon;
-          return (
-            <div
-              key={card.label}
-              className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex items-center gap-4"
-            >
-              <div className={`w-12 h-12 rounded-xl ${card.lightBg} flex items-center justify-center shrink-0`}>
-                <Icon className={`w-6 h-6 ${card.lightIcon}`} strokeWidth={2} />
-              </div>
-              
-              <div className="flex-1">
-                <p className="text-2xl font-bold text-gray-900 leading-none">{card.value}</p>
-                <p className="text-xs font-semibold text-gray-600 mt-1">{card.label}</p>
-                <p className="text-[10px] text-gray-400 font-medium mt-0.5">{card.sub}</p>
-              </div>
-            </div>
-          );
-        })}
+        {items.map((card) => (
+          <StatCard
+            key={card.label}
+            title={card.label}
+            value={card.value}
+            icon={card.icon}
+            bgColor={card.lightBg}
+            iconColor={card.lightIcon}
+            description={card.sub}
+          />
+        ))}
       </div>
     </div>
   );
