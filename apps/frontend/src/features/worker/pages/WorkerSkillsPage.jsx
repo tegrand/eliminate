@@ -215,7 +215,7 @@ export default function WorkerSkillsPage() {
         isOpen={isModalOpen}
         onClose={closeModal}
         title={editingSkill ? "Edit Skill" : "Add New Skill"}
-        className="sm:max-w-2xl"
+        className="sm:max-w-xl"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
