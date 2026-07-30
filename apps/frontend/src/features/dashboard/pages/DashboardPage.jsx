@@ -38,7 +38,7 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
             <span>Welcome back, {user?.profileType === "SUPER_ADMIN" ? "Super Admin" : user?.email?.split('@')[0] || "User"}! 👋</span>
             {user?.profileType === "WORKER" && (
-              user?.workerProfile?.profileStatus === "VERIFIED" ? (
+              user?.workerProfile?.profileStatus === "APPROVED" ? (
                 <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-medium">
                   <BadgeCheck className="w-4 h-4" />
                   Verified
