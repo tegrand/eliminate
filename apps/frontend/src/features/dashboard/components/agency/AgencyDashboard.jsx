@@ -36,7 +36,7 @@ export default function AgencyDashboard() {
     );
   }
 
-  const { topStats, recentActivities, notifications, attendance } = dashboardData || {};
+  const { topStats, chartData } = dashboardData || {};
 
   return (
     <div className="space-y-6">
@@ -47,27 +47,11 @@ export default function AgencyDashboard() {
       <DashboardChartsRow
         lineTitle="Monthly Agency Revenue"
         lineSubtitle="Revenue overview from deployed workers"
-        lineData={[
-          { name: 'Jan', value: 0 },
-          { name: 'Feb', value: 0 },
-          { name: 'Mar', value: 0.1 },
-          { name: 'Apr', value: 0 },
-          { name: 'May', value: 0 },
-          { name: 'Jun', value: 0 },
-          { name: 'Jul', value: 0 },
-          { name: 'Aug', value: 0.8 },
-          { name: 'Sep', value: 0 },
-          { name: 'Oct', value: 0 },
-          { name: 'Nov', value: 0 },
-          { name: 'Dec', value: 0 },
-        ]}
+        lineData={chartData?.lineData || []}
         donutTitle="Worker Allocation"
         donutSubtitle="Status breakdown"
-        donutTotal={topStats?.activeWorkers || 5}
-        donutData={[
-          { name: 'Active', value: topStats?.activeWorkers || 3 },
-          { name: 'Available', value: topStats?.availableWorkers || 2 },
-        ]}
+        donutTotal={chartData?.donutTotal || 0}
+        donutData={chartData?.donutData || []}
       />
     </div>
   );

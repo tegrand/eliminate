@@ -62,27 +62,11 @@ export default function WorkerDashboard() {
       <DashboardChartsRow
         lineTitle="Earnings Overview"
         lineSubtitle="Monthly income overview"
-        lineData={[
-          { name: 'Jan', value: 0 },
-          { name: 'Feb', value: 0 },
-          { name: 'Mar', value: 0 },
-          { name: 'Apr', value: 0 },
-          { name: 'May', value: 0 },
-          { name: 'Jun', value: 0 },
-          { name: 'Jul', value: 0 },
-          { name: 'Aug', value: 0.15 },
-          { name: 'Sep', value: 0 },
-          { name: 'Oct', value: 0 },
-          { name: 'Nov', value: 0 },
-          { name: 'Dec', value: 0 },
-        ]}
+        lineData={data.chartData?.lineData || []}
         donutTitle="Task Completion"
         donutSubtitle="Status breakdown"
-        donutTotal={data.topStats?.totalCompletedWork || 1}
-        donutData={[
-          { name: 'Completed', value: data.topStats?.totalCompletedWork || 1 },
-          { name: 'Active', value: data.activeJob ? 1 : 0 },
-        ]}
+        donutTotal={data.chartData?.donutTotal || 0}
+        donutData={data.chartData?.donutData || []}
       />
     </div>
   );

@@ -104,8 +104,33 @@ export const getWorkerDashboard = async (userId) => {
   const absentCount = attendanceRecords.filter(rec => rec.status === 'ABSENT').length;
   const onLeaveCount = attendanceRecords.filter(rec => rec.status === 'ON_LEAVE').length;
 
-  const totalRevenue = payments.filter(p => p.status === 'PAID').reduce((sum, p) => sum + (p.amount || 0), 0);
+  const totalRevenue = payments.filter(p => p.status === 'COMPLETED').reduce((sum, p) => sum + (p.amount || 0), 0);
   const pendingAmount = payments.filter(p => p.status === 'PENDING').reduce((sum, p) => sum + (p.amount || 0), 0);
+
+  const getEmptyMonthlyData = () => [
+    { name: 'Jan', value: 0 }, { name: 'Feb', value: 0 }, { name: 'Mar', value: 0 },
+    { name: 'Apr', value: 0 }, { name: 'May', value: 0 }, { name: 'Jun', value: 0 },
+    { name: 'Jul', value: 0 }, { name: 'Aug', value: 0 }, { name: 'Sep', value: 0 },
+    { name: 'Oct', value: 0 }, { name: 'Nov', value: 0 }, { name: 'Dec', value: 0 }
+  ];
+
+  const currentYear = today.getFullYear();
+  const monthlyRevenue = getEmptyMonthlyData();
+  payments.filter(p => p.status === 'COMPLETED').forEach(p => {
+    const date = new Date(p.createdAt); // Or p.paymentDate
+    if (date.getFullYear() === currentYear) {
+      monthlyRevenue[date.getMonth()].value += (p.amount || 0) / 1000; // in thousands (k)
+    }
+  });
+
+  const chartData = {
+    lineData: monthlyRevenue,
+    donutData: [
+      { name: 'Completed', value: worker.assignments?.length || 0 },
+      { name: 'Active', value: activeJobs.length > 0 ? 1 : 0 }
+    ],
+    donutTotal: (worker.assignments?.length || 0) + (activeJobs.length > 0 ? 1 : 0)
+  };
 
   return {
     profile: {
@@ -134,7 +159,8 @@ export const getWorkerDashboard = async (userId) => {
         absent: absentCount,
         onLeave: onLeaveCount
       }
-    }
+    },
+    chartData
   };
 };
 
@@ -264,9 +290,42 @@ export const getClientDashboard = async (userId) => {
     requiredWorkers: req.requiredWorkers,
     location: req.location?.name || null,
     category: req.category?.name || null,
-    timestamp: req.updatedAt,
     createdAt: req.createdAt
   }));
+
+  const getEmptyMonthlyData = () => [
+    { name: 'Jan', value: 0 }, { name: 'Feb', value: 0 }, { name: 'Mar', value: 0 },
+    { name: 'Apr', value: 0 }, { name: 'May', value: 0 }, { name: 'Jun', value: 0 },
+    { name: 'Jul', value: 0 }, { name: 'Aug', value: 0 }, { name: 'Sep', value: 0 },
+    { name: 'Oct', value: 0 }, { name: 'Nov', value: 0 }, { name: 'Dec', value: 0 }
+  ];
+
+  const currentYear = today.getFullYear();
+  const monthlyExpenditure = getEmptyMonthlyData();
+  
+  // We approximate expenditure based on job requirements for the client
+  // Since there is no payment table for clients yet, we will count the number of jobs posted per month.
+  // We'll scale this for demo purposes or just show raw counts in the graph
+  const allReqs = await prisma.jobRequirement.findMany({
+    where: { clientId: client.id, deletedAt: null },
+    select: { createdAt: true }
+  });
+  
+  allReqs.forEach(req => {
+    const d = new Date(req.createdAt);
+    if (d.getFullYear() === currentYear) {
+      monthlyExpenditure[d.getMonth()].value += 1;
+    }
+  });
+
+  const chartData = {
+    lineData: monthlyExpenditure,
+    donutData: [
+      { name: 'Completed', value: completedJobs },
+      { name: 'Active', value: activeRequirements }
+    ],
+    donutTotal: completedJobs + activeRequirements
+  };
 
   return {
     topStats: {
@@ -280,5 +339,6 @@ export const getClientDashboard = async (userId) => {
     },
     recentActivities,
     notifications,
+    chartData
   };
 };
