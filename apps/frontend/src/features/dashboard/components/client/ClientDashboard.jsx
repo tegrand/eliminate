@@ -4,6 +4,7 @@ import ClientOverviewCards from "./ClientOverviewCards";
 import ClientQuickActions from "./ClientQuickActions";
 import ClientRecentActivity from "./ClientRecentActivity";
 import ClientNotifications from "./ClientNotifications";
+import DashboardChartsRow from "../charts/DashboardChartsRow";
 import { Loader2, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -40,6 +41,33 @@ export default function ClientDashboard() {
     <div className="space-y-6">
       {/* Overview Stat Cards */}
       <ClientOverviewCards stats={topStats} />
+
+      {/* Analytics Charts */}
+      <DashboardChartsRow
+        lineTitle="Monthly Expenditure"
+        lineSubtitle="Monthly spending overview on assignments"
+        lineData={[
+          { name: 'Jan', value: 0 },
+          { name: 'Feb', value: 0 },
+          { name: 'Mar', value: 0 },
+          { name: 'Apr', value: 0 },
+          { name: 'May', value: 0 },
+          { name: 'Jun', value: 0 },
+          { name: 'Jul', value: 0 },
+          { name: 'Aug', value: 0.3 },
+          { name: 'Sep', value: 0 },
+          { name: 'Oct', value: 0 },
+          { name: 'Nov', value: 0 },
+          { name: 'Dec', value: 0 },
+        ]}
+        donutTitle="Project Status"
+        donutSubtitle="Status breakdown"
+        donutTotal={topStats?.activeRequirements || 1}
+        donutData={[
+          { name: 'Completed', value: topStats?.completedJobs || 0 },
+          { name: 'Active', value: topStats?.activeRequirements || 1 },
+        ]}
+      />
 
       {/* Quick Actions */}
       <ClientQuickActions />

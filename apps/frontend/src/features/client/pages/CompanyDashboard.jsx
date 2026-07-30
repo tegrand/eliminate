@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import { ROUTES } from "../../../routes/routePaths";
 import { useAuth } from "../../../hooks/useAuth";
 import DashboardCard from "../../dashboard/components/DashboardCard";
-import DashboardChartsRow from "../../dashboard/components/charts/DashboardChartsRow";
 
 export default function CompanyDashboard() {
   const { user } = useAuth();
@@ -76,33 +75,6 @@ export default function CompanyDashboard() {
           />
         </div>
       )}
-
-      {/* Analytics Charts */}
-      <DashboardChartsRow
-        lineTitle="Monthly Expenditure"
-        lineSubtitle="Monthly spending overview on assignments"
-        lineData={[
-          { name: 'Jan', value: 0 },
-          { name: 'Feb', value: 0 },
-          { name: 'Mar', value: 0 },
-          { name: 'Apr', value: 0 },
-          { name: 'May', value: 0 },
-          { name: 'Jun', value: 0 },
-          { name: 'Jul', value: 0 },
-          { name: 'Aug', value: 0.3 },
-          { name: 'Sep', value: 0 },
-          { name: 'Oct', value: 0 },
-          { name: 'Nov', value: 0 },
-          { name: 'Dec', value: 0 },
-        ]}
-        donutTitle="Project Status"
-        donutSubtitle="Status breakdown"
-        donutTotal={projectsRes?.data?.data?.length || 2}
-        donutData={[
-          { name: 'Completed', value: 1 },
-          { name: 'Active', value: 1 },
-        ]}
-      />
 
       <div className="mt-8 bg-indigo-50 border border-indigo-100 rounded-xl p-5 lg:p-6 flex flex-col lg:flex-row items-center justify-between gap-5">
         <div>
