@@ -8,8 +8,10 @@ import { useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
 
 import { Filter, RotateCcw } from "lucide-react";
+import { useAuth } from "../../../hooks/useAuth";
 
 export default function WorkerFilters() {
+  const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const { register, handleSubmit, reset, setValue } = useForm({
@@ -60,15 +62,17 @@ export default function WorkerFilters() {
           <option value="SUSPENDED">Suspended</option>
         </select>
       </div>
-      <div className="flex-1 w-full">
-        <label className="block text-sm font-medium text-slate-700 mb-1.5">Agency</label>
-        <select {...register("agency")} className="block w-full pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg text-gray-600 border bg-white h-10">
-          <option value="">Select agency</option>
-          <option value="Alpha Staffing">Alpha Staffing</option>
-          <option value="Beta Temp">Beta Temp</option>
-          <option value="Direct Hire">Direct Hire</option>
-        </select>
-      </div>
+      {user?.profileType !== "AGENCY" && (
+        <div className="flex-1 w-full">
+          <label className="block text-sm font-medium text-slate-700 mb-1.5">Agency</label>
+          <select {...register("agency")} className="block w-full pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg text-gray-600 border bg-white h-10">
+            <option value="">Select agency</option>
+            <option value="Alpha Staffing">Alpha Staffing</option>
+            <option value="Beta Temp">Beta Temp</option>
+            <option value="Direct Hire">Direct Hire</option>
+          </select>
+        </div>
+      )}
       <div className="flex-1 w-full">
         <label className="block text-sm font-medium text-slate-700 mb-1.5">Skill</label>
         <select {...register("skill")} className="block w-full pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg text-gray-600 border bg-white h-10">
