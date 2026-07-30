@@ -155,8 +155,8 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
           </div>
         </div>
       )
-    },
-  ];
+    }
+  );
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm flex flex-col h-full">
