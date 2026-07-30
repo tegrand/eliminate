@@ -66,11 +66,11 @@ const Input = forwardRef(
               // Dynamic padding logic based on presence of icons
               leftIcon ? "pl-10" : "pl-3",
               rightIcon ? "pr-10" : "pr-3",
-              "py-2",
+              "py-1.5",
               // Error vs Normal state styling
               error
                 ? "border-red-300 text-red-900 placeholder-red-300 focus:border-red-500 focus:ring-red-500 border"
-                : "border-gray-300 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500 border"
+                : "border-gray-300 text-gray-900 placeholder-gray-400 focus:border-orange-500 focus:ring-orange-500 border"
             )}
             {...props}
           />

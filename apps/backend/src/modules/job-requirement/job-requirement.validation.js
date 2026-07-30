@@ -3,8 +3,8 @@ import { z } from "zod";
 const baseJobRequirementSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(150),
   description: z.string().optional(),
-  categoryId: z.string().uuid("Invalid category ID").optional(),
-  locationId: z.string().uuid("Invalid location ID").optional(),
+  categoryId: z.string().uuid("Invalid category ID").nullable().optional(),
+  locationId: z.string().uuid("Invalid location ID").nullable().optional(),
   requiredWorkers: z.number().int().min(1, "Minimum 1 worker required").max(1000, "Maximum 1000 workers allowed").default(1),
   startDate: z.string().datetime({ message: "Invalid start date format" }).optional(),
   endDate: z.string().datetime({ message: "Invalid end date format" }).optional(),

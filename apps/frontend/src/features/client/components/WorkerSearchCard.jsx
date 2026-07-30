@@ -38,18 +38,18 @@ export default function WorkerSearchCard({ worker }) {
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full animate-fade-in group">
+    <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full animate-fade-in group">
       <div className="flex items-start gap-4">
         {/* Avatar */}
         <div className="relative shrink-0">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-xl shadow-sm">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 flex items-center justify-center text-indigo-600 font-bold text-lg shadow-sm">
             {avatar ? (
-              <img src={avatar} alt={name} className="w-full h-full object-cover rounded-2xl" />
+              <img src={avatar} alt={name} className="w-full h-full object-cover rounded-xl" />
             ) : initials}
           </div>
           {isVerified && (
             <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm" title="Verified Worker">
-              <ShieldCheck className="w-5 h-5 text-emerald-500" />
+              <ShieldCheck className="w-4 h-4 text-emerald-500" />
             </div>
           )}
         </div>
@@ -58,10 +58,10 @@ export default function WorkerSearchCard({ worker }) {
         <div className="flex-1 min-w-0 pt-0.5">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <h3 className="font-bold text-gray-900 truncate text-lg leading-tight group-hover:text-blue-600 transition-colors">
+              <h3 className="font-bold text-gray-900 truncate text-base leading-tight group-hover:text-blue-600 transition-colors">
                 {name}
               </h3>
-              <p className="text-sm font-medium text-blue-600 mt-0.5 truncate">{skill}</p>
+              <p className="text-xs font-medium text-blue-600 mt-0.5 truncate">{skill}</p>
             </div>
             
             {/* Agency/Independent Badge */}
@@ -72,7 +72,7 @@ export default function WorkerSearchCard({ worker }) {
             </span>
           </div>
           
-          <div className="mt-2.5 space-y-1.5">
+          <div className="mt-1.5 space-y-1">
             <div className="flex items-center gap-1.5 text-xs text-gray-500">
               <Briefcase className="w-3.5 h-3.5 text-gray-400 shrink-0" />
               <span className="truncate">{experience}</span>
@@ -85,18 +85,15 @@ export default function WorkerSearchCard({ worker }) {
         </div>
       </div>
 
-      <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-4">
-        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider border ${statusColors[status] || statusColors.ACTIVE}`}>
+      <div className="mt-3 pt-3 border-t border-gray-50 flex items-center justify-between gap-3 mt-auto">
+        <span className={`shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${statusColors[status] || statusColors.ACTIVE}`}>
           {statusLabels[status] || statusLabels.ACTIVE}
         </span>
-      </div>
-
-      <div className="mt-4">
         <Link 
           to={`/search-workers/${worker.id}`}
-          className="block w-full py-2.5 text-center text-sm font-semibold text-gray-700 bg-gray-50 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-200 rounded-xl transition-all"
+          className="flex-1 py-1.5 text-center text-xs font-semibold text-gray-700 bg-gray-50 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-200 rounded-lg transition-all"
         >
-          View Full Profile
+          View Profile
         </Link>
       </div>
     </div>

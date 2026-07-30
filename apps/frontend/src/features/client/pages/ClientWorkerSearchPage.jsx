@@ -7,7 +7,6 @@ import { workerApi } from "../../worker/api/worker.api";
 
 const DEFAULT_FILTERS = {
   search: "",
-  category: "",
   skill: "",
   location: "",
   minExperience: "",
@@ -57,10 +56,10 @@ export default function ClientWorkerSearchPage() {
       if (filters.search && !name.toLowerCase().includes(filters.search.toLowerCase())) return false;
       
       // 2. Skill Match
-      if (filters.skill && !skill.toLowerCase().includes(filters.skill.toLowerCase())) return false;
+      if (filters.skill && skill !== filters.skill) return false;
       
       // 3. Location Match
-      if (filters.location && !locationStr.toLowerCase().includes(filters.location.toLowerCase())) return false;
+      if (filters.location && locationStr !== filters.location) return false;
       
       // 4. Experience Range
       if (filters.minExperience && experience < parseInt(filters.minExperience, 10)) return false;
@@ -104,6 +103,7 @@ export default function ClientWorkerSearchPage() {
                 filters={filters} 
                 setFilters={setFilters} 
                 onClear={() => setFilters(DEFAULT_FILTERS)} 
+                workers={workers}
               />
             </div>
 
@@ -150,7 +150,7 @@ export default function ClientWorkerSearchPage() {
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 pb-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-5 pb-10">
                   {filteredWorkers.map(worker => (
                     <WorkerSearchCard key={worker.id} worker={worker} />
                   ))}

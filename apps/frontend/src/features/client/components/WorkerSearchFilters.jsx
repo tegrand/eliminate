@@ -1,11 +1,7 @@
-import { Search, Filter, X, CheckSquare, Square } from "lucide-react";
-import { useState } from "react";
+import { Search, Filter, CheckSquare } from "lucide-react";
+import { useState, useMemo } from "react";
 
-const MOCK_SKILLS = ["Electrician", "Plumber", "Carpenter", "Mason", "Painter", "Welder", "General Helper"];
-const MOCK_CATEGORIES = ["Construction", "Maintenance", "Manufacturing", "Hospitality", "Logistics"];
-const MOCK_LOCATIONS = ["Ernakulam", "Thiruvananthapuram", "Kozhikode", "Thrissur", "Malappuram"];
-
-export default function WorkerSearchFilters({ filters, setFilters, onClear }) {
+export default function WorkerSearchFilters({ filters, setFilters, onClear, workers = [] }) {
   const [isExpanded, setIsExpanded] = useState(true);
 
   const handleCheckboxChange = (field) => {
@@ -17,8 +13,28 @@ export default function WorkerSearchFilters({ filters, setFilters, onClear }) {
     setFilters(prev => ({ ...prev, [name]: value }));
   };
 
+  const uniqueSkills = useMemo(() => {
+    if (!workers) return [];
+    const skills = workers.map(w => w.primarySkill?.name || (typeof w.primarySkill === 'string' ? w.primarySkill : "") || w.skills?.[0]?.name || "").filter(Boolean);
+    return [...new Set(skills)].sort();
+  }, [workers]);
+
+  const uniqueLocations = useMemo(() => {
+    if (!workers) return [];
+    const locs = workers.map(w => {
+      if (w.city && w.state) return `${w.city}, ${w.state}`;
+      if (w.city) return w.city;
+      if (w.state) return w.state;
+      return "";
+    }).filter(Boolean);
+    return [...new Set(locs)].sort();
+  }, [workers]);
+
   const CheckboxField = ({ label, field }) => (
-    <label className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors group">
+    <label 
+      className="flex items-center gap-3 p-1.5 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors group"
+      onClick={() => handleCheckboxChange(field)}
+    >
       <div className={`flex items-center justify-center w-5 h-5 rounded border ${filters[field] ? 'bg-blue-600 border-blue-600 text-white' : 'border-gray-300 text-transparent group-hover:border-blue-400'}`}>
         <CheckSquare className={`w-4 h-4 ${filters[field] ? 'opacity-100' : 'opacity-0'}`} />
       </div>
@@ -27,7 +43,7 @@ export default function WorkerSearchFilters({ filters, setFilters, onClear }) {
   );
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden sticky top-4 flex flex-col max-h-[calc(100vh-8rem)]">
+    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden sticky top-4 flex flex-col max-h-[calc(100vh-6rem)] 2xl:max-h-[700px]">
       {/* Header */}
       <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50 shrink-0">
         <h3 className="font-bold text-gray-900 flex items-center gap-2">
@@ -42,11 +58,10 @@ export default function WorkerSearchFilters({ filters, setFilters, onClear }) {
         </button>
       </div>
 
-      <div className="p-5 space-y-6 flex-1 overflow-y-auto custom-scrollbar">
+      <div className="p-4 space-y-4 flex-1 overflow-y-auto custom-scrollbar">
         
         {/* Search */}
-        <div className="space-y-1.5">
-          <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Search</label>
+        <div className="space-y-1">
           <div className="relative">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input 
@@ -61,36 +76,24 @@ export default function WorkerSearchFilters({ filters, setFilters, onClear }) {
         </div>
 
         {/* Dropdowns */}
-        <div className="space-y-4">
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Category</label>
-            <select name="category" value={filters.category} onChange={handleChange} className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none">
-              <option value="">All Categories</option>
-              {MOCK_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Skill</label>
+        <div className="space-y-2">
+          <div className="space-y-1">
             <select name="skill" value={filters.skill} onChange={handleChange} className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none">
               <option value="">All Skills</option>
-              {MOCK_SKILLS.map(s => <option key={s} value={s}>{s}</option>)}
+              {uniqueSkills.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Location</label>
+          <div className="space-y-1">
             <select name="location" value={filters.location} onChange={handleChange} className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none">
               <option value="">Any Location</option>
-              {MOCK_LOCATIONS.map(l => <option key={l} value={l}>{l}</option>)}
+              {uniqueLocations.map(l => <option key={l} value={l}>{l}</option>)}
             </select>
           </div>
         </div>
 
-        <hr className="border-gray-100" />
-
         {/* Experience */}
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Experience (Years)</label>
           <div className="flex items-center gap-2">
             <input 
@@ -115,10 +118,8 @@ export default function WorkerSearchFilters({ filters, setFilters, onClear }) {
           </div>
         </div>
 
-        <hr className="border-gray-100" />
-
         {/* Preferences Toggles */}
-        <div className="space-y-1">
+        <div className="space-y-1 pt-1 border-t border-gray-100">
           <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">Preferences</label>
           <div className="-mx-2">
             <CheckboxField label="Verified Workers Only" field="verifiedOnly" />
@@ -126,10 +127,8 @@ export default function WorkerSearchFilters({ filters, setFilters, onClear }) {
           </div>
         </div>
 
-        <hr className="border-gray-100" />
-
         {/* Worker Type */}
-        <div className="space-y-1">
+        <div className="space-y-1 pt-1 border-t border-gray-100">
           <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">Worker Type</label>
           <div className="-mx-2">
             <CheckboxField label="Independent Workers" field="independentWorkers" />
