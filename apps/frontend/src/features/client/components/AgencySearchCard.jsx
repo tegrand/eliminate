@@ -9,82 +9,65 @@ export default function AgencySearchCard({ agency }) {
   const isVerified = agency.verificationStatus === "VERIFIED";
 
   return (
-    <div className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all group relative">
-      <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center">
+    <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full animate-fade-in group">
+      <div className="flex items-start gap-4">
         
         {/* Avatar / Logo */}
-        <div className="w-16 h-16 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
-          <Building2 className="w-8 h-8 text-blue-600" />
+        <div className="relative shrink-0">
+          <div className="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+            <Building2 className="w-6 h-6 text-blue-600" />
+          </div>
+          {isVerified && (
+            <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm" title="Verified Agency">
+              <CheckCircle2 className="w-4 h-4 text-blue-500" />
+            </div>
+          )}
         </div>
 
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1">
-            <h3 className="text-lg font-bold text-gray-900 truncate pr-4">
-              {agency.companyName || "Unnamed Agency"}
-            </h3>
-            
-            {/* Badges */}
-            <div className="flex items-center gap-2 shrink-0">
-              {isVerified ? (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-100">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  Verified
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-50 text-gray-600 text-xs font-semibold border border-gray-200">
-                  <XCircle className="w-3.5 h-3.5" />
-                  Unverified
-                </span>
-              )}
+        <div className="flex-1 min-w-0 pt-0.5">
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <h3 className="font-bold text-gray-900 truncate text-base leading-tight group-hover:text-blue-600 transition-colors">
+                {agency.companyName || "Unnamed Agency"}
+              </h3>
+              <p className="text-xs font-medium text-blue-600 mt-0.5 truncate">Agency</p>
             </div>
+            
+            {/* Verification Badge */}
+            <span className={`shrink-0 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+              isVerified ? "bg-blue-50 text-blue-700 border border-blue-100" : "bg-gray-50 text-gray-600 border border-gray-200"
+            }`}>
+              {isVerified ? "Verified" : "Unverified"}
+            </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-sm text-gray-500 mt-2">
-            
-            {/* Location */}
-            <div className="flex items-center gap-1.5">
-              <MapPin className="w-4 h-4 text-gray-400" />
-              <span className="truncate max-w-[150px]">
-                {agency.address || agency.location || "Location not specified"}
+          <div className="mt-1.5 space-y-1">
+            <div className="flex items-center gap-1.5 text-xs text-gray-500">
+              <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400 shrink-0" />
+              <span className="truncate">{rating.toFixed(1)} Rating</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-xs text-gray-500">
+              <MapPin className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+              <span className="truncate">
+                {agency.address || agency.location || "Location N/A"}
               </span>
             </div>
-
-            <div className="w-1 h-1 rounded-full bg-gray-300 hidden sm:block"></div>
-
-            {/* Rating */}
-            <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-              <span className="font-medium text-gray-700">{rating.toFixed(1)}</span>
-            </div>
           </div>
-
-          {/* Skills / Specializations (Mocked as Agencies don't have direct skills array usually, but we display something) */}
-          <div className="mt-4 flex flex-wrap gap-2">
-            <span className="px-2.5 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg">
-              Construction
-            </span>
-            <span className="px-2.5 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg">
-              Manufacturing
-            </span>
-            <span className="px-2.5 py-1 bg-gray-50 text-gray-500 text-xs font-medium rounded-lg border border-gray-200 border-dashed">
-              +3 more
-            </span>
-          </div>
-
         </div>
       </div>
       
-      {/* Absolute contact button for desktop hover */}
-      <div className="flex items-center gap-3 mt-5 w-full">
-        <button className="flex-1 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-colors">
-          View Profile
-        </button>
+      <div className="mt-3 pt-3 border-t border-gray-50 flex items-center justify-between gap-3 mt-auto">
         <button 
           onClick={() => setIsHireModalOpen(true)}
-          className="flex-1 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 shadow-sm shadow-blue-200 transition-colors flex items-center justify-center gap-2"
+          className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm"
         >
-          <Briefcase className="w-4 h-4" />
-          Hire Agency
+          <Briefcase className="w-3.5 h-3.5" />
+          Hire
+        </button>
+        <button 
+          className="flex-1 py-1.5 text-center text-xs font-semibold text-gray-700 bg-gray-50 hover:bg-blue-50 hover:text-blue-700 border border-gray-200 hover:border-blue-200 rounded-lg transition-all"
+        >
+          View Profile
         </button>
       </div>
 
