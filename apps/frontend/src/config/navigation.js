@@ -96,6 +96,20 @@ export const NAVIGATION_CONFIG = [
     ],
   },
 
+  // ─── AGENCY PORTAL ───────────────────────────────────────────────────────
+  {
+    group: "Agency Workspace",
+    roles: ["AGENCY"],
+    items: [
+      {
+        title: "My Profile",
+        path: ROUTES.AGENCY_PROFILE,
+        icon: UserCircle,
+        roles: ["AGENCY"],
+      },
+    ],
+  },
+
   // ─── CLIENT PORTAL ───────────────────────────────────────────────────────
   {
     group: "Recruitment",

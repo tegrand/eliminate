@@ -50,6 +50,7 @@ import TeamsPage from "../features/client/pages/TeamsPage";
 
 import AgencyListPage from "../features/agency/pages/AgencyListPage";
 import AgencyDetailsPage from "../features/agency/pages/AgencyDetailsPage";
+import AgencyProfilePage from "../features/agency/pages/AgencyProfilePage";
 
 import SkillListPage from "../features/master-data/skill/pages/SkillListPage";
 import CategoryListPage from "../features/master-data/category/pages/CategoryListPage";
@@ -146,6 +147,7 @@ const AppRouter = () => {
             {/* Agencies */}
             <Route path={ROUTES.AGENCIES} element={<AgencyListPage />} />
             <Route path={ROUTES.AGENCY_DETAILS} element={<AgencyDetailsPage />} />
+            <Route path={ROUTES.AGENCY_PROFILE} element={<AgencyProfilePage />} />
 
             {/* Master Data */}
             <Route path={ROUTES.SKILLS} element={<SkillListPage />} />
