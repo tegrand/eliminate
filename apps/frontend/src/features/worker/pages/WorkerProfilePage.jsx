@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { User, MapPin, Briefcase, Loader2, Save } from "lucide-react";
+import { User, MapPin, Briefcase, Loader2, Save, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { workerApi } from "../api/worker.api";
 import Button from "../../../components/ui/button/Button";
+import MyDocumentsPage from "../../documents/pages/MyDocumentsPage";
 
 const WORK_PREFERENCES = [
   "Daily Work",
@@ -96,21 +97,21 @@ export default function WorkerProfilePage() {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto py-8 space-y-6 animate-fade-in">
+    <div className="w-full max-w-4xl mx-auto py-6 space-y-5 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">My Profile</h1>
+        <h1 className="text-xl font-bold text-slate-900">My Profile</h1>
         <p className="text-sm text-slate-500 mt-1">Manage your professional information and preferences</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-5">
         {/* Basic Information */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8">
-          <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-6">
-            <User className="w-5 h-5 text-indigo-500" />
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 md:p-6">
+          <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2 mb-5">
+            <User className="w-4 h-4 text-indigo-500" />
             Basic Information
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">First Name</label>
               <input
@@ -118,7 +119,7 @@ export default function WorkerProfilePage() {
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleChange}
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors"
+                className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors"
                 required
               />
             </div>
@@ -129,7 +130,7 @@ export default function WorkerProfilePage() {
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleChange}
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors"
+                className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors"
                 required
               />
             </div>
@@ -139,7 +140,7 @@ export default function WorkerProfilePage() {
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors"
+                className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors"
               >
                 <option value="">Select Gender</option>
                 <option value="Male">Male</option>
@@ -151,13 +152,13 @@ export default function WorkerProfilePage() {
         </div>
 
         {/* Work Preferences */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8">
-          <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-6">
-            <Briefcase className="w-5 h-5 text-indigo-500" />
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 md:p-6">
+          <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2 mb-5">
+            <Briefcase className="w-4 h-4 text-indigo-500" />
             Work Preferences
           </h2>
           
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2">
             {WORK_PREFERENCES.map(pref => {
               const isSelected = formData.workPreferences.includes(pref);
               return (
@@ -165,10 +166,10 @@ export default function WorkerProfilePage() {
                   key={pref}
                   type="button"
                   onClick={() => handlePreferenceToggle(pref)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
                     isSelected 
-                      ? "bg-indigo-50 text-indigo-700 border-2 border-indigo-600 shadow-sm" 
-                      : "bg-white text-slate-600 border-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                      ? "bg-indigo-50 text-indigo-700 border border-indigo-600 shadow-sm" 
+                      : "bg-white text-slate-600 border border-slate-200 hover:border-slate-300 hover:bg-slate-50"
                   }`}
                 >
                   {pref}
@@ -182,13 +183,13 @@ export default function WorkerProfilePage() {
         </div>
 
         {/* Preferred Locations */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8">
-          <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 mb-6">
-            <MapPin className="w-5 h-5 text-indigo-500" />
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 md:p-6">
+          <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2 mb-5">
+            <MapPin className="w-4 h-4 text-indigo-500" />
             Location Preferences
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Preferred State</label>
               <input
@@ -197,7 +198,7 @@ export default function WorkerProfilePage() {
                 value={formData.preferredState}
                 onChange={handleChange}
                 placeholder="e.g. Kerala"
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors"
+                className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors"
               />
             </div>
             <div>
@@ -208,7 +209,7 @@ export default function WorkerProfilePage() {
                 value={formData.preferredDistrict}
                 onChange={handleChange}
                 placeholder="e.g. Ernakulam"
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors"
+                className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors"
               />
             </div>
             <div>
@@ -220,7 +221,7 @@ export default function WorkerProfilePage() {
                 onChange={handleChange}
                 min="0"
                 placeholder="e.g. 50"
-                className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors"
+                className="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-colors"
               />
             </div>
             <div className="flex items-center pt-6">
@@ -233,15 +234,24 @@ export default function WorkerProfilePage() {
                     onChange={handleChange}
                     className="sr-only"
                   />
-                  <div className={`block w-14 h-8 rounded-full transition-colors ${formData.willingToRelocate ? 'bg-indigo-600' : 'bg-slate-300'}`}></div>
-                  <div className={`dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${formData.willingToRelocate ? 'transform translate-x-6' : ''}`}></div>
+                  <div className={`block w-10 h-5 rounded-full transition-colors ${formData.willingToRelocate ? 'bg-indigo-600' : 'bg-slate-300'}`}></div>
+                  <div className={`absolute left-[2px] top-[2px] bg-white w-4 h-4 rounded-full transition-transform ${formData.willingToRelocate ? 'transform translate-x-5' : ''}`}></div>
                 </div>
-                <div className="ml-3 font-medium text-slate-700">
+                <div className="ml-3 text-sm font-medium text-slate-700">
                   Willing to Relocate
                 </div>
               </label>
             </div>
           </div>
+        </div>
+
+        {/* Documents */}
+        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 md:p-6">
+          <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2 mb-5">
+            <FileText className="w-4 h-4 text-indigo-500" />
+            My Documents
+          </h2>
+          <MyDocumentsPage embedded={true} />
         </div>
 
         <div className="flex justify-end pt-4">

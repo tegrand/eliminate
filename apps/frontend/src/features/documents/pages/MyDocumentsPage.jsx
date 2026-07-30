@@ -20,7 +20,7 @@ const getDocumentLabel = (type) => {
   return found ? found.label : type.replace('_', ' ');
 };
 
-export default function MyDocumentsPage() {
+export default function MyDocumentsPage({ embedded = false }) {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -137,16 +137,25 @@ export default function MyDocumentsPage() {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto py-8 space-y-6 animate-fade-in">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">My Documents</h1>
-          <p className="text-sm text-slate-500 mt-1">Manage your identity proofs and certifications</p>
+    <div className={embedded ? "w-full space-y-5" : "w-full max-w-6xl mx-auto py-8 space-y-6 animate-fade-in"}>
+      {!embedded && (
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">My Documents</h1>
+            <p className="text-sm text-slate-500 mt-1">Manage your identity proofs and certifications</p>
+          </div>
+          <Button leftIcon={<Upload className="w-4 h-4" />} onClick={openUploadModal}>
+            Upload New
+          </Button>
         </div>
-        <Button leftIcon={<Upload className="w-4 h-4" />} onClick={openUploadModal}>
-          Upload New
-        </Button>
-      </div>
+      )}
+      {embedded && (
+        <div className="flex justify-end mb-2">
+          <Button type="button" size="sm" leftIcon={<Upload className="w-4 h-4" />} onClick={openUploadModal}>
+            Upload Document
+          </Button>
+        </div>
+      )}
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
