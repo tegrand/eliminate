@@ -177,22 +177,22 @@ export default function MyDocumentsPage({ embedded = false }) {
             );
             
             return (
-              <div key={req.id} className="flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-white shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-4">
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${req.bg} ${req.color}`}>
-                    <req.icon className="w-5 h-5" />
+              <div key={req.id} className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-white shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${req.bg} ${req.color}`}>
+                    <req.icon className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900">{req.title}</h3>
-                    <p className="text-xs text-slate-500">{uploadedDoc ? uploadedDoc.fileName : req.desc}</p>
+                    <h3 className="text-xs font-bold text-slate-900">{req.title}</h3>
+                    <p className="text-[10px] text-slate-500">{uploadedDoc ? uploadedDoc.fileName : req.desc}</p>
                   </div>
                 </div>
                 {uploadedDoc ? (
-                  <Button type="button" size="sm" variant="outline" className="text-slate-600 border-slate-200" onClick={() => openReplaceModal(uploadedDoc)}>
+                  <Button type="button" size="sm" variant="outline" className="text-slate-600 border-slate-200 w-24 flex justify-center" onClick={() => openReplaceModal(uploadedDoc)}>
                     Replace
                   </Button>
                 ) : (
-                  <Button type="button" size="sm" variant="outline" className="text-indigo-600 border-indigo-100 hover:bg-indigo-50" onClick={() => openUploadModal(req.type)}>
+                  <Button type="button" size="sm" variant="outline" className="text-indigo-600 border-indigo-100 hover:bg-indigo-50 w-24 flex justify-center" onClick={() => openUploadModal(req.type)}>
                     <Upload className="w-3.5 h-3.5 mr-1.5" />
                     Upload
                   </Button>
