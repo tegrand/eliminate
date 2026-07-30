@@ -33,7 +33,9 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
   const handleConfirmAction = async (reasonOrNote) => {
     try {
       let status = actionType;
-      if (actionType === 'REACTIVATE') status = 'APPROVED';
+      if (actionType === 'APPROVE' || actionType === 'REACTIVATE') status = 'APPROVED';
+      else if (actionType === 'REJECT') status = 'REJECTED';
+      else if (actionType === 'SUSPEND') status = 'SUSPENDED';
       await workerApi.updateWorkerStatus(selectedWorker.id, status);
       toast.success(`Worker ${actionType.toLowerCase()}d successfully.`);
       queryClient.invalidateQueries({ queryKey: ["workers"] });
