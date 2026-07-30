@@ -15,28 +15,28 @@ import DashboardCard from "../DashboardCard";
 const cards = (stats, t) => [
   {
     label: t('clientDashboard.activeJobs'),
-    value: stats?.activeJobs ?? "—",
+    value: stats?.activeJobs || 0,
     sub: t('clientDashboard.activeJobsSub'),
     gradient: "from-blue-500 to-blue-600",
     link: ROUTES.CLIENT_JOBS,
   },
   {
     label: t('clientDashboard.pendingRequests'),
-    value: stats?.pendingRequests ?? "—",
+    value: stats?.pendingRequests || 0,
     sub: t('clientDashboard.pendingRequestsSub'),
     gradient: "from-orange-500 to-orange-600",
     link: ROUTES.CLIENT_WORKERS,
   },
   {
     label: t('clientDashboard.completedJobs'),
-    value: stats?.completedJobs ?? "—",
+    value: stats?.completedJobs || 0,
     sub: t('clientDashboard.completedJobsSub'),
     gradient: "from-teal-500 to-teal-600",
     link: ROUTES.CLIENT_JOBS,
   },
   {
     label: t('clientDashboard.assignedWorkers'),
-    value: stats?.assignedWorkers ?? "—",
+    value: stats?.assignedWorkers || 0,
     sub: t('clientDashboard.assignedWorkersSub'),
     gradient: "from-emerald-500 to-emerald-600",
     link: ROUTES.CLIENT_WORKERS,
