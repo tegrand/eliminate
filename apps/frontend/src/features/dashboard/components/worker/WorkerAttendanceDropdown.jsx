@@ -33,7 +33,7 @@ export default function WorkerAttendanceDropdown() {
 
   const fetchCurrentStatus = async () => {
     try {
-      const res = await api.get("/worker-attendance/history");
+      const res = await api.get("/my-attendance/history");
       const records = res.data.data;
       if (records && records.length > 0) {
         const today = new Date().toISOString().split('T')[0];
@@ -65,11 +65,11 @@ export default function WorkerAttendanceDropdown() {
     setLoading(true);
     try {
       if (selectedOption.id === "PRESENT") {
-        await api.post("/worker-attendance/check-in");
+        await api.post("/my-attendance/check-in");
       } else if (selectedOption.id === "CHECK_OUT") {
-        await api.post("/worker-attendance/check-out");
+        await api.post("/my-attendance/check-out");
       } else {
-        await api.post("/worker-attendance/mark-status", { status: selectedOption.id });
+        await api.post("/my-attendance/mark-status", { status: selectedOption.id });
       }
       
       toast.success(`Successfully marked as ${selectedOption.label}`);

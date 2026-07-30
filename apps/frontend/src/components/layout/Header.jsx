@@ -68,8 +68,11 @@ export default function Header() {
             onClick={() => setIsProfileOpen(!isProfileOpen)}
             className="flex items-center gap-3 pl-2 border-l border-gray-100 hover:bg-gray-50 rounded-lg py-1 px-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-100"
           >
-            <div className="flex items-center justify-center w-9 h-9 rounded-full bg-blue-100 text-blue-600">
+            <div className="flex items-center justify-center w-9 h-9 rounded-full bg-blue-100 text-blue-600 relative">
               <User className="w-5 h-5" />
+              {user?.profileType === "WORKER" && user?.workerProfile?.profileStatus !== "VERIFIED" && (
+                <span className="absolute top-0 right-0 block w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-white animate-pulse"></span>
+              )}
             </div>
             <div className="hidden md:flex flex-col text-left">
               <span className="text-sm font-semibold text-gray-900 leading-tight capitalize">
