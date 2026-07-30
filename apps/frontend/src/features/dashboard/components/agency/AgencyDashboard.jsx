@@ -1,8 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { dashboardApi } from "../../api/dashboard.api";
 import AgencyOverviewCards from "./AgencyOverviewCards";
-import AgencyAttendance from "./AgencyAttendance";
-import AgencyNotifications from "./AgencyNotifications";
 import DashboardChartsRow from "../charts/DashboardChartsRow";
 import { Loader2, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -71,12 +69,6 @@ export default function AgencyDashboard() {
           { name: 'Available', value: topStats?.availableWorkers || 2 },
         ]}
       />
-
-      {/* Bottom Row: Attendance & Notifications */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <AgencyAttendance attendance={attendance} />
-        <AgencyNotifications notifications={notifications} />
-      </div>
     </div>
   );
 }
