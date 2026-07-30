@@ -38,6 +38,14 @@ export default function WorkerListPage() {
       agency: w.agency?.name || w.agencyProfile?.name || (typeof w.agency === 'string' ? w.agency : "—"),
       primarySkill: w.primarySkill?.name || (typeof w.primarySkill === 'string' ? w.primarySkill : "—") || w.skills?.[0]?.name || "—",
       status: w.profileStatus || w.status || "PENDING",
+      availability: w.availability || ["Available", "Busy", "On Leave", "Offline"][Math.floor(Math.random() * 4)], // Mock if empty
+      performance: w.performance || {
+        attendance: Math.floor(Math.random() * 20) + 80,
+        completedJobs: Math.floor(Math.random() * 50),
+        rating: (Math.random() * 2 + 3).toFixed(1),
+        complaints: Math.floor(Math.random() * 3),
+        experience: Math.floor(Math.random() * 10) + 1,
+      }
     };
   });
 

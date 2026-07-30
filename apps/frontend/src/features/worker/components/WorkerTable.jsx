@@ -64,16 +64,57 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
         <span className="text-sm font-semibold text-gray-900">{row.name}</span>
       </div>
     )},
-    { key: "gender", title: <div className="flex items-center gap-1.5">GENDER</div>, render: (row) => <span className="text-sm text-gray-600 capitalize">{row.gender && row.gender !== "—" ? row.gender : "-"}</span> },
-    { key: "phone", title: <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />PHONE</div>, render: (row) => <span className="text-sm text-gray-600">{row.phone}</span> },
-    { key: "agency", title: <div className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" />AGENCY</div>, render: (row) => <span className="text-sm text-gray-600">{row.agency}</span> },
-    { key: "primarySkill", title: <div className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5" />PRIMARY SKILL</div>, render: (row) => <span className="text-sm text-gray-600">{row.primarySkill}</span> },
-    { 
-      key: "status", 
-      title: "STATUS", 
-      render: (row) => <WorkerStatusBadge status={row.status} /> 
-    },
-    {
+  ];
+
+  if (user?.profileType !== "AGENCY") {
+    columns.push({ key: "gender", title: <div className="flex items-center gap-1.5">GENDER</div>, render: (row) => <span className="text-sm text-gray-600 capitalize">{row.gender && row.gender !== "—" ? row.gender : "-"}</span> });
+    columns.push({ key: "agency", title: <div className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" />AGENCY</div>, render: (row) => <span className="text-sm text-gray-600">{row.agency}</span> });
+  } else {
+    // Agency specific columns
+    columns.push({
+      key: "availability",
+      title: <div className="flex items-center gap-1.5">AVAILABILITY</div>,
+      render: (row) => {
+        const getAvailabilityBadge = (status) => {
+          switch(status) {
+            case 'Available': return <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Available</span>;
+            case 'Busy': return <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200">Busy</span>;
+            case 'On Leave': return <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-orange-50 text-orange-700 border border-orange-200">On Leave</span>;
+            case 'Offline': return <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-50 text-gray-600 border border-gray-200">Offline</span>;
+            default: return <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">{status}</span>;
+          }
+        };
+        return getAvailabilityBadge(row.availability);
+      }
+    });
+
+    columns.push({
+      key: "performance",
+      title: <div className="flex items-center gap-1.5">PERFORMANCE</div>,
+      render: (row) => (
+        <div className="flex flex-col gap-1 w-44">
+          <div className="flex items-center justify-between text-[11px] text-gray-600">
+            <span>Attd: <span className="font-semibold text-gray-900">{row.performance?.attendance}%</span></span>
+            <span className="flex items-center gap-0.5"><Star className="w-3 h-3 text-yellow-500 fill-yellow-500"/> {row.performance?.rating}</span>
+          </div>
+          <div className="flex items-center justify-between text-[11px] text-gray-600">
+            <span>Jobs: <span className="font-semibold text-gray-900">{row.performance?.completedJobs}</span></span>
+            <span>Cmp: <span className="font-semibold text-red-600">{row.performance?.complaints}</span></span>
+          </div>
+          <div className="text-[10px] text-gray-500 mt-0.5">Exp: {row.performance?.experience} Yrs</div>
+        </div>
+      )
+    });
+  }
+
+  columns.push({ key: "phone", title: <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />PHONE</div>, render: (row) => <span className="text-sm text-gray-600">{row.phone}</span> });
+  columns.push({ key: "primarySkill", title: <div className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5" />PRIMARY SKILL</div>, render: (row) => <span className="text-sm text-gray-600">{row.primarySkill}</span> });
+  columns.push({ 
+    key: "status", 
+    title: "STATUS", 
+    render: (row) => <WorkerStatusBadge status={row.status} /> 
+  });
+  columns.push({
       key: "actions",
       title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />ACTIONS</div>,
       render: (row) => (
