@@ -54,17 +54,17 @@ export default function ClientWorkerProfilePage() {
   const isVerified = worker.profileStatus === "APPROVED";
   const agencyName = worker.agency?.companyName || worker.agencyProfile?.companyName || null;
   const avatar = worker.user?.avatar || worker.profilePhoto;
+  const status = worker.employmentStatus || "ACTIVE";
   
-  // Mock rating and reviews for a complete UI feel
-  const mockRating = 4.8;
-  const mockReviewCount = 24;
-  const mockReviews = [
-    { id: 1, author: "Rahul M.", text: "Very professional and completed the work on time. Highly recommended!", date: "2 weeks ago", rating: 5 },
-    { id: 2, author: "Priya S.", text: "Good skills, but arrived a bit late. Overall satisfied with the quality of work.", date: "1 month ago", rating: 4 }
-  ];
+  const statusLabels = {
+    ACTIVE: 'Available',
+    BUSY: 'Busy',
+    ON_LEAVE: 'On Leave',
+    INACTIVE: 'Offline'
+  };
 
-  const languages = worker.languages?.length > 0 ? worker.languages.map(l => l.language?.name).filter(Boolean) : ["Malayalam", "English (Basic)"];
-  const allSkills = worker.skills?.length > 0 ? worker.skills.map(s => s.skill?.name).filter(Boolean) : [skillName, "Teamwork", "Time Management"];
+  const languages = worker.languages?.length > 0 ? worker.languages.map(l => l.language?.name).filter(Boolean) : [];
+  const allSkills = worker.skills?.length > 0 ? worker.skills.map(s => s.skill?.name).filter(Boolean) : [skillName];
 
   return (
     <div className="w-full h-[calc(100vh-4rem)] bg-[#f8f9fa] overflow-y-auto scrollbar-hide py-6 px-4 sm:px-8 lg:px-12 animate-fade-in">
@@ -76,149 +76,61 @@ export default function ClientWorkerProfilePage() {
           Back to Search
         </Link>
 
-        {/* Profile Header Card */}
-        <div className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-sm relative overflow-hidden">
-          {/* Background decoration */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 opacity-70 pointer-events-none"></div>
-
-          <div className="relative z-10 flex flex-col sm:flex-row gap-5 items-start sm:items-center">
-            
-            {/* Avatar */}
-            <div className="relative shrink-0">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gray-100 border-4 border-white shadow-lg overflow-hidden flex items-center justify-center text-gray-400">
-                {avatar ? (
-                  <img src={avatar} alt={name} className="w-full h-full object-cover" />
-                ) : (
-                  <UserCircle className="w-12 h-12 sm:w-16 sm:h-16" />
+        {/* Content Layout */}
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
+          
+          {/* Left Sidebar (Profile Info & Actions) */}
+          <div className="w-full lg:w-80 shrink-0 space-y-5">
+            {/* Main Profile Card */}
+            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm relative overflow-hidden flex flex-col items-center text-center">
+              <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-blue-50 to-indigo-50"></div>
+              
+              <div className="relative mt-8 mb-4">
+                <div className="w-24 h-24 rounded-2xl bg-white border-4 border-white shadow-md overflow-hidden flex items-center justify-center text-gray-400">
+                  {avatar ? (
+                    <img src={avatar} alt={name} className="w-full h-full object-cover" />
+                  ) : (
+                    <UserCircle className="w-16 h-16" />
+                  )}
+                </div>
+                {isVerified && (
+                  <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-sm" title="Verified Worker">
+                    <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+                  </div>
                 )}
               </div>
-              {isVerified && (
-                <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-md" title="Verified Worker">
-                  <CheckCircle2 className="w-6 h-6 text-emerald-500" />
-                </div>
-              )}
-            </div>
 
-            <div className="flex-1 min-w-0">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight leading-tight">
-                    {name}
-                  </h1>
-                  <p className="text-sm sm:text-base font-semibold text-blue-600 mt-0.5">{skillName}</p>
-                </div>
-                
-                <div className="flex items-center gap-3 shrink-0">
-                  <button className="px-5 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2">
-                    <MessageSquare className="w-4 h-4" />
-                    Message
-                  </button>
-                  <button 
-                    onClick={() => setIsHireModalOpen(true)}
-                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-sm shadow-blue-200 transition-all flex items-center justify-center gap-2"
-                  >
-                    <Briefcase className="w-4 h-4" />
-                    Hire Worker
-                  </button>
-                </div>
-              </div>
+              <h1 className="text-xl font-bold text-gray-900 leading-tight">
+                {name}
+              </h1>
+              <p className="text-sm font-semibold text-blue-600 mt-1">{skillName}</p>
 
-              <div className="mt-5 flex flex-wrap items-center gap-4 text-sm text-gray-600">
-                <div className="flex items-center gap-1.5 font-medium">
-                  <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                  <span className="text-gray-900">{mockRating}</span>
-                  <span className="text-gray-500">({mockReviewCount} reviews)</span>
-                </div>
-                <div className="w-1.5 h-1.5 rounded-full bg-gray-300 hidden sm:block"></div>
-                <div className="flex items-center gap-1.5">
+              <div className="flex items-center justify-center gap-4 text-xs text-gray-600 mt-3 w-full">
+                <div className="flex items-center gap-1">
                   <MapPin className="w-4 h-4 text-gray-400" />
                   {location}
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Content Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          
-          {/* Main Info Column */}
-          <div className="md:col-span-2 space-y-5">
-            
-            {/* About / Overview */}
-            <div className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-sm">
-              <h2 className="text-lg font-bold text-gray-900 mb-4">Professional Overview</h2>
-              
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                  <div className="flex items-center gap-2 text-gray-500 mb-1">
-                    <Briefcase className="w-4 h-4" />
-                    <span className="text-xs font-bold uppercase tracking-wider">Experience</span>
-                  </div>
-                  <p className="font-semibold text-gray-900">{experience}</p>
-                </div>
-                
-                <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
-                  <div className="flex items-center gap-2 text-gray-500 mb-1">
-                    <CalendarCheck className="w-4 h-4" />
-                    <span className="text-xs font-bold uppercase tracking-wider">Availability</span>
-                  </div>
-                  <p className="font-semibold text-emerald-600">Available Now</p>
-                </div>
-              </div>
-
-              {worker.notes && (
-                <div className="prose prose-sm max-w-none text-gray-600">
-                  <p>{worker.notes}</p>
-                </div>
-              )}
-            </div>
-
-            {/* Reviews (Mocked) */}
-            <div className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-sm">
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-base font-bold text-gray-900">Client Reviews</h2>
-                <div className="text-sm font-bold text-blue-600 cursor-pointer hover:underline">View all</div>
-              </div>
-              
-              <div className="space-y-5">
-                {mockReviews.map(review => (
-                  <div key={review.id} className="border-b border-gray-100 last:border-0 pb-5 last:pb-0">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900">{review.author}</h4>
-                      <span className="text-xs text-gray-400">{review.date}</span>
-                    </div>
-                    <div className="flex items-center gap-0.5 mb-2">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className={`w-3.5 h-3.5 ${i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-200'}`} />
-                      ))}
-                    </div>
-                    <p className="text-sm text-gray-600">{review.text}</p>
-                  </div>
-                ))}
+              <div className="w-full grid grid-cols-2 gap-3 mt-6 pt-6 border-t border-gray-100">
+                <button className="py-2.5 bg-gray-50 border border-gray-200 hover:bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2">
+                  <MessageSquare className="w-4 h-4" />
+                  Chat
+                </button>
+                <button 
+                  onClick={() => setIsHireModalOpen(true)}
+                  className="py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2"
+                >
+                  <Briefcase className="w-4 h-4" />
+                  Hire
+                </button>
               </div>
             </div>
-
-          </div>
-
-          {/* Sidebar Info Column */}
-          <div className="space-y-5">
-            
-            {/* Verified Badge */}
-            {isVerified && (
-              <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100 flex items-start gap-3">
-                <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                <div>
-                  <h3 className="font-bold text-emerald-900 text-sm">Verified Profile</h3>
-                  <p className="text-xs text-emerald-700 mt-1">Identity and documents have been reviewed and approved.</p>
-                </div>
-              </div>
-            )}
 
             {/* Agency info */}
             {agencyName && (
               <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
-                <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <h3 className="text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
                   <Building2 className="w-4 h-4 text-gray-400" /> Current Agency
                 </h3>
                 <p className="text-sm font-semibold text-gray-700 bg-gray-50 p-3 rounded-xl border border-gray-100">
@@ -226,38 +138,81 @@ export default function ClientWorkerProfilePage() {
                 </p>
               </div>
             )}
-
-            {/* Skills */}
-            <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
-              <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-gray-400" /> Skills
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {allSkills.map((s, idx) => (
-                  <span key={idx} className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 transition-colors text-gray-700 text-xs font-semibold rounded-lg">
-                    {s}
-                  </span>
-                ))}
+          </div>
+          
+          {/* Main Content Area */}
+          <div className="flex-1 min-w-0 space-y-5">
+            
+            {/* Professional Overview */}
+            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+              <h2 className="text-base font-bold text-gray-900 mb-5 pb-4 border-b border-gray-100">Professional Overview</h2>
+              
+              <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                <div className="flex-1 bg-gray-50 rounded-xl p-4 border border-gray-100 flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+                    <Briefcase className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">Experience</p>
+                    <p className="font-semibold text-gray-900 text-sm">{experience}</p>
+                  </div>
+                </div>
+                
+                <div className="flex-1 bg-emerald-50/50 rounded-xl p-4 border border-emerald-100 flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                    <CalendarCheck className="w-5 h-5 text-emerald-600" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-0.5">Availability</p>
+                    <p className="font-semibold text-emerald-900 text-sm">{statusLabels[status] || statusLabels.ACTIVE}</p>
+                  </div>
+                </div>
               </div>
+
+              {worker.notes && (
+                <div className="prose prose-sm max-w-none text-gray-600 bg-gray-50/50 p-4 rounded-xl border border-gray-100">
+                  <p>{worker.notes}</p>
+                </div>
+              )}
             </div>
 
-            {/* Languages */}
-            <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
-              <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Languages className="w-4 h-4 text-gray-400" /> Languages
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {languages.map((l, idx) => (
-                  <span key={idx} className="px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-100 text-xs font-semibold rounded-lg">
-                    {l}
-                  </span>
-                ))}
-              </div>
+            {/* Skills & Languages (Side by Side on Large Screens) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {/* Skills */}
+              {(allSkills.length > 0) && (
+                <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                  <h3 className="text-sm font-bold text-gray-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-blue-500" /> Skills
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {allSkills.map((s, idx) => (
+                      <span key={idx} className="px-3 py-1.5 bg-gray-50 border border-gray-200 text-gray-700 text-xs font-semibold rounded-lg">
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Languages */}
+              {(languages.length > 0) && (
+                <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+                  <h3 className="text-sm font-bold text-gray-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
+                    <Languages className="w-4 h-4 text-blue-500" /> Languages
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {languages.map((l, idx) => (
+                      <span key={idx} className="px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-100 text-xs font-semibold rounded-lg">
+                        {l}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
           </div>
         </div>
-
       </div>
       
       {/* Hiring Modal */}
