@@ -112,7 +112,7 @@ export default function WorkerProfilePage() {
   }
 
   return (
-    <div className="w-full max-w-7xl mx-auto py-5 pb-20 space-y-4 animate-fade-in px-4 sm:px-6">
+    <div className="w-full max-w-7xl mx-auto py-6 pb-24 space-y-6 animate-fade-in px-4 sm:px-6 lg:px-8">
       
       <form id="profile-form" onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         
@@ -120,7 +120,7 @@ export default function WorkerProfilePage() {
         <div className="space-y-6">
           
           {/* Profile Completion Card */}
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 md:p-5 h-fit">
+          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6 h-fit">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2.5">
                 <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
@@ -177,7 +177,7 @@ export default function WorkerProfilePage() {
           </div>
 
           {/* Basic Information Card */}
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 md:p-5 h-fit">
+          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6 h-fit">
             <div className="flex items-center gap-2.5 mb-4">
               <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg">
                 <User className="w-4 h-4" />
@@ -224,14 +224,14 @@ export default function WorkerProfilePage() {
               <div className="md:col-span-2">
                 <label className="block text-[11px] font-semibold text-slate-700 mb-1">Gender</label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <User className="w-3.5 h-3.5 text-slate-400" />
                   </div>
                   <select
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    className="w-full pl-8 pr-2.5 py-1.5 text-[13px] font-medium bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none appearance-none"
+                    className="w-full pl-9 pr-3 py-2 text-[13px] font-medium bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none appearance-none"
                   >
                     <option value="">Select Gender</option>
                     <option value="Male">Male</option>
@@ -244,8 +244,8 @@ export default function WorkerProfilePage() {
           </div>
 
           {/* Location Preferences */}
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 md:p-5">
-            <div className="flex items-center gap-2.5 mb-4">
+          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6 h-fit">
+            <div className="flex items-center gap-2.5 mb-5">
               <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
                 <MapPin className="w-4 h-4" />
               </div>
@@ -255,11 +255,11 @@ export default function WorkerProfilePage() {
               </div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2">
+            <div className="grid grid-cols-1 gap-5">
+              <div>
                 <label className="block text-[11px] font-semibold text-slate-700 mb-1">Preferred State</label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <MapPin className="w-3.5 h-3.5 text-slate-400" />
                   </div>
                   <input
@@ -268,14 +268,14 @@ export default function WorkerProfilePage() {
                     value={formData.preferredState}
                     onChange={handleChange}
                     placeholder="e.g. Kerala"
-                    className="w-full pl-8 pr-2.5 py-1.5 text-[13px] font-medium bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
+                    className="w-full pl-9 pr-3 py-2 text-[13px] font-medium bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
                   />
                 </div>
               </div>
-              <div className="md:col-span-2">
+              <div>
                 <label className="block text-[11px] font-semibold text-slate-700 mb-1">Preferred District</label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <MapPin className="w-3.5 h-3.5 text-slate-400" />
                   </div>
                   <input
@@ -284,14 +284,14 @@ export default function WorkerProfilePage() {
                     value={formData.preferredDistrict}
                     onChange={handleChange}
                     placeholder="e.g. Ernakulam"
-                    className="w-full pl-8 pr-2.5 py-1.5 text-[13px] font-medium bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
+                    className="w-full pl-9 pr-3 py-2 text-[13px] font-medium bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
                   />
                 </div>
               </div>
-              <div className="md:col-span-2">
+              <div>
                 <label className="block text-[11px] font-semibold text-slate-700 mb-1">Maximum Travel Distance (km)</label>
                 <div className="relative flex items-center">
-                  <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <MapPin className="w-3.5 h-3.5 text-slate-400" />
                   </div>
                   <input
@@ -301,14 +301,14 @@ export default function WorkerProfilePage() {
                     onChange={handleChange}
                     min="0"
                     placeholder="e.g. 50"
-                    className="w-full pl-8 pr-10 py-1.5 text-[13px] font-medium bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
+                    className="w-full pl-9 pr-10 py-2 text-[13px] font-medium bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
                   />
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                     <span className="text-[11px] font-medium text-slate-400">km</span>
                   </div>
                 </div>
               </div>
-              <div className="md:col-span-2 flex items-center pt-1">
+              <div className="flex items-center pt-2">
                 <label className="flex items-center cursor-pointer">
                   <div className="relative">
                     <input
@@ -318,10 +318,10 @@ export default function WorkerProfilePage() {
                       onChange={handleChange}
                       className="sr-only"
                     />
-                    <div className={`block w-8 h-4 rounded-full transition-colors ${formData.willingToRelocate ? 'bg-indigo-500' : 'bg-slate-300'}`}></div>
-                    <div className={`absolute left-[2px] top-[2px] bg-white w-3 h-3 rounded-full transition-transform ${formData.willingToRelocate ? 'transform translate-x-4' : ''}`}></div>
+                    <div className={`block w-10 h-5 rounded-full transition-colors ${formData.willingToRelocate ? 'bg-indigo-500' : 'bg-slate-300'}`}></div>
+                    <div className={`absolute left-[2px] top-[2px] bg-white w-4 h-4 rounded-full transition-transform ${formData.willingToRelocate ? 'transform translate-x-5' : ''}`}></div>
                   </div>
-                  <div className="ml-2.5 text-xs font-semibold text-slate-700">
+                  <div className="ml-3 text-xs font-semibold text-slate-700">
                     Willing to Relocate
                   </div>
                 </label>
@@ -335,7 +335,7 @@ export default function WorkerProfilePage() {
         <div className="space-y-6">
 
           {/* Documents Card */}
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 md:p-5 flex flex-col h-fit">
+          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6 flex flex-col h-fit">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2.5">
                 <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
@@ -358,8 +358,8 @@ export default function WorkerProfilePage() {
           </div>
 
           {/* Work Preferences Card */}
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 md:p-5 h-fit">
-            <div className="flex items-center gap-2.5 mb-4">
+          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6 h-fit">
+            <div className="flex items-center gap-2.5 mb-5">
               <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
                 <Briefcase className="w-4 h-4" />
               </div>
@@ -369,7 +369,7 @@ export default function WorkerProfilePage() {
               </div>
             </div>
             
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            <div className="flex flex-wrap gap-3">
               {WORK_PREFS.map(pref => {
                 const isSelected = formData.workPreferences.includes(pref.id);
                 return (
@@ -377,26 +377,26 @@ export default function WorkerProfilePage() {
                     key={pref.id}
                     type="button"
                     onClick={() => handlePreferenceToggle(pref.id)}
-                    className={`relative flex flex-col items-center justify-center p-2 rounded-lg border transition-all ${
+                    className={`relative flex flex-col items-center justify-center p-4 rounded-xl border transition-all flex-1 min-w-[120px] ${
                       isSelected 
                         ? "border-indigo-500 bg-indigo-50 text-indigo-700 ring-1 ring-indigo-500 shadow-sm" 
                         : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
                     }`}
                   >
-                    <pref.icon className={`w-4 h-4 mb-1.5 ${isSelected ? 'text-indigo-600' : 'text-slate-400'}`} />
-                    <span className="text-[9px] sm:text-[10px] font-semibold text-center leading-tight">{pref.label}</span>
+                    <pref.icon className={`w-5 h-5 mb-2 ${isSelected ? 'text-indigo-600' : 'text-slate-400'}`} />
+                    <span className="text-xs font-medium text-center leading-tight whitespace-nowrap">{pref.label}</span>
                     
                     {isSelected && (
-                      <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-indigo-600 rounded-full flex items-center justify-center border-2 border-white">
-                        <CheckCircle2 className="w-2 h-2 text-white" />
+                      <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-indigo-600 rounded-full flex items-center justify-center border-2 border-white">
+                        <CheckCircle2 className="w-2.5 h-2.5 text-white" />
                       </div>
                     )}
                   </button>
                 );
               })}
             </div>
-            <p className="text-[11px] text-slate-500 mt-3 flex items-center gap-1.5">
-               <span className="w-3.5 h-3.5 rounded-full border border-slate-300 flex items-center justify-center text-[9px]">i</span>
+            <p className="text-xs text-slate-500 mt-4 flex items-center gap-1.5">
+               <span className="w-4 h-4 rounded-full border border-slate-300 flex items-center justify-center text-[10px]">i</span>
                Select at least one work preference.
             </p>
           </div>
