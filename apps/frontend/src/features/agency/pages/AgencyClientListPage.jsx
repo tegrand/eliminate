@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Users, Star, History, Award, Building2, MapPin, Mail, Phone, Calendar, ArrowRight, Activity, TrendingUp, Search, Filter, MoreVertical } from "lucide-react";
+import { Users, Star, History, Award, Building2, MapPin, Mail, Phone, Calendar, ArrowRight, Activity, TrendingUp, Search, Filter, MoreVertical, FileText, DollarSign, PauseCircle } from "lucide-react";
 import clsx from "clsx";
 
 const MOCK_CLIENTS = [
@@ -16,10 +16,6 @@ const MOCK_HISTORY = [
   { id: 103, client: "Healthcare Partners", action: "Payment Received", date: "Jul 20, 2026", description: "Invoice #INV-2026-089 settled ($45,200).", icon: DollarSign, color: "text-purple-600", bg: "bg-purple-50" },
   { id: 104, client: "Starlight Hospitality", action: "Service Paused", date: "Jul 15, 2026", description: "Client temporarily paused hiring requests.", icon: PauseCircle, color: "text-orange-600", bg: "bg-orange-50" },
 ];
-
-const FileText = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>;
-const DollarSign = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>;
-const PauseCircle = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/></svg>;
 
 
 export default function AgencyClientListPage() {
