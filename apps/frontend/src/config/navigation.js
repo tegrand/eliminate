@@ -140,6 +140,12 @@ export const NAVIGATION_CONFIG = [
         icon: UserPlus,
         roles: ["AGENCY"],
       },
+      {
+        title: "Job Requirements",
+        path: ROUTES.AGENCY_JOB_REQUIREMENTS,
+        icon: Briefcase,
+        roles: ["AGENCY"],
+      },
     ],
   },
   {

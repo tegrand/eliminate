@@ -47,6 +47,7 @@ export const ROUTES = {
   AGENCY_DETAILS: "/agencies/:id",
   AGENCY_PROFILE: "/agency/profile",
   AGENCY_CLIENTS: "/agency/clients",
+  AGENCY_JOB_REQUIREMENTS: "/agency/job-requirements",
 
   // Master Data
   SKILLS: "/skills",
