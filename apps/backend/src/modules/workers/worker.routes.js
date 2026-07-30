@@ -76,7 +76,7 @@ router.post("/my-profile/invitations/:id/reject", rejectJobInvitation);
 
 router.get(
   "/:id",
-  requirePermission("worker:read"),
+  authorize("SUPER_ADMIN", "CLIENT", "AGENCY", "WORKER"),
   validate(workerIdParamSchema, "params"),
   getWorkerById
 );
