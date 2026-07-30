@@ -294,6 +294,7 @@ model Worker {
   // Professional Info
   experienceYears    Int?
   expectedSalary     String?
+  expectedDailyWage  String?
   preferredLocations Json? // Keep as legacy/array or repurpose
   
   // Work Preferences & Location settings

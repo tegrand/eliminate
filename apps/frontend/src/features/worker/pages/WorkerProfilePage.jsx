@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   User, MapPin, Briefcase, Loader2, Save, FileText, 
   BarChart2, Folder, CheckCircle2, Circle, 
-  Calendar, Clock, X, Upload
+  Calendar, Clock, X, Upload, DollarSign
 } from "lucide-react";
 import { toast } from "sonner";
 import { workerApi } from "../api/worker.api";
@@ -29,6 +29,7 @@ export default function WorkerProfilePage() {
     preferredState: "",
     maxTravelDistance: "",
     willingToRelocate: false,
+    expectedDailyWage: "",
   });
   const [initialData, setInitialData] = useState(null);
 
@@ -51,6 +52,7 @@ export default function WorkerProfilePage() {
         preferredState: profileData.preferredState || "",
         maxTravelDistance: profileData.maxTravelDistance || "",
         willingToRelocate: profileData.willingToRelocate || false,
+        expectedDailyWage: profileData.expectedDailyWage || "",
       };
       setFormData(data);
       setInitialData(data);
@@ -236,7 +238,7 @@ export default function WorkerProfilePage() {
                   />
                 </div>
               </div>
-              <div className="md:col-span-2">
+              <div className="md:col-span-1">
                 <label className="block text-[11px] font-semibold text-slate-700 mb-1">Gender</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -253,6 +255,23 @@ export default function WorkerProfilePage() {
                     <option value="Female">Female</option>
                     <option value="Other">Other</option>
                   </select>
+                </div>
+              </div>
+              <div className="md:col-span-1">
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1">Expected Daily Wage (₹)</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <DollarSign className="w-3.5 h-3.5 text-emerald-500" />
+                  </div>
+                  <input
+                    type="number"
+                    name="expectedDailyWage"
+                    value={formData.expectedDailyWage}
+                    onChange={handleChange}
+                    min="0"
+                    placeholder="e.g. 1000"
+                    className="w-full pl-9 pr-3 py-2 text-[13px] font-medium bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
+                  />
                 </div>
               </div>
             </div>

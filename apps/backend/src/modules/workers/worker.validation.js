@@ -35,6 +35,7 @@ export const updateWorkerSchema = z.object({
   
   experienceYears: z.number().int().min(0).optional().nullable(),
   expectedSalary: z.string().trim().optional(),
+  expectedDailyWage: z.string().trim().optional(),
   preferredLocations: z.array(z.string()).optional().nullable(),
   
   // Work Preferences & Location settings

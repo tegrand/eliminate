@@ -4,7 +4,7 @@ import { workerApi } from "../../worker/api/worker.api";
 import { 
   ArrowLeft, MapPin, Briefcase, Star, 
   CheckCircle2, Languages, Building2, UserCircle,
-  MessageSquare, CalendarCheck
+  MessageSquare, CalendarCheck, DollarSign
 } from "lucide-react";
 import { useState } from "react";
 import ClientHiringModal from "../components/ClientHiringModal";
@@ -167,6 +167,18 @@ export default function ClientWorkerProfilePage() {
                     <p className="font-semibold text-emerald-900 text-sm">{statusLabels[status] || statusLabels.ACTIVE}</p>
                   </div>
                 </div>
+                
+                {worker.expectedDailyWage && (
+                  <div className="flex-1 bg-amber-50/50 rounded-xl p-4 border border-amber-100 flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+                      <DollarSign className="w-5 h-5 text-amber-600" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-0.5">Expected Wage</p>
+                      <p className="font-semibold text-amber-900 text-sm">₹{worker.expectedDailyWage} / day</p>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {worker.notes && (
