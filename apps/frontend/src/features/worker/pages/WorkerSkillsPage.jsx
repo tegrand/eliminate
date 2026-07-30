@@ -211,12 +211,11 @@ export default function WorkerSkillsPage() {
         </div>
       )}
 
-      {/* Modal */}
       <Modal
         isOpen={isModalOpen}
         onClose={closeModal}
         title={editingSkill ? "Edit Skill" : "Add New Skill"}
-        className="sm:max-w-[425px]"
+        className="sm:max-w-2xl"
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -241,31 +240,33 @@ export default function WorkerSkillsPage() {
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Proficiency Level <span className="text-red-500">*</span></label>
-            <select
-              value={proficiency}
-              onChange={(e) => setProficiency(e.target.value)}
-              className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500"
-              required
-            >
-              {PROFICIENCIES.map((p) => (
-                <option key={p.value} value={p.value}>{p.label}</option>
-              ))}
-            </select>
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Proficiency Level <span className="text-red-500">*</span></label>
+              <select
+                value={proficiency}
+                onChange={(e) => setProficiency(e.target.value)}
+                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500"
+                required
+              >
+                {PROFICIENCIES.map((p) => (
+                  <option key={p.value} value={p.value}>{p.label}</option>
+                ))}
+              </select>
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Experience (Years)</label>
-            <input
-              type="number"
-              min="0"
-              max="50"
-              value={experience}
-              onChange={(e) => setExperience(e.target.value)}
-              placeholder="e.g. 5"
-              className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500"
-            />
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Experience (Years)</label>
+              <input
+                type="number"
+                min="0"
+                max="50"
+                value={experience}
+                onChange={(e) => setExperience(e.target.value)}
+                placeholder="e.g. 5"
+                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
           </div>
 
           <div className="mt-6 flex justify-end gap-3 border-t pt-4">
