@@ -73,13 +73,14 @@ export default function ClientAgencySearchPage() {
         {/* Main Content Area */}
         <div className="flex-1 w-full min-w-0">
           {/* Header Controls */}
-          <div className="bg-white rounded-xl border border-gray-200 shadow-sm px-5 py-3 mb-6 flex flex-wrap items-center justify-between gap-4">
-            <p className="text-sm font-medium text-gray-700">
-              Showing <span className="font-bold text-gray-900">{filteredAgencies.length}</span> agenc{filteredAgencies.length !== 1 ? 'ies' : 'y'}
-            </p>
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <span>Sort by:</span>
-              <select className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all font-medium text-gray-700">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+            <div className="text-sm text-gray-600 font-medium">
+              Showing <span className="text-gray-900 font-bold">{filteredAgencies.length}</span> agencies
+            </div>
+            
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <span className="text-sm text-gray-500">Sort by:</span>
+              <select className="flex-1 sm:flex-none bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all">
                 <option>Recommended</option>
                 <option>Highest Rated</option>
                 <option>Newest</option>
@@ -96,12 +97,12 @@ export default function ClientAgencySearchPage() {
 
           {/* Loading State */}
           {isLoading && !error && (
-            <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-5 pb-10">
-              {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="bg-white rounded-2xl p-4 border border-gray-200 shadow-sm animate-pulse h-40">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+              {[1, 2, 3, 4].map(i => (
+                <div key={i} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm animate-pulse h-40">
                   <div className="flex gap-4">
-                    <div className="w-12 h-12 bg-gray-200 rounded-xl"></div>
-                    <div className="flex-1 space-y-3 mt-1">
+                    <div className="w-16 h-16 bg-gray-200 rounded-xl"></div>
+                    <div className="flex-1 space-y-3 mt-2">
                       <div className="h-4 bg-gray-200 rounded w-1/2"></div>
                       <div className="h-3 bg-gray-200 rounded w-1/3"></div>
                     </div>
@@ -113,7 +114,7 @@ export default function ClientAgencySearchPage() {
 
           {/* Agency Grid */}
           {!isLoading && !error && filteredAgencies.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-5 pb-10">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
               {filteredAgencies.map((agency) => (
                 <AgencySearchCard key={agency.id} agency={agency} />
               ))}
@@ -122,17 +123,19 @@ export default function ClientAgencySearchPage() {
 
           {/* Empty State */}
           {!isLoading && !error && filteredAgencies.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-24 bg-white rounded-2xl border border-gray-200 shadow-sm text-center px-4">
+            <div className="bg-white border border-gray-200 rounded-2xl p-12 text-center flex flex-col items-center justify-center shadow-sm">
               <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                <Building2 className="w-8 h-8 text-gray-300" />
+                <Building2 className="w-8 h-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900">No agencies found</h3>
-              <p className="text-sm text-gray-500 mt-1 max-w-sm">Try adjusting your filters or search terms to find more candidates.</p>
+              <h3 className="text-lg font-bold text-gray-900 mb-1">No agencies found</h3>
+              <p className="text-sm text-gray-500 max-w-sm mb-6">
+                Try adjusting your filters or search terms to find what you're looking for.
+              </p>
               <button 
                 onClick={handleClearFilters}
-                className="mt-6 px-6 py-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl text-sm font-semibold transition-colors shadow-sm hover:shadow"
+                className="px-5 py-2.5 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 text-sm font-semibold rounded-xl transition-colors"
               >
-                Clear All Filters
+                Clear all filters
               </button>
             </div>
           )}
