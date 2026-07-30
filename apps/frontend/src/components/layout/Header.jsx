@@ -121,6 +121,18 @@ export default function Header() {
                 </Link>
               )}
 
+              {/* Profile Link (Agency Only) */}
+              {user?.profileType === "AGENCY" && (
+                <Link 
+                  to={ROUTES.AGENCY_PROFILE}
+                  onClick={() => setIsProfileOpen(false)}
+                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors mb-1"
+                >
+                  <User className="w-4 h-4" />
+                  <span>Agency Profile</span>
+                </Link>
+              )}
+
               {/* Logout Button */}
               <button 
                 onClick={() => {
