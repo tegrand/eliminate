@@ -138,15 +138,15 @@ export default function WorkerInvitationsPage() {
             </div>
           ) : (
             jobInvitations.map(invite => (
-              <div key={invite.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:shadow-md transition-shadow">
+              <div key={invite.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 hover:shadow-md transition-shadow">
                 <div className="flex flex-col md:flex-row justify-between gap-4">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 text-indigo-600">
-                      <Briefcase className="w-6 h-6" />
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 text-indigo-600">
+                      <Briefcase className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-slate-900">{invite.title}</h3>
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2 text-sm text-slate-500">
+                      <h3 className="text-base font-bold text-slate-900 leading-tight">{invite.title}</h3>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-1.5 text-xs text-slate-500">
                         <span className="flex items-center gap-1.5 font-medium text-slate-700">
                           <Building2 className="w-4 h-4 text-slate-400" />
                           {invite.client ? invite.client.clientCode : invite.agency ? invite.agency.agencyName : "Direct Invite"}
@@ -170,31 +170,34 @@ export default function WorkerInvitationsPage() {
                   
                   <div className="flex flex-row md:flex-col justify-end gap-2 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-4 mt-4 md:mt-0">
                     <Button 
+                      size="sm"
                       variant="outline"
                       className="text-slate-600 border-slate-200 hover:bg-slate-50 w-full md:w-auto flex justify-center"
                       onClick={() => openDetails(invite)}
                     >
-                      <Eye className="w-4 h-4 mr-1.5" />
+                      <Eye className="w-3.5 h-3.5 mr-1.5" />
                       Details
                     </Button>
                     <div className="flex gap-2 w-full md:w-auto">
                       <Button 
+                        size="sm"
                         variant="outline"
                         className="text-red-600 hover:bg-red-50 border-red-200 hover:border-red-300 flex-1 md:flex-none justify-center"
                         onClick={() => rejectJobMutation.mutate(invite.id)}
                         loading={rejectJobMutation.isPending && rejectJobMutation.variables === invite.id}
                         disabled={acceptJobMutation.isPending || rejectJobMutation.isPending}
                       >
-                        <XCircle className="w-4 h-4 mr-1.5 md:mr-0 lg:mr-1.5" />
+                        <XCircle className="w-3.5 h-3.5 mr-1.5 md:mr-0 lg:mr-1.5" />
                         <span className="md:hidden lg:inline">Reject</span>
                       </Button>
                       <Button 
+                        size="sm"
                         className="bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 flex-1 md:flex-none justify-center"
                         onClick={() => acceptJobMutation.mutate(invite.id)}
                         loading={acceptJobMutation.isPending && acceptJobMutation.variables === invite.id}
                         disabled={acceptJobMutation.isPending || rejectJobMutation.isPending}
                       >
-                        <CheckCircle2 className="w-4 h-4 mr-1.5 md:mr-0 lg:mr-1.5" />
+                        <CheckCircle2 className="w-3.5 h-3.5 mr-1.5 md:mr-0 lg:mr-1.5" />
                         <span className="md:hidden lg:inline">Accept</span>
                       </Button>
                     </div>
@@ -215,15 +218,15 @@ export default function WorkerInvitationsPage() {
             </div>
           ) : (
             agencyInvitations.map(invite => (
-              <div key={invite.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:shadow-md transition-shadow">
+              <div key={invite.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 hover:shadow-md transition-shadow">
                 <div className="flex flex-col md:flex-row justify-between gap-4">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 text-blue-600">
-                      <Building2 className="w-6 h-6" />
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 text-blue-600">
+                      <Building2 className="w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-slate-900">{invite.agency?.agencyName}</h3>
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2 text-sm text-slate-500">
+                      <h3 className="text-base font-bold text-slate-900 leading-tight">{invite.agency?.agencyName}</h3>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-1.5 text-xs text-slate-500">
                         <span className="flex items-center gap-1.5 font-medium text-slate-700">
                           <Briefcase className="w-4 h-4 text-slate-400" />
                           Agency Invite
@@ -240,31 +243,34 @@ export default function WorkerInvitationsPage() {
                   
                   <div className="flex flex-row md:flex-col justify-end gap-2 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-4 mt-4 md:mt-0">
                     <Button 
+                      size="sm"
                       variant="outline"
                       className="text-slate-600 border-slate-200 hover:bg-slate-50 w-full md:w-auto flex justify-center"
                       onClick={() => openDetails({ ...invite, isAgencyInvite: true })}
                     >
-                      <Eye className="w-4 h-4 mr-1.5" />
+                      <Eye className="w-3.5 h-3.5 mr-1.5" />
                       Details
                     </Button>
                     <div className="flex gap-2 w-full md:w-auto">
                       <Button 
+                        size="sm"
                         variant="outline"
                         className="text-red-600 hover:bg-red-50 border-red-200 hover:border-red-300 flex-1 md:flex-none justify-center"
                         onClick={() => rejectAgencyMutation.mutate(invite.agencyId)}
                         loading={rejectAgencyMutation.isPending && rejectAgencyMutation.variables === invite.agencyId}
                         disabled={acceptAgencyMutation.isPending || rejectAgencyMutation.isPending}
                       >
-                        <XCircle className="w-4 h-4 mr-1.5 md:mr-0 lg:mr-1.5" />
+                        <XCircle className="w-3.5 h-3.5 mr-1.5 md:mr-0 lg:mr-1.5" />
                         <span className="md:hidden lg:inline">Reject</span>
                       </Button>
                       <Button 
+                        size="sm"
                         className="bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 flex-1 md:flex-none justify-center"
                         onClick={() => acceptAgencyMutation.mutate(invite.agencyId)}
                         loading={acceptAgencyMutation.isPending && acceptAgencyMutation.variables === invite.agencyId}
                         disabled={acceptAgencyMutation.isPending || rejectAgencyMutation.isPending}
                       >
-                        <CheckCircle2 className="w-4 h-4 mr-1.5 md:mr-0 lg:mr-1.5" />
+                        <CheckCircle2 className="w-3.5 h-3.5 mr-1.5 md:mr-0 lg:mr-1.5" />
                         <span className="md:hidden lg:inline">Accept</span>
                       </Button>
                     </div>
