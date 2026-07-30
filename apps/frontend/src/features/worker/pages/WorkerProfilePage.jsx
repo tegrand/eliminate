@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   User, MapPin, Briefcase, Loader2, Save, FileText, 
@@ -30,6 +30,7 @@ export default function WorkerProfilePage() {
     maxTravelDistance: "",
     willingToRelocate: false,
   });
+  const [initialData, setInitialData] = useState(null);
 
   const { data: profileData, isLoading } = useQuery({
     queryKey: ["workerProfile"],
@@ -41,7 +42,7 @@ export default function WorkerProfilePage() {
 
   useEffect(() => {
     if (profileData) {
-      setFormData({
+      const data = {
         firstName: profileData.firstName || "",
         lastName: profileData.lastName || "",
         gender: profileData.gender || "",
@@ -50,9 +51,16 @@ export default function WorkerProfilePage() {
         preferredState: profileData.preferredState || "",
         maxTravelDistance: profileData.maxTravelDistance || "",
         willingToRelocate: profileData.willingToRelocate || false,
-      });
+      };
+      setFormData(data);
+      setInitialData(data);
     }
   }, [profileData]);
+
+  const isDirty = useMemo(() => {
+    if (!initialData) return false;
+    return JSON.stringify(formData) !== JSON.stringify(initialData);
+  }, [formData, initialData]);
 
   const updateMutation = useMutation({
     mutationFn: (data) => workerApi.updateMyWorkerProfile(data),
@@ -85,11 +93,18 @@ export default function WorkerProfilePage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!isDirty) return;
     const payload = {
       ...formData,
       maxTravelDistance: formData.maxTravelDistance ? parseInt(formData.maxTravelDistance) : null
     };
     updateMutation.mutate(payload);
+  };
+
+  const handleCancel = () => {
+    if (initialData) {
+      setFormData(initialData);
+    }
   };
 
   // Calculate completion
@@ -406,15 +421,17 @@ export default function WorkerProfilePage() {
       </form>
 
       {/* Floating Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 px-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-20 flex justify-end gap-3 md:pl-64">
-        <Button 
-          type="button" 
-          variant="outline"
-          className="px-6 rounded-xl text-slate-700 border-slate-200 hover:bg-slate-50"
-        >
-          <X className="w-4 h-4 mr-1.5" />
-          Cancel
-        </Button>
+      {isDirty && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 px-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-20 flex justify-end gap-3 md:pl-64 animate-slide-up">
+          <Button 
+            type="button" 
+            variant="outline"
+            onClick={handleCancel}
+            className="px-6 rounded-xl text-slate-700 border-slate-200 hover:bg-slate-50"
+          >
+            <X className="w-4 h-4 mr-1.5" />
+            Cancel
+          </Button>
         <Button 
           type="submit" 
           form="profile-form"
@@ -425,6 +442,7 @@ export default function WorkerProfilePage() {
           Save Changes
         </Button>
       </div>
+      )}
 
     </div>
   );

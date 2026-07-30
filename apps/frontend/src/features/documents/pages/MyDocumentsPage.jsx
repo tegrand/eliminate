@@ -77,6 +77,8 @@ export default function MyDocumentsPage({ embedded = false }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
+    
     if (!file) {
       toast.error("Please select a file to upload");
       return;
@@ -220,7 +222,7 @@ export default function MyDocumentsPage({ embedded = false }) {
           <p className="text-slate-500 max-w-md mx-auto mb-6">
             Upload your Aadhaar, PAN card, or other required certificates to get your profile verified.
           </p>
-          <Button onClick={() => openUploadModal()}>Upload Document</Button>
+          <Button type="button" onClick={() => openUploadModal()}>Upload Document</Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
