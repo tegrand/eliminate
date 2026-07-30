@@ -21,6 +21,25 @@ export const getDashboardData = asyncHandler(async (req, res) => {
     return ApiResponse.success(res, "Client dashboard retrieved successfully", data, 200);
   }
 
-  // Fallback for AGENCY, etc. when built
+  if (profileType === "AGENCY") {
+    // Return empty mock data for now, frontend will use its fallbacks
+    const data = {
+      topStats: {
+        activeWorkers: 0,
+        availableWorkers: 0,
+        busyWorkers: 0,
+        pendingRequests: 0,
+        activeClientRequirements: 0,
+        ongoingAssignments: 0,
+        completedAssignments: 0,
+      },
+      recentActivities: [],
+      notifications: [],
+      attendance: []
+    };
+    return ApiResponse.success(res, "Agency dashboard retrieved successfully", data, 200);
+  }
+
+  // Fallback for others
   throw new AppError(`Dashboard for profile type ${profileType} is not implemented yet.`, 501);
 });
