@@ -3,6 +3,7 @@ import { dashboardApi } from "../../api/dashboard.api";
 import AgencyOverviewCards from "./AgencyOverviewCards";
 import AgencyAttendance from "./AgencyAttendance";
 import AgencyNotifications from "./AgencyNotifications";
+import DashboardChartsRow from "../charts/DashboardChartsRow";
 import { Loader2, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -43,6 +44,33 @@ export default function AgencyDashboard() {
     <div className="space-y-6">
       {/* Top Row: Overview Cards */}
       <AgencyOverviewCards stats={topStats} />
+
+      {/* Analytics Charts */}
+      <DashboardChartsRow
+        lineTitle="Monthly Agency Revenue"
+        lineSubtitle="Revenue overview from deployed workers"
+        lineData={[
+          { name: 'Jan', value: 0 },
+          { name: 'Feb', value: 0 },
+          { name: 'Mar', value: 0.1 },
+          { name: 'Apr', value: 0 },
+          { name: 'May', value: 0 },
+          { name: 'Jun', value: 0 },
+          { name: 'Jul', value: 0 },
+          { name: 'Aug', value: 0.8 },
+          { name: 'Sep', value: 0 },
+          { name: 'Oct', value: 0 },
+          { name: 'Nov', value: 0 },
+          { name: 'Dec', value: 0 },
+        ]}
+        donutTitle="Worker Allocation"
+        donutSubtitle="Status breakdown"
+        donutTotal={topStats?.activeWorkers || 5}
+        donutData={[
+          { name: 'Active', value: topStats?.activeWorkers || 3 },
+          { name: 'Available', value: topStats?.availableWorkers || 2 },
+        ]}
+      />
 
       {/* Bottom Row: Attendance & Notifications */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
