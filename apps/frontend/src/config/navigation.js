@@ -146,6 +146,12 @@ export const NAVIGATION_CONFIG = [
         icon: Briefcase,
         roles: ["AGENCY"],
       },
+      {
+        title: "Team Assignments",
+        path: ROUTES.AGENCY_TEAM_ASSIGNMENTS,
+        icon: Users,
+        roles: ["AGENCY"],
+      },
     ],
   },
   {
