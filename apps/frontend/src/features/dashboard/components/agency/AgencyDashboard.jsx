@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { dashboardApi } from "../../api/dashboard.api";
 import AgencyOverviewCards from "./AgencyOverviewCards";
-import AgencyAssignments from "./AgencyAssignments";
 import AgencyAttendance from "./AgencyAttendance";
 import AgencyNotifications from "./AgencyNotifications";
 import { Loader2, AlertCircle } from "lucide-react";
@@ -44,9 +43,6 @@ export default function AgencyDashboard() {
     <div className="space-y-6">
       {/* Top Row: Overview Cards */}
       <AgencyOverviewCards stats={topStats} />
-
-      {/* Second Row: Assignments / Requirements */}
-      <AgencyAssignments stats={topStats} />
 
       {/* Bottom Row: Attendance & Notifications */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
