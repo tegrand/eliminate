@@ -142,6 +142,18 @@ export const NAVIGATION_CONFIG = [
       },
     ],
   },
+  {
+    group: "Client Management",
+    roles: ["AGENCY"],
+    items: [
+      {
+        title: "Clients",
+        path: ROUTES.AGENCY_CLIENTS,
+        icon: UserCheck,
+        roles: ["AGENCY"],
+      }
+    ],
+  },
 
   // ─── COMPANY TOOLS ───────────────────────────────────────────────────────
   {
