@@ -11,8 +11,10 @@ import ReactivateDialog from "../../../components/ui/action-dialogs/ReactivateDi
 import { useQueryClient } from "@tanstack/react-query";
 import { workerApi } from "../api/worker.api";
 import toast from "react-hot-toast";
+import { useAuth } from "../../../hooks/useAuth";
 
 export default function WorkerTable({ workers, loading, page, totalPages }) {
+  const { user } = useAuth();
   const [selectedWorker, setSelectedWorker] = useState(null);
   const [actionType, setActionType] = useState(null);
 
@@ -84,20 +86,29 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
               <MoreVertical className="w-4 h-4" />
             </button>
             <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-100 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 flex flex-col">
-              {row.status === 'PENDING' && (
+              {user?.profileType === "AGENCY" ? (
                 <>
-                  <button onClick={() => handleAction(row, 'APPROVE')} className="text-left px-4 py-2 text-sm text-green-600 hover:bg-green-50 w-full transition-colors">Approve</button>
-                  <button onClick={() => handleAction(row, 'REJECT')} className="text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full transition-colors">Reject</button>
+                  <button onClick={() => { setActionType('SUSPEND'); toast.success("Agency suspended worker"); }} className="text-left px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 w-full transition-colors">Suspend Worker</button>
+                  <button onClick={() => toast.success("Worker removed from agency")} className="text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full transition-colors">Remove Worker</button>
                 </>
-              )}
-              {row.status === 'APPROVED' && (
-                <button onClick={() => handleAction(row, 'SUSPEND')} className="text-left px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 w-full transition-colors">Suspend</button>
-              )}
-              {row.status === 'SUSPENDED' && (
-                <button onClick={() => handleAction(row, 'REACTIVATE')} className="text-left px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 w-full transition-colors">Reactivate</button>
-              )}
-              {row.status === 'REJECTED' && (
-                <div className="px-4 py-2 text-sm text-gray-400 italic text-center">No actions</div>
+              ) : (
+                <>
+                  {row.status === 'PENDING' && (
+                    <>
+                      <button onClick={() => handleAction(row, 'APPROVE')} className="text-left px-4 py-2 text-sm text-green-600 hover:bg-green-50 w-full transition-colors">Approve</button>
+                      <button onClick={() => handleAction(row, 'REJECT')} className="text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full transition-colors">Reject</button>
+                    </>
+                  )}
+                  {row.status === 'APPROVED' && (
+                    <button onClick={() => handleAction(row, 'SUSPEND')} className="text-left px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 w-full transition-colors">Suspend</button>
+                  )}
+                  {row.status === 'SUSPENDED' && (
+                    <button onClick={() => handleAction(row, 'REACTIVATE')} className="text-left px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 w-full transition-colors">Reactivate</button>
+                  )}
+                  {row.status === 'REJECTED' && (
+                    <div className="px-4 py-2 text-sm text-gray-400 italic text-center">No actions</div>
+                  )}
+                </>
               )}
             </div>
           </div>

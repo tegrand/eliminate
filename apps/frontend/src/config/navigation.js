@@ -93,6 +93,9 @@ export const NAVIGATION_CONFIG = [
         icon: Bookmark,
         roles: ["WORKER"],
       },
+    ],
+  },
+
   // ─── CLIENT PORTAL ───────────────────────────────────────────────────────
   {
     group: "Recruitment",
@@ -115,6 +118,20 @@ export const NAVIGATION_CONFIG = [
         path: ROUTES.CLIENT_JOBS,
         icon: FileText,
         roles: ["CLIENT"],
+      },
+    ],
+  },
+
+  // ─── AGENCY PORTAL ───────────────────────────────────────────────────────
+  {
+    group: "Workforce Management",
+    roles: ["AGENCY"],
+    items: [
+      {
+        title: "Workers",
+        path: ROUTES.WORKERS,
+        icon: Users,
+        roles: ["AGENCY"],
       },
     ],
   },
