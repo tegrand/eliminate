@@ -114,7 +114,7 @@ export default function WorkerProfilePage() {
     { name: "Basic Information", filled: formData.firstName && formData.lastName && formData.gender },
     { name: "Work Preferences", filled: formData.workPreferences.length > 0 },
     { name: "Location Preferences", filled: formData.preferredState && formData.preferredDistrict },
-    { name: "Documents", filled: false } // Real documents calculation requires checking uploaded docs, placeholder for now
+    { name: "Documents", filled: profileData?.documents && profileData.documents.length > 0 }
   ];
   const completedCount = completionItems.filter(i => i.filled).length;
   const totalCount = completionItems.length;
