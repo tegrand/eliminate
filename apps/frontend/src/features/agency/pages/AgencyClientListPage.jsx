@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Users, Star, History, Award, Building2, MapPin, Mail, Phone, Calendar, ArrowRight, Activity, TrendingUp, Search, Filter, MoreVertical, FileText, DollarSign, PauseCircle } from "lucide-react";
+import { Users, Star, History, Award, Building2, MapPin, Mail, Phone, Calendar, ArrowRight, Activity, TrendingUp, Search, Filter, MoreVertical, FileText, DollarSign, PauseCircle, UserCircle } from "lucide-react";
 import clsx from "clsx";
 
 const MOCK_CLIENTS = [
