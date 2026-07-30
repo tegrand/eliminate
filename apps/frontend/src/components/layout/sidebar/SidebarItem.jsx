@@ -90,6 +90,7 @@ export default function SidebarItem({ item }) {
     );
   }
 
+  return (
     <NavLink
       to={item.path}
       className={() => {
