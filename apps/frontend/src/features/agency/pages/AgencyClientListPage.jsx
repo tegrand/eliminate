@@ -2,25 +2,11 @@ import { useState } from "react";
 import { Users, Star, History, Award, Building2, MapPin, Mail, Phone, Calendar, ArrowRight, Activity, TrendingUp, Search, Filter, MoreVertical, FileText, DollarSign, PauseCircle, UserCircle } from "lucide-react";
 import clsx from "clsx";
 
-const MOCK_CLIENTS = [
-  { id: 1, name: "Nexus Tech Solutions", contact: "Sarah Jenkins", role: "HR Director", email: "sarah@nexustech.com", phone: "+1 (555) 123-4567", status: "Active", joined: "Jan 12, 2026", rating: 4.8, jobsPosted: 42, location: "New York, NY", isFavourite: true },
-  { id: 2, name: "Global Logistics Corp", contact: "Mike Torres", role: "Operations Manager", email: "mtorres@globallogistics.com", phone: "+1 (555) 987-6543", status: "Active", joined: "Mar 05, 2026", rating: 4.5, jobsPosted: 15, location: "Chicago, IL", isFavourite: false },
-  { id: 3, name: "Starlight Hospitality", contact: "Elena Rodriguez", role: "General Manager", email: "elena@starlight.com", phone: "+1 (555) 456-7890", status: "Inactive", joined: "Nov 22, 2025", rating: 4.9, jobsPosted: 89, location: "Miami, FL", isFavourite: true },
-  { id: 4, name: "BuildRight Construction", contact: "David Chen", role: "Site Supervisor", email: "david.c@buildright.com", phone: "+1 (555) 789-0123", status: "Active", joined: "Feb 18, 2026", rating: 4.2, jobsPosted: 27, location: "Austin, TX", isFavourite: false },
-  { id: 5, name: "Healthcare Partners", contact: "Dr. Emily Wong", role: "Chief of Staff", email: "ewong@hcpartners.org", phone: "+1 (555) 234-5678", status: "Active", joined: "Jun 30, 2025", rating: 4.7, jobsPosted: 104, location: "Boston, MA", isFavourite: true },
-];
-
-const MOCK_HISTORY = [
-  { id: 101, client: "Nexus Tech Solutions", action: "Contract Renewed", date: "Jul 28, 2026", description: "Annual workforce supply contract renewed for 2026-2027.", icon: FileText, color: "text-blue-600", bg: "bg-blue-50" },
-  { id: 102, client: "Global Logistics Corp", action: "Bulk Hiring Complete", date: "Jul 25, 2026", description: "Successfully supplied 50 warehouse workers for holiday season.", icon: Users, color: "text-green-600", bg: "bg-green-50" },
-  { id: 103, client: "Healthcare Partners", action: "Payment Received", date: "Jul 20, 2026", description: "Invoice #INV-2026-089 settled ($45,200).", icon: DollarSign, color: "text-purple-600", bg: "bg-purple-50" },
-  { id: 104, client: "Starlight Hospitality", action: "Service Paused", date: "Jul 15, 2026", description: "Client temporarily paused hiring requests.", icon: PauseCircle, color: "text-orange-600", bg: "bg-orange-50" },
-];
-
+import { useClients } from "../../../features/client/hooks/useClients";
 
 export default function AgencyClientListPage() {
-  const [activeTab, setActiveTab] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const { data, isLoading } = useClients({ page: 1 });
+  const clientsData = data?.data?.data || [];
 
   const tabs = [
     { id: "all", label: "View Clients", icon: Users },
@@ -29,10 +15,10 @@ export default function AgencyClientListPage() {
     { id: "ratings", label: "Client Ratings", icon: Award },
   ];
 
-  const filteredClients = MOCK_CLIENTS.filter(client => {
-    const matchesSearch = client.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          client.contact.toLowerCase().includes(searchQuery.toLowerCase());
-    if (activeTab === "favourites") return matchesSearch && client.isFavourite;
+  const filteredClients = clientsData.filter(client => {
+    const matchesSearch = client?.companyName?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          client?.contactPerson?.toLowerCase().includes(searchQuery.toLowerCase());
+    if (activeTab === "favourites") return false; // Favourites not supported yet by backend
     return matchesSearch;
   });
 
@@ -106,19 +92,19 @@ export default function AgencyClientListPage() {
               <div key={client.id} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] hover:shadow-[0_8px_20px_-6px_rgba(6,81,237,0.15)] transition-all duration-300 group">
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">
-                      {client.name.charAt(0)}
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-sm uppercase">
+                      {client.companyName ? client.companyName.charAt(0) : "C"}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">{client.name}</h3>
+                      <h3 className="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">{client.companyName || "Unknown Client"}</h3>
                       <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-0.5">
                         <MapPin className="w-3 h-3" />
-                        {client.location}
+                        {client.location || "N/A"}
                       </div>
                     </div>
                   </div>
                   <button className="text-gray-300 hover:text-yellow-400 transition-colors">
-                    <Star className={clsx("w-5 h-5", client.isFavourite && "fill-yellow-400 text-yellow-400")} />
+                    <Star className="w-5 h-5" />
                   </button>
                 </div>
                 
@@ -128,21 +114,21 @@ export default function AgencyClientListPage() {
                       <UserCircle className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900 leading-none">{client.contact}</p>
-                      <p className="text-xs text-gray-500 mt-1">{client.role}</p>
+                      <p className="font-medium text-gray-900 leading-none">{client.contactPerson || "N/A"}</p>
+                      <p className="text-xs text-gray-500 mt-1">Contact Person</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2.5 text-sm text-gray-600">
                     <div className="w-7 h-7 rounded-full bg-gray-50 flex items-center justify-center text-gray-400">
                       <Mail className="w-4 h-4" />
                     </div>
-                    <span className="truncate">{client.email}</span>
+                    <span className="truncate">{client.email || "N/A"}</span>
                   </div>
                   <div className="flex items-center gap-2.5 text-sm text-gray-600">
                     <div className="w-7 h-7 rounded-full bg-gray-50 flex items-center justify-center text-gray-400">
                       <Phone className="w-4 h-4" />
                     </div>
-                    <span>{client.phone}</span>
+                    <span>{client.phone || "N/A"}</span>
                   </div>
                 </div>
                 
@@ -151,18 +137,18 @@ export default function AgencyClientListPage() {
                     <div>
                       <p className="text-xs text-gray-500 mb-0.5">Rating</p>
                       <div className="flex items-center gap-1 text-sm font-semibold text-gray-900">
-                        <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                        {client.rating}
+                        <Star className="w-3.5 h-3.5 text-gray-300" />
+                        N/A
                       </div>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 mb-0.5">Jobs</p>
-                      <p className="text-sm font-semibold text-gray-900">{client.jobsPosted}</p>
+                      <p className="text-xs text-gray-500 mb-0.5">ID</p>
+                      <p className="text-sm font-semibold text-gray-900 uppercase">#{client.id.toString().substring(0,6)}</p>
                     </div>
                   </div>
                   <span className={clsx(
                     "px-2.5 py-1 rounded-md text-xs font-medium",
-                    client.status === "Active" ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/10" : "bg-gray-100 text-gray-600 ring-1 ring-gray-500/10"
+                    client.status === "ACTIVE" ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/10" : "bg-gray-100 text-gray-600 ring-1 ring-gray-500/10"
                   )}>
                     {client.status}
                   </span>
@@ -193,29 +179,9 @@ export default function AgencyClientListPage() {
             </div>
             <div className="p-6">
               <div className="relative border-l-2 border-gray-100 ml-4 space-y-8 pb-4">
-                {MOCK_HISTORY.map((item, index) => {
-                  const Icon = item.icon;
-                  return (
-                    <div key={item.id} className="relative pl-8 animate-slide-up" style={{ animationDelay: `${index * 100}ms` }}>
-                      <div className={clsx("absolute -left-4 top-1 w-8 h-8 rounded-full flex items-center justify-center ring-4 ring-white", item.bg)}>
-                        <Icon className={clsx("w-4 h-4", item.color)} />
-                      </div>
-                      <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <h4 className="font-semibold text-gray-900">{item.action}</h4>
-                            <p className="text-sm text-indigo-600 font-medium mt-0.5">{item.client}</p>
-                          </div>
-                          <span className="text-xs text-gray-500 flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-md">
-                            <Calendar className="w-3.5 h-3.5" />
-                            {item.date}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-600 mt-3">{item.description}</p>
-                      </div>
-                    </div>
-                  );
-                })}
+                <div className="py-8 text-center text-gray-500 text-sm">
+                  History integration with backend pending API support.
+                </div>
               </div>
             </div>
           </div>

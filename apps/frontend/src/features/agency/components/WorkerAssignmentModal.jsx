@@ -2,29 +2,24 @@ import { useState } from "react";
 import { Search, Filter, X, Check, Users, UserPlus, RefreshCw, UserMinus, ShieldAlert, BadgeCheck } from "lucide-react";
 import clsx from "clsx";
 import { Modal } from "../../../components/ui/modal";
-
-const MOCK_WORKERS = [
-  { id: "W001", name: "John Doe", skill: "Electrician", status: "Available", rating: 4.8 },
-  { id: "W002", name: "Jane Smith", skill: "Plumber", status: "Available", rating: 4.9 },
-  { id: "W003", name: "Mike Johnson", skill: "Carpenter", status: "Busy", rating: 4.5 },
-  { id: "W004", name: "Sarah Williams", skill: "Painter", status: "Available", rating: 4.7 },
-  { id: "W005", name: "Robert Brown", skill: "Electrician", status: "Available", rating: 4.6 },
-];
+import { useWorkers } from "../../../features/worker/hooks/useWorkers";
 
 export default function WorkerAssignmentModal({ isOpen, onClose, requirement, onAssign }) {
   const [activeTab, setActiveTab] = useState("assign");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedWorkers, setSelectedWorkers] = useState([]);
   
-  // Tabs: assign (Select & Assign Multiple), manage (Replace, Remove, Reassign)
+  const { data, isLoading } = useWorkers({ page: 1, limit: 100 });
+  const workersData = data?.data?.data || [];
+
   const tabs = [
     { id: "assign", label: "Assign Workers", icon: UserPlus },
     { id: "manage", label: "Manage Assignment", icon: Users },
   ];
 
-  const filteredWorkers = MOCK_WORKERS.filter(w => 
-    w.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    w.skill.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredWorkers = workersData.filter(w => 
+    w?.user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    w?.primarySkill?.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const toggleWorker = (id) => {
@@ -106,19 +101,19 @@ export default function WorkerAssignmentModal({ isOpen, onClose, requirement, on
                         className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                       />
                     </td>
-                    <td className="px-6 py-4 font-medium text-gray-900">{worker.name}</td>
-                    <td className="px-6 py-4 text-gray-600">{worker.skill}</td>
+                    <td className="px-6 py-4 font-medium text-gray-900">{worker.user?.name || "Unknown"}</td>
+                    <td className="px-6 py-4 text-gray-600">{worker.primarySkill?.name || "No Skill"}</td>
                     <td className="px-6 py-4">
                       <span className={clsx(
                         "px-2.5 py-1 rounded-full text-xs font-medium",
-                        worker.status === "Available" ? "bg-emerald-50 text-emerald-700" : "bg-orange-50 text-orange-700"
+                        worker.status === "ACTIVE" ? "bg-emerald-50 text-emerald-700" : "bg-orange-50 text-orange-700"
                       )}>
-                        {worker.status}
+                        {worker.status || "UNKNOWN"}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-gray-900 flex items-center gap-1">
-                      <BadgeCheck className="w-4 h-4 text-indigo-500" />
-                      {worker.rating}
+                      <BadgeCheck className="w-4 h-4 text-gray-300" />
+                      N/A
                     </td>
                   </tr>
                 ))}
@@ -151,28 +146,28 @@ export default function WorkerAssignmentModal({ isOpen, onClose, requirement, on
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {/* Displaying some mockup currently assigned workers */}
-                {MOCK_WORKERS.slice(0, 2).map(worker => (
-                  <tr key={worker.id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-6 py-4 font-medium text-gray-900">{worker.name}</td>
-                    <td className="px-6 py-4 text-gray-600">{worker.skill}</td>
+                {/* Displaying the currently assigned workers, mocked from currently selected req for now as backend might not support fetching assigned workers by req id directly yet */}
+                {requirement?.applications?.map(app => (
+                  <tr key={app.id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="px-6 py-4 font-medium text-gray-900">{app.worker?.user?.name || "Unknown Worker"}</td>
+                    <td className="px-6 py-4 text-gray-600">{app.worker?.primarySkill?.name || "No Skill"}</td>
                     <td className="px-6 py-4 flex justify-end gap-2">
                       <button 
-                        onClick={() => handleAction('REPLACE', worker.id)}
+                        onClick={() => handleAction('REPLACE', app.worker?.id)}
                         className="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
                         title="Replace Worker"
                       >
                         <RefreshCw className="w-4 h-4" />
                       </button>
                       <button 
-                        onClick={() => handleAction('REASSIGN', worker.id)}
+                        onClick={() => handleAction('REASSIGN', app.worker?.id)}
                         className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                         title="Reassign Worker"
                       >
                         <ShieldAlert className="w-4 h-4" />
                       </button>
                       <button 
-                        onClick={() => handleAction('REMOVE', worker.id)}
+                        onClick={() => handleAction('REMOVE', app.worker?.id)}
                         className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         title="Remove Worker"
                       >

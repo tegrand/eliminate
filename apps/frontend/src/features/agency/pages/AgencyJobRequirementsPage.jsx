@@ -2,14 +2,7 @@ import { useState } from "react";
 import { Briefcase, Clock, CheckCircle, XCircle, PlayCircle, Plus, Search, Filter, Calendar, MapPin, Users, ChevronRight, UserPlus } from "lucide-react";
 import clsx from "clsx";
 import WorkerAssignmentModal from "../components/WorkerAssignmentModal";
-
-const MOCK_REQUIREMENTS = [
-  { id: "REQ-001", title: "Senior Plumbers for Commercial Site", client: "BuildRight Construction", location: "Austin, TX", date: "Aug 15, 2026", required: 5, assigned: 0, status: "New" },
-  { id: "REQ-002", title: "Warehouse Logistics Team", client: "Global Logistics Corp", location: "Chicago, IL", date: "Aug 10, 2026", required: 20, assigned: 20, status: "Assigned" },
-  { id: "REQ-003", title: "Registered Nurses - ER", client: "Healthcare Partners", location: "Boston, MA", date: "Aug 01, 2026", required: 10, assigned: 10, status: "Ongoing" },
-  { id: "REQ-004", title: "Event Staff for Tech Summit", client: "Nexus Tech Solutions", location: "New York, NY", date: "Jul 20, 2026", required: 15, assigned: 15, status: "Completed" },
-  { id: "REQ-005", title: "Temporary Cooks", client: "Starlight Hospitality", location: "Miami, FL", date: "Jul 25, 2026", required: 3, assigned: 0, status: "Cancelled" },
-];
+import { useJobRequirements } from "../../../features/job-requirement/hooks/useJobRequirements";
 
 export default function AgencyJobRequirementsPage() {
   const [activeTab, setActiveTab] = useState("New");
@@ -17,17 +10,20 @@ export default function AgencyJobRequirementsPage() {
   const [assignmentModalOpen, setAssignmentModalOpen] = useState(false);
   const [selectedReq, setSelectedReq] = useState(null);
 
+  const { data, isLoading } = useJobRequirements({ page: 1 });
+  const requirementsData = data?.data?.data || [];
+
   const tabs = [
-    { id: "New", label: "New Requirements", icon: Plus },
-    { id: "Assigned", label: "Assigned", icon: Users },
-    { id: "Ongoing", label: "Ongoing", icon: PlayCircle },
-    { id: "Completed", label: "Completed", icon: CheckCircle },
-    { id: "Cancelled", label: "Cancelled", icon: XCircle },
+    { id: "OPEN", label: "Open / New", icon: Plus },
+    { id: "PARTIALLY_FILLED", label: "Partially Assigned", icon: Users },
+    { id: "FILLED", label: "Assigned / Ongoing", icon: PlayCircle },
+    { id: "COMPLETED", label: "Completed", icon: CheckCircle },
+    { id: "CANCELLED", label: "Cancelled", icon: XCircle },
   ];
 
-  const filteredReqs = MOCK_REQUIREMENTS.filter(req => 
+  const filteredReqs = requirementsData.filter(req => 
     req.status === activeTab && 
-    (req.title.toLowerCase().includes(searchQuery.toLowerCase()) || req.client.toLowerCase().includes(searchQuery.toLowerCase()))
+    (req?.title?.toLowerCase().includes(searchQuery.toLowerCase()) || req?.client?.companyName?.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const openAssignmentModal = (req) => {
@@ -84,7 +80,7 @@ export default function AgencyJobRequirementsPage() {
                 "ml-1.5 px-2 py-0.5 rounded-full text-xs",
                 isActive ? "bg-indigo-100 text-indigo-700" : "bg-gray-200 text-gray-600"
               )}>
-                {MOCK_REQUIREMENTS.filter(r => r.status === tab.id).length}
+                {requirementsData.filter(r => r.status === tab.id).length}
               </span>
             </button>
           );
@@ -96,26 +92,26 @@ export default function AgencyJobRequirementsPage() {
           <div key={req.id} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] hover:shadow-[0_8px_20px_-6px_rgba(6,81,237,0.15)] transition-all duration-300 flex flex-col h-full">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h3 className="font-semibold text-gray-900 leading-tight mb-1">{req.title}</h3>
-                <p className="text-sm text-indigo-600 font-medium">{req.client}</p>
+                <h3 className="font-semibold text-gray-900 leading-tight mb-1">{req.title || "Untitled Requirement"}</h3>
+                <p className="text-sm text-indigo-600 font-medium">{req.client?.companyName || "Unknown Client"}</p>
               </div>
-              <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-md shrink-0">
-                {req.id}
+              <span className="text-xs font-semibold text-gray-500 bg-gray-100 px-2.5 py-1 rounded-md shrink-0 uppercase">
+                #{req.id?.toString().substring(0, 6)}
               </span>
             </div>
             
             <div className="space-y-2 mb-6 flex-1">
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <MapPin className="w-4 h-4 text-gray-400" />
-                {req.location}
+                {req.location?.name || "Location TBA"}
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <Calendar className="w-4 h-4 text-gray-400" />
-                Start: {req.date}
+                Start: {req.startDate ? new Date(req.startDate).toLocaleDateString() : "TBA"}
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <Users className="w-4 h-4 text-gray-400" />
-                Workers: {req.assigned} / {req.required}
+                Workers: {req.assignedWorkers || 0} / {req.requiredWorkers || 1}
               </div>
             </div>
             
@@ -124,19 +120,19 @@ export default function AgencyJobRequirementsPage() {
               <div className="flex justify-between text-xs mb-1.5 font-medium">
                 <span className="text-gray-500">Assignment Progress</span>
                 <span className={clsx(
-                  req.assigned === req.required ? "text-emerald-600" : "text-indigo-600"
-                )}>{Math.round((req.assigned / req.required) * 100)}%</span>
+                  req.assignedWorkers >= req.requiredWorkers ? "text-emerald-600" : "text-indigo-600"
+                )}>{Math.round(((req.assignedWorkers || 0) / (req.requiredWorkers || 1)) * 100)}%</span>
               </div>
               <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                 <div 
-                  className={clsx("h-full rounded-full transition-all duration-500", req.assigned === req.required ? "bg-emerald-500" : "bg-indigo-500")} 
-                  style={{ width: `${(req.assigned / req.required) * 100}%` }}
+                  className={clsx("h-full rounded-full transition-all duration-500", req.assignedWorkers >= req.requiredWorkers ? "bg-emerald-500" : "bg-indigo-500")} 
+                  style={{ width: `${Math.min(((req.assignedWorkers || 0) / (req.requiredWorkers || 1)) * 100, 100)}%` }}
                 ></div>
               </div>
             </div>
             
             <div className="pt-4 border-t border-gray-100 mt-auto">
-              {(activeTab === "New" || activeTab === "Assigned" || activeTab === "Ongoing") && (
+              {(activeTab === "OPEN" || activeTab === "PARTIALLY_FILLED" || activeTab === "FILLED") && (
                 <button 
                   onClick={() => openAssignmentModal(req)}
                   className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium rounded-lg transition-colors"
@@ -145,7 +141,7 @@ export default function AgencyJobRequirementsPage() {
                   Manage Assignment
                 </button>
               )}
-              {(activeTab === "Completed" || activeTab === "Cancelled") && (
+              {(activeTab === "COMPLETED" || activeTab === "CANCELLED") && (
                 <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium rounded-lg transition-colors">
                   View Details <ChevronRight className="w-4 h-4" />
                 </button>
