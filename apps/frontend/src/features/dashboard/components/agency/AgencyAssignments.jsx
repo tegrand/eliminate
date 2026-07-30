@@ -1,6 +1,6 @@
 import { Briefcase, Activity, CheckCircle2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import StatCard from "../../StatCard";
+import StatCard from "../StatCard";
 
 export default function AgencyAssignments({ stats }) {
   const { t } = useTranslation();

@@ -1,6 +1,6 @@
 import { Users, UserCheck, Clock, UserPlus } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import StatCard from "../../StatCard"; // I will assume this exists based on ClientDashboard
+import StatCard from "../StatCard";
 
 export default function AgencyOverviewCards({ stats }) {
   const { t } = useTranslation();
