@@ -76,12 +76,7 @@ export const NAVIGATION_CONFIG = [
         icon: Briefcase,
         roles: ["WORKER"],
       },
-      {
-        title: "Attendance",
-        path: ROUTES.MY_ATTENDANCE,
-        icon: Clock,
-        roles: ["WORKER"],
-      },
+
       {
         title: "Work History",
         path: "/worker/history",

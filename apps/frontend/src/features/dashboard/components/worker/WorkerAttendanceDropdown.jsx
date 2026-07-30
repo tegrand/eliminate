@@ -97,6 +97,7 @@ export default function WorkerAttendanceDropdown() {
         isOpen={isModalOpen} 
         onClose={() => !loading && setIsModalOpen(false)}
         title="Confirm Attendance"
+        className="sm:max-w-sm"
       >
         <div className="p-6">
           <div className="mb-6 flex flex-col items-center text-center">
@@ -122,7 +123,12 @@ export default function WorkerAttendanceDropdown() {
             <Button 
               onClick={handleConfirm}
               disabled={loading}
-              className={selectedOption?.id === 'ABSENT' ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500' : ''}
+              className={
+                selectedOption?.id === 'PRESENT' ? 'bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500' :
+                selectedOption?.id === 'CHECK_OUT' ? 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500' :
+                selectedOption?.id === 'ON_LEAVE' ? 'bg-amber-600 hover:bg-amber-700 focus:ring-amber-500' :
+                selectedOption?.id === 'ABSENT' ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500' : ''
+              }
               leftIcon={loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
             >
               {loading ? "Confirming..." : "Confirm"}
