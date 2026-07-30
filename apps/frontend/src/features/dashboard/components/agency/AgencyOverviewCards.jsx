@@ -1,6 +1,6 @@
-import { Users, UserCheck, Clock, UserPlus } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import StatCard from "../StatCard";
+import { ROUTES } from "../../../routes/routePaths";
+import DashboardCard from "../DashboardCard";
 
 export default function AgencyOverviewCards({ stats }) {
   const { t } = useTranslation();
@@ -9,37 +9,44 @@ export default function AgencyOverviewCards({ stats }) {
     {
       title: t('agencyDashboard.activeWorkers') || "Active Workers",
       value: stats?.activeWorkers || "0",
-      icon: Users,
-      bgColor: "bg-blue-50",
-      iconColor: "text-blue-500",
+      description: "Workers currently on job",
+      gradient: "from-blue-500 to-blue-600",
+      link: ROUTES.AGENCY_WORKERS,
     },
     {
       title: t('agencyDashboard.availableWorkers') || "Available Workers",
       value: stats?.availableWorkers || "0",
-      icon: UserCheck,
-      bgColor: "bg-emerald-50",
-      iconColor: "text-emerald-500",
+      description: "Workers ready for assignment",
+      gradient: "from-emerald-500 to-emerald-600",
+      link: ROUTES.AGENCY_WORKERS,
     },
     {
       title: t('agencyDashboard.busyWorkers') || "Busy Workers",
       value: stats?.busyWorkers || "0",
-      icon: Clock,
-      bgColor: "bg-amber-50",
-      iconColor: "text-amber-500",
+      description: "Workers temporarily unavailable",
+      gradient: "from-amber-500 to-amber-600",
+      link: ROUTES.AGENCY_WORKERS,
     },
     {
-      title: t('agencyDashboard.pendingRequests') || "Pending Worker Requests",
+      title: t('agencyDashboard.pendingRequests') || "Pending Requests",
       value: stats?.pendingRequests || "0",
-      icon: UserPlus,
-      bgColor: "bg-purple-50",
-      iconColor: "text-purple-500",
+      description: "Pending worker assignments",
+      gradient: "from-purple-500 to-purple-600",
+      link: ROUTES.AGENCY_ASSIGNMENTS,
     }
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
       {cards.map((card, idx) => (
-        <StatCard key={idx} {...card} />
+        <DashboardCard 
+          key={idx} 
+          title={card.title}
+          count={card.value}
+          colorClass={card.gradient}
+          link={card.link}
+          description={card.description}
+        />
       ))}
     </div>
   );

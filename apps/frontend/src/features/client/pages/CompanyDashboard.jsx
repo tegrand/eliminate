@@ -4,32 +4,7 @@ import { FolderKanban, MapPin, Users, Users2, Building2, Briefcase, Loader2, Arr
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../../routes/routePaths";
 import { useAuth } from "../../../hooks/useAuth";
-
-const DashboardCard = ({ title, count, icon: Icon, colorClass, link, description }) => {
-  // Extract a light bg color from colorClass (e.g. from-blue-500 -> bg-blue-50)
-  // For simplicity and matching the exact screenshot, we can just use the provided opacity approach.
-  return (
-    <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-md transition-all group relative overflow-hidden flex flex-col justify-end min-h-[140px]">
-      <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${colorClass} opacity-10 rounded-bl-[100%] transition-transform group-hover:scale-110`} />
-      
-      <div className="absolute top-4 right-4 z-10">
-        {link ? (
-          <Link to={link} className="text-slate-400 hover:text-indigo-600 transition-colors block">
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        ) : (
-          <ArrowRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 transition-transform" />
-        )}
-      </div>
-
-      <div className="relative z-10 mt-6">
-        <h3 className="text-3xl font-bold text-slate-900 mb-1">{count}</h3>
-        <p className="text-sm font-medium text-slate-700">{title}</p>
-        {description && <p className="text-[11px] text-slate-500 mt-1">{description}</p>}
-      </div>
-    </div>
-  );
-};
+import DashboardCard from "../../dashboard/components/DashboardCard";
 
 export default function CompanyDashboard() {
   const { user } = useAuth();
