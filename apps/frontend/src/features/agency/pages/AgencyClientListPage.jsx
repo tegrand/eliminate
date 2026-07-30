@@ -5,6 +5,9 @@ import clsx from "clsx";
 import { useClients } from "../../../features/client/hooks/useClients";
 
 export default function AgencyClientListPage() {
+  const [activeTab, setActiveTab] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+
   const { data, isLoading } = useClients({ page: 1 });
   const clientsData = data?.data?.data || [];
 
