@@ -146,16 +146,6 @@ export default function MyDocumentsPage({ embedded = false }) {
             <h1 className="text-2xl font-bold text-slate-900">My Documents</h1>
             <p className="text-sm text-slate-500 mt-1">Manage your identity proofs and certifications</p>
           </div>
-          <Button leftIcon={<Upload className="w-4 h-4" />} onClick={openUploadModal}>
-            Upload New
-          </Button>
-        </div>
-      )}
-      {!embedded && (
-        <div className="flex justify-end mb-2">
-          <Button type="button" size="sm" leftIcon={<Upload className="w-4 h-4" />} onClick={() => openUploadModal("AADHAAR")}>
-            Upload Document
-          </Button>
         </div>
       )}
 
