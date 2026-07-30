@@ -77,7 +77,7 @@ export default function AgencyClientListPage() {
                   "ml-1.5 px-2 py-0.5 rounded-full text-xs",
                   isActive ? "bg-indigo-100 text-indigo-700" : "bg-gray-200 text-gray-600"
                 )}>
-                  {MOCK_CLIENTS.filter(c => c.isFavourite).length}
+                  {0}
                 </span>
               )}
             </button>
