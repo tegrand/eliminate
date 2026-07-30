@@ -17,12 +17,19 @@ const COLORS = ["#2dd4bf", "#818cf8", "#f43f5e", "#f59e0b"]; // Teal, Indigo, Ro
 export default function DashboardChartsRow({
   lineTitle,
   lineSubtitle,
-  lineData,
+  lineData = [],
   donutTitle,
   donutSubtitle,
-  donutData,
+  donutData = [],
   donutTotal
 }) {
+  const isLineEmpty = lineData.every(d => d.value === 0);
+  const isEmptyDonut = donutData.length === 0 || donutData.every(d => d.value === 0);
+  
+  const renderDonutData = isEmptyDonut 
+    ? [{ name: 'No Data', value: 1 }] 
+    : donutData;
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6 mb-6">
       {/* Line Chart */}
@@ -54,6 +61,7 @@ export default function DashboardChartsRow({
                 tick={{ fontSize: 10, fill: '#64748b' }} 
                 width={50}
                 tickFormatter={(val) => `₹${val}k`}
+                domain={[0, dataMax => (dataMax === 0 ? 1 : dataMax)]}
               />
               <Tooltip 
                 contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
@@ -82,15 +90,18 @@ export default function DashboardChartsRow({
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie
-                data={donutData}
+                data={renderDonutData}
                 innerRadius={65}
                 outerRadius={85}
                 paddingAngle={3}
                 dataKey="value"
                 stroke="none"
               >
-                {donutData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                {renderDonutData.map((entry, index) => (
+                  <Cell 
+                    key={`cell-${index}`} 
+                    fill={isEmptyDonut ? '#f1f5f9' : COLORS[index % COLORS.length]} 
+                  />
                 ))}
               </Pie>
               <Tooltip 
