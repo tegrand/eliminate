@@ -261,13 +261,13 @@ export default function MyDocumentsPage({ embedded = false }) {
                   {format(parseISO(doc.createdAt), 'MMM dd, yyyy')}
                 </p>
                 <div className="flex items-center gap-1 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button onClick={() => handleDownload(doc)} className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" title="Download/View">
+                  <button type="button" onClick={() => handleDownload(doc)} className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" title="Download/View">
                     <Download className="w-4 h-4" />
                   </button>
-                  <button onClick={() => openReplaceModal(doc)} className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Replace">
+                  <button type="button" onClick={() => openReplaceModal(doc)} className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Replace">
                     <Edit className="w-4 h-4" />
                   </button>
-                  <button onClick={() => handleDelete(doc.id)} className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
+                  <button type="button" onClick={() => handleDelete(doc.id)} className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -279,7 +279,7 @@ export default function MyDocumentsPage({ embedded = false }) {
 
       {/* Upload / Replace Modal */}
       <Modal isOpen={isModalOpen} onClose={() => !uploading && setIsModalOpen(false)} title={modalMode === 'upload' ? 'Upload Document' : 'Replace Document'} className="sm:max-w-xl">
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <div className="p-6 space-y-4">
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div className="space-y-4">
@@ -334,14 +334,15 @@ export default function MyDocumentsPage({ embedded = false }) {
               Cancel
             </Button>
             <Button 
-              type="submit" 
+              type="button"
+              onClick={handleSubmit}
               disabled={!file || uploading}
               leftIcon={uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
             >
               {uploading ? (modalMode === 'upload' ? 'Uploading...' : 'Replacing...') : (modalMode === 'upload' ? 'Upload' : 'Replace')}
             </Button>
           </div>
-        </form>
+        </div>
       </Modal>
 
     </div>
