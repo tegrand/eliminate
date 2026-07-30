@@ -43,7 +43,7 @@ export default function ClientWorkerProfilePage() {
   const lastName = worker.user?.lastName || worker.lastName || "";
   const name = `${firstName} ${lastName}`.trim() || worker.user?.name || worker.name || "Unknown Worker";
   
-  const skillName = worker.primarySkill?.name || (typeof worker.primarySkill === 'string' ? worker.primarySkill : null) || worker.skills?.[0]?.name || "General Worker";
+  const skillName = worker.primarySkill?.name || (typeof worker.primarySkill === 'string' ? worker.primarySkill : null) || worker.skills?.[0]?.skill?.name || "General Worker";
   const experience = worker.experienceYears ? `${worker.experienceYears} Years Experience` : "Experience N/A";
   
   let location = "Location not specified";
@@ -63,8 +63,8 @@ export default function ClientWorkerProfilePage() {
     { id: 2, author: "Priya S.", text: "Good skills, but arrived a bit late. Overall satisfied with the quality of work.", date: "1 month ago", rating: 4 }
   ];
 
-  const languages = worker.languages?.length > 0 ? worker.languages.map(l => l.name) : ["Malayalam", "English (Basic)"];
-  const allSkills = worker.skills?.length > 0 ? worker.skills.map(s => s.name) : [skillName, "Teamwork", "Time Management"];
+  const languages = worker.languages?.length > 0 ? worker.languages.map(l => l.language?.name).filter(Boolean) : ["Malayalam", "English (Basic)"];
+  const allSkills = worker.skills?.length > 0 ? worker.skills.map(s => s.skill?.name).filter(Boolean) : [skillName, "Teamwork", "Time Management"];
 
   return (
     <div className="w-full h-[calc(100vh-4rem)] bg-[#f8f9fa] overflow-y-auto scrollbar-hide py-6 px-4 sm:px-8 lg:px-12 animate-fade-in">
