@@ -112,15 +112,15 @@ export default function WorkerProfilePage() {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto py-5 pb-20 space-y-4 animate-fade-in px-4 sm:px-6">
+    <div className="w-full max-w-7xl mx-auto py-5 pb-20 space-y-4 animate-fade-in px-4 sm:px-6">
       
       <form id="profile-form" onSubmit={handleSubmit} className="space-y-4">
         
         {/* TOP ROW: Profile Completion & Documents */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           
           {/* Profile Completion Card */}
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 md:p-5">
+          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 md:p-5 h-fit">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2.5">
                 <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
@@ -202,10 +202,10 @@ export default function WorkerProfilePage() {
         </div>
 
         {/* MIDDLE ROW: Basic Info & Work Preferences */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           
           {/* Basic Information Card */}
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 md:p-5">
+          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 md:p-5 h-fit">
             <div className="flex items-center gap-2.5 mb-4">
               <div className="p-1.5 bg-blue-50 text-blue-600 rounded-lg">
                 <User className="w-4 h-4" />
@@ -272,7 +272,7 @@ export default function WorkerProfilePage() {
           </div>
 
           {/* Work Preferences Card */}
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 md:p-5">
+          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 md:p-5 h-fit">
             <div className="flex items-center gap-2.5 mb-4">
               <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
                 <Briefcase className="w-4 h-4" />

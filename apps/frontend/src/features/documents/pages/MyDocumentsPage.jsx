@@ -149,9 +149,9 @@ export default function MyDocumentsPage({ embedded = false }) {
           </Button>
         </div>
       )}
-      {embedded && (
+      {!embedded && (
         <div className="flex justify-end mb-2">
-          <Button type="button" size="sm" leftIcon={<Upload className="w-4 h-4" />} onClick={openUploadModal}>
+          <Button type="button" size="sm" leftIcon={<Upload className="w-4 h-4" />} onClick={() => openUploadModal("AADHAAR")}>
             Upload Document
           </Button>
         </div>
