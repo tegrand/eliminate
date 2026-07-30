@@ -68,7 +68,7 @@ export default function ClientWorkerProfilePage() {
 
   return (
     <div className="w-full h-[calc(100vh-4rem)] bg-[#f8f9fa] overflow-y-auto scrollbar-hide py-6 px-4 sm:px-8 lg:px-12 animate-fade-in">
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-5">
         
         {/* Top Navigation */}
         <Link to="/search-workers" className="inline-flex items-center text-sm font-semibold text-gray-500 hover:text-blue-600 transition-colors gap-2 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm">
@@ -77,19 +77,19 @@ export default function ClientWorkerProfilePage() {
         </Link>
 
         {/* Profile Header Card */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-gray-200 shadow-sm relative overflow-hidden">
+        <div className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-sm relative overflow-hidden">
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 opacity-70 pointer-events-none"></div>
 
-          <div className="relative z-10 flex flex-col sm:flex-row gap-6 sm:gap-8 items-start sm:items-center">
+          <div className="relative z-10 flex flex-col sm:flex-row gap-5 items-start sm:items-center">
             
             {/* Avatar */}
             <div className="relative shrink-0">
-              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-3xl bg-gray-100 border-4 border-white shadow-lg overflow-hidden flex items-center justify-center text-gray-400">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gray-100 border-4 border-white shadow-lg overflow-hidden flex items-center justify-center text-gray-400">
                 {avatar ? (
                   <img src={avatar} alt={name} className="w-full h-full object-cover" />
                 ) : (
-                  <UserCircle className="w-16 h-16 sm:w-20 sm:h-20" />
+                  <UserCircle className="w-12 h-12 sm:w-16 sm:h-16" />
                 )}
               </div>
               {isVerified && (
@@ -102,10 +102,10 @@ export default function ClientWorkerProfilePage() {
             <div className="flex-1 min-w-0">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight leading-tight">
+                  <h1 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight leading-tight">
                     {name}
                   </h1>
-                  <p className="text-lg font-medium text-blue-600 mt-1">{skillName}</p>
+                  <p className="text-sm sm:text-base font-semibold text-blue-600 mt-0.5">{skillName}</p>
                 </div>
                 
                 <div className="flex items-center gap-3 shrink-0">
@@ -140,13 +140,13 @@ export default function ClientWorkerProfilePage() {
         </div>
 
         {/* Content Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           
           {/* Main Info Column */}
-          <div className="md:col-span-2 space-y-6">
+          <div className="md:col-span-2 space-y-5">
             
             {/* About / Overview */}
-            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200 shadow-sm">
+            <div className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-sm">
               <h2 className="text-lg font-bold text-gray-900 mb-4">Professional Overview</h2>
               
               <div className="grid grid-cols-2 gap-4 mb-6">
@@ -175,9 +175,9 @@ export default function ClientWorkerProfilePage() {
             </div>
 
             {/* Reviews (Mocked) */}
-            <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200 shadow-sm">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-bold text-gray-900">Client Reviews</h2>
+            <div className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-sm">
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="text-base font-bold text-gray-900">Client Reviews</h2>
                 <div className="text-sm font-bold text-blue-600 cursor-pointer hover:underline">View all</div>
               </div>
               
@@ -202,11 +202,11 @@ export default function ClientWorkerProfilePage() {
           </div>
 
           {/* Sidebar Info Column */}
-          <div className="space-y-6">
+          <div className="space-y-5">
             
             {/* Verified Badge */}
             {isVerified && (
-              <div className="bg-emerald-50 rounded-2xl p-5 border border-emerald-100 flex items-start gap-3">
+              <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100 flex items-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
                   <h3 className="font-bold text-emerald-900 text-sm">Verified Profile</h3>
@@ -217,7 +217,7 @@ export default function ClientWorkerProfilePage() {
 
             {/* Agency info */}
             {agencyName && (
-              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+              <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
                 <h3 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
                   <Building2 className="w-4 h-4 text-gray-400" /> Current Agency
                 </h3>
@@ -228,7 +228,7 @@ export default function ClientWorkerProfilePage() {
             )}
 
             {/* Skills */}
-            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+            <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
               <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-gray-400" /> Skills
               </h3>
@@ -242,7 +242,7 @@ export default function ClientWorkerProfilePage() {
             </div>
 
             {/* Languages */}
-            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+            <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
               <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
                 <Languages className="w-4 h-4 text-gray-400" /> Languages
               </h3>
