@@ -1,5 +1,5 @@
 import { useAuth } from "../../../hooks/useAuth";
-import { Calendar, ChevronDown } from "lucide-react";
+import { Calendar, ChevronDown, BadgeCheck, Clock } from "lucide-react";
 
 import DashboardStats from "../components/DashboardStats";
 import UpcomingRequirements from "../components/UpcomingRequirements";
@@ -35,8 +35,21 @@ export default function DashboardPage() {
     <div className="w-full pt-4 pb-8 space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            Welcome back, {user?.profileType === "SUPER_ADMIN" ? "Super Admin" : user?.email?.split('@')[0] || "User"}! 👋
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+            <span>Welcome back, {user?.profileType === "SUPER_ADMIN" ? "Super Admin" : user?.email?.split('@')[0] || "User"}! 👋</span>
+            {user?.profileType === "WORKER" && (
+              user?.workerProfile?.profileStatus === "VERIFIED" ? (
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs font-medium">
+                  <BadgeCheck className="w-4 h-4" />
+                  Verified
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-100 text-amber-700 text-xs font-medium">
+                  <Clock className="w-4 h-4" />
+                  {user?.workerProfile?.profileStatus === "PENDING" ? "Verification Pending" : "Unverified"}
+                </div>
+              )
+            )}
           </h1>
           <p className="text-sm text-gray-500 mt-1">
             {user?.profileType === "WORKER" 

@@ -63,6 +63,14 @@ const issueTokensAndUpdateUser = async (user, meta, action = "LOGIN") => {
     if (clientProfile) {
       userWithProfile.clientProfile = clientProfile;
     }
+  } else if (updatedUser.profileType === "WORKER") {
+    const workerProfile = await prisma.worker.findUnique({
+      where: { userId: updatedUser.id },
+      select: { profileStatus: true },
+    });
+    if (workerProfile) {
+      userWithProfile.workerProfile = workerProfile;
+    }
   }
 
   return { accessToken, refreshToken, user: userWithProfile };
@@ -338,6 +346,14 @@ export const getCurrentUser = async (userId) => {
     });
     if (clientProfile) {
       userWithProfile.clientProfile = clientProfile;
+    }
+  } else if (user.profileType === "WORKER") {
+    const workerProfile = await prisma.worker.findUnique({
+      where: { userId: user.id },
+      select: { profileStatus: true },
+    });
+    if (workerProfile) {
+      userWithProfile.workerProfile = workerProfile;
     }
   }
 

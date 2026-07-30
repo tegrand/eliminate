@@ -19,6 +19,8 @@ export default function WorkerAttendanceDropdown() {
   const [loading, setLoading] = useState(false);
   const dropdownRef = useRef(null);
 
+  const [currentStatus, setCurrentStatus] = useState(null);
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -27,6 +29,28 @@ export default function WorkerAttendanceDropdown() {
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const fetchCurrentStatus = async () => {
+    try {
+      const res = await api.get("/worker-attendance/history");
+      const records = res.data.data;
+      if (records && records.length > 0) {
+        const today = new Date().toISOString().split('T')[0];
+        const latestRecordDate = new Date(records[0].date).toISOString().split('T')[0];
+        if (today === latestRecordDate) {
+          const matchedOption = ATTENDANCE_OPTIONS.find(opt => opt.id === records[0].status) 
+                             || (records[0].status === "PRESENT" && records[0].checkOutTime ? ATTENDANCE_OPTIONS.find(opt => opt.id === "CHECK_OUT") : null);
+          if (matchedOption) setCurrentStatus(matchedOption);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch attendance status", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCurrentStatus();
   }, []);
 
   const handleSelect = (option) => {
@@ -50,6 +74,7 @@ export default function WorkerAttendanceDropdown() {
       
       toast.success(`Successfully marked as ${selectedOption.label}`);
       setIsModalOpen(false);
+      fetchCurrentStatus();
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to update attendance");
     } finally {
@@ -63,8 +88,8 @@ export default function WorkerAttendanceDropdown() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-4 py-2 border border-transparent rounded-lg text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
       >
-        <Calendar className="w-4 h-4 text-indigo-100" />
-        <span>Today's Attendance</span>
+        {currentStatus ? <currentStatus.icon className="w-4 h-4 text-indigo-100" /> : <Calendar className="w-4 h-4 text-indigo-100" />}
+        <span>{currentStatus ? `Today: ${currentStatus.label}` : "Today's Attendance"}</span>
         <ChevronDown className={`w-4 h-4 text-indigo-100 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
