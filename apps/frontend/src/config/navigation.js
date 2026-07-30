@@ -130,13 +130,13 @@ export const NAVIGATION_CONFIG = [
     items: [
       {
         title: "Our Workers",
-        path: ROUTES.WORKERS,
+        path: ROUTES.WORKERS + "?view=my",
         icon: Users,
         roles: ["AGENCY"],
       },
       {
         title: "Find / Add Workers",
-        path: ROUTES.WORKFORCE_SEARCH,
+        path: ROUTES.WORKERS + "?view=all",
         icon: UserPlus,
         roles: ["AGENCY"],
       },

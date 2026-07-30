@@ -6,11 +6,14 @@ import WorkerFilters from "../components/WorkerFilters";
 import WorkerTable from "../components/WorkerTable";
 import WorkerStats from "../components/WorkerStats";
 import { useWorkers } from "../hooks/useWorkers";
+import { useAuth } from "../../../hooks/useAuth";
 
 export default function WorkerListPage() {
+  const { user } = useAuth();
   const [page] = useState(1);
   const [searchParams] = useSearchParams();
   const currentStatus = searchParams.get("status") || "ALL";
+  const viewMode = searchParams.get("view") || "all";
 
   const { data, isLoading } = useWorkers({ page, status: currentStatus !== "ALL" ? currentStatus : undefined });
 
@@ -40,6 +43,12 @@ export default function WorkerListPage() {
 
   let displayedWorkers = normalizedWorkers;
   
+  if (viewMode === "my" && user?.profileType === "AGENCY") {
+    // Basic match: assumes worker.agency field matches logged-in user's agency name
+    const agencyName = user?.agencyProfile?.name || user?.name || "";
+    displayedWorkers = displayedWorkers.filter(w => w.agency === agencyName || w.agencyId === user?.id);
+  }
+
   if (agencyFilter) {
     displayedWorkers = displayedWorkers.filter(w => w.agency === agencyFilter);
   }
