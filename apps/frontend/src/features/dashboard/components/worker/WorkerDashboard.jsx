@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { dashboardApi } from "../../api/dashboard.api";
-import WorkerProfileWidget from "./WorkerProfileWidget";
-import WorkerJobsWidget from "./WorkerJobsWidget";
-import WorkerActivityWidget from "./WorkerActivityWidget";
 import WorkerTopStatsWidget from "./WorkerTopStatsWidget";
 import DashboardChartsRow from "../charts/DashboardChartsRow";
 import api from "../../../../api/axios";
@@ -86,27 +83,6 @@ export default function WorkerDashboard() {
           { name: 'Completed', value: data.topStats?.totalCompletedWork || 1 },
           { name: 'Active', value: data.activeJob ? 1 : 0 },
         ]}
-      />
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-1 space-y-4">
-          <WorkerProfileWidget 
-            profile={data.profile} 
-            onStatusChange={handleStatusChange} 
-          />
-        </div>
-        
-        <div className="lg:col-span-2">
-          <WorkerJobsWidget 
-            activeJob={data.activeJob} 
-            upcomingJobs={data.upcomingJobs} 
-          />
-        </div>
-      </div>
-
-      <WorkerActivityWidget 
-        notifications={data.notifications} 
-        recentActivities={data.recentActivities} 
       />
     </div>
   );
