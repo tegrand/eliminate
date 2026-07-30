@@ -137,5 +137,23 @@ export const workerApi = {
   markAllNotificationsRead: async () => {
     const response = await api.put("/notifications/read-all");
     return response.data;
+  },
+
+  // Marketplace
+  getMarketplaceJobs: async (filters = {}) => {
+    const response = await api.get("/jobs", { params: filters });
+    return response.data;
+  },
+  applyForMarketplaceJob: async (jobId) => {
+    const response = await api.post(`/jobs/${jobId}/apply`);
+    return response.data;
+  },
+  saveMarketplaceJob: async (jobId) => {
+    const response = await api.post(`/jobs/${jobId}/save`);
+    return response.data;
+  },
+  ignoreMarketplaceJob: async (jobId) => {
+    // Missing backend implementation, but we'll return mock success for now
+    return { success: true };
   }
 };
