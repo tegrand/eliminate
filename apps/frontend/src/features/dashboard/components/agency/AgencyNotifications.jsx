@@ -52,25 +52,7 @@ export default function AgencyNotifications({ notifications = [] }) {
             </div>
           </div>
         )) : (
-          [
-            { id: 'n1', type: 'WORKER_REQUEST', title: 'New Worker Request', message: 'Client requires 5 electricians for Site A.', createdAt: new Date(Date.now() - 3600000) },
-            { id: 'n2', type: 'ATTENDANCE_ALERT', title: 'Missing Attendance', message: '3 workers have not checked in today.', createdAt: new Date(Date.now() - 86400000) },
-            { id: 'n3', type: 'PAYMENT_RECEIVED', title: 'Payment Received', message: 'Payment of ₹45,000 received from Alpha Builders.', createdAt: new Date(Date.now() - 172800000) },
-          ].map((notif) => (
-            <div key={notif.id} className="group flex items-start gap-4 p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer border border-transparent hover:border-gray-100">
-              <div className="p-2 bg-white rounded-full shadow-sm border border-gray-100 shrink-0 group-hover:scale-110 transition-transform">
-                {getIcon(notif.type)}
-              </div>
-              <div>
-                <h4 className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors">{notif.title}</h4>
-                <p className="text-sm text-gray-500 mt-0.5">{notif.message}</p>
-                <span className="text-xs text-gray-400 mt-2 block flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  {new Date(notif.createdAt).toLocaleDateString()}
-                </span>
-              </div>
-            </div>
-          ))
+          <div className="text-sm text-gray-500 py-4 text-center">No notifications found.</div>
         )}
       </div>
     </div>

@@ -4,12 +4,7 @@ import { useTranslation } from "react-i18next";
 export default function AgencyAttendance({ attendance = [] }) {
   const { t } = useTranslation();
   
-  // Use mock data if API doesn't provide
-  const displayAttendance = attendance?.length > 0 ? attendance : [
-    { id: 1, name: "Rahul Sharma", role: "Electrician", status: "PRESENT", timeIn: "08:00 AM", location: "Site A" },
-    { id: 2, name: "Sneha Nair", role: "Catering Staff", status: "PRESENT", timeIn: "08:15 AM", location: "Site B" },
-    { id: 3, name: "Mohammed Ali", role: "Plumber", status: "ABSENT", timeIn: "-", location: "-" },
-  ];
+  const displayAttendance = attendance || [];
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] p-6 animate-fade-in flex flex-col h-full" style={{ animationDelay: '0.3s' }}>
@@ -24,7 +19,7 @@ export default function AgencyAttendance({ attendance = [] }) {
       </div>
 
       <div className="space-y-4 flex-1">
-        {displayAttendance.map((record) => (
+        {displayAttendance.length > 0 ? displayAttendance.map((record) => (
           <div key={record.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100 group">
             <div className="flex items-center gap-3">
               <div className={`w-2 h-2 rounded-full ${record.status === 'PRESENT' ? 'bg-emerald-500' : 'bg-rose-500'}`} />
@@ -41,7 +36,9 @@ export default function AgencyAttendance({ attendance = [] }) {
               </span>
             </div>
           </div>
-        ))}
+        )) : (
+          <div className="text-sm text-gray-500 py-4 text-center">No attendance records found.</div>
+        )}
       </div>
     </div>
   );
