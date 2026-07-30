@@ -12,6 +12,11 @@ export const checkOut = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, "Checked out successfully", result, 200);
 });
 
+export const markStatus = asyncHandler(async (req, res) => {
+  const result = await attendanceService.markStatus(req.user.id, req.body.status);
+  return ApiResponse.success(res, "Attendance status updated", result, 200);
+});
+
 export const getHistory = asyncHandler(async (req, res) => {
   const result = await attendanceService.getHistory(req.user.id, req.query);
   return ApiResponse.success(res, "Attendance history retrieved", result, 200);

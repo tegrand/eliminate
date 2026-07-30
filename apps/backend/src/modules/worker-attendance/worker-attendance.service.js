@@ -72,6 +72,35 @@ export const checkOut = async (userId) => {
   });
 };
 
+export const markStatus = async (userId, status) => {
+  const worker = await getWorkerByUserId(userId);
+  const today = startOfDay(new Date());
+
+  const validStatuses = ["PRESENT", "ABSENT", "HALF_DAY", "ON_LEAVE"];
+  if (!validStatuses.includes(status)) {
+    throw new AppError("Invalid attendance status", 400);
+  }
+
+  const existing = await prisma.workerAttendance.findUnique({
+    where: { workerId_date: { workerId: worker.id, date: today } }
+  });
+
+  if (existing) {
+    return prisma.workerAttendance.update({
+      where: { id: existing.id },
+      data: { status }
+    });
+  }
+
+  return prisma.workerAttendance.create({
+    data: {
+      workerId: worker.id,
+      date: today,
+      status
+    }
+  });
+};
+
 export const getHistory = async (userId, { month, year }) => {
   const worker = await getWorkerByUserId(userId);
   

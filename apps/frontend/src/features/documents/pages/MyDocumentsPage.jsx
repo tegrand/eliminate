@@ -272,12 +272,12 @@ export default function MyDocumentsPage() {
             <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={uploading}>
               Cancel
             </Button>
-            <Button type="submit" disabled={!file || uploading}>
-              {uploading ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {modalMode === 'upload' ? 'Uploading...' : 'Replacing...'}</>
-              ) : (
-                <><Upload className="w-4 h-4 mr-2" /> {modalMode === 'upload' ? 'Upload' : 'Replace'}</>
-              )}
+            <Button 
+              type="submit" 
+              disabled={!file || uploading}
+              leftIcon={uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+            >
+              {uploading ? (modalMode === 'upload' ? 'Uploading...' : 'Replacing...') : (modalMode === 'upload' ? 'Upload' : 'Replace')}
             </Button>
           </div>
         </form>
