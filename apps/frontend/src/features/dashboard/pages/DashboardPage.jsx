@@ -7,6 +7,7 @@ import SystemOverview from "../components/SystemOverview";
 import RecentActivity from "../components/RecentActivity";
 import NotificationPanel from "../components/NotificationPanel";
 import WorkerDashboard from "../components/worker/WorkerDashboard";
+import WorkerAttendanceDropdown from "../components/worker/WorkerAttendanceDropdown";
 import ClientDashboard from "../components/client/ClientDashboard";
 import CompanyDashboard from "../../client/pages/CompanyDashboard";
 import AgencyDashboard from "../components/agency/AgencyDashboard";
@@ -43,11 +44,15 @@ export default function DashboardPage() {
               : "Here's what's happening in your system today."}
           </p>
         </div>
-        <button className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors shadow-sm">
-          <Calendar className="w-4 h-4 text-gray-500" />
-          <span>May 21, 2025</span>
-          <ChevronDown className="w-4 h-4 text-gray-500" />
-        </button>
+        {user?.profileType === "WORKER" ? (
+          <WorkerAttendanceDropdown />
+        ) : (
+          <button className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors shadow-sm">
+            <Calendar className="w-4 h-4 text-gray-500" />
+            <span>May 21, 2025</span>
+            <ChevronDown className="w-4 h-4 text-gray-500" />
+          </button>
+        )}
       </div>
 
       {user?.profileType === "WORKER" ? (
