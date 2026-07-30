@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { ROUTES } from "../../../routes/routePaths";
+import { ROUTES } from "../../../../routes/routePaths";
 import DashboardCard from "../DashboardCard";
 
 export default function AgencyOverviewCards({ stats }) {

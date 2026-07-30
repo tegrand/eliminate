@@ -9,7 +9,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { ROUTES } from "../../../routes/routePaths";
+import { ROUTES } from "../../../../routes/routePaths";
 import DashboardCard from "../DashboardCard";
 
 const cards = (stats, t) => [
