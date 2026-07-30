@@ -31,7 +31,8 @@ export default function WorkerListPage() {
     
     return {
       ...w,
-      id: w.workerCode || w.id,
+      id: w.id,
+      employeeId: w.workerCode || w.id,
       name: fullName || "—",
       gender: w.user?.gender || w.gender || "—",
       phone: w.user?.phone || w.phone || "-",

@@ -55,7 +55,7 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
 
   const columns = [
     { key: "checkbox", title: <input type="checkbox" className="rounded border-gray-300" />, render: () => <input type="checkbox" className="rounded border-gray-300" /> },
-    { key: "id", title: <div className="flex items-center gap-1.5"><Briefcase className="w-3.5 h-3.5" />EMPLOYEE ID</div>, render: (row) => <span className="font-bold text-gray-900 text-sm">{row.id}</span> },
+    { key: "employeeId", title: <div className="flex items-center gap-1.5"><Briefcase className="w-3.5 h-3.5" />EMPLOYEE ID</div>, render: (row) => <span className="font-bold text-gray-900 text-sm">{row.employeeId}</span> },
     { key: "name", title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />NAME</div>, render: (row) => (
       <div className="flex items-center gap-3">
         <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs">
