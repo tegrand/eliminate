@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 export const assignSkillSchema = z.object({
-  workerId: z.string().uuid("Invalid worker ID format"),
   skillId: z.string().uuid("Invalid skill ID format"),
   experienceYears: z.number().int().min(0).max(60).optional().nullable(),
   proficiencyLevel: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"]),
