@@ -1,13 +1,21 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, CheckCircle2, XCircle, Building2, Briefcase } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, Building2, Briefcase, Eye, Calendar, DollarSign, MapPin, Clock } from "lucide-react";
 import { toast } from "sonner";
 import { workerApi } from "../api/worker.api";
 import Button from "../../../components/ui/button/Button";
+import { Modal } from "../../../components/ui/modal/Modal";
 
 export default function WorkerInvitationsPage() {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("jobs"); // 'jobs' or 'agencies'
+  const [selectedInvite, setSelectedInvite] = useState(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+
+  const openDetails = (invite) => {
+    setSelectedInvite(invite);
+    setIsDetailsModalOpen(true);
+  };
 
   // Fetch Job Invitations
   const { data: jobInvitesData, isLoading: loadingJobs } = useQuery({
@@ -130,38 +138,67 @@ export default function WorkerInvitationsPage() {
             </div>
           ) : (
             jobInvitations.map(invite => (
-              <div key={invite.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                  <h3 className="text-lg font-bold text-slate-900">{invite.title}</h3>
-                  <div className="flex items-center gap-3 mt-1 text-sm text-slate-500">
-                    <span className="font-medium text-indigo-600">
-                      {invite.client ? `Client: ${invite.client.clientCode}` : invite.agency ? `Agency: ${invite.agency.agencyName}` : "Direct Invite"}
-                    </span>
-                    {invite.proposedRate && <span>• ₹{invite.proposedRate}</span>}
+              <div key={invite.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:shadow-md transition-shadow">
+                <div className="flex flex-col md:flex-row justify-between gap-4">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 text-indigo-600">
+                      <Briefcase className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-900">{invite.title}</h3>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2 text-sm text-slate-500">
+                        <span className="flex items-center gap-1.5 font-medium text-slate-700">
+                          <Building2 className="w-4 h-4 text-slate-400" />
+                          {invite.client ? invite.client.clientCode : invite.agency ? invite.agency.agencyName : "Direct Invite"}
+                        </span>
+                        {invite.proposedRate && (
+                          <span className="flex items-center gap-1.5">
+                            <DollarSign className="w-4 h-4 text-slate-400" />
+                            ₹{invite.proposedRate}
+                          </span>
+                        )}
+                        {invite.startDate && (
+                          <span className="flex items-center gap-1.5">
+                            <Calendar className="w-4 h-4 text-slate-400" />
+                            {new Date(invite.startDate).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                      {invite.description && <p className="mt-3 text-sm text-slate-600 line-clamp-2">{invite.description}</p>}
+                    </div>
                   </div>
-                  {invite.description && <p className="mt-2 text-sm text-slate-600">{invite.description}</p>}
-                </div>
-                
-                <div className="flex gap-2 shrink-0">
-                  <Button 
-                    variant="outline"
-                    className="text-red-600 hover:bg-red-50 border-red-200 hover:border-red-300"
-                    onClick={() => rejectJobMutation.mutate(invite.id)}
-                    loading={rejectJobMutation.isPending && rejectJobMutation.variables === invite.id}
-                    disabled={acceptJobMutation.isPending || rejectJobMutation.isPending}
-                  >
-                    <XCircle className="w-4 h-4 mr-1.5" />
-                    Reject
-                  </Button>
-                  <Button 
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600"
-                    onClick={() => acceptJobMutation.mutate(invite.id)}
-                    loading={acceptJobMutation.isPending && acceptJobMutation.variables === invite.id}
-                    disabled={acceptJobMutation.isPending || rejectJobMutation.isPending}
-                  >
-                    <CheckCircle2 className="w-4 h-4 mr-1.5" />
-                    Accept
-                  </Button>
+                  
+                  <div className="flex flex-row md:flex-col justify-end gap-2 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-4 mt-4 md:mt-0">
+                    <Button 
+                      variant="outline"
+                      className="text-slate-600 border-slate-200 hover:bg-slate-50 w-full md:w-auto flex justify-center"
+                      onClick={() => openDetails(invite)}
+                    >
+                      <Eye className="w-4 h-4 mr-1.5" />
+                      Details
+                    </Button>
+                    <div className="flex gap-2 w-full md:w-auto">
+                      <Button 
+                        variant="outline"
+                        className="text-red-600 hover:bg-red-50 border-red-200 hover:border-red-300 flex-1 md:flex-none justify-center"
+                        onClick={() => rejectJobMutation.mutate(invite.id)}
+                        loading={rejectJobMutation.isPending && rejectJobMutation.variables === invite.id}
+                        disabled={acceptJobMutation.isPending || rejectJobMutation.isPending}
+                      >
+                        <XCircle className="w-4 h-4 mr-1.5 md:mr-0 lg:mr-1.5" />
+                        <span className="md:hidden lg:inline">Reject</span>
+                      </Button>
+                      <Button 
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 flex-1 md:flex-none justify-center"
+                        onClick={() => acceptJobMutation.mutate(invite.id)}
+                        loading={acceptJobMutation.isPending && acceptJobMutation.variables === invite.id}
+                        disabled={acceptJobMutation.isPending || rejectJobMutation.isPending}
+                      >
+                        <CheckCircle2 className="w-4 h-4 mr-1.5 md:mr-0 lg:mr-1.5" />
+                        <span className="md:hidden lg:inline">Accept</span>
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))
@@ -178,41 +215,139 @@ export default function WorkerInvitationsPage() {
             </div>
           ) : (
             agencyInvitations.map(invite => (
-              <div key={invite.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                  <h3 className="text-lg font-bold text-slate-900">{invite.agency?.agencyName}</h3>
-                  <div className="flex items-center gap-3 mt-1 text-sm text-slate-500">
-                    <span>Contact: {invite.agency?.contactPerson || "N/A"}</span>
-                    <span>• {invite.agency?.phone || "No phone"}</span>
+              <div key={invite.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:shadow-md transition-shadow">
+                <div className="flex flex-col md:flex-row justify-between gap-4">
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 text-blue-600">
+                      <Building2 className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-slate-900">{invite.agency?.agencyName}</h3>
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2 text-sm text-slate-500">
+                        <span className="flex items-center gap-1.5 font-medium text-slate-700">
+                          <Briefcase className="w-4 h-4 text-slate-400" />
+                          Agency Invite
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                          Contact: {invite.agency?.contactPerson || "N/A"}
+                        </span>
+                        <span className="flex items-center gap-1.5">
+                          {invite.agency?.phone || "No phone"}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="flex gap-2 shrink-0">
-                  <Button 
-                    variant="outline"
-                    className="text-red-600 hover:bg-red-50 border-red-200 hover:border-red-300"
-                    onClick={() => rejectAgencyMutation.mutate(invite.agencyId)}
-                    loading={rejectAgencyMutation.isPending && rejectAgencyMutation.variables === invite.agencyId}
-                    disabled={acceptAgencyMutation.isPending || rejectAgencyMutation.isPending}
-                  >
-                    <XCircle className="w-4 h-4 mr-1.5" />
-                    Reject
-                  </Button>
-                  <Button 
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600"
-                    onClick={() => acceptAgencyMutation.mutate(invite.agencyId)}
-                    loading={acceptAgencyMutation.isPending && acceptAgencyMutation.variables === invite.agencyId}
-                    disabled={acceptAgencyMutation.isPending || rejectAgencyMutation.isPending}
-                  >
-                    <CheckCircle2 className="w-4 h-4 mr-1.5" />
-                    Accept
-                  </Button>
+                  
+                  <div className="flex flex-row md:flex-col justify-end gap-2 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-4 mt-4 md:mt-0">
+                    <Button 
+                      variant="outline"
+                      className="text-slate-600 border-slate-200 hover:bg-slate-50 w-full md:w-auto flex justify-center"
+                      onClick={() => openDetails({ ...invite, isAgencyInvite: true })}
+                    >
+                      <Eye className="w-4 h-4 mr-1.5" />
+                      Details
+                    </Button>
+                    <div className="flex gap-2 w-full md:w-auto">
+                      <Button 
+                        variant="outline"
+                        className="text-red-600 hover:bg-red-50 border-red-200 hover:border-red-300 flex-1 md:flex-none justify-center"
+                        onClick={() => rejectAgencyMutation.mutate(invite.agencyId)}
+                        loading={rejectAgencyMutation.isPending && rejectAgencyMutation.variables === invite.agencyId}
+                        disabled={acceptAgencyMutation.isPending || rejectAgencyMutation.isPending}
+                      >
+                        <XCircle className="w-4 h-4 mr-1.5 md:mr-0 lg:mr-1.5" />
+                        <span className="md:hidden lg:inline">Reject</span>
+                      </Button>
+                      <Button 
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 flex-1 md:flex-none justify-center"
+                        onClick={() => acceptAgencyMutation.mutate(invite.agencyId)}
+                        loading={acceptAgencyMutation.isPending && acceptAgencyMutation.variables === invite.agencyId}
+                        disabled={acceptAgencyMutation.isPending || rejectAgencyMutation.isPending}
+                      >
+                        <CheckCircle2 className="w-4 h-4 mr-1.5 md:mr-0 lg:mr-1.5" />
+                        <span className="md:hidden lg:inline">Accept</span>
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))
           )}
         </div>
       )}
+
+      {/* Details Modal */}
+      <Modal isOpen={isDetailsModalOpen} onClose={() => setIsDetailsModalOpen(false)} title="Invitation Details" className="sm:max-w-xl">
+        {selectedInvite && (
+          <div className="p-6">
+            {!selectedInvite.isAgencyInvite ? (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900">{selectedInvite.title}</h3>
+                  <p className="text-sm font-medium text-indigo-600 mt-1">
+                    {selectedInvite.client ? `Client: ${selectedInvite.client.clientCode}` : selectedInvite.agency ? `Agency: ${selectedInvite.agency.agencyName}` : "Direct Invite"}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  {selectedInvite.proposedRate && (
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                      <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Proposed Rate</p>
+                      <p className="font-bold text-slate-900 flex items-center gap-1.5"><DollarSign className="w-4 h-4 text-slate-400" /> ₹{selectedInvite.proposedRate}</p>
+                    </div>
+                  )}
+                  {selectedInvite.startDate && (
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                      <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Start Date</p>
+                      <p className="font-bold text-slate-900 flex items-center gap-1.5"><Calendar className="w-4 h-4 text-slate-400" /> {new Date(selectedInvite.startDate).toLocaleDateString()}</p>
+                    </div>
+                  )}
+                </div>
+
+                {selectedInvite.description && (
+                  <div>
+                    <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Description</p>
+                    <div className="text-sm text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-100 whitespace-pre-wrap">
+                      {selectedInvite.description}
+                    </div>
+                  </div>
+                )}
+                
+                {selectedInvite.notes && (
+                  <div>
+                    <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Additional Notes</p>
+                    <p className="text-sm text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-100 whitespace-pre-wrap">{selectedInvite.notes}</p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900">{selectedInvite.agency?.agencyName}</h3>
+                  <p className="text-sm font-medium text-indigo-600 mt-1 flex items-center gap-1.5"><Building2 className="w-4 h-4" /> Agency Invitation</p>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                    <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Contact Person</p>
+                    <p className="font-bold text-slate-900">{selectedInvite.agency?.contactPerson || "N/A"}</p>
+                  </div>
+                  <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                    <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Phone Number</p>
+                    <p className="font-bold text-slate-900">{selectedInvite.agency?.phone || "N/A"}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="mt-8 pt-4 flex justify-end gap-3 border-t border-slate-100">
+              <Button variant="outline" onClick={() => setIsDetailsModalOpen(false)}>
+                Close
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }
