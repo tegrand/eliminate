@@ -115,5 +115,21 @@
     "workersCount": "Workers",
     "jobsCount": "Jobs",
     "failedToLoadData": "Failed to load dashboard data. Please try again."
+  },
+  "agencyDashboard": {
+    "activeWorkers": "Active Workers",
+    "availableWorkers": "Available Workers",
+    "busyWorkers": "Busy Workers",
+    "pendingRequests": "Pending Worker Requests",
+    "activeClientRequirements": "Active Client Requirements",
+    "ongoingAssignments": "Ongoing Assignments",
+    "completedAssignments": "Completed Assignments",
+    "attendanceToday": "Attendance Today",
+    "notifications": "Notifications",
+    "markAllRead": "Mark all read",
+    "viewAll": "View All",
+    "present": "Present",
+    "absent": "Absent",
+    "failedToLoadData": "Failed to load dashboard data. Please try again."
   }
 }

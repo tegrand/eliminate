@@ -115,5 +115,21 @@
     "workersCount": "തൊഴിലാളികൾ",
     "jobsCount": "ജോലികൾ",
     "failedToLoadData": "ഡാഷ്ബോർഡ് ഡാറ്റ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല. ദയവായി വീണ്ടും ശ്രമിക്കുക."
+  },
+  "agencyDashboard": {
+    "activeWorkers": "സജീവ തൊഴിലാളികൾ",
+    "availableWorkers": "ലഭ്യമായ തൊഴിലാളികൾ",
+    "busyWorkers": "തിരക്കുള്ള തൊഴിലാളികൾ",
+    "pendingRequests": "പെൻഡിംഗ് വർക്കർ അപേക്ഷകൾ",
+    "activeClientRequirements": "സജീവ ക്ലയൻ്റ് ആവശ്യങ്ങൾ",
+    "ongoingAssignments": "നടന്നുകൊണ്ടിരിക്കുന്ന ജോലികൾ",
+    "completedAssignments": "പൂർത്തിയാക്കിയ ജോലികൾ",
+    "attendanceToday": "ഇന്നത്തെ ഹാജർ",
+    "notifications": "അറിയിപ്പുകൾ",
+    "markAllRead": "എല്ലാം വായിച്ചതായി രേഖപ്പെടുത്തുക",
+    "viewAll": "എല്ലാം കാണുക",
+    "present": "ഹാജർ",
+    "absent": "ഹാജരല്ല",
+    "failedToLoadData": "ഡാഷ്ബോർഡ് ഡാറ്റ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല. ദയവായി വീണ്ടും ശ്രമിക്കുക."
   }
 }

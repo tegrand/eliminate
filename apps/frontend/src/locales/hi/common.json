@@ -115,5 +115,21 @@
     "workersCount": "श्रमिक",
     "jobsCount": "नौकरियां",
     "failedToLoadData": "डैशबोर्ड डेटा लोड करने में विफल। कृपया पुन: प्रयास करें।"
+  },
+  "agencyDashboard": {
+    "activeWorkers": "सक्रिय श्रमिक",
+    "availableWorkers": "उपलब्ध श्रमिक",
+    "busyWorkers": "व्यस्त श्रमिक",
+    "pendingRequests": "लंबित श्रमिक अनुरोध",
+    "activeClientRequirements": "सक्रिय ग्राहक आवश्यकताएं",
+    "ongoingAssignments": "चल रहे असाइनमेंट",
+    "completedAssignments": "पूरे किए गए असाइनमेंट",
+    "attendanceToday": "आज की उपस्थिति",
+    "notifications": "सूचनाएं",
+    "markAllRead": "सभी को पढ़ा हुआ चिह्नित करें",
+    "viewAll": "सभी देखें",
+    "present": "उपस्थित",
+    "absent": "अनुपस्थित",
+    "failedToLoadData": "डैशबोर्ड डेटा लोड करने में विफल। कृपया पुन: प्रयास करें।"
   }
 }
