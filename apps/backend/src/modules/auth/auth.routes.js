@@ -11,14 +11,14 @@ const router = Router();
 
 router.post(
   "/register",
-  authRateLimiter,
+  // authRateLimiter,
   validate(registerSchema),
   register
 );
 
 router.post(
   "/login",
-  authRateLimiter,
+  // authRateLimiter,
   validate(loginSchema),
   login
 );
@@ -38,7 +38,7 @@ router.patch(
 
 router.post(
   "/forgot-password",
-  authRateLimiter,
+  // authRateLimiter,
   validate(forgotPasswordSchema),
   forgotPassword
 );
