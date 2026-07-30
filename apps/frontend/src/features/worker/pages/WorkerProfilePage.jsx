@@ -114,10 +114,10 @@ export default function WorkerProfilePage() {
   return (
     <div className="w-full max-w-7xl mx-auto py-5 pb-20 space-y-4 animate-fade-in px-4 sm:px-6">
       
-      <form id="profile-form" onSubmit={handleSubmit} className="space-y-4">
+      <form id="profile-form" onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         
-        {/* TOP ROW: Profile Completion & Documents */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        {/* LEFT COLUMN */}
+        <div className="space-y-6">
           
           {/* Profile Completion Card */}
           <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 md:p-5 h-fit">
@@ -176,34 +176,6 @@ export default function WorkerProfilePage() {
             </div>
           </div>
 
-          {/* Documents Card */}
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 md:p-5 flex flex-col">
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex items-center gap-2.5">
-                <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
-                  <Folder className="w-4 h-4" />
-                </div>
-                <div>
-                  <h2 className="text-sm font-bold text-slate-900">Documents</h2>
-                  <p className="text-[10px] text-slate-500 mt-0.5">Upload your documents to verify your profile</p>
-                </div>
-              </div>
-              <button type="button" className="text-[11px] font-medium text-slate-600 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-md hover:bg-slate-100 transition-colors">
-                View All
-              </button>
-            </div>
-
-            {/* Embed actual documents page here to keep it functional */}
-            <div className="flex-1 overflow-y-auto min-h-[200px]">
-               <MyDocumentsPage embedded={true} />
-            </div>
-          </div>
-
-        </div>
-
-        {/* MIDDLE ROW: Basic Info & Work Preferences */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-          
           {/* Basic Information Card */}
           <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 md:p-5 h-fit">
             <div className="flex items-center gap-2.5 mb-4">
@@ -271,6 +243,120 @@ export default function WorkerProfilePage() {
             </div>
           </div>
 
+          {/* Location Preferences */}
+          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 md:p-5">
+            <div className="flex items-center gap-2.5 mb-4">
+              <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
+                <MapPin className="w-4 h-4" />
+              </div>
+              <div>
+                <h2 className="text-sm font-bold text-slate-900">Location Preferences</h2>
+                <p className="text-[10px] text-slate-500 mt-0.5">Tell us where you prefer to work</p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="md:col-span-2">
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1">Preferred State</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                    <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                  </div>
+                  <input
+                    type="text"
+                    name="preferredState"
+                    value={formData.preferredState}
+                    onChange={handleChange}
+                    placeholder="e.g. Kerala"
+                    className="w-full pl-8 pr-2.5 py-1.5 text-[13px] font-medium bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
+                  />
+                </div>
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1">Preferred District</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                    <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                  </div>
+                  <input
+                    type="text"
+                    name="preferredDistrict"
+                    value={formData.preferredDistrict}
+                    onChange={handleChange}
+                    placeholder="e.g. Ernakulam"
+                    className="w-full pl-8 pr-2.5 py-1.5 text-[13px] font-medium bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
+                  />
+                </div>
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-[11px] font-semibold text-slate-700 mb-1">Maximum Travel Distance (km)</label>
+                <div className="relative flex items-center">
+                  <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                    <MapPin className="w-3.5 h-3.5 text-slate-400" />
+                  </div>
+                  <input
+                    type="number"
+                    name="maxTravelDistance"
+                    value={formData.maxTravelDistance}
+                    onChange={handleChange}
+                    min="0"
+                    placeholder="e.g. 50"
+                    className="w-full pl-8 pr-10 py-1.5 text-[13px] font-medium bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
+                  />
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <span className="text-[11px] font-medium text-slate-400">km</span>
+                  </div>
+                </div>
+              </div>
+              <div className="md:col-span-2 flex items-center pt-1">
+                <label className="flex items-center cursor-pointer">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      name="willingToRelocate"
+                      checked={formData.willingToRelocate}
+                      onChange={handleChange}
+                      className="sr-only"
+                    />
+                    <div className={`block w-8 h-4 rounded-full transition-colors ${formData.willingToRelocate ? 'bg-indigo-500' : 'bg-slate-300'}`}></div>
+                    <div className={`absolute left-[2px] top-[2px] bg-white w-3 h-3 rounded-full transition-transform ${formData.willingToRelocate ? 'transform translate-x-4' : ''}`}></div>
+                  </div>
+                  <div className="ml-2.5 text-xs font-semibold text-slate-700">
+                    Willing to Relocate
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+
+        {/* RIGHT COLUMN */}
+        <div className="space-y-6">
+
+          {/* Documents Card */}
+          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 md:p-5 flex flex-col h-fit">
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
+                  <Folder className="w-4 h-4" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-bold text-slate-900">Documents</h2>
+                  <p className="text-[10px] text-slate-500 mt-0.5">Upload your documents to verify your profile</p>
+                </div>
+              </div>
+              <button type="button" className="text-[11px] font-medium text-slate-600 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-md hover:bg-slate-100 transition-colors">
+                View All
+              </button>
+            </div>
+
+            {/* Embed actual documents page here to keep it functional */}
+            <div className="flex-1 overflow-y-auto min-h-[200px]">
+               <MyDocumentsPage embedded={true} />
+            </div>
+          </div>
+
           {/* Work Preferences Card */}
           <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 md:p-5 h-fit">
             <div className="flex items-center gap-2.5 mb-4">
@@ -283,7 +369,7 @@ export default function WorkerProfilePage() {
               </div>
             </div>
             
-            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
               {WORK_PREFS.map(pref => {
                 const isSelected = formData.workPreferences.includes(pref.id);
                 return (
@@ -315,92 +401,6 @@ export default function WorkerProfilePage() {
             </p>
           </div>
 
-        </div>
-
-        {/* BOTTOM ROW: Location Preferences */}
-        <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4 md:p-5">
-          <div className="flex items-center gap-2.5 mb-4">
-            <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
-              <MapPin className="w-4 h-4" />
-            </div>
-            <div>
-              <h2 className="text-sm font-bold text-slate-900">Location Preferences</h2>
-              <p className="text-[10px] text-slate-500 mt-0.5">Tell us where you prefer to work</p>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <label className="block text-[11px] font-semibold text-slate-700 mb-1">Preferred State</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                  <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                </div>
-                <input
-                  type="text"
-                  name="preferredState"
-                  value={formData.preferredState}
-                  onChange={handleChange}
-                  placeholder="e.g. Kerala"
-                  className="w-full pl-8 pr-2.5 py-1.5 text-[13px] font-medium bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-[11px] font-semibold text-slate-700 mb-1">Preferred District</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                  <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                </div>
-                <input
-                  type="text"
-                  name="preferredDistrict"
-                  value={formData.preferredDistrict}
-                  onChange={handleChange}
-                  placeholder="e.g. Ernakulam"
-                  className="w-full pl-8 pr-2.5 py-1.5 text-[13px] font-medium bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-[11px] font-semibold text-slate-700 mb-1">Maximum Travel Distance (km)</label>
-              <div className="relative flex items-center">
-                <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                  <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                </div>
-                <input
-                  type="number"
-                  name="maxTravelDistance"
-                  value={formData.maxTravelDistance}
-                  onChange={handleChange}
-                  min="0"
-                  placeholder="e.g. 50"
-                  className="w-full pl-8 pr-10 py-1.5 text-[13px] font-medium bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
-                />
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                  <span className="text-[11px] font-medium text-slate-400">km</span>
-                </div>
-              </div>
-            </div>
-            <div className="md:col-span-2 lg:col-span-3 flex items-center pt-1">
-              <label className="flex items-center cursor-pointer">
-                <div className="relative">
-                  <input
-                    type="checkbox"
-                    name="willingToRelocate"
-                    checked={formData.willingToRelocate}
-                    onChange={handleChange}
-                    className="sr-only"
-                  />
-                  <div className={`block w-8 h-4 rounded-full transition-colors ${formData.willingToRelocate ? 'bg-indigo-500' : 'bg-slate-300'}`}></div>
-                  <div className={`absolute left-[2px] top-[2px] bg-white w-3 h-3 rounded-full transition-transform ${formData.willingToRelocate ? 'transform translate-x-4' : ''}`}></div>
-                </div>
-                <div className="ml-2.5 text-xs font-semibold text-slate-700">
-                  Willing to Relocate
-                </div>
-              </label>
-            </div>
-          </div>
         </div>
 
       </form>
