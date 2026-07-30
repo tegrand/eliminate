@@ -1,4 +1,5 @@
 import { Settings } from "lucide-react";
+import { Link } from "react-router-dom";
 import { DataTable } from "../../../components/ui/data-table";
 import { Pagination } from "../../../components/ui/pagination";
 import PayrollStatusBadge from "./PayrollStatusBadge";
@@ -21,9 +22,9 @@ export default function PayrollTable({ payrolls, loading, page, totalPages }) {
       title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />ACTIONS</div>,
       render: (row) => (
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-semibold">
-          <button className="text-blue-600 hover:text-blue-800 transition-colors">
+          <Link to={`/payrolls/${row.id}`} className="text-blue-600 hover:text-blue-800 transition-colors">
             View
-          </button>
+          </Link>
           {row.status === "PENDING_APPROVAL" && (
             <button className="text-green-600 hover:text-green-800 transition-colors">
               Approve

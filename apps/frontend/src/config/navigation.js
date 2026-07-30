@@ -237,4 +237,16 @@ export const NAVIGATION_CONFIG = [
       },
     ],
   },
+  {
+    group: "Financial Management",
+    roles: ADMIN_ONLY,
+    items: [
+      {
+        title: "Payrolls",
+        path: ROUTES.PAYROLLS,
+        icon: DollarSign,
+        roles: ADMIN_ONLY,
+      },
+    ],
+  },
 ];

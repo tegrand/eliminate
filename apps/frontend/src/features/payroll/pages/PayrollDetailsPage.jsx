@@ -8,8 +8,26 @@ import OvertimeSummaryCard from "../components/OvertimeSummaryCard";
 import DeductionCard from "../components/DeductionCard";
 import ApprovalTimeline from "../components/ApprovalTimeline";
 
-const MOCK_PAYROLL = null;
-const MOCK_SALARIES = [];
+const MOCK_PAYROLL = {
+  id: "PAY-2024-01",
+  period: "January 2024",
+  totalAmount: "₹1,450,000",
+  totalWorkers: 50,
+  generatedDate: "Feb 1, 2024",
+  status: "PENDING_APPROVAL"
+};
+
+const MOCK_SALARIES = [
+  { id: 1, workerName: "Rahul M", role: "Mason", basicPay: "₹25,000", overtime: "₹3,500", deductions: "₹500", netPay: "₹28,000", status: "Pending" },
+  { id: 2, workerName: "Suresh K", role: "Helper", basicPay: "₹18,000", overtime: "₹2,000", deductions: "₹200", netPay: "₹19,800", status: "Pending" },
+  { id: 3, workerName: "Anil T", role: "Painter", basicPay: "₹22,000", overtime: "₹4,000", deductions: "₹0", netPay: "₹26,000", status: "Pending" }
+];
+
+const MOCK_STATS = {
+  attendance: { present: 1420, absent: 30, leaves: 50 },
+  overtime: { totalHours: 120, amount: "₹15,000" },
+  deductions: { advances: "₹5,000", damages: "₹1,500", other: "₹0" }
+};
 
 export default function PayrollDetailsPage() {
   const { id } = useParams();
@@ -40,9 +58,9 @@ export default function PayrollDetailsPage() {
       <PayrollSummaryCard payroll={MOCK_PAYROLL} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        <AttendanceSummaryCard stats={null} />
-        <OvertimeSummaryCard stats={null} />
-        <DeductionCard stats={null} />
+        <AttendanceSummaryCard stats={MOCK_STATS.attendance} />
+        <OvertimeSummaryCard stats={MOCK_STATS.overtime} />
+        <DeductionCard stats={MOCK_STATS.deductions} />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
