@@ -146,8 +146,7 @@ export default function WorkerSkillsPage() {
           <h1 className="text-2xl font-bold text-slate-900">My Skills</h1>
           <p className="text-sm text-slate-500 mt-1">Manage your professional skills and proficiencies</p>
         </div>
-        <Button onClick={() => openModal()}>
-          <Plus className="w-4 h-4 mr-2" />
+        <Button leftIcon={<Plus className="w-4 h-4" />} onClick={() => openModal()}>
           Add Skill
         </Button>
       </div>
