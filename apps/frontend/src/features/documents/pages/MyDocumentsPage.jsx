@@ -48,9 +48,9 @@ export default function MyDocumentsPage({ embedded = false }) {
     fetchDocuments();
   }, []);
 
-  const openUploadModal = () => {
+  const openUploadModal = (type = "AADHAAR") => {
     setModalMode("upload");
-    setDocType("AADHAAR");
+    setDocType(type);
     setFile(null);
     setSelectedDocId(null);
     setIsModalOpen(true);
@@ -161,6 +161,56 @@ export default function MyDocumentsPage({ embedded = false }) {
         <div className="flex items-center justify-center py-20">
           <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
         </div>
+      ) : embedded ? (
+        <div className="flex flex-col space-y-3">
+          {[
+            { id: 'resume', type: 'EXPERIENCE_CERTIFICATE', title: 'Resume / CV', desc: 'Upload your latest resume', icon: FileText, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+            { id: 'id_proof', type: 'AADHAAR', title: 'ID Proof', desc: 'Aadhaar, PAN, Passport, etc.', icon: FileCheck, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+            { id: 'address', type: 'OTHER', title: 'Address Proof', desc: 'Utility bill, Rent agreement, etc.', icon: FileText, color: 'text-amber-600', bg: 'bg-amber-50' }
+          ].map(req => {
+            const uploadedDoc = documents.find(d => 
+              (req.id === 'resume' && d.documentType === 'EXPERIENCE_CERTIFICATE') ||
+              (req.id === 'id_proof' && ['AADHAAR', 'PAN', 'PASSPORT'].includes(d.documentType)) ||
+              (req.id === 'address' && d.documentType === 'OTHER')
+            );
+            
+            return (
+              <div key={req.id} className="flex items-center justify-between p-4 rounded-xl border border-slate-100 bg-white shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-4">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${req.bg} ${req.color}`}>
+                    <req.icon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900">{req.title}</h3>
+                    <p className="text-xs text-slate-500">{uploadedDoc ? uploadedDoc.fileName : req.desc}</p>
+                  </div>
+                </div>
+                {uploadedDoc ? (
+                  <Button type="button" size="sm" variant="outline" className="text-slate-600 border-slate-200" onClick={() => openReplaceModal(uploadedDoc)}>
+                    Replace
+                  </Button>
+                ) : (
+                  <Button type="button" size="sm" variant="outline" className="text-indigo-600 border-indigo-100 hover:bg-indigo-50" onClick={() => openUploadModal(req.type)}>
+                    <Upload className="w-3.5 h-3.5 mr-1.5" />
+                    Upload
+                  </Button>
+                )}
+              </div>
+            );
+          })}
+          
+          <div className="pt-4 flex items-center gap-3">
+            <span className="text-[10px] font-semibold text-slate-500 whitespace-nowrap">
+              {documents.length} of 3 documents uploaded
+            </span>
+            <div className="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-indigo-500 rounded-full" 
+                style={{ width: `${Math.min(100, (documents.length / 3) * 100)}%` }} 
+              />
+            </div>
+          </div>
+        </div>
       ) : documents.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center">
           <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -170,7 +220,7 @@ export default function MyDocumentsPage({ embedded = false }) {
           <p className="text-slate-500 max-w-md mx-auto mb-6">
             Upload your Aadhaar, PAN card, or other required certificates to get your profile verified.
           </p>
-          <Button onClick={openUploadModal}>Upload Document</Button>
+          <Button onClick={() => openUploadModal()}>Upload Document</Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
