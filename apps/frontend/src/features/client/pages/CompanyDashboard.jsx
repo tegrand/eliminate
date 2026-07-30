@@ -58,15 +58,7 @@ export default function CompanyDashboard() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto animate-fade-in">
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-1.5">
-          <div className="p-1.5 bg-indigo-100 rounded-lg text-indigo-700">
-            <Building2 className="w-5 h-5" />
-          </div>
-          <h1 className="text-2xl font-bold text-slate-900">Company Dashboard</h1>
-        </div>
-        <p className="text-sm text-slate-500">Welcome back, {user?.clientProfile?.companyName || "Company Admin"}. Manage your enterprise operations.</p>
-      </div>
+
 
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
