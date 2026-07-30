@@ -55,6 +55,9 @@ export default function WorkerListPage() {
   if (skillFilter) {
     displayedWorkers = displayedWorkers.filter(w => w.primarySkill === skillFilter);
   }
+  
+  const statsWorkers = displayedWorkers;
+
   if (currentStatus !== "ALL") {
     displayedWorkers = displayedWorkers.filter(w => w.status === currentStatus);
   }
@@ -71,7 +74,9 @@ export default function WorkerListPage() {
     <div className="w-full h-[calc(100vh-4rem)] px-4 pb-4 pt-4 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
       <WorkerToolbar totalWorkers={displayedWorkers.length} />
       
-      <WorkerStats workers={normalizedWorkers} />
+      {!(user?.profileType === "AGENCY" && viewMode !== "my") && (
+        <WorkerStats workers={statsWorkers} />
+      )}
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col flex-1 overflow-hidden">
         <div className="border-b border-gray-100 px-6 pt-1 flex-shrink-0">
