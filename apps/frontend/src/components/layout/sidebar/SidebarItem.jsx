@@ -90,17 +90,19 @@ export default function SidebarItem({ item }) {
     );
   }
 
-  return (
     <NavLink
       to={item.path}
-      className={({ isActive }) =>
-        clsx(
+      className={() => {
+        const isPathMatch = location.pathname === item.path.split('?')[0];
+        const isQueryMatch = item.path.includes('?') ? location.search === `?${item.path.split('?')[1]}` : true;
+        const actuallyActive = isPathMatch && isQueryMatch;
+        return clsx(
           "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-normal transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500",
-          isActive
-            ? "bg-blue-50 text-blue-700"
+          actuallyActive
+            ? "bg-blue-50 text-blue-700 font-semibold"
             : "text-gray-500 hover:bg-gray-50 hover:text-gray-800"
-        )
-      }
+        );
+      }}
     >
       {Icon && <Icon className="h-5 w-5 flex-shrink-0" />}
       <span className="truncate">{getI18nKey(item.title) ? t(getI18nKey(item.title)) : item.title}</span>

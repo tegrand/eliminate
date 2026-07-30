@@ -2,9 +2,12 @@ import { Search, Filter, Plus, ChevronDown, UserPlus, Link as LinkIcon } from "l
 import toast from "react-hot-toast";
 import { useAuth } from "../../../hooks/useAuth";
 import { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 export default function WorkerToolbar() {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
+  const viewMode = searchParams.get("view") || "all";
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -42,7 +45,7 @@ export default function WorkerToolbar() {
           Export
         </button>
 
-        {user?.profileType === "AGENCY" && (
+        {user?.profileType === "AGENCY" && viewMode !== "my" && (
           <div className="relative" ref={dropdownRef}>
             <button 
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
