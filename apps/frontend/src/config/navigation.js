@@ -20,6 +20,7 @@ import {
   ShieldCheck,
   ClipboardList,
   UserCheck,
+  UserPlus,
 } from "lucide-react";
 
 const ALL_ROLES = ["SUPER_ADMIN", "CLIENT", "AGENCY", "WORKER"];
@@ -128,9 +129,15 @@ export const NAVIGATION_CONFIG = [
     roles: ["AGENCY"],
     items: [
       {
-        title: "Workers",
+        title: "Our Workers",
         path: ROUTES.WORKERS,
         icon: Users,
+        roles: ["AGENCY"],
+      },
+      {
+        title: "Find / Add Workers",
+        path: ROUTES.WORKFORCE_SEARCH,
+        icon: UserPlus,
         roles: ["AGENCY"],
       },
     ],
