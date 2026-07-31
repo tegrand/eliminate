@@ -53,8 +53,18 @@ export default function AgencyDetailsPage() {
     try {
       let status = actionType;
       if (actionType === 'REACTIVATE') status = 'APPROVED';
+      if (actionType === 'APPROVE') status = 'APPROVED';
+      if (actionType === 'REJECT') status = 'REJECTED';
+      if (actionType === 'SUSPEND') status = 'SUSPENDED';
+      
       await agencyApi.updateAgencyStatus(id, status);
-      toast.success(`Agency ${actionType.toLowerCase()}d successfully.`);
+      
+      // For toast message formatting
+      const actionPastTense = actionType === 'REACTIVATE' ? 'reactivated' : 
+                              actionType === 'APPROVE' ? 'approved' : 
+                              actionType === 'REJECT' ? 'rejected' : 'suspended';
+                              
+      toast.success(`Agency ${actionPastTense} successfully.`);
       queryClient.invalidateQueries({ queryKey: ["agency", id] });
       queryClient.invalidateQueries({ queryKey: ["agencies"] });
     } catch (error) {
