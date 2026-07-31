@@ -138,69 +138,66 @@ export default function WorkerInvitationsPage() {
             </div>
           ) : (
             jobInvitations.map(invite => (
-              <div key={invite.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 hover:shadow-md transition-shadow">
-                <div className="flex flex-col md:flex-row justify-between gap-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 text-indigo-600">
+              <div key={invite.id} className="group bg-white rounded-xl border border-slate-200/60 shadow-sm hover:shadow-md hover:border-slate-300/80 transition-all duration-200 p-3.5">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="w-10 h-10 rounded-lg bg-indigo-50/80 flex items-center justify-center shrink-0 text-indigo-600 border border-indigo-100/50">
                       <Briefcase className="w-5 h-5" />
                     </div>
-                    <div>
-                      <h3 className="text-base font-bold text-slate-900 leading-tight">{invite.title}</h3>
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-1.5 text-xs text-slate-500">
-                        <span className="flex items-center gap-1.5 font-medium text-slate-700">
-                          <Building2 className="w-4 h-4 text-slate-400" />
+                    <div className="min-w-0">
+                      <h3 className="text-sm font-semibold text-slate-900 truncate">{invite.title}</h3>
+                      <div className="flex flex-wrap items-center gap-3 mt-1 text-[13px] text-slate-500">
+                        <span className="flex items-center gap-1.5 truncate">
+                          <Building2 className="w-3.5 h-3.5 text-slate-400" />
                           {invite.client ? invite.client.clientCode : invite.agency ? invite.agency.agencyName : "Direct Invite"}
                         </span>
                         {invite.proposedRate && (
-                          <span className="flex items-center gap-1.5">
-                            <DollarSign className="w-4 h-4 text-slate-400" />
+                          <span className="flex items-center gap-1 shrink-0">
+                            <DollarSign className="w-3.5 h-3.5 text-slate-400" />
                             ₹{invite.proposedRate}
                           </span>
                         )}
                         {invite.startDate && (
-                          <span className="flex items-center gap-1.5">
-                            <Calendar className="w-4 h-4 text-slate-400" />
+                          <span className="flex items-center gap-1 shrink-0">
+                            <Calendar className="w-3.5 h-3.5 text-slate-400" />
                             {new Date(invite.startDate).toLocaleDateString()}
                           </span>
                         )}
                       </div>
-                      {invite.description && <p className="mt-3 text-sm text-slate-600 line-clamp-2">{invite.description}</p>}
                     </div>
                   </div>
                   
-                  <div className="flex flex-row md:flex-col justify-end gap-2 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-4 mt-4 md:mt-0">
+                  <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
                     <Button 
                       size="sm"
                       variant="outline"
-                      className="text-slate-600 border-slate-200 hover:bg-slate-50 w-full md:w-auto flex justify-center"
+                      className="h-8 px-3 text-xs font-medium text-slate-600 bg-white border-slate-200 hover:bg-slate-50 hover:text-slate-900 shadow-sm w-full sm:w-auto"
                       onClick={() => openDetails(invite)}
                     >
                       <Eye className="w-3.5 h-3.5 mr-1.5" />
                       Details
                     </Button>
-                    <div className="flex gap-2 w-full md:w-auto">
-                      <Button 
-                        size="sm"
-                        variant="outline"
-                        className="text-red-600 hover:bg-red-50 border-red-200 hover:border-red-300 flex-1 md:flex-none justify-center"
-                        onClick={() => rejectJobMutation.mutate(invite.id)}
-                        loading={rejectJobMutation.isPending && rejectJobMutation.variables === invite.id}
-                        disabled={acceptJobMutation.isPending || rejectJobMutation.isPending}
-                      >
-                        <XCircle className="w-3.5 h-3.5 mr-1.5 md:mr-0 lg:mr-1.5" />
-                        <span className="md:hidden lg:inline">Reject</span>
-                      </Button>
-                      <Button 
-                        size="sm"
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 flex-1 md:flex-none justify-center"
-                        onClick={() => acceptJobMutation.mutate(invite.id)}
-                        loading={acceptJobMutation.isPending && acceptJobMutation.variables === invite.id}
-                        disabled={acceptJobMutation.isPending || rejectJobMutation.isPending}
-                      >
-                        <CheckCircle2 className="w-3.5 h-3.5 mr-1.5 md:mr-0 lg:mr-1.5" />
-                        <span className="md:hidden lg:inline">Accept</span>
-                      </Button>
-                    </div>
+                    <Button 
+                      size="sm"
+                      variant="outline"
+                      className="h-8 px-3 text-xs font-medium text-red-600 bg-white border-red-200 hover:bg-red-50 hover:border-red-300 shadow-sm w-full sm:w-auto"
+                      onClick={() => rejectJobMutation.mutate(invite.id)}
+                      loading={rejectJobMutation.isPending && rejectJobMutation.variables === invite.id}
+                      disabled={acceptJobMutation.isPending || rejectJobMutation.isPending}
+                    >
+                      <XCircle className="w-3.5 h-3.5 mr-1.5" />
+                      Reject
+                    </Button>
+                    <Button 
+                      size="sm"
+                      className="h-8 px-3 text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm border-transparent w-full sm:w-auto"
+                      onClick={() => acceptJobMutation.mutate(invite.id)}
+                      loading={acceptJobMutation.isPending && acceptJobMutation.variables === invite.id}
+                      disabled={acceptJobMutation.isPending || rejectJobMutation.isPending}
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
+                      Accept
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -218,62 +215,60 @@ export default function WorkerInvitationsPage() {
             </div>
           ) : (
             agencyInvitations.map(invite => (
-              <div key={invite.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 hover:shadow-md transition-shadow">
-                <div className="flex flex-col md:flex-row justify-between gap-4">
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 text-blue-600">
+              <div key={invite.id} className="group bg-white rounded-xl border border-slate-200/60 shadow-sm hover:shadow-md hover:border-slate-300/80 transition-all duration-200 p-3.5">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="w-10 h-10 rounded-lg bg-blue-50/80 flex items-center justify-center shrink-0 text-blue-600 border border-blue-100/50">
                       <Building2 className="w-5 h-5" />
                     </div>
-                    <div>
-                      <h3 className="text-base font-bold text-slate-900 leading-tight">{invite.agency?.agencyName}</h3>
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-1.5 text-xs text-slate-500">
-                        <span className="flex items-center gap-1.5 font-medium text-slate-700">
-                          <Briefcase className="w-4 h-4 text-slate-400" />
+                    <div className="min-w-0">
+                      <h3 className="text-sm font-semibold text-slate-900 truncate">{invite.agency?.agencyName}</h3>
+                      <div className="flex flex-wrap items-center gap-3 mt-1 text-[13px] text-slate-500">
+                        <span className="flex items-center gap-1.5 shrink-0">
+                          <Briefcase className="w-3.5 h-3.5 text-slate-400" />
                           Agency Invite
                         </span>
-                        <span className="flex items-center gap-1.5">
+                        <span className="flex items-center gap-1.5 truncate">
                           Contact: {invite.agency?.contactPerson || "N/A"}
                         </span>
-                        <span className="flex items-center gap-1.5">
+                        <span className="flex items-center gap-1.5 shrink-0">
                           {invite.agency?.phone || "No phone"}
                         </span>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="flex flex-row md:flex-col justify-end gap-2 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-4 md:pt-0 md:pl-4 mt-4 md:mt-0">
+                  <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
                     <Button 
                       size="sm"
                       variant="outline"
-                      className="text-slate-600 border-slate-200 hover:bg-slate-50 w-full md:w-auto flex justify-center"
+                      className="h-8 px-3 text-xs font-medium text-slate-600 bg-white border-slate-200 hover:bg-slate-50 hover:text-slate-900 shadow-sm w-full sm:w-auto"
                       onClick={() => openDetails({ ...invite, isAgencyInvite: true })}
                     >
                       <Eye className="w-3.5 h-3.5 mr-1.5" />
                       Details
                     </Button>
-                    <div className="flex gap-2 w-full md:w-auto">
-                      <Button 
-                        size="sm"
-                        variant="outline"
-                        className="text-red-600 hover:bg-red-50 border-red-200 hover:border-red-300 flex-1 md:flex-none justify-center"
-                        onClick={() => rejectAgencyMutation.mutate(invite.agencyId)}
-                        loading={rejectAgencyMutation.isPending && rejectAgencyMutation.variables === invite.agencyId}
-                        disabled={acceptAgencyMutation.isPending || rejectAgencyMutation.isPending}
-                      >
-                        <XCircle className="w-3.5 h-3.5 mr-1.5 md:mr-0 lg:mr-1.5" />
-                        <span className="md:hidden lg:inline">Reject</span>
-                      </Button>
-                      <Button 
-                        size="sm"
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 flex-1 md:flex-none justify-center"
-                        onClick={() => acceptAgencyMutation.mutate(invite.agencyId)}
-                        loading={acceptAgencyMutation.isPending && acceptAgencyMutation.variables === invite.agencyId}
-                        disabled={acceptAgencyMutation.isPending || rejectAgencyMutation.isPending}
-                      >
-                        <CheckCircle2 className="w-3.5 h-3.5 mr-1.5 md:mr-0 lg:mr-1.5" />
-                        <span className="md:hidden lg:inline">Accept</span>
-                      </Button>
-                    </div>
+                    <Button 
+                      size="sm"
+                      variant="outline"
+                      className="h-8 px-3 text-xs font-medium text-red-600 bg-white border-red-200 hover:bg-red-50 hover:border-red-300 shadow-sm w-full sm:w-auto"
+                      onClick={() => rejectAgencyMutation.mutate(invite.agencyId)}
+                      loading={rejectAgencyMutation.isPending && rejectAgencyMutation.variables === invite.agencyId}
+                      disabled={acceptAgencyMutation.isPending || rejectAgencyMutation.isPending}
+                    >
+                      <XCircle className="w-3.5 h-3.5 mr-1.5" />
+                      Reject
+                    </Button>
+                    <Button 
+                      size="sm"
+                      className="h-8 px-3 text-xs font-medium bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm border-transparent w-full sm:w-auto"
+                      onClick={() => acceptAgencyMutation.mutate(invite.agencyId)}
+                      loading={acceptAgencyMutation.isPending && acceptAgencyMutation.variables === invite.agencyId}
+                      disabled={acceptAgencyMutation.isPending || rejectAgencyMutation.isPending}
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
+                      Accept
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -290,31 +285,92 @@ export default function WorkerInvitationsPage() {
               <div className="space-y-6">
                 <div>
                   <h3 className="text-xl font-bold text-slate-900">{selectedInvite.title}</h3>
-                  <p className="text-sm font-medium text-indigo-600 mt-1">
-                    {selectedInvite.client ? `Client: ${selectedInvite.client.clientCode}` : selectedInvite.agency ? `Agency: ${selectedInvite.agency.agencyName}` : "Direct Invite"}
-                  </p>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2">
+                    <p className="text-sm font-medium text-indigo-600 flex items-center gap-1.5">
+                      <Building2 className="w-4 h-4" />
+                      {selectedInvite.client?.companyName || selectedInvite.client?.clientCode ? `Client: ${selectedInvite.client.companyName || selectedInvite.client.clientCode}` : selectedInvite.agency ? `Agency: ${selectedInvite.agency.agencyName}` : "Direct Invite"}
+                    </p>
+                    <span className="hidden sm:inline text-slate-300">•</span>
+                    <p className="text-sm text-slate-500 flex items-center gap-1.5">
+                      <Clock className="w-4 h-4" />
+                      Invited: {new Date(selectedInvite.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                   {selectedInvite.proposedRate && (
                     <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
                       <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Proposed Rate</p>
-                      <p className="font-bold text-slate-900 flex items-center gap-1.5"><DollarSign className="w-4 h-4 text-slate-400" /> ₹{selectedInvite.proposedRate}</p>
+                      <p className="font-bold text-slate-900 flex items-center gap-1.5"><DollarSign className="w-4 h-4 text-emerald-500" /> ₹{selectedInvite.proposedRate}</p>
                     </div>
                   )}
                   {selectedInvite.startDate && (
                     <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
                       <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Start Date</p>
-                      <p className="font-bold text-slate-900 flex items-center gap-1.5"><Calendar className="w-4 h-4 text-slate-400" /> {new Date(selectedInvite.startDate).toLocaleDateString()}</p>
+                      <p className="font-bold text-slate-900 flex items-center gap-1.5"><Calendar className="w-4 h-4 text-indigo-400" /> {new Date(selectedInvite.startDate).toLocaleDateString()}</p>
+                    </div>
+                  )}
+                  {selectedInvite.endDate && (
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                      <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">End Date</p>
+                      <p className="font-bold text-slate-900 flex items-center gap-1.5"><Calendar className="w-4 h-4 text-red-400" /> {new Date(selectedInvite.endDate).toLocaleDateString()}</p>
+                    </div>
+                  )}
+                  {selectedInvite.jobRequirement?.requiredWorkers && (
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                      <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Required Workers</p>
+                      <p className="font-bold text-slate-900">{selectedInvite.jobRequirement.requiredWorkers}</p>
+                    </div>
+                  )}
+                  {selectedInvite.jobRequirement?.shift && (
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                      <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Shift</p>
+                      <p className="font-bold text-slate-900">{selectedInvite.jobRequirement.shift}</p>
+                    </div>
+                  )}
+                  {(selectedInvite.jobRequirement?.startTime || selectedInvite.jobRequirement?.endTime) && (
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                      <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Timings</p>
+                      <p className="font-bold text-slate-900">{selectedInvite.jobRequirement?.startTime || '-'} to {selectedInvite.jobRequirement?.endTime || '-'}</p>
+                    </div>
+                  )}
+                  {selectedInvite.jobRequirement?.experienceRequired && (
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                      <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Experience Reqd</p>
+                      <p className="font-bold text-slate-900">{selectedInvite.jobRequirement.experienceRequired}</p>
+                    </div>
+                  )}
+                  {selectedInvite.jobRequirement?.duration && (
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                      <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Duration</p>
+                      <p className="font-bold text-slate-900">{selectedInvite.jobRequirement.duration}</p>
+                    </div>
+                  )}
+                  {selectedInvite.jobRequirement?.genderPreference && (
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                      <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Gender Pref.</p>
+                      <p className="font-bold text-slate-900">{selectedInvite.jobRequirement.genderPreference}</p>
                     </div>
                   )}
                 </div>
 
-                {selectedInvite.description && (
+                {selectedInvite.jobRequirement && (selectedInvite.jobRequirement.accommodation || selectedInvite.jobRequirement.food || selectedInvite.jobRequirement.transport) && (
+                  <div>
+                    <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Facilities Provided</p>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedInvite.jobRequirement.accommodation && <span className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-medium border border-blue-100">Accommodation</span>}
+                      {selectedInvite.jobRequirement.food && <span className="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-md text-xs font-medium border border-amber-100">Food</span>}
+                      {selectedInvite.jobRequirement.transport && <span className="px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-md text-xs font-medium border border-emerald-100">Transport</span>}
+                    </div>
+                  </div>
+                )}
+
+                {(selectedInvite.description || selectedInvite.jobRequirement?.description) && (
                   <div>
                     <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Description</p>
                     <div className="text-sm text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-100 whitespace-pre-wrap">
-                      {selectedInvite.description}
+                      {selectedInvite.description || selectedInvite.jobRequirement?.description}
                     </div>
                   </div>
                 )}
@@ -329,19 +385,37 @@ export default function WorkerInvitationsPage() {
             ) : (
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-bold text-slate-900">{selectedInvite.agency?.agencyName}</h3>
-                  <p className="text-sm font-medium text-indigo-600 mt-1 flex items-center gap-1.5"><Building2 className="w-4 h-4" /> Agency Invitation</p>
+                  <h3 className="text-xl font-bold text-slate-900">{selectedInvite.agency?.agencyName || selectedInvite.agencyName}</h3>
+                  <p className="text-sm font-medium text-indigo-600 mt-1 flex items-center gap-1.5">
+                    <Building2 className="w-4 h-4" /> 
+                    Agency Invitation {selectedInvite.agencyCode || selectedInvite.agency?.agencyCode ? `(${selectedInvite.agencyCode || selectedInvite.agency?.agencyCode})` : ""}
+                  </p>
                 </div>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
                     <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Contact Person</p>
-                    <p className="font-bold text-slate-900">{selectedInvite.agency?.contactPerson || "N/A"}</p>
+                    <p className="font-bold text-slate-900">{selectedInvite.agency?.contactPerson || selectedInvite.contactPerson || "Not provided"}</p>
                   </div>
                   <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
                     <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Phone Number</p>
-                    <p className="font-bold text-slate-900">{selectedInvite.agency?.phone || "N/A"}</p>
+                    <p className="font-bold text-slate-900">{selectedInvite.agency?.phone || selectedInvite.phone || "Not provided"}</p>
                   </div>
+                  {(selectedInvite.agency?.email || selectedInvite.email) && (
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                      <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Email</p>
+                      <p className="font-bold text-slate-900">{selectedInvite.agency?.email || selectedInvite.email}</p>
+                    </div>
+                  )}
+                  {(selectedInvite.invitedAt || selectedInvite.createdAt) && (
+                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                      <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Invited On</p>
+                      <p className="font-bold text-slate-900 flex items-center gap-1.5">
+                        <Calendar className="w-4 h-4 text-slate-400" />
+                        {new Date(selectedInvite.invitedAt || selectedInvite.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
