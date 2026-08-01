@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Users, Loader2 } from "lucide-react";
+import { Users, Loader2, Filter, X } from "lucide-react";
 import WorkerSearchFilters from "../components/WorkerSearchFilters";
 import WorkerSearchCard from "../components/WorkerSearchCard";
 import { workerApi } from "../../worker/api/worker.api";
@@ -19,6 +19,7 @@ const DEFAULT_FILTERS = {
 
 export default function ClientWorkerSearchPage() {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
   // Fetch all workers (backend will return paginated, we just use items for this UI demo)
   const { data, isLoading, error } = useQuery({
@@ -97,31 +98,30 @@ export default function ClientWorkerSearchPage() {
 
       <div className="flex flex-col lg:flex-row gap-6 items-start relative">
         
-        {/* Sidebar Filters */}
-        <div className="w-full lg:w-72 shrink-0">
-              <WorkerSearchFilters 
-                filters={filters} 
-                setFilters={setFilters} 
-                onClear={() => setFilters(DEFAULT_FILTERS)} 
-                workers={workers}
-              />
-            </div>
-
-            {/* Results Grid */}
-            <div className="flex-1 min-w-0 w-full">
+        {/* Results Grid */}
+        <div className="flex-1 min-w-0 w-full">
               
               {/* Results count bar */}
               <div className="bg-white rounded-xl border border-gray-200 shadow-sm px-5 py-3 mb-6 flex flex-wrap items-center justify-between gap-4">
                 <p className="text-sm font-medium text-gray-700">
                   Showing <span className="font-bold text-gray-900">{filteredWorkers.length}</span> worker{filteredWorkers.length !== 1 ? 's' : ''}
                 </p>
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <span>Sort by:</span>
-                  <select className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all font-medium text-gray-700">
-                    <option>Recommended</option>
-                    <option>Experience: High to Low</option>
-                    <option>Recently Added</option>
-                  </select>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setIsFilterModalOpen(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg text-sm font-bold shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5"
+                  >
+                    <Filter className="w-4 h-4" />
+                    Filters
+                  </button>
+                  <div className="flex items-center gap-2 text-sm text-gray-500 border-l border-gray-200 pl-3">
+                    <span>Sort by:</span>
+                    <select className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all font-medium text-gray-700">
+                      <option>Recommended</option>
+                      <option>Experience: High to Low</option>
+                      <option>Recently Added</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -160,6 +160,25 @@ export default function ClientWorkerSearchPage() {
             </div>
           </div>
           
+      {/* Filter Modal */}
+      {isFilterModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
+          <div className="relative w-full max-w-sm">
+            <button 
+              onClick={() => setIsFilterModalOpen(false)}
+              className="absolute -top-3 -right-3 z-10 p-1.5 bg-white rounded-full shadow-md text-gray-500 hover:text-gray-700 border border-gray-200"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <WorkerSearchFilters 
+              filters={filters} 
+              setFilters={setFilters} 
+              onClear={() => setFilters(DEFAULT_FILTERS)} 
+              workers={workers}
+            />
+          </div>
+        </div>
+      )}
         </div>
   );
 }

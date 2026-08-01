@@ -1,11 +1,12 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Building2 } from "lucide-react";
+import { Building2, Filter, X } from "lucide-react";
 import { agencyApi } from "../../agency/api/agency.api";
 import AgencySearchFilters from "../components/AgencySearchFilters";
 import AgencySearchCard from "../components/AgencySearchCard";
 
 export default function ClientAgencySearchPage() {
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [filters, setFilters] = useState({
     search: "",
     location: "",
@@ -61,15 +62,6 @@ export default function ClientAgencySearchPage() {
 
       <div className="flex flex-col lg:flex-row gap-6 items-start relative">
         
-        {/* Sidebar Filters */}
-        <div className="w-full lg:w-72 shrink-0">
-          <AgencySearchFilters 
-            filters={filters} 
-            setFilters={setFilters} 
-            onClear={handleClearFilters}
-          />
-        </div>
-
         {/* Main Content Area */}
         <div className="flex-1 w-full min-w-0">
           {/* Header Controls */}
@@ -79,12 +71,21 @@ export default function ClientAgencySearchPage() {
             </div>
             
             <div className="flex items-center gap-3 w-full sm:w-auto">
-              <span className="text-sm text-gray-500">Sort by:</span>
-              <select className="flex-1 sm:flex-none bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all">
-                <option>Recommended</option>
-                <option>Highest Rated</option>
-                <option>Newest</option>
-              </select>
+              <button
+                onClick={() => setIsFilterModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg text-sm font-bold shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5"
+              >
+                <Filter className="w-4 h-4" />
+                Filters
+              </button>
+              <div className="flex items-center gap-2 text-sm text-gray-500 border-l border-gray-200 pl-3">
+                <span>Sort by:</span>
+                <select className="flex-1 sm:flex-none bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all">
+                  <option>Recommended</option>
+                  <option>Highest Rated</option>
+                  <option>Newest</option>
+                </select>
+              </div>
             </div>
           </div>
 
@@ -97,7 +98,7 @@ export default function ClientAgencySearchPage() {
 
           {/* Loading State */}
           {isLoading && !error && (
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
               {[1, 2, 3, 4].map(i => (
                 <div key={i} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm animate-pulse h-40">
                   <div className="flex gap-4">
@@ -114,7 +115,7 @@ export default function ClientAgencySearchPage() {
 
           {/* Agency Grid */}
           {!isLoading && !error && filteredAgencies.length > 0 && (
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
               {filteredAgencies.map((agency) => (
                 <AgencySearchCard key={agency.id} agency={agency} />
               ))}
@@ -142,6 +143,25 @@ export default function ClientAgencySearchPage() {
 
         </div>
       </div>
+      
+      {/* Filter Modal */}
+      {isFilterModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
+          <div className="relative w-full max-w-sm">
+            <button 
+              onClick={() => setIsFilterModalOpen(false)}
+              className="absolute -top-3 -right-3 z-10 p-1.5 bg-white rounded-full shadow-md text-gray-500 hover:text-gray-700 border border-gray-200"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <AgencySearchFilters 
+              filters={filters} 
+              setFilters={setFilters} 
+              onClear={handleClearFilters}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
