@@ -68,8 +68,8 @@ export default function ClientProfileForm({ clientData, refetchClient }) {
   };
 
   return (
-    <form onSubmit={handleSubmit(save)} className="flex flex-col animate-fade-in">
-      <div className="p-5">
+    <form onSubmit={handleSubmit(save)} className="flex flex-col h-full animate-fade-in">
+      <div className="p-5 flex-1">
         
         {/* Header & Image Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-gray-100">
@@ -185,7 +185,7 @@ export default function ClientProfileForm({ clientData, refetchClient }) {
       </div>
 
       {/* Save Button */}
-      <div className="px-5 py-3 bg-gray-50 border-t border-gray-200 flex justify-end">
+      <div className="px-5 py-4 bg-gray-50 border-t border-gray-200 flex justify-end mt-auto">
         <button type="submit" disabled={saving || !isDirty}
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}

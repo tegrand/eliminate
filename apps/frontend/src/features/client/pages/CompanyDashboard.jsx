@@ -1,10 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { companyApi } from "../api/company.api";
+import { dashboardApi } from "../../dashboard/api/dashboard.api";
 import { FolderKanban, MapPin, Users, Users2, Building2, Briefcase, Loader2, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../../routes/routePaths";
 import { useAuth } from "../../../hooks/useAuth";
 import DashboardCard from "../../dashboard/components/DashboardCard";
+import DashboardChartsRow from "../../dashboard/components/charts/DashboardChartsRow";
 
 export default function CompanyDashboard() {
   const { user } = useAuth();
@@ -29,7 +31,13 @@ export default function CompanyDashboard() {
     queryFn: () => companyApi.getTeams(),
   });
 
-  const isLoading = loadingProjects || loadingSites || loadingDepts || loadingTeams;
+  const { data: dashboardRes, isLoading: loadingDashboard } = useQuery({
+    queryKey: ["clientDashboard"],
+    queryFn: () => dashboardApi.getDashboardData(),
+  });
+
+  const isLoading = loadingProjects || loadingSites || loadingDepts || loadingTeams || loadingDashboard;
+  const chartData = dashboardRes?.data?.chartData;
 
   return (
     <div className="p-6 max-w-7xl mx-auto animate-fade-in">
@@ -76,19 +84,18 @@ export default function CompanyDashboard() {
         </div>
       )}
 
-      <div className="mt-8 bg-indigo-50 border border-indigo-100 rounded-xl p-5 lg:p-6 flex flex-col lg:flex-row items-center justify-between gap-5">
-        <div>
-          <h2 className="text-lg font-bold text-indigo-900 flex items-center gap-2 mb-1.5">
-            <Briefcase className="w-4 h-4" /> Enterprise Hiring
-          </h2>
-          <p className="text-sm text-indigo-700">Use the bulk hiring tools to request large numbers of workers across your departments and projects.</p>
-        </div>
-        <Link 
-          to={ROUTES.CLIENT_JOBS} 
-          className="bg-indigo-600 text-white px-5 py-2.5 text-sm rounded-lg font-bold hover:bg-indigo-700 transition-colors shrink-0 whitespace-nowrap shadow-sm hover:shadow-md"
-        >
-          Manage Job Requirements
-        </Link>
+
+
+      <div className="mt-8">
+        <DashboardChartsRow
+          lineTitle="Monthly Expenditure"
+          lineSubtitle="Monthly spending overview on assignments"
+          lineData={chartData?.lineData || []}
+          donutTitle="Project Status"
+          donutSubtitle="Status breakdown"
+          donutTotal={chartData?.donutTotal || 0}
+          donutData={chartData?.donutData || []}
+        />
       </div>
     </div>
   );

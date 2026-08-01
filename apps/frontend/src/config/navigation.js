@@ -119,19 +119,7 @@ export const NAVIGATION_CONFIG = [
     ],
   },
 
-  // ─── CLIENT ACCOUNT ──────────────────────────────────────────────────────
-  {
-    group: "Account",
-    roles: ["CLIENT"],
-    items: [
-      {
-        title: "Settings",
-        path: ROUTES.CLIENT_PROFILE,
-        icon: Settings,
-        roles: ["CLIENT"],
-      },
-    ],
-  },
+
 
   // ─── AGENCY PORTAL ───────────────────────────────────────────────────────
   {
@@ -205,6 +193,20 @@ export const NAVIGATION_CONFIG = [
         title: "Teams",
         path: ROUTES.COMPANY_TEAMS,
         icon: Users,
+        roles: ["CLIENT"],
+      },
+    ],
+  },
+
+  // ─── CLIENT ACCOUNT ──────────────────────────────────────────────────────
+  {
+    group: "Account",
+    roles: ["CLIENT"],
+    items: [
+      {
+        title: "Settings",
+        path: ROUTES.CLIENT_PROFILE,
+        icon: Settings,
         roles: ["CLIENT"],
       },
     ],
