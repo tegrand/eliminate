@@ -6,7 +6,7 @@ export default function StatCard({ icon: Icon, title, value, bgColor, iconColor,
   // We use bgColor (e.g. 'bg-blue-100') for the top-right arc.
   // If iconColor is provided (e.g. 'text-blue-600'), use it for the arrow.
   return (
-    <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-md transition-all group relative overflow-hidden flex flex-col justify-end min-h-[140px]">
+    <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-md transition-all group relative overflow-hidden flex flex-col justify-end min-h-[160px] h-full">
       <div className={`absolute top-0 right-0 w-20 h-20 ${bgColor || 'bg-blue-50'} opacity-70 rounded-bl-[100%] transition-transform group-hover:scale-110`} />
       
       <div className="absolute top-4 right-4 z-10">

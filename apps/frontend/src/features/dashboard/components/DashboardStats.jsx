@@ -1,7 +1,59 @@
-import { Users, Building, Building2, Ban, CheckCircle } from "lucide-react";
+import { Users, Building, Building2, Ban, CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
 import StatCard from "./StatCard";
 
 export default function DashboardStats() {
+  const scrollRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(true);
+
+  const checkScroll = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      setShowLeftArrow(scrollLeft > 0);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 5); // 5px tolerance
+    }
+  };
+
+  useEffect(() => {
+    checkScroll();
+    window.addEventListener("resize", checkScroll);
+    return () => window.removeEventListener("resize", checkScroll);
+  }, []);
+
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
+
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 2; // scroll speed
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  const scroll = (direction) => {
+    if (scrollRef.current) {
+      const container = scrollRef.current;
+      const scrollAmount = container.clientWidth * 0.75; // Scroll by 75% of container width
+      container.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+    }
+  };
+
   const stats = [
     { title: "Pending Workers", value: "0", icon: Users, bgColor: "bg-blue-50", iconColor: "text-blue-500" },
     { title: "Pending Agencies", value: "0", icon: Building2, bgColor: "bg-purple-50", iconColor: "text-purple-500" },
@@ -12,10 +64,42 @@ export default function DashboardStats() {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-      {stats.map((stat) => (
-        <StatCard key={stat.title} {...stat} />
-      ))}
+    <div className="relative group mb-2">
+      {showLeftArrow && (
+        <button 
+          onClick={() => scroll('left')} 
+          className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-20 bg-white shadow-lg border border-gray-100 rounded-full p-2 text-gray-500 hover:text-indigo-600 hover:bg-gray-50 transition-all focus:outline-none hidden md:flex"
+          aria-label="Scroll left"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+      )}
+
+      <div 
+        ref={scrollRef}
+        onMouseDown={handleMouseDown}
+        onMouseLeave={handleMouseLeave}
+        onMouseUp={handleMouseUp}
+        onMouseMove={handleMouseMove}
+        onScroll={checkScroll}
+        className={`flex overflow-x-auto gap-4 pb-2 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] ${isDragging ? 'cursor-grabbing select-none snap-none' : 'cursor-grab'}`}
+      >
+        {stats.map((stat) => (
+          <div key={stat.title} className="flex-none w-[85%] sm:w-[calc(50%-0.5rem)] md:w-[calc(33.333%-0.66rem)] lg:w-[calc(25%-0.75rem)] snap-start">
+            <StatCard {...stat} />
+          </div>
+        ))}
+      </div>
+
+      {showRightArrow && (
+        <button 
+          onClick={() => scroll('right')} 
+          className="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 z-20 bg-white shadow-lg border border-gray-100 rounded-full p-2 text-gray-500 hover:text-indigo-600 hover:bg-gray-50 transition-all focus:outline-none hidden md:flex"
+          aria-label="Scroll right"
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
+      )}
     </div>
   );
 }

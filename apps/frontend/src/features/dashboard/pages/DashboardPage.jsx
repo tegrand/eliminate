@@ -2,10 +2,10 @@ import { useAuth } from "../../../hooks/useAuth";
 import { Calendar, ChevronDown, BadgeCheck, Clock } from "lucide-react";
 
 import DashboardStats from "../components/DashboardStats";
-import UpcomingRequirements from "../components/UpcomingRequirements";
-import SystemOverview from "../components/SystemOverview";
 import RecentActivity from "../components/RecentActivity";
 import NotificationPanel from "../components/NotificationPanel";
+import EarningsOverview from "../components/EarningsOverview";
+import TaskCompletion from "../components/TaskCompletion";
 import WorkerDashboard from "../components/worker/WorkerDashboard";
 import WorkerAttendanceDropdown from "../components/worker/WorkerAttendanceDropdown";
 import ClientDashboard from "../components/client/ClientDashboard";
@@ -19,12 +19,12 @@ export default function DashboardPage() {
     <>
       <DashboardStats />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <UpcomingRequirements />
-        <SystemOverview />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-2">
+        <EarningsOverview />
+        <TaskCompletion />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         <RecentActivity />
         <NotificationPanel />
       </div>
