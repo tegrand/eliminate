@@ -1191,7 +1191,18 @@ model AssignmentTeam {
   assignment Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
   team       Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
-  @@unique([assignmentId, teamId])
   @@index([assignmentId])
   @@index([teamId])
+}
+
+model SystemSetting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([key])
 }

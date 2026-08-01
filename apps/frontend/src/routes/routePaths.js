@@ -85,4 +85,7 @@ export const ROUTES = {
   // Payments
   PAYMENTS: "/payments",
   PAYMENT_RECEIPT: "/payments/:id",
+
+  // Settings
+  SETTINGS: "/settings",
 };

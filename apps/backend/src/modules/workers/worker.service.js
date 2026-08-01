@@ -142,7 +142,7 @@ export const getWorkers = async ({
     ];
   }
 
-  const [items, total] = await Promise.all([
+  const [items, total, feeSetting] = await Promise.all([
     prisma.worker.findMany({
       where,
       skip,
@@ -151,10 +151,23 @@ export const getWorkers = async ({
       select: workerSelect,
     }),
     prisma.worker.count({ where }),
+    prisma.systemSetting.findUnique({ where: { key: "platform_fee_percentage" } })
   ]);
 
+  const platformFeePercentage = feeSetting && !isNaN(parseFloat(feeSetting.value)) ? parseFloat(feeSetting.value) : 0;
+
+  const adjustedItems = items.map(worker => {
+    if (worker.expectedDailyWage && platformFeePercentage > 0) {
+      const wage = parseFloat(worker.expectedDailyWage);
+      if (!isNaN(wage)) {
+        worker.expectedDailyWage = String(Math.round(wage + (wage * platformFeePercentage / 100)));
+      }
+    }
+    return worker;
+  });
+
   return {
-    items,
+    items: adjustedItems,
     pagination: {
       page: Number(page),
       limit: Number(limit),
@@ -177,6 +190,19 @@ export const getWorkerById = async (id, user) => {
   // RBAC Ownership Check
   if (user?.profileType === "WORKER" && worker.userId !== user.id) {
     throw new AppError("Forbidden: You cannot access another worker's profile.", 403);
+  }
+
+  // Only apply commission if user viewing is NOT the worker themselves
+  if (user?.profileType !== "WORKER" || worker.userId !== user.id) {
+    const feeSetting = await prisma.systemSetting.findUnique({ where: { key: "platform_fee_percentage" } });
+    const platformFeePercentage = feeSetting && !isNaN(parseFloat(feeSetting.value)) ? parseFloat(feeSetting.value) : 0;
+    
+    if (worker.expectedDailyWage && platformFeePercentage > 0) {
+      const wage = parseFloat(worker.expectedDailyWage);
+      if (!isNaN(wage)) {
+        worker.expectedDailyWage = String(Math.round(wage + (wage * platformFeePercentage / 100)));
+      }
+    }
   }
 
   return worker;

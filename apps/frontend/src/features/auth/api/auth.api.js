@@ -34,5 +34,9 @@ export const authApi = {
   
   resetPassword: async (data) => {
     return api.post("/auth/reset-password", data);
+  },
+  
+  changePassword: async (data) => {
+    return api.patch("/auth/change-password", data);
   }
 };

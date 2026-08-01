@@ -83,6 +83,8 @@ import InvoiceDetailsPage from "../features/invoice/pages/InvoiceDetailsPage";
 import PaymentListPage from "../features/payment/pages/PaymentListPage";
 import PaymentReceiptPage from "../features/payment/pages/PaymentReceiptPage";
 
+import SettingsPage from "../features/settings/pages/SettingsPage";
+
 const NotFoundPage = () => (
   <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
     <h1 className="text-4xl font-bold text-gray-900 mb-2">404 - Page Not Found</h1>
@@ -190,6 +192,9 @@ const AppRouter = () => {
             {/* Payments */}
             <Route path={ROUTES.PAYMENTS} element={<PaymentListPage />} />
             <Route path={ROUTES.PAYMENT_RECEIPT} element={<PaymentReceiptPage />} />
+
+            {/* System Settings */}
+            <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
 
           </Route>
         </Route>

@@ -28,6 +28,7 @@ import notificationsRoutes from "../modules/notifications/notifications.routes.j
 import reviewRoutes from "../modules/reviews/review.routes.js";
 import reportsRoutes from "../modules/reports/reports.routes.js";
 import complaintsRoutes from "../modules/complaints/complaints.routes.js";
+import settingsRoutes from "../modules/settings/settings.routes.js";
 
 const router = Router();
 
@@ -35,6 +36,7 @@ const router = Router();
 router.use("/auth", authRoutes);
 router.use("/users", usersRoutes);
 router.use("/dashboard", dashboardRoutes);
+router.use("/settings", settingsRoutes);
 
 // Entity Routes
 router.use("/workers/marketplace", workerMarketplaceRoutes);

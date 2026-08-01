@@ -21,6 +21,7 @@ import {
   ClipboardList,
   UserCheck,
   UserPlus,
+  Settings,
 } from "lucide-react";
 
 const ALL_ROLES = ["SUPER_ADMIN", "CLIENT", "AGENCY", "WORKER"];
@@ -232,14 +233,26 @@ export const NAVIGATION_CONFIG = [
       },
     ],
   },
+  // {
+  //   group: "Financial Management",
+  //   roles: ADMIN_ONLY,
+  //   items: [
+  //     {
+  //       title: "Payrolls",
+  //       path: ROUTES.PAYROLLS,
+  //       icon: DollarSign,
+  //       roles: ADMIN_ONLY,
+  //     },
+  //   ],
+  // },
   {
-    group: "Financial Management",
+    group: "System Configuration",
     roles: ADMIN_ONLY,
     items: [
       {
-        title: "Payrolls",
-        path: ROUTES.PAYROLLS,
-        icon: DollarSign,
+        title: "Settings",
+        path: ROUTES.SETTINGS,
+        icon: Settings,
         roles: ADMIN_ONLY,
       },
     ],
