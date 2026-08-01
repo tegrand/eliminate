@@ -103,7 +103,7 @@ export default function SettingsPage() {
 
         <div className="px-3 py-2 bg-gray-50 border-t border-gray-200 flex justify-end">
           <button
-            onClick={handlehandleSave}
+            onClick={handleSave}
             disabled={isSaving}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
