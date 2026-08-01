@@ -23,12 +23,21 @@ export default function DashboardChartsRow({
   donutData = [],
   donutTotal
 }) {
-  const isLineEmpty = lineData.every(d => d.value === 0);
-  const isEmptyDonut = donutData.length === 0 || donutData.every(d => d.value === 0);
+  const isLineEmpty = !lineData || lineData.length === 0 || lineData.every(d => d.value === 0);
+  const isEmptyDonut = !donutData || donutData.length === 0 || donutData.every(d => d.value === 0);
   
   const renderDonutData = isEmptyDonut 
     ? [{ name: 'No Data', value: 1 }] 
     : donutData;
+
+  const finalLineData = (!lineData || lineData.length === 0) ? [
+    { name: 'Jan', value: 0 },
+    { name: 'Feb', value: 0 },
+    { name: 'Mar', value: 0 },
+    { name: 'Apr', value: 0 },
+    { name: 'May', value: 0 },
+    { name: 'Jun', value: 0 }
+  ] : lineData;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6 mb-6">
@@ -40,7 +49,7 @@ export default function DashboardChartsRow({
         </div>
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={lineData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+            <LineChart data={finalLineData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
               <defs>
                 <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#f97316" stopOpacity={0.1} />

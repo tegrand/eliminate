@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import {
   User, Phone, Mail, MapPin, Lock, History, Monitor,
   Loader2, Save, Camera, ShieldCheck, LogOut, ChevronRight,
-  Globe, Hash, CheckCircle2, AlertCircle, Smartphone, Eye, EyeOff,
+  Globe, Hash, CheckCircle2, AlertCircle, Smartphone, Eye, EyeOff, Settings
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { usersApi } from "../../../api/users.api";
@@ -12,12 +12,7 @@ import { useAuth } from "../../../hooks/useAuth";
 import { clientApi } from "../api/client.api";
 import ClientProfileForm from "../components/ClientProfileForm";
 
-const TABS = [
-  { id: "profile", label: "Edit Profile", icon: User },
-  { id: "password", label: "Change Password", icon: Lock },
-  { id: "history", label: "Login History", icon: History },
-  { id: "sessions", label: "Active Sessions", icon: Monitor },
-];
+const TABS = []; // Not used anymore
 
 // ── Action badge colours for login history ────────────────────────────────────
 const ACTION_STYLE = {
@@ -55,11 +50,9 @@ function ChangePasswordTab() {
   const toggle = (field) => setShow(s => ({ ...s, [field]: !s[field] }));
 
   return (
-    <form onSubmit={handleSubmit(change)} className="space-y-5 max-w-md">
-      <div className="flex items-start gap-3 bg-blue-50 p-4 rounded-xl border border-blue-100 text-sm text-blue-700">
-        <ShieldCheck className="w-5 h-5 mt-0.5 shrink-0" />
-        <p>Use a strong password with at least 8 characters, a number, and a special character.</p>
-      </div>
+    <form onSubmit={handleSubmit(change)} className="flex flex-col h-full">
+      <div className="p-5 space-y-5 flex-1">
+
 
       {[
         { id: "currentPassword", label: "Current Password", placeholder: "Enter current password", field: "current" },
@@ -75,7 +68,7 @@ function ChangePasswordTab() {
               {...register(id, { required: `${label} is required`, validate })}
               type={show[field] ? "text" : "password"}
               placeholder={placeholder}
-              className="field-input pr-10"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all pr-10"
             />
             <button type="button" onClick={() => toggle(field)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -86,11 +79,14 @@ function ChangePasswordTab() {
         </div>
       ))}
 
-      <button type="submit" disabled={isPending}
-        className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl transition-colors">
-        {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
-        {isPending ? "Changing…" : "Change Password"}
-      </button>
+      </div>
+      <div className="px-5 py-4 bg-gray-50 border-t border-gray-200 flex justify-end mt-auto">
+        <button type="submit" disabled={isPending}
+          className="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors">
+          {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
+          {isPending ? "Changing…" : "Change Password"}
+        </button>
+      </div>
     </form>
   );
 }
@@ -257,7 +253,6 @@ function Empty({ icon: Icon, message }) {
 
 export default function ClientProfilePage() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState("profile");
 
   const { data: clientData, isLoading, refetch } = useQuery({
     queryKey: ["clientProfile"],
@@ -276,72 +271,49 @@ export default function ClientProfilePage() {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto pt-4 pb-12 space-y-6 animate-fade-in">
+    <div className="w-full py-6 animate-fade-in">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">
-          {clientData?.clientType === "COMPANY" ? "Company Profile" : "My Profile"}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+          <Settings className="w-6 h-6 text-blue-600" />
+          Settings
         </h1>
-        <p className="text-sm text-gray-500 mt-1">Manage your account details, password, and security settings</p>
+        <p className="text-gray-500 mt-1 text-sm">Manage your account details, password, and security settings</p>
       </div>
 
-      {/* Card */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-        {/* Banner */}
-        <div className="h-28 bg-gradient-to-r from-blue-500 via-indigo-500 to-violet-600" />
-
-        {/* Tab nav */}
-        <div className="border-b border-gray-100 px-6 -mt-px">
-          <nav className="flex gap-1 overflow-x-auto">
-            {TABS.map((tab) => {
-              const Icon = tab.icon;
-              const active = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-3.5 text-sm font-semibold whitespace-nowrap border-b-2 transition-colors ${
-                    active
-                      ? "border-blue-600 text-blue-700"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                  }`}
-                >
-                  <Icon className="w-4 h-4" />
-                  {tab.label}
-                </button>
-              );
-            })}
-          </nav>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        {/* Profile Details Card */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full">
+          <div className="p-5 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <User className="w-5 h-5 text-blue-600" />
+              Profile Details
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              Update your personal or company information.
+            </p>
+          </div>
+          <div className="flex-1 flex flex-col">
+            <ClientProfileForm clientData={clientData} refetchClient={refetch} />
+          </div>
         </div>
 
-        {/* Tab content */}
-        <div className="p-6 sm:p-8">
-          {activeTab === "profile"  && <ClientProfileForm clientData={clientData} refetchClient={refetch} />}
-          {activeTab === "password" && <ChangePasswordTab />}
-          {activeTab === "history"  && <LoginHistoryTab />}
-          {activeTab === "sessions" && <ActiveSessionsTab />}
+        {/* Change Password Card */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full">
+          <div className="p-5 border-b border-gray-200">
+            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <Settings className="w-5 h-5 text-gray-600" />
+              Change Password
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              Update your account password securely.
+            </p>
+          </div>
+          <div className="flex-1 flex flex-col">
+            <ChangePasswordTab />
+          </div>
         </div>
       </div>
-
-      {/* Inject field-input style scoped to this page */}
-      <style>{`
-        .field-input {
-          width: 100%;
-          padding: 0.5rem 0.75rem;
-          border: 1px solid #e5e7eb;
-          border-radius: 0.625rem;
-          font-size: 0.875rem;
-          background: white;
-          color: #111827;
-          outline: none;
-          transition: border-color 0.15s, box-shadow 0.15s;
-        }
-        .field-input:focus {
-          border-color: #3b82f6;
-          box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
-        }
-        .field-input::placeholder { color: #9ca3af; }
-      `}</style>
     </div>
   );
 }

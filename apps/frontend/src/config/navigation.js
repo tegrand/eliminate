@@ -119,6 +119,20 @@ export const NAVIGATION_CONFIG = [
     ],
   },
 
+  // ─── CLIENT ACCOUNT ──────────────────────────────────────────────────────
+  {
+    group: "Account",
+    roles: ["CLIENT"],
+    items: [
+      {
+        title: "Settings",
+        path: ROUTES.CLIENT_PROFILE,
+        icon: Settings,
+        roles: ["CLIENT"],
+      },
+    ],
+  },
+
   // ─── AGENCY PORTAL ───────────────────────────────────────────────────────
   {
     group: "Workforce Management",

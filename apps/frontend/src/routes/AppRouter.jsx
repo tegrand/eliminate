@@ -38,6 +38,7 @@ import WorkerHistoryPage from "../features/worker/pages/WorkerHistoryPage";
 import MyDocumentsPage from "../features/documents/pages/MyDocumentsPage";
 import ClientListPage from "../features/client/pages/ClientListPage";
 import ClientDetailsPage from "../features/client/pages/ClientDetailsPage";
+import ClientProfilePage from "../features/client/pages/ClientProfilePage";
 import ClientWorkerSearchPage from "../features/client/pages/ClientWorkerSearchPage";
 import ClientWorkerProfilePage from "../features/client/pages/ClientWorkerProfilePage";
 import ClientAgencySearchPage from "../features/client/pages/ClientAgencySearchPage";
@@ -141,6 +142,7 @@ const AppRouter = () => {
             {/* Clients */}
             <Route path={ROUTES.CLIENTS} element={<ClientListPage />} />
             <Route path={ROUTES.CLIENT_DETAILS} element={<ClientDetailsPage />} />
+            <Route path={ROUTES.CLIENT_PROFILE} element={<ClientProfilePage />} />
             <Route path={ROUTES.CLIENT_JOBS} element={<ClientJobsPage />} />
             
             {/* Client (Company) Features */}

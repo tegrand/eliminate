@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -21,6 +22,7 @@ function Field({ label, icon: Icon, error, className = "", children }) {
 }
 
 export default function ClientProfileForm({ clientData, refetchClient }) {
+  const [activeTab, setActiveTab] = useState("basic");
   const isCompany = clientData?.clientType === "COMPANY";
 
   const { register, handleSubmit, formState: { errors, isDirty } } = useForm({
@@ -66,136 +68,128 @@ export default function ClientProfileForm({ clientData, refetchClient }) {
   };
 
   return (
-    <form onSubmit={handleSubmit(save)} className="space-y-8 animate-fade-in">
-      
-      {/* 1. Header & Image Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-gray-50/50 rounded-2xl border border-gray-100">
-        <div className="flex items-center gap-5">
-          <div className="relative shrink-0">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-md text-white text-2xl font-bold">
-              {clientData?.user?.avatar
-                ? <img src={clientData.user.avatar} alt="" className="w-full h-full object-cover rounded-2xl" />
-                : initials}
+    <form onSubmit={handleSubmit(save)} className="flex flex-col animate-fade-in">
+      <div className="p-5">
+        
+        {/* Header & Image Section */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-gray-100">
+          <div className="flex items-center gap-4">
+            <div className="relative shrink-0">
+              <div className="w-14 h-14 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-600 text-lg font-bold">
+                {clientData?.user?.avatar
+                  ? <img src={clientData.user.avatar} alt="" className="w-full h-full object-cover rounded-full" />
+                  : initials}
+              </div>
+              <button type="button" title="Upload Photo" className="absolute bottom-0 right-0 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm hover:bg-gray-50 text-gray-500 transition-colors">
+                <Camera className="w-3 h-3 text-gray-500 hover:text-blue-600" />
+              </button>
             </div>
-            <button type="button" title="Upload Photo" className="absolute -bottom-2 -right-2 w-8 h-8 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow hover:bg-blue-50 hover:text-blue-600 transition-colors">
-              <Camera className="w-4 h-4 text-gray-500 hover:text-blue-600" />
-            </button>
-          </div>
-          <div>
-            <div className="flex items-center gap-3">
-              <h3 className="text-xl font-bold text-gray-900">
-                {isCompany && clientData?.companyName ? clientData.companyName : clientData?.contactPerson || (isCompany ? "Company Profile" : "My Profile")}
-              </h3>
-              {getStatusBadge(clientData?.profileStatus)}
-            </div>
-            <p className="text-sm text-gray-500 mt-0.5">{clientData?.user?.email}</p>
-            <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-white border border-gray-200 shadow-sm text-gray-600">
-              {isCompany ? <Building2 className="w-3.5 h-3.5 text-blue-500" /> : <User className="w-3.5 h-3.5 text-blue-500" />}
-              {isCompany ? "Company Account" : "Individual Account"}
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg font-bold text-gray-900">
+                  {isCompany && clientData?.companyName ? clientData.companyName : clientData?.contactPerson || (isCompany ? "Company Profile" : "My Profile")}
+                </h3>
+                {getStatusBadge(clientData?.profileStatus)}
+              </div>
+              <p className="text-sm text-gray-500">{clientData?.user?.email}</p>
             </div>
           </div>
         </div>
-        
-        {/* Right side actions if any */}
-        <div className="shrink-0 flex sm:flex-col items-end justify-end gap-2">
-          {/* Read-only client type warning if we want to show it, or just empty space */}
+
+        {/* Inner Tabs */}
+        <div className="flex gap-6 border-b border-gray-100 mt-2">
+          {[
+            { id: "basic", label: "Basic Details" },
+            { id: "contact", label: "Contact Details" },
+            { id: "location", label: "Location Details" },
+          ].map(t => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setActiveTab(t.id)}
+              className={`py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === t.id ? 'border-blue-600 text-blue-700' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="pt-6">
+          {activeTab === "basic" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {isCompany && (
+                <Field label="Company Name" icon={Building2} error={errors.companyName?.message}>
+                  <input {...register("companyName", { required: "Company name is required" })}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" placeholder="e.g. Acme Corp" />
+                </Field>
+              )}
+              <Field label="Contact Person" icon={User} error={errors.contactPerson?.message}>
+                <input {...register("contactPerson", { required: "Contact person is required" })}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" placeholder="e.g. John Doe" />
+              </Field>
+              {isCompany && (
+                <Field label="GST Number" icon={FileText} error={errors.gstNumber?.message}>
+                  <input {...register("gstNumber")}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all uppercase" placeholder="29ABCDE1234F1Z5" />
+                </Field>
+              )}
+            </div>
+          )}
+
+          {activeTab === "contact" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Field label="Primary Phone" icon={Phone} error={errors.phone?.message}>
+                <input {...register("phone", { required: "Primary phone is required" })}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" placeholder="+91 9876543210" />
+              </Field>
+              <Field label="Alternate Phone" icon={Phone}>
+                <input {...register("alternatePhone")}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" placeholder="Optional alternate number" />
+              </Field>
+              <Field label="Email Address" icon={Mail} error={errors.email?.message}>
+                <input {...register("email", { required: "Email is required" })}
+                  type="email" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" placeholder="you@example.com" />
+              </Field>
+            </div>
+          )}
+
+          {activeTab === "location" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Field label="Address Line 1" icon={MapPin} className="md:col-span-2">
+                <input {...register("addressLine1")}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" placeholder="Building, Street, Area" />
+              </Field>
+              <Field label="Address Line 2" icon={MapPin} className="md:col-span-2">
+                <input {...register("addressLine2")}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" placeholder="Landmark, Locality (Optional)" />
+              </Field>
+              <Field label="City / District" icon={Globe} error={errors.city?.message}>
+                <input {...register("city")}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" placeholder="e.g. Kochi" />
+              </Field>
+              <Field label="State" icon={Globe}>
+                <input {...register("state")}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" placeholder="e.g. Kerala" />
+              </Field>
+              <Field label="PIN Code" icon={Hash} error={errors.postalCode?.message}>
+                <input {...register("postalCode")}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" placeholder="e.g. 682001" />
+              </Field>
+              <Field label="Country" icon={Globe}>
+                <input {...register("country")}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" placeholder="e.g. India" />
+              </Field>
+            </div>
+          )}
         </div>
       </div>
 
-      <hr className="border-gray-100" />
-
-      {/* 2. Basic Information */}
-      <section>
-        <h4 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <User className="w-4 h-4 text-gray-400" /> Basic Details
-        </h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {isCompany && (
-            <Field label="Company Name" icon={Building2} error={errors.companyName?.message}>
-              <input {...register("companyName", { required: "Company name is required" })}
-                className="field-input" placeholder="e.g. Acme Corp" />
-            </Field>
-          )}
-
-          <Field label="Contact Person" icon={User} error={errors.contactPerson?.message}>
-            <input {...register("contactPerson", { required: "Contact person is required" })}
-              className="field-input" placeholder="e.g. John Doe" />
-          </Field>
-
-          {isCompany && (
-            <Field label="GST Number" icon={FileText} error={errors.gstNumber?.message}>
-              <input {...register("gstNumber")}
-                className="field-input uppercase" placeholder="29ABCDE1234F1Z5" />
-            </Field>
-          )}
-        </div>
-      </section>
-
-      <hr className="border-gray-100" />
-
-      {/* 3. Contact Information */}
-      <section>
-        <h4 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <Phone className="w-4 h-4 text-gray-400" /> Contact Details
-        </h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <Field label="Primary Phone" icon={Phone} error={errors.phone?.message}>
-            <input {...register("phone", { required: "Primary phone is required" })}
-              className="field-input" placeholder="+91 9876543210" />
-          </Field>
-          <Field label="Alternate Phone" icon={Phone}>
-            <input {...register("alternatePhone")}
-              className="field-input" placeholder="Optional alternate number" />
-          </Field>
-          <Field label="Email Address" icon={Mail} error={errors.email?.message}>
-            <input {...register("email", { required: "Email is required" })}
-              type="email" className="field-input" placeholder="you@example.com" />
-          </Field>
-        </div>
-      </section>
-
-      <hr className="border-gray-100" />
-
-      {/* 4. Address & Location */}
-      <section>
-        <h4 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <MapPin className="w-4 h-4 text-gray-400" /> Location Details
-        </h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <Field label="Address Line 1" icon={MapPin} className="md:col-span-2">
-            <input {...register("addressLine1")}
-              className="field-input" placeholder="Building, Street, Area" />
-          </Field>
-          <Field label="Address Line 2" icon={MapPin} className="md:col-span-2">
-            <input {...register("addressLine2")}
-              className="field-input" placeholder="Landmark, Locality (Optional)" />
-          </Field>
-          
-          <Field label="City / District" icon={Globe} error={errors.city?.message}>
-            <input {...register("city")}
-              className="field-input" placeholder="e.g. Kochi" />
-          </Field>
-          <Field label="State" icon={Globe}>
-            <input {...register("state")}
-              className="field-input" placeholder="e.g. Kerala" />
-          </Field>
-          <Field label="PIN Code" icon={Hash} error={errors.postalCode?.message}>
-            <input {...register("postalCode")}
-              className="field-input" placeholder="e.g. 682001" />
-          </Field>
-          <Field label="Country" icon={Globe}>
-            <input {...register("country")}
-              className="field-input" placeholder="e.g. India" />
-          </Field>
-        </div>
-      </section>
-
       {/* Save Button */}
-      <div className="flex justify-end pt-4 border-t border-gray-200">
+      <div className="px-5 py-3 bg-gray-50 border-t border-gray-200 flex justify-end">
         <button type="submit" disabled={saving || !isDirty}
-          className="flex items-center gap-2 px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold rounded-xl transition-all shadow-sm hover:shadow active:scale-[0.98]">
-          {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-          {saving ? "Saving Changes…" : "Save Profile"}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+          {saving ? "Saving…" : "Save Profile"}
         </button>
       </div>
     </form>
