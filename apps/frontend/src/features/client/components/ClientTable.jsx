@@ -44,8 +44,7 @@ export default function ClientTable({ clients, loading, page, totalPages }) {
 
   const columns = [
     { key: "checkbox", title: <input type="checkbox" className="rounded border-gray-300" />, render: () => <input type="checkbox" className="rounded border-gray-300" /> },
-    { key: "id", title: <div className="flex items-center gap-1.5"><CreditCard className="w-3.5 h-3.5" />CLIENT CODE</div>, render: (row) => <span className="font-bold text-gray-900 text-sm">{row.id}</span> },
-    { key: "companyName", title: <div className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" />COMPANY NAME</div>, render: (row) => <span className="text-gray-900 text-sm font-medium">{row.companyName}</span> },
+    { key: "companyName", title: <div className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" />COMPANY / CLIENT NAME</div>, render: (row) => <span className="text-gray-900 text-sm font-bold">{row.companyName || row.name || "—"}</span> },
     { key: "contactPerson", title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />CONTACT PERSON</div>, render: (row) => <span className="text-sm text-gray-600">{row.contactPerson}</span> },
     { key: "phone", title: <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />PHONE</div>, render: (row) => <span className="text-sm text-gray-600">{row.phone}</span> },
     { key: "location", title: <div className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />LOCATION</div>, render: (row) => <span className="text-sm text-gray-600">{row.location}</span> },

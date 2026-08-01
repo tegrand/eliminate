@@ -90,9 +90,18 @@ export default function WorkerListPage() {
     { name: "Suspended", value: "SUSPENDED", path: getTabPath("SUSPENDED") }
   ];
 
+  const availableStatuses = [...new Set(rawWorkers.map(w => w.profileStatus || w.status || "PENDING"))];
+  const availableAgencies = [...new Set(rawWorkers.map(w => w.agency?.name || w.agencyProfile?.name || (typeof w.agency === 'string' ? w.agency : null)).filter(Boolean))];
+  const availableSkills = [...new Set(rawWorkers.map(w => w.primarySkill?.name || (typeof w.primarySkill === 'string' ? w.primarySkill : null) || w.skills?.[0]?.name).filter(Boolean))];
+
   return (
     <div className="w-full h-[calc(100vh-4rem)] px-4 pb-4 pt-4 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
-      <WorkerToolbar totalWorkers={displayedWorkers.length} />
+      <WorkerToolbar 
+        totalWorkers={displayedWorkers.length} 
+        availableStatuses={availableStatuses}
+        availableAgencies={availableAgencies}
+        availableSkills={availableSkills}
+      />
       
       {!(user?.profileType === "AGENCY" && viewMode !== "my") && (
         <WorkerStats workers={statsWorkers} />
@@ -121,8 +130,6 @@ export default function WorkerListPage() {
         )}
 
         <div className="px-6 pb-4 flex flex-col flex-1 overflow-hidden">
-          <WorkerFilters />
-          
           <div className="mt-3 flex-1 overflow-hidden flex flex-col">
             <WorkerTable 
               workers={displayedWorkers} 

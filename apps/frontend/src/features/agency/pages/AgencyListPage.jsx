@@ -40,9 +40,16 @@ export default function AgencyListPage() {
     { name: "Suspended", value: "SUSPENDED", path: "/agencies?status=SUSPENDED" }
   ];
 
+  const availableStatuses = [...new Set(rawAgencies.map(a => a.profileStatus || "PENDING"))];
+  const availableDistricts = [...new Set(rawAgencies.map(a => a.district).filter(Boolean))];
+
   return (
     <div className="w-full h-[calc(100vh-4rem)] px-4 pb-4 pt-4 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
-      <AgencyToolbar totalAgencies={displayedAgencies.length} />
+      <AgencyToolbar 
+        totalAgencies={displayedAgencies.length} 
+        availableStatuses={availableStatuses}
+        availableDistricts={availableDistricts}
+      />
       
       <AgencyStats agencies={normalizedAgencies} />
 
@@ -67,8 +74,6 @@ export default function AgencyListPage() {
         </div>
 
         <div className="px-6 pb-4 flex flex-col flex-1 overflow-hidden">
-          <AgencyFilters />
-          
           <div className="mt-3 flex-1 overflow-hidden flex flex-col">
             <AgencyTable 
               agencies={displayedAgencies} 

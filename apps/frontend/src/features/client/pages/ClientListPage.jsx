@@ -39,9 +39,16 @@ export default function ClientListPage() {
     { name: "Suspended", value: "SUSPENDED", path: "/clients?status=SUSPENDED" }
   ];
 
+  const availableStatuses = [...new Set(rawClients.map(c => c.profileStatus || "ACTIVE"))];
+  const availableDistricts = [...new Set(rawClients.map(c => c.district).filter(Boolean))];
+
   return (
     <div className="w-full h-[calc(100vh-4rem)] px-4 pb-4 pt-4 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
-      <ClientToolbar totalClients={pagination.total || 0} />
+      <ClientToolbar 
+        totalClients={pagination.total || 0} 
+        availableStatuses={availableStatuses} 
+        availableDistricts={availableDistricts} 
+      />
       
       <ClientStats clients={rawClients} />
 
@@ -66,8 +73,6 @@ export default function ClientListPage() {
         </div>
 
         <div className="px-6 pb-4 flex flex-col flex-1 overflow-hidden">
-          <ClientFilters />
-          
           <div className="mt-3 flex-1 overflow-hidden flex flex-col">
             <ClientTable 
               clients={displayedClients} 

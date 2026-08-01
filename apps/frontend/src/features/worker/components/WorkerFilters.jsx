@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import { Filter, RotateCcw } from "lucide-react";
 import { useAuth } from "../../../hooks/useAuth";
 
-export default function WorkerFilters() {
+export default function WorkerFilters({ availableStatuses = [], availableAgencies = [], availableSkills = [] }) {
   const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -50,46 +50,41 @@ export default function WorkerFilters() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col sm:flex-row items-end gap-4 mt-6">
-      <div className="flex-1 w-full">
-        <label className="block text-sm font-medium text-slate-700 mb-1.5">Status</label>
-        <select {...register("status")} className="block w-full pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg text-gray-600 border bg-white h-10">
-          <option value="">Select status</option>
-          <option value="ACTIVE">Active</option>
-          <option value="ON_LEAVE">On Leave</option>
-          <option value="INACTIVE">Inactive</option>
-          <option value="PENDING">Pending</option>
-          <option value="SUSPENDED">Suspended</option>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col sm:flex-row items-center gap-2 mt-0">
+      <div className="w-full sm:w-[130px]">
+        <select {...register("status")} className="block w-full pl-3 pr-8 py-1.5 text-sm border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-lg text-gray-600 border bg-white h-9">
+          <option value="">Status (All)</option>
+          {availableStatuses.map(status => (
+            <option key={status} value={status}>{status}</option>
+          ))}
         </select>
       </div>
       {user?.profileType !== "AGENCY" && (
-        <div className="flex-1 w-full">
-          <label className="block text-sm font-medium text-slate-700 mb-1.5">Agency</label>
-          <select {...register("agency")} className="block w-full pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg text-gray-600 border bg-white h-10">
-            <option value="">Select agency</option>
-            <option value="Alpha Staffing">Alpha Staffing</option>
-            <option value="Beta Temp">Beta Temp</option>
-            <option value="Direct Hire">Direct Hire</option>
+        <div className="w-full sm:w-[130px]">
+          <select {...register("agency")} className="block w-full pl-3 pr-8 py-1.5 text-sm border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-lg text-gray-600 border bg-white h-9">
+            <option value="">Agency (All)</option>
+            {availableAgencies.map(agency => (
+              <option key={agency} value={agency}>{agency}</option>
+            ))}
           </select>
         </div>
       )}
-      <div className="flex-1 w-full">
-        <label className="block text-sm font-medium text-slate-700 mb-1.5">Skill</label>
-        <select {...register("skill")} className="block w-full pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg text-gray-600 border bg-white h-10">
-          <option value="">Select skill</option>
-          <option value="Forklift Operator">Forklift Operator</option>
-          <option value="Warehouse Associate">Warehouse Associate</option>
-          <option value="Security Guard">Security Guard</option>
+      <div className="w-full sm:w-[130px]">
+        <select {...register("skill")} className="block w-full pl-3 pr-8 py-1.5 text-sm border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-lg text-gray-600 border bg-white h-9">
+          <option value="">Skill (All)</option>
+          {availableSkills.map(skill => (
+            <option key={skill} value={skill}>{skill}</option>
+          ))}
         </select>
       </div>
-      <div className="flex gap-3 w-full sm:w-auto">
-        <button type="button" onClick={handleReset} className="h-10 px-5 inline-flex items-center justify-center border border-gray-300 shadow-sm text-sm font-semibold rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full sm:w-auto gap-2">
-          <RotateCcw className="w-4 h-4" />
+      <div className="flex gap-2 w-full sm:w-auto">
+        <button type="button" onClick={handleReset} className="h-9 px-3 inline-flex items-center justify-center border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full sm:w-auto gap-1.5">
+          <RotateCcw className="w-3.5 h-3.5" />
           Reset
         </button>
-        <button type="submit" className="h-10 px-5 inline-flex items-center justify-center border border-transparent shadow-sm text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full sm:w-auto gap-2">
-          <Filter className="w-4 h-4" />
-          Apply Filters
+        <button type="submit" className="h-9 px-3 inline-flex items-center justify-center border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full sm:w-auto gap-1.5">
+          <Filter className="w-3.5 h-3.5" />
+          Apply
         </button>
       </div>
     </form>
