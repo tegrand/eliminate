@@ -20,6 +20,7 @@ export const ROUTES = {
   WORKER_DETAILS: "/workers/:id",
   WORKER_PROFILE: "/worker/profile",
   MY_INVITATIONS: "/worker/invitations",
+  WORKER_SETTINGS: "/worker/settings",
   FIND_WORK: "/find-work",
   MY_JOBS: "/my-jobs",
   MY_ATTENDANCE: "/my-attendance",

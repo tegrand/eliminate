@@ -28,6 +28,7 @@ import WorkerListPage from "../features/worker/pages/WorkerListPage";
 import WorkerDetailsPage from "../features/worker/pages/WorkerDetailsPage";
 import WorkerSkillsPage from "../features/worker/pages/WorkerSkillsPage";
 import WorkerProfilePage from "../features/worker/pages/WorkerProfilePage";
+import WorkerSettingsPage from "../features/worker/pages/WorkerSettingsPage";
 import WorkerInvitationsPage from "../features/worker/pages/WorkerInvitationsPage";
 import WorkerMarketplacePage from "../features/worker/pages/WorkerMarketplacePage";
 import WorkerAssignmentsPage from "../features/worker/pages/WorkerAssignmentsPage";
@@ -127,6 +128,7 @@ const AppRouter = () => {
             {/* Worker Only Routes */}
             <Route path={ROUTES.WORKER_PROFILE} element={<WorkerProfilePage />} />
             <Route path={ROUTES.MY_DOCUMENTS} element={<MyDocumentsPage />} />
+            <Route path={ROUTES.WORKER_SETTINGS} element={<WorkerSettingsPage />} />
             <Route path={ROUTES.MY_SKILLS} element={<WorkerSkillsPage />} />
             <Route path={ROUTES.MY_INVITATIONS} element={<WorkerInvitationsPage />} />
             <Route path={ROUTES.FIND_WORK} element={<WorkerMarketplacePage />} />

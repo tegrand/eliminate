@@ -93,6 +93,20 @@ export const NAVIGATION_CONFIG = [
     ],
   },
 
+  // ─── WORKER ACCOUNT ──────────────────────────────────────────────────────
+  {
+    group: "Account",
+    roles: ["WORKER"],
+    items: [
+      {
+        title: "Settings",
+        path: ROUTES.WORKER_SETTINGS,
+        icon: Settings,
+        roles: ["WORKER"],
+      },
+    ],
+  },
+
   // ─── CLIENT PORTAL ───────────────────────────────────────────────────────
   {
     group: "Recruitment",
