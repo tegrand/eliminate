@@ -165,6 +165,10 @@ export const getWorkerDashboard = async (userId) => {
 };
 
 export const getSuperAdminDashboard = async () => {
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const startOfYear = new Date(currentYear, 0, 1);
+
   const [
     totalWorkers,
     totalClients,
@@ -172,7 +176,9 @@ export const getSuperAdminDashboard = async () => {
     activeRequirements,
     openRequirements,
     completedRequirements,
-    totalApplications
+    totalApplications,
+    recentUsers,
+    usersThisYear
   ] = await Promise.all([
     prisma.worker.count({ where: { deletedAt: null } }),
     prisma.client.count({ where: { deletedAt: null } }),
@@ -181,7 +187,40 @@ export const getSuperAdminDashboard = async () => {
     prisma.jobRequirement.count({ where: { deletedAt: null, status: "OPEN" } }),
     prisma.jobRequirement.count({ where: { deletedAt: null, status: "COMPLETED" } }),
     prisma.jobApplication.count(),
+    prisma.user.findMany({
+      where: { deletedAt: null, profileType: { not: "SUPER_ADMIN" } },
+      orderBy: { createdAt: "desc" },
+      take: 5,
+      select: { id: true, email: true, profileType: true, status: true, createdAt: true, firstName: true, lastName: true }
+    }),
+    prisma.user.findMany({
+      where: { deletedAt: null, createdAt: { gte: startOfYear }, profileType: { not: "SUPER_ADMIN" } },
+      select: { createdAt: true, profileType: true }
+    })
   ]);
+
+  const getEmptyMonthlyData = () => [
+    { name: 'Jan', value: 0 }, { name: 'Feb', value: 0 }, { name: 'Mar', value: 0 },
+    { name: 'Apr', value: 0 }, { name: 'May', value: 0 }, { name: 'Jun', value: 0 },
+    { name: 'Jul', value: 0 }, { name: 'Aug', value: 0 }, { name: 'Sep', value: 0 },
+    { name: 'Oct', value: 0 }, { name: 'Nov', value: 0 }, { name: 'Dec', value: 0 }
+  ];
+
+  const monthlyRegistrations = getEmptyMonthlyData();
+  usersThisYear.forEach(u => {
+    const d = new Date(u.createdAt);
+    monthlyRegistrations[d.getMonth()].value += 1;
+  });
+
+  const chartData = {
+    lineData: monthlyRegistrations,
+    donutData: [
+      { name: 'Workers', value: totalWorkers },
+      { name: 'Clients', value: totalClients },
+      { name: 'Agencies', value: totalAgencies }
+    ],
+    donutTotal: totalWorkers + totalClients + totalAgencies
+  };
 
   return {
     topStats: {
@@ -192,7 +231,10 @@ export const getSuperAdminDashboard = async () => {
       openRequirements,
       completedRequirements,
       totalApplications,
-    }
+      totalUsers: totalWorkers + totalClients + totalAgencies
+    },
+    recentUsers,
+    chartData
   };
 };
 

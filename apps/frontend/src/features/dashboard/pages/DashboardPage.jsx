@@ -35,7 +35,7 @@ export default function DashboardPage() {
     <div className="w-full pt-4 pb-8 space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
+          <h1 className="text-2xl font-medium text-gray-900 flex items-center gap-3">
             <span>Welcome back, {user?.profileType === "SUPER_ADMIN" ? "Super Admin" : user?.email?.split('@')[0] || "User"}! 👋</span>
             {user?.profileType === "WORKER" && (
               user?.workerProfile?.profileStatus === "APPROVED" ? (
