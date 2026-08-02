@@ -130,6 +130,12 @@ export const NAVIGATION_CONFIG = [
         icon: FileText,
         roles: ["CLIENT"],
       },
+      {
+        title: "My Requests",
+        path: ROUTES.CLIENT_REQUESTS,
+        icon: Briefcase,
+        roles: ["CLIENT"],
+      },
     ],
   },
 
