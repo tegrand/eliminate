@@ -21,14 +21,8 @@ export default function WorkerSignupPage() {
     phone: "",
     dateOfBirth: "",
     gender: "MALE",
-    houseName: "",
-    district: "",
-    state: "",
-    pincode: "",
     primarySkill: "",
-    experienceYears: "2",
-    preferredCategory: "",
-    expectedSalary: "$25/hr"
+    expectedDailyWage: ""
   });
 
   const handleChange = (e) => {
@@ -37,7 +31,7 @@ export default function WorkerSignupPage() {
 
   const handleNext = async (e) => {
     e.preventDefault();
-    if (currentStep < 5) {
+    if (currentStep < 3) {
       setCurrentStep(prev => prev + 1);
     } else {
       setLoading(true);
@@ -78,13 +72,13 @@ export default function WorkerSignupPage() {
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900">Worker Onboarding</h2>
-              <p className="text-xs text-gray-500">Step {currentStep} of 5 • Independent Worker Registration</p>
+              <p className="text-xs text-gray-500">Step {currentStep} of 3 • Independent Worker Registration</p>
             </div>
           </div>
 
           {/* Progress Indicators */}
           <div className="flex gap-1.5">
-            {[1, 2, 3, 4, 5].map(step => (
+            {[1, 2, 3].map(step => (
               <div 
                 key={step} 
                 className={`h-2 rounded-full transition-all ${
@@ -162,139 +156,45 @@ export default function WorkerSignupPage() {
             </div>
           )}
 
-          {/* STEP 2: Address */}
+          {/* STEP 2: Job Info */}
           {currentStep === 2 && (
             <div className="space-y-4 animate-fade-in">
-              <h3 className="text-sm font-semibold text-gray-900">Step 2: Permanent Address</h3>
-              <Input
-                label="House / Villa Name & Street"
-                name="houseName"
-                value={formData.houseName}
-                onChange={handleChange}
-                placeholder="No. 42, Green Valley Apartments"
-                required
-              />
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <Input
-                  label="District"
-                  name="district"
-                  value={formData.district}
-                  onChange={handleChange}
-                  placeholder="Central District"
-                  required
-                />
-                <Input
-                  label="State"
-                  name="state"
-                  value={formData.state}
-                  onChange={handleChange}
-                  placeholder="Texas"
-                  required
-                />
-                <Input
-                  label="Pincode"
-                  name="pincode"
-                  value={formData.pincode}
-                  onChange={handleChange}
-                  placeholder="75001"
-                  required
-                />
-              </div>
-            </div>
-          )}
-
-          {/* STEP 3: Professional Details */}
-          {currentStep === 3 && (
-            <div className="space-y-4 animate-fade-in">
-              <h3 className="text-sm font-semibold text-gray-900">Step 3: Skills & Professional Experience</h3>
+              <h3 className="text-sm font-semibold text-gray-900">Step 2: Job Details</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input
                   label="Primary Trade / Skill"
                   name="primarySkill"
                   value={formData.primarySkill}
                   onChange={handleChange}
-                  placeholder="e.g. Certified Electrician, Forklift Operator"
+                  placeholder="e.g. Mason, Electrician"
                   required
                 />
                 <Input
-                  label="Years of Experience"
-                  name="experienceYears"
-                  value={formData.experienceYears}
+                  label="Expected Daily Wage"
+                  name="expectedDailyWage"
+                  value={formData.expectedDailyWage}
                   onChange={handleChange}
-                  placeholder="e.g. 4"
-                  required
-                />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Input
-                  label="Preferred Job Category"
-                  name="preferredCategory"
-                  value={formData.preferredCategory}
-                  onChange={handleChange}
-                  placeholder="e.g. Logistics & Warehouse"
-                  required
-                />
-                <Input
-                  label="Expected Pay Rate"
-                  name="expectedSalary"
-                  value={formData.expectedSalary}
-                  onChange={handleChange}
-                  placeholder="e.g. $25/hr"
+                  placeholder="e.g. ₹900"
                   required
                 />
               </div>
             </div>
           )}
 
-          {/* STEP 4: Documents & Bank */}
-          {currentStep === 4 && (
+          {/* STEP 3: Review */}
+          {currentStep === 3 && (
             <div className="space-y-4 animate-fade-in">
-              <h3 className="text-sm font-semibold text-gray-900">Step 4: Identity & Bank Uploads (Optional)</h3>
-              <p className="text-xs text-gray-500">You can skip this step and upload documents later from your dashboard.</p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-blue-500 transition-colors cursor-pointer bg-gray-50/50">
-                  <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">Profile Photo (Optional)</p>
-                  <p className="text-[10px] text-gray-400 mt-1">Clear headshot photo</p>
-                </div>
-
-                <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-blue-500 transition-colors cursor-pointer bg-gray-50/50">
-                  <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">Govt ID (Optional)</p>
-                  <p className="text-[10px] text-gray-400 mt-1">Front & Back PDF/JPG</p>
-                </div>
-
-                <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-blue-500 transition-colors cursor-pointer bg-gray-50/50">
-                  <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">Bank Passbook (Optional)</p>
-                  <p className="text-[10px] text-gray-400 mt-1">For direct wage deposits</p>
-                </div>
-
-                <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-blue-500 transition-colors cursor-pointer bg-gray-50/50">
-                  <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">Trade Skill Certificates (Optional)</p>
-                  <p className="text-[10px] text-gray-400 mt-1">Proof of certification</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* STEP 5: Review */}
-          {currentStep === 5 && (
-            <div className="space-y-4 animate-fade-in">
-              <h3 className="text-sm font-semibold text-gray-900">Step 5: Review Application</h3>
+              <h3 className="text-sm font-semibold text-gray-900">Step 3: Review Application</h3>
               <div className="bg-blue-50/50 border border-blue-100 p-4 rounded-xl text-xs space-y-2 text-gray-700">
                 <p><strong>Full Name:</strong> {formData.fullName || "N/A"}</p>
                 <p><strong>Contact:</strong> {formData.email} • {formData.phone}</p>
-                <p><strong>Trade & Skill:</strong> {formData.primarySkill} ({formData.experienceYears} yrs experience)</p>
-                <p><strong>Address:</strong> {formData.district}, {formData.state}</p>
+                <p><strong>Job & Wage:</strong> {formData.primarySkill} ({formData.expectedDailyWage})</p>
               </div>
 
               <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 text-xs text-gray-500 flex items-start gap-2">
                 <ShieldCheck className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
                 <span>
-                  <strong>Independent Registration Notice:</strong> You are registering as an independent worker. You are not attached to any staffing agency. Once verified by Super Admin, agencies or employers can match you to shifts directly.
+                  <strong>Independent Registration Notice:</strong> You are registering as an independent worker. Once registered, agencies or employers can match you to shifts directly.
                 </span>
               </div>
             </div>
@@ -309,7 +209,7 @@ export default function WorkerSignupPage() {
             ) : <div />}
 
             <Button type="submit" loading={loading} className="bg-gray-900 hover:bg-gray-800">
-              {currentStep === 5 ? (
+              {currentStep === 3 ? (
                 <>Submit Worker Application <CheckCircle className="ml-2 h-4 w-4" /></>
               ) : "Continue"}
             </Button>

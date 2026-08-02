@@ -2,14 +2,14 @@ import { useState, useEffect, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { 
   User, MapPin, Briefcase, Loader2, Save, FileText, 
-  BarChart2, Folder, CheckCircle2, Circle, 
+  BarChart2, CheckCircle2, Circle, 
   Calendar, Clock, X, Upload, DollarSign
 } from "lucide-react";
 import { toast } from "sonner";
 import { workerApi } from "../api/worker.api";
 import { settingsApi } from "../../../api/settings.api";
 import Button from "../../../components/ui/button/Button";
-import MyDocumentsPage from "../../documents/pages/MyDocumentsPage";
+
 
 const WORK_PREFS = [
   { id: "Daily Work", label: "Daily Work", icon: Calendar },
@@ -396,28 +396,6 @@ export default function WorkerProfilePage() {
         {/* RIGHT COLUMN */}
         <div className="space-y-6">
 
-          {/* Documents Card */}
-          <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6 flex flex-col h-fit">
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex items-center gap-2.5">
-                <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
-                  <Folder className="w-4 h-4" />
-                </div>
-                <div>
-                  <h2 className="text-sm font-bold text-slate-900">Documents</h2>
-                  <p className="text-[10px] text-slate-500 mt-0.5">Upload your documents to verify your profile</p>
-                </div>
-              </div>
-              <button type="button" className="text-[11px] font-medium text-slate-600 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-md hover:bg-slate-100 transition-colors">
-                View All
-              </button>
-            </div>
-
-            {/* Embed actual documents page here to keep it functional */}
-            <div className="flex-1 overflow-y-auto min-h-[200px]">
-               <MyDocumentsPage embedded={true} />
-            </div>
-          </div>
 
           {/* Work Preferences Card */}
           <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6 h-fit">

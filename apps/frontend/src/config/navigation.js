@@ -48,18 +48,6 @@ export const NAVIGATION_CONFIG = [
     roles: ["WORKER"],
     items: [
       {
-        title: "My Skills",
-        path: ROUTES.MY_SKILLS,
-        icon: UserCheck, // Will import if needed, or use a general one like FileText. Let's use Tags
-        roles: ["WORKER"],
-      },
-      {
-        title: "My Documents",
-        path: ROUTES.MY_DOCUMENTS,
-        icon: FileText,
-        roles: ["WORKER"],
-      },
-      {
         title: "Invitations",
         path: ROUTES.MY_INVITATIONS,
         icon: Bell,

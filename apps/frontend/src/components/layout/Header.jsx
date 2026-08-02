@@ -6,6 +6,7 @@ import { ROUTES } from "../../routes/routePaths";
 import { LogOut, Search, User, ChevronDown } from "lucide-react";
 import NotificationBell from "../ui/notifications/NotificationBell";
 import LanguageSwitcher from "../ui/LanguageSwitcher";
+import { calculateWorkerProfileCompletion } from "../../utils/profileCompletion";
 
 export default function Header() {
   const { logout, user } = useAuth();
@@ -100,17 +101,29 @@ export default function Header() {
                 </p>
               </div>
 
-              {/* Profile Link (Worker Only) */}
-              {user?.profileType === "WORKER" && (
-                <Link 
-                  to={ROUTES.WORKER_PROFILE}
-                  onClick={() => setIsProfileOpen(false)}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors mb-1"
-                >
-                  <User className="w-4 h-4" />
-                  <span>My Profile</span>
-                </Link>
-              )}
+              {/* Profile Progress (Worker Only) */}
+              {user?.profileType === "WORKER" && (() => {
+                const percent = calculateWorkerProfileCompletion(user);
+                return (
+                <div className="w-full px-4 py-3 flex items-center justify-between gap-3 border-b border-gray-50 mb-1 bg-slate-50/50">
+                  <div>
+                    <p className="text-xs font-semibold text-gray-900">Profile Completion</p>
+                    <p className="text-[10px] text-gray-500">Update in settings</p>
+                  </div>
+                  
+                  {/* Circular Progress */}
+                  <div className="relative w-9 h-9 flex items-center justify-center shrink-0">
+                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="40" stroke="#E5E7EB" strokeWidth="12" fill="none" />
+                      <circle cx="50" cy="50" r="40" stroke="#2563EB" strokeWidth="12" fill="none" 
+                        strokeDasharray="251.2" strokeDashoffset={251.2 - (251.2 * (percent/100))} strokeLinecap="round" />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-[9px] font-bold text-blue-600">{percent}%</span>
+                    </div>
+                  </div>
+                </div>
+              )})()}
 
               {/* Profile Link (Client Only) */}
               {user?.profileType === "CLIENT" && (
