@@ -54,7 +54,7 @@ export const getWorkerDashboard = async (userId) => {
         }
       },
       include: {
-        assignment: { include: { siteLocation: true } }
+        assignment: true
       },
       take: 1
     }),
@@ -67,7 +67,7 @@ export const getWorkerDashboard = async (userId) => {
         }
       },
       include: {
-        assignment: { include: { siteLocation: true } }
+        assignment: true
       },
       take: 2,
       orderBy: { assignment: { startDate: 'asc' } }
@@ -87,7 +87,7 @@ export const getWorkerDashboard = async (userId) => {
 
   const activeJob = activeJobs.length > 0 ? {
     title: activeJobs[0].assignment.title,
-    location: activeJobs[0].assignment.siteLocation?.name || "Multiple / On-site",
+    location: "Multiple / On-site",
     date: activeJobs[0].assignment.startDate,
     duration: "Ongoing"
   } : null;
@@ -96,7 +96,7 @@ export const getWorkerDashboard = async (userId) => {
     id: job.id,
     title: job.assignment.title,
     date: job.assignment.startDate,
-    location: job.assignment.siteLocation?.name || "Multiple / On-site"
+    location: "Multiple / On-site"
   }));
 
   const totalHoursLogged = attendanceRecords.reduce((sum, rec) => sum + (rec.totalHours || 0), 0);

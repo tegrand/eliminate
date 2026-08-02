@@ -9,7 +9,7 @@ import TaskCompletion from "../components/TaskCompletion";
 import WorkerDashboard from "../components/worker/WorkerDashboard";
 import WorkerAttendanceDropdown from "../components/worker/WorkerAttendanceDropdown";
 import ClientDashboard from "../components/client/ClientDashboard";
-import CompanyDashboard from "../../client/pages/CompanyDashboard";
+
 import AgencyDashboard from "../components/agency/AgencyDashboard";
 
 export default function DashboardPage() {
@@ -71,7 +71,7 @@ export default function DashboardPage() {
       {user?.profileType === "WORKER" ? (
         <WorkerDashboard />
       ) : user?.profileType === "CLIENT" ? (
-        user?.clientProfile?.clientType === "COMPANY" ? <CompanyDashboard /> : <ClientDashboard />
+        <ClientDashboard />
       ) : user?.profileType === "AGENCY" ? (
         <AgencyDashboard />
       ) : (

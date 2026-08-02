@@ -2,8 +2,7 @@ import { z } from "zod";
 
 // Client Signup Schema
 export const clientSignupSchema = z.object({
-  clientType: z.enum(["INDIVIDUAL", "COMPANY"]).default("INDIVIDUAL"),
-  companyName: z.string().optional(),
+
   contactPerson: z.string().min(2, "Name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Valid phone number is required"),
@@ -13,14 +12,6 @@ export const clientSignupSchema = z.object({
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match",
   path: ["confirmPassword"],
-}).refine((data) => {
-  if (data.clientType === "COMPANY" && (!data.companyName || data.companyName.trim() === "")) {
-    return false;
-  }
-  return true;
-}, {
-  message: "Company name is required for company accounts",
-  path: ["companyName"],
 });
 
 // Agency Multi-Step Schema

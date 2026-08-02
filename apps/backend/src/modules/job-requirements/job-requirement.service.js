@@ -26,7 +26,7 @@ const jobRequirementSelect = {
     select: {
       id: true,
       clientCode: true,
-      companyName: true,
+      contactPerson: true,
     },
   },
   category: {

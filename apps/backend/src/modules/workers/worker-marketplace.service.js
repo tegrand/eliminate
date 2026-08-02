@@ -41,8 +41,7 @@ export const getMarketplaceJobs = async (userId, filters = {}) => {
     include: {
       client: {
         select: {
-          companyName: true,
-          firstName: true,
+          contactPerson: true,
           lastName: true,
           profilePhoto: true,
           rating: true

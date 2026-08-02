@@ -11,9 +11,7 @@ export const registerSchema = z.object({
     .max(100)
     .regex(passwordRegex, passwordMessage),
   accountType: z.enum(["SUPER_ADMIN", "CLIENT", "AGENCY", "WORKER"]),
-  clientType: z.enum(["INDIVIDUAL", "COMPANY"]).optional(),
-  companyName: z.string().optional(),
-  contactPerson: z.string().optional(),
+  contactPerson: z.string().trim().optional(),
   phone: z.string().optional(),
 });
 

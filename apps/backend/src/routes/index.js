@@ -7,10 +7,6 @@ import workerMarketplaceRoutes from "../modules/workers/worker-marketplace.route
 import workerSkillRoutes from "../modules/workers/worker-skill.routes.js";
 import workerLanguageRoutes from "../modules/workers/worker-language.routes.js";
 import clientRoutes from "../modules/clients/client.routes.js";
-import companyProjectRoutes from "../modules/client-company/project.routes.js";
-import companySiteRoutes from "../modules/client-company/site-location.routes.js";
-import companyDepartmentRoutes from "../modules/client-company/department.routes.js";
-import companyTeamRoutes from "../modules/client-company/team.routes.js";
 import agencyRoutes from "../modules/agencies/agency.routes.js";
 import agencyWorkerRoutes from "../modules/agencies/agency-worker.routes.js";
 import skillRoutes from "../modules/skills/skill.routes.js";
@@ -42,10 +38,6 @@ router.use("/settings", settingsRoutes);
 // Entity Routes
 router.use("/workers/marketplace", workerMarketplaceRoutes);
 router.use("/workers", workerRoutes);
-router.use("/clients/company/projects", companyProjectRoutes);
-router.use("/clients/company/sites", companySiteRoutes);
-router.use("/clients/company/departments", companyDepartmentRoutes);
-router.use("/clients/company/teams", companyTeamRoutes);
 router.use("/clients", clientRoutes);
 router.use("/agencies", agencyRoutes);
 router.use("/job-requirements", jobRequirementRoutes);

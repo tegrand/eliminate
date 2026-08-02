@@ -13,14 +13,9 @@ export default function ClientSignupPage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
+  const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(clientSignupSchema),
-    defaultValues: {
-      clientType: "INDIVIDUAL"
-    }
   });
-
-  const clientType = watch("clientType");
 
   const onSubmit = async (data) => {
     setLoading(true);
@@ -53,78 +48,12 @@ export default function ClientSignupPage() {
           </div>
         </div>
 
-        {/* Client Type Selector */}
-        <div className="mb-6">
-          <p className="text-sm font-semibold text-gray-700 mb-3">I am registering as a</p>
-          <div className="grid grid-cols-2 gap-3">
-            {/* Individual Option */}
-            <button
-              type="button"
-              onClick={() => setValue("clientType", "INDIVIDUAL")}
-              className={`relative flex flex-col items-center justify-center gap-2 p-5 rounded-xl border-2 transition-all cursor-pointer ${
-                clientType === "INDIVIDUAL"
-                  ? "border-blue-600 bg-blue-50 text-blue-700 shadow-sm"
-                  : "border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50"
-              }`}
-            >
-              {clientType === "INDIVIDUAL" && (
-                <span className="absolute top-2 right-2 w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
-                  <CheckCircle2 className="w-3 h-3 text-white" />
-                </span>
-              )}
-              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                clientType === "INDIVIDUAL" ? "bg-blue-100" : "bg-gray-100"
-              }`}>
-                <User className="w-6 h-6" />
-              </div>
-              <div className="text-center">
-                <p className="font-semibold text-sm">Individual</p>
-                <p className="text-xs opacity-70 mt-0.5">Personal hiring</p>
-              </div>
-            </button>
 
-            {/* Company Option */}
-            <button
-              type="button"
-              onClick={() => setValue("clientType", "COMPANY")}
-              className={`relative flex flex-col items-center justify-center gap-2 p-5 rounded-xl border-2 transition-all cursor-pointer ${
-                clientType === "COMPANY"
-                  ? "border-blue-600 bg-blue-50 text-blue-700 shadow-sm"
-                  : "border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50"
-              }`}
-            >
-              {clientType === "COMPANY" && (
-                <span className="absolute top-2 right-2 w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
-                  <CheckCircle2 className="w-3 h-3 text-white" />
-                </span>
-              )}
-              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                clientType === "COMPANY" ? "bg-blue-100" : "bg-gray-100"
-              }`}>
-                <Building2 className="w-6 h-6" />
-              </div>
-              <div className="text-center">
-                <p className="font-semibold text-sm">Company</p>
-                <p className="text-xs opacity-70 mt-0.5">Business hiring</p>
-              </div>
-            </button>
-          </div>
-        </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Company Name - only for COMPANY type */}
-          {clientType === "COMPANY" && (
-            <Input
-              label="Company Name"
-              placeholder="e.g. Acme Corporation Pvt. Ltd."
-              error={errors.companyName?.message}
-              {...register("companyName")}
-            />
-          )}
-
           <Input
-            label={clientType === "INDIVIDUAL" ? "Your Full Name" : "Contact Person Name"}
-            placeholder={clientType === "INDIVIDUAL" ? "e.g. Rahul Sharma" : "e.g. John Doe"}
+            label="Your Full Name"
+            placeholder="e.g. Rahul Sharma"
             error={errors.contactPerson?.message}
             {...register("contactPerson")}
           />

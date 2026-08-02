@@ -11,8 +11,6 @@ const clientSelect = {
   id: true,
   userId: true,
   clientCode: true,
-  clientType: true,
-  companyName: true,
   contactPerson: true,
   phone: true,
   alternatePhone: true,
@@ -99,7 +97,6 @@ export const getClients = async ({
 
   if (search) {
     where.OR = [
-      { companyName: { contains: search, mode: "insensitive" } },
       { contactPerson: { contains: search, mode: "insensitive" } },
       { email: { contains: search, mode: "insensitive" } },
       { clientCode: { contains: search, mode: "insensitive" } },

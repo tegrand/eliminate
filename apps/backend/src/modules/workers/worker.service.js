@@ -96,7 +96,7 @@ const workerSelect = {
       createdAt: true,
       reviewer: {
         select: {
-          companyName: true,
+          contactPerson: true,
           user: {
             select: {
               firstName: true,

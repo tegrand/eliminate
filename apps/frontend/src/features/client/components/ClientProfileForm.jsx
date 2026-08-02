@@ -23,17 +23,13 @@ function Field({ label, icon: Icon, error, className = "", children }) {
 
 export default function ClientProfileForm({ clientData, refetchClient }) {
   const [activeTab, setActiveTab] = useState("basic");
-  const isCompany = clientData?.clientType === "COMPANY";
 
   const { register, handleSubmit, formState: { errors, isDirty } } = useForm({
     defaultValues: {
-      clientType:     clientData?.clientType     || "INDIVIDUAL",
-      companyName:    clientData?.companyName    || "",
       contactPerson:  clientData?.contactPerson  || "",
       phone:          clientData?.phone          || "",
       alternatePhone: clientData?.alternatePhone || "",
       email:          clientData?.email          || clientData?.user?.email || "",
-      gstNumber:      clientData?.gstNumber      || "",
       addressLine1:   clientData?.addressLine1   || "",
       addressLine2:   clientData?.addressLine2   || "",
       city:           clientData?.city           || "",
@@ -86,9 +82,7 @@ export default function ClientProfileForm({ clientData, refetchClient }) {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-lg font-bold text-gray-900">
-                  {isCompany && clientData?.companyName ? clientData.companyName : clientData?.contactPerson || (isCompany ? "Company Profile" : "My Profile")}
-                </h3>
+                  {clientData?.contactPerson || "My Profile"}
                 {getStatusBadge(clientData?.profileStatus)}
               </div>
               <p className="text-sm text-gray-500">{clientData?.user?.email}</p>
@@ -117,22 +111,12 @@ export default function ClientProfileForm({ clientData, refetchClient }) {
         <div className="pt-6">
           {activeTab === "basic" && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {isCompany && (
-                <Field label="Company Name" icon={Building2} error={errors.companyName?.message}>
-                  <input {...register("companyName", { required: "Company name is required" })}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" placeholder="e.g. Acme Corp" />
-                </Field>
-              )}
+
               <Field label="Contact Person" icon={User} error={errors.contactPerson?.message}>
                 <input {...register("contactPerson", { required: "Contact person is required" })}
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" placeholder="e.g. John Doe" />
               </Field>
-              {isCompany && (
-                <Field label="GST Number" icon={FileText} error={errors.gstNumber?.message}>
-                  <input {...register("gstNumber")}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all uppercase" placeholder="29ABCDE1234F1Z5" />
-                </Field>
-              )}
+
             </div>
           )}
 

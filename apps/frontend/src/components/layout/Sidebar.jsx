@@ -12,7 +12,6 @@ export default function Sidebar() {
 
   const filteredNavigation = NAVIGATION_CONFIG.map(group => {
     if (group.roles && !group.roles.includes(profileType)) return null;
-    if (group.clientType && user?.clientProfile?.clientType !== group.clientType) return null;
 
     const filteredItems = group.items.filter(item => {
       if (!item.roles) return true;

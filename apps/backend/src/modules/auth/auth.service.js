@@ -58,7 +58,7 @@ const issueTokensAndUpdateUser = async (user, meta, action = "LOGIN") => {
   if (updatedUser.profileType === "CLIENT") {
     const clientProfile = await prisma.client.findUnique({
       where: { userId: updatedUser.id },
-      select: { clientType: true, companyName: true, contactPerson: true },
+      select: { contactPerson: true },
     });
     if (clientProfile) {
       userWithProfile.clientProfile = clientProfile;
@@ -115,11 +115,9 @@ export const register = async (data) => {
       client: data.accountType === "CLIENT" ? {
         create: {
           clientCode: `CLI-${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
-          companyName: data.companyName || null,
           contactPerson: data.contactPerson || null,
           phone: data.phone || null,
           email: data.email || null,
-          clientType: data.clientType || "INDIVIDUAL",
         }
       } : undefined
     },
@@ -342,7 +340,7 @@ export const getCurrentUser = async (userId) => {
   if (user.profileType === "CLIENT") {
     const clientProfile = await prisma.client.findUnique({
       where: { userId: user.id },
-      select: { clientType: true, companyName: true, contactPerson: true },
+      select: { contactPerson: true },
     });
     if (clientProfile) {
       userWithProfile.clientProfile = clientProfile;

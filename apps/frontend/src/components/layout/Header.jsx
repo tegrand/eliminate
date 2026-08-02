@@ -119,8 +119,7 @@ export default function Header() {
                   onClick={() => setIsProfileOpen(false)}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors mb-1"
                 >
-                  <User className="w-4 h-4" />
-                  <span>{user?.clientProfile?.clientType === "COMPANY" ? "Company Profile" : "My Profile"}</span>
+                  <span>My Profile</span>
                 </Link>
               )}
 

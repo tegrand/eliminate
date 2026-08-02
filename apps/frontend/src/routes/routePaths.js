@@ -38,11 +38,6 @@ export const ROUTES = {
   CLIENT_JOBS: "/jobs",
   CLIENT_REQUESTS: "/client/requests",
   
-  // Client (Company Features)
-  COMPANY_PROJECTS: "/company/projects",
-  COMPANY_SITES: "/company/sites",
-  COMPANY_DEPARTMENTS: "/company/departments",
-  COMPANY_TEAMS: "/company/teams",
 
   // Agency
   AGENCIES: "/agencies",
