@@ -67,138 +67,150 @@ export default function ClientWorkerProfilePage() {
   const allSkills = worker.skills?.length > 0 ? worker.skills.map(s => s.skill?.name).filter(Boolean) : [skillName];
 
   return (
-    <div className="w-full h-[calc(100vh-4rem)] bg-[#f8f9fa] overflow-y-auto scrollbar-hide py-6 px-4 sm:px-8 lg:px-12 animate-fade-in">
-      <div className="max-w-4xl mx-auto space-y-5">
+    <div className="w-full h-[calc(100vh-4rem)] bg-[#f8f9fa] overflow-y-auto scrollbar-hide py-8 px-4 sm:px-8 lg:px-12 animate-fade-in">
+      <div className="max-w-6xl mx-auto space-y-6">
         
         {/* Top Navigation */}
-        <Link to="/search-workers" className="inline-flex items-center text-sm font-semibold text-gray-500 hover:text-blue-600 transition-colors gap-2 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Search
-        </Link>
+        <div>
+          <Link to="/search-workers" className="inline-flex items-center text-sm font-semibold text-gray-500 hover:text-blue-600 transition-colors gap-2 bg-white px-4 py-2.5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md">
+            <ArrowLeft className="w-4 h-4" />
+            Back to Search
+          </Link>
+        </div>
 
         {/* Content Layout */}
-        <div className="flex flex-col lg:flex-row gap-6 items-start">
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
           
           {/* Left Sidebar (Profile Info & Actions) */}
-          <div className="w-full lg:w-80 shrink-0 space-y-5">
+          <div className="w-full lg:w-[340px] shrink-0 space-y-6">
             {/* Main Profile Card */}
-            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm relative overflow-hidden flex flex-col items-center text-center">
-              <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-blue-50 to-indigo-50"></div>
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden flex flex-col">
+              <div className="h-32 bg-gradient-to-br from-blue-600 to-indigo-700 w-full relative">
+                {/* Decorative pattern */}
+                <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+              </div>
               
-              <div className="relative mt-8 mb-4">
-                <div className="w-24 h-24 rounded-2xl bg-white border-4 border-white shadow-md overflow-hidden flex items-center justify-center text-gray-400">
-                  {avatar ? (
-                    <img src={avatar} alt={name} className="w-full h-full object-cover" />
-                  ) : (
-                    <UserCircle className="w-16 h-16" />
+              <div className="px-6 pb-6 pt-0 flex flex-col items-center text-center relative">
+                <div className="relative -mt-16 mb-4">
+                  <div className="w-32 h-32 rounded-full bg-white p-1.5 shadow-md">
+                    <div className="w-full h-full rounded-full bg-gray-50 overflow-hidden flex items-center justify-center text-gray-400 border border-gray-100">
+                      {avatar ? (
+                        <img src={avatar} alt={name} className="w-full h-full object-cover" />
+                      ) : (
+                        <UserCircle className="w-20 h-20" />
+                      )}
+                    </div>
+                  </div>
+                  {isVerified && (
+                    <div className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-sm border border-gray-100" title="Verified Worker">
+                      <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+                    </div>
                   )}
                 </div>
-                {isVerified && (
-                  <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-sm" title="Verified Worker">
-                    <CheckCircle2 className="w-6 h-6 text-emerald-500" />
-                  </div>
-                )}
-              </div>
 
-              <h1 className="text-xl font-bold text-gray-900 leading-tight">
-                {name}
-              </h1>
-              <p className="text-sm font-semibold text-blue-600 mt-1">{skillName}</p>
+                <h1 className="text-2xl font-bold text-gray-900 leading-tight">
+                  {name}
+                </h1>
+                <p className="text-sm font-semibold text-blue-600 mt-1">{skillName}</p>
 
-              <div className="flex items-center justify-center gap-4 text-xs text-gray-600 mt-3 w-full">
-                <div className="flex items-center gap-1">
+                <div className="flex items-center justify-center gap-2 text-sm text-gray-600 mt-3 w-full bg-gray-50 py-2 rounded-lg border border-gray-100">
                   <MapPin className="w-4 h-4 text-gray-400" />
-                  {location}
+                  <span className="font-medium">{location}</span>
                 </div>
-              </div>
 
-              <div className="w-full grid grid-cols-2 gap-3 mt-6 pt-6 border-t border-gray-100">
-                <button className="py-2.5 bg-gray-50 border border-gray-200 hover:bg-gray-100 text-gray-700 text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2">
-                  <MessageSquare className="w-4 h-4" />
-                  Chat
-                </button>
-                <button 
-                  onClick={() => setIsHireModalOpen(true)}
-                  className="py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2"
-                >
-                  <Briefcase className="w-4 h-4" />
-                  Hire
-                </button>
+                <div className="w-full grid grid-cols-2 gap-3 mt-6">
+                  <button className="py-2.5 bg-white border border-gray-300 hover:bg-gray-50 hover:border-gray-400 text-gray-700 text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm">
+                    <MessageSquare className="w-4 h-4 text-gray-500" />
+                    Message
+                  </button>
+                  <button 
+                    onClick={() => setIsHireModalOpen(true)}
+                    className="py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2"
+                  >
+                    <Briefcase className="w-4 h-4" />
+                    Hire Now
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* Agency info */}
             {agencyName && (
-              <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm">
-                <h3 className="text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
-                  <Building2 className="w-4 h-4 text-gray-400" /> Current Agency
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm flex flex-col gap-3">
+                <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                  <Building2 className="w-4 h-4 text-blue-600" /> Current Agency
                 </h3>
-                <p className="text-sm font-semibold text-gray-700 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                <div className="bg-blue-50 text-blue-800 p-4 rounded-xl border border-blue-100 font-semibold text-sm">
                   {agencyName}
-                </p>
+                </div>
               </div>
             )}
           </div>
           
           {/* Main Content Area */}
-          <div className="flex-1 min-w-0 space-y-5">
+          <div className="flex-1 w-full space-y-6">
             
             {/* Professional Overview */}
-            <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-              <h2 className="text-base font-bold text-gray-900 mb-5 pb-4 border-b border-gray-100">Professional Overview</h2>
+            <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-200 shadow-sm">
+              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <Star className="w-5 h-5 text-amber-500 fill-amber-500" /> Professional Overview
+              </h2>
               
-              <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                <div className="flex-1 bg-gray-50 rounded-xl p-4 border border-gray-100 flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                    <Briefcase className="w-5 h-5 text-blue-600" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                <div className="bg-gray-50 rounded-xl p-5 border border-gray-100 hover:border-gray-300 transition-colors">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
+                      <Briefcase className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Experience</p>
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-0.5">Experience</p>
-                    <p className="font-semibold text-gray-900 text-sm">{experience}</p>
-                  </div>
+                  <p className="font-black text-gray-900 text-lg">{experience}</p>
                 </div>
                 
-                <div className="flex-1 bg-emerald-50/50 rounded-xl p-4 border border-emerald-100 flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-                    <CalendarCheck className="w-5 h-5 text-emerald-600" />
+                <div className="bg-gray-50 rounded-xl p-5 border border-gray-100 hover:border-gray-300 transition-colors">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
+                      <CalendarCheck className="w-4 h-4 text-emerald-600" />
+                    </div>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Availability</p>
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider mb-0.5">Availability</p>
-                    <p className="font-semibold text-emerald-900 text-sm">{statusLabels[status] || statusLabels.ACTIVE}</p>
-                  </div>
+                  <p className="font-black text-gray-900 text-lg">{statusLabels[status] || statusLabels.ACTIVE}</p>
                 </div>
                 
                 {worker.expectedDailyWage && (
-                  <div className="flex-1 bg-amber-50/50 rounded-xl p-4 border border-amber-100 flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
-                      <DollarSign className="w-5 h-5 text-amber-600" />
+                  <div className="bg-gray-50 rounded-xl p-5 border border-gray-100 hover:border-gray-300 transition-colors">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
+                        <DollarSign className="w-4 h-4 text-amber-600" />
+                      </div>
+                      <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Expected Wage</p>
                     </div>
-                    <div>
-                      <p className="text-xs font-bold text-amber-700 uppercase tracking-wider mb-0.5">Expected Wage</p>
-                      <p className="font-semibold text-amber-900 text-sm">₹{worker.expectedDailyWage} / day</p>
-                    </div>
+                    <p className="font-black text-gray-900 text-lg">₹{worker.expectedDailyWage} <span className="text-sm font-medium text-gray-500">/ day</span></p>
                   </div>
                 )}
               </div>
 
               {worker.notes && (
-                <div className="prose prose-sm max-w-none text-gray-600 bg-gray-50/50 p-4 rounded-xl border border-gray-100">
-                  <p>{worker.notes}</p>
+                <div>
+                  <h3 className="text-sm font-bold text-gray-900 mb-3">About</h3>
+                  <div className="prose prose-sm max-w-none text-gray-600 bg-gray-50 p-5 rounded-xl border border-gray-100 leading-relaxed">
+                    <p>{worker.notes}</p>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Skills & Languages (Side by Side on Large Screens) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {/* Skills & Languages */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Skills */}
               {(allSkills.length > 0) && (
-                <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-                  <h3 className="text-sm font-bold text-gray-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-blue-500" /> Skills
+                <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-200 shadow-sm h-full">
+                  <h3 className="text-base font-bold text-gray-900 mb-5 flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-indigo-500" /> Skills & Expertise
                   </h3>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2.5">
                     {allSkills.map((s, idx) => (
-                      <span key={idx} className="px-3 py-1.5 bg-gray-50 border border-gray-200 text-gray-700 text-xs font-semibold rounded-lg">
+                      <span key={idx} className="px-4 py-2 bg-indigo-50 text-indigo-700 border border-indigo-100 text-sm font-semibold rounded-xl">
                         {s}
                       </span>
                     ))}
@@ -208,13 +220,13 @@ export default function ClientWorkerProfilePage() {
 
               {/* Languages */}
               {(languages.length > 0) && (
-                <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-                  <h3 className="text-sm font-bold text-gray-900 mb-4 pb-3 border-b border-gray-100 flex items-center gap-2">
-                    <Languages className="w-4 h-4 text-blue-500" /> Languages
+                <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-200 shadow-sm h-full">
+                  <h3 className="text-base font-bold text-gray-900 mb-5 flex items-center gap-2">
+                    <Languages className="w-5 h-5 text-teal-500" /> Languages
                   </h3>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2.5">
                     {languages.map((l, idx) => (
-                      <span key={idx} className="px-3 py-1.5 bg-blue-50 text-blue-700 border border-blue-100 text-xs font-semibold rounded-lg">
+                      <span key={idx} className="px-4 py-2 bg-teal-50 text-teal-700 border border-teal-100 text-sm font-semibold rounded-xl">
                         {l}
                       </span>
                     ))}
