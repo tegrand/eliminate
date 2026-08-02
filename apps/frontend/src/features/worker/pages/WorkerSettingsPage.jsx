@@ -117,7 +117,8 @@ export default function WorkerSettingsPage() {
   });
 
   const onSaveAllSettings = (data) => {
-    updateProfile(data);
+    const { email, ...rest } = data;
+    updateProfile(rest);
   };
 
   const { mutate: change, isPending } = useMutation({
