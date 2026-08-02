@@ -186,6 +186,9 @@ export default function ClientJobCreationModal({ isOpen, onClose, mode = "create
 
     if (!payload.categoryId) delete payload.categoryId;
     if (!payload.locationId) delete payload.locationId;
+    if (!payload.startDate) delete payload.startDate;
+    if (!payload.endDate) delete payload.endDate;
+    if (!payload.salaryAmount) delete payload.salaryAmount;
 
     if (mode === "edit") {
       updateJobMutation.mutate(payload);
