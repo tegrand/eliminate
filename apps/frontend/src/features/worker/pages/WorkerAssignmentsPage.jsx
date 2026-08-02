@@ -49,6 +49,7 @@ export default function WorkerAssignmentsPage() {
 
   const currentAssignments = categorized[activeTab] || [];
 
+  return (
     <div className="w-full max-w-7xl mx-auto py-6 px-4 sm:px-6 space-y-6 animate-fade-in">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">My Assignments</h1>
