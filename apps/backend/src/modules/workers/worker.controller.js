@@ -67,11 +67,11 @@ export const getMyJobInvitations = asyncHandler(async (req, res) => {
 });
 
 export const acceptJobInvitation = asyncHandler(async (req, res) => {
-  const result = await workerService.acceptJobInvitation(req.user.id, req.params.id);
+  const result = await workerService.acceptJobInvitation(req.user.id, req.params.id, req.user);
   return ApiResponse.success(res, "Job invitation accepted", result, 200);
 });
 
 export const rejectJobInvitation = asyncHandler(async (req, res) => {
-  const result = await workerService.rejectJobInvitation(req.user.id, req.params.id);
+  const result = await workerService.rejectJobInvitation(req.user.id, req.params.id, req.user);
   return ApiResponse.success(res, "Job invitation rejected", result, 200);
 });

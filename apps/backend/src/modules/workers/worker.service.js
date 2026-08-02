@@ -416,6 +416,8 @@ export const leaveAgency = async (userId, agencyId) => {
   return getMyAgencies(userId);
 };
 
+import * as hiringRequestService from "../hiring-requests/hiring-request.service.js";
+
 export const getMyJobInvitations = async (userId) => {
   const worker = await getMyWorkerProfile(userId);
   return prisma.hiringRequest.findMany({
@@ -428,16 +430,19 @@ export const getMyJobInvitations = async (userId) => {
   });
 };
 
-export const acceptJobInvitation = async (userId, id) => {
+export const acceptJobInvitation = async (userId, id, user) => {
   const worker = await getMyWorkerProfile(userId);
   const req = await prisma.hiringRequest.findFirst({ where: { id, targetWorkerId: worker.id, status: 'PENDING' } });
   if (!req) throw new AppError('Invitation not found', 404);
-  return prisma.hiringRequest.update({ where: { id }, data: { status: 'ACCEPTED' } });
+  
+  // Call the actual service that handles all the assignment creation logic
+  return hiringRequestService.updateHiringRequestStatus(id, 'ACCEPTED', user);
 };
 
-export const rejectJobInvitation = async (userId, id) => {
+export const rejectJobInvitation = async (userId, id, user) => {
   const worker = await getMyWorkerProfile(userId);
   const req = await prisma.hiringRequest.findFirst({ where: { id, targetWorkerId: worker.id, status: 'PENDING' } });
   if (!req) throw new AppError('Invitation not found', 404);
-  return prisma.hiringRequest.update({ where: { id }, data: { status: 'REJECTED' } });
+  
+  return hiringRequestService.updateHiringRequestStatus(id, 'REJECTED', user);
 };
