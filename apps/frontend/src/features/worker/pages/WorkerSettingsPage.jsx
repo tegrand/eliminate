@@ -19,8 +19,7 @@ export default function WorkerSettingsPage() {
     defaultValues: {
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",
-      phone: user?.phone || "",
-      email: user?.email || ""
+      phone: user?.phone || ""
     }
   });
   
@@ -249,8 +248,8 @@ export default function WorkerSettingsPage() {
       </div>
       </div>
 
-      <form onSubmit={handleSettingsSubmit(onSaveAllSettings)} className="space-y-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <form id="main-settings-form" onSubmit={handleSettingsSubmit(onSaveAllSettings)} className="contents">
           
           {/* Basic Information Section */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
@@ -336,21 +335,9 @@ export default function WorkerSettingsPage() {
               </label>
             </div>
           </div>
-        </div>
+        </form>
 
-        {/* Global Save Button */}
-        <div className="flex justify-end mt-4">
-          <button type="submit" disabled={isUpdatingProfile}
-            className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl shadow-sm hover:shadow transition-all">
-            {isUpdatingProfile ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-            {isUpdatingProfile ? "Saving..." : "Save All Settings"}
-          </button>
-        </div>
-      </form>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
         <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-white">
           <div className="flex items-center gap-2">
             <Lock className="w-4 h-4 text-blue-600" />
@@ -397,7 +384,15 @@ export default function WorkerSettingsPage() {
         </div>
       </div>
 
+      </div>
 
+      {/* Global Save Button */}
+      <div className="flex justify-end mt-4">
+        <button type="submit" form="main-settings-form" disabled={isUpdatingProfile}
+          className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl shadow-sm hover:shadow transition-all">
+          {isUpdatingProfile ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+          {isUpdatingProfile ? "Saving..." : "Save All Settings"}
+        </button>
       </div>
       {/* Password Modal */}
       {showPasswordModal && (
