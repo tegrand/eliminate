@@ -84,12 +84,6 @@ export default function WorkerTopStatsWidget({ stats }) {
       value: "0",
       description: "Currently working on",
       gradient: "from-purple-500 to-purple-600",
-    },
-    {
-      title: "Profile Views",
-      value: "0",
-      description: "Last 30 days",
-      gradient: "from-pink-500 to-pink-600",
     }
   ];
 
