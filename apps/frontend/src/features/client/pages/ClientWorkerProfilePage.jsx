@@ -235,6 +235,62 @@ export default function ClientWorkerProfilePage() {
               )}
             </div>
 
+            {/* Additional Details */}
+            <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-200 shadow-sm mt-6">
+              <h3 className="text-base font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <UserCircle className="w-5 h-5 text-purple-500" /> Additional Details
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                
+                {worker.phone && (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Phone</span>
+                    <span className="text-sm font-semibold text-gray-800">{worker.phone}</span>
+                  </div>
+                )}
+                
+                {worker.gender && (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Gender</span>
+                    <span className="text-sm font-semibold text-gray-800 capitalize">{worker.gender.toLowerCase()}</span>
+                  </div>
+                )}
+
+                {worker.dateOfBirth && (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Age</span>
+                    <span className="text-sm font-semibold text-gray-800">
+                      {new Date().getFullYear() - new Date(worker.dateOfBirth).getFullYear()} Years
+                    </span>
+                  </div>
+                )}
+
+                {worker.joiningDate && (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Member Since</span>
+                    <span className="text-sm font-semibold text-gray-800">
+                      {new Date(worker.joiningDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                    </span>
+                  </div>
+                )}
+
+                {worker.expectedSalary && (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Expected Salary</span>
+                    <span className="text-sm font-semibold text-gray-800">₹{worker.expectedSalary}/month</span>
+                  </div>
+                )}
+
+                {worker.workerCode && (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Worker ID</span>
+                    <span className="text-sm font-semibold text-gray-800">{worker.workerCode}</span>
+                  </div>
+                )}
+                
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
