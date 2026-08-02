@@ -262,7 +262,8 @@ export const getClientDashboard = async (userId) => {
     allRequirementsForWorkers,
     upcomingJobsCount,
     recentActivitiesList,
-    notifications
+    notifications,
+    pendingHiringRequests
   ] = await Promise.all([
     // Active = OPEN + PARTIALLY_FILLED
     prisma.jobRequirement.count({
@@ -317,6 +318,10 @@ export const getClientDashboard = async (userId) => {
       where: { userId },
       orderBy: { createdAt: "desc" },
       take: 6
+    }),
+    // Pending Hiring Requests
+    prisma.hiringRequest.count({
+      where: { clientId: client.id, status: "PENDING" }
     })
   ]);
 
@@ -377,6 +382,7 @@ export const getClientDashboard = async (userId) => {
       ongoingJobs,
       completedJobs,
       upcomingJobs: upcomingJobsCount,
+      pendingRequests: pendingHiringRequests,
       pendingPayments: "₹0"   // payment module pending
     },
     recentActivities,

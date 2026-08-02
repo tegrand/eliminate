@@ -28,7 +28,7 @@ const cards = (stats, t) => [
     value: stats?.pendingRequests || 0,
     sub: t('clientDashboard.pendingRequestsSub') || "Awaiting action",
     gradient: "from-orange-500 to-orange-600",
-    link: ROUTES.CLIENT_WORKERS,
+    link: ROUTES.CLIENT_REQUESTS,
   },
   {
     label: t('clientDashboard.completedJobs') || "Completed Jobs",
