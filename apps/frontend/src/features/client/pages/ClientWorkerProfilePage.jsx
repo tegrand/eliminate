@@ -70,12 +70,12 @@ export default function ClientWorkerProfilePage() {
   const avgRating = reviews.length > 0 ? (reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length).toFixed(1) : 0;
 
   return (
-    <div className="w-full h-[calc(100vh-4rem)] bg-[#f8f9fa] overflow-y-auto scrollbar-hide py-8 px-4 sm:px-8 lg:px-12 animate-fade-in">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div className="w-full h-[calc(100vh-4rem)] bg-[#f8f9fa] overflow-y-auto scrollbar-hide py-8 px-4 sm:px-8 animate-fade-in">
+      <div className="max-w-5xl mx-auto space-y-6">
         
         {/* Top Navigation */}
         <div>
-          <Link to="/search-workers" className="inline-flex items-center text-sm font-semibold text-gray-500 hover:text-blue-600 transition-colors gap-2 bg-white px-4 py-2.5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md">
+          <Link to="/search-workers" className="inline-flex items-center text-sm font-semibold text-gray-500 hover:text-blue-600 transition-colors gap-2 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-sm hover:shadow-md">
             <ArrowLeft className="w-4 h-4" />
             Back to Search
           </Link>
@@ -85,72 +85,76 @@ export default function ClientWorkerProfilePage() {
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           
           {/* Left Sidebar (Profile Info & Actions) */}
-          <div className="w-full lg:w-[340px] shrink-0 space-y-6">
+          <div className="w-full lg:w-80 shrink-0 space-y-5">
             {/* Main Profile Card */}
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm relative overflow-hidden flex flex-col">
-              <div className="h-32 bg-gradient-to-br from-blue-600 to-indigo-700 w-full relative">
-                {/* Decorative pattern */}
-                <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
-              </div>
-              
-              <div className="px-6 pb-6 pt-0 flex flex-col items-center text-center relative">
-                <div className="relative -mt-16 mb-4">
-                  <div className="w-32 h-32 rounded-full bg-white p-1.5 shadow-md">
-                    <div className="w-full h-full rounded-full bg-gray-50 overflow-hidden flex items-center justify-center text-gray-400 border border-gray-100">
-                      {avatar ? (
-                        <img src={avatar} alt={name} className="w-full h-full object-cover" />
-                      ) : (
-                        <UserCircle className="w-20 h-20" />
-                      )}
-                    </div>
-                  </div>
-                  {isVerified && (
-                    <div className="absolute bottom-1 right-1 bg-white rounded-full p-1 shadow-sm border border-gray-100" title="Verified Worker">
-                      <CheckCircle2 className="w-6 h-6 text-emerald-500" />
-                    </div>
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 flex flex-col items-center text-center">
+              <div className="relative mb-4">
+                <div className="w-24 h-24 rounded-full bg-gray-50 overflow-hidden flex items-center justify-center text-gray-400 border border-gray-200 shadow-sm">
+                  {avatar ? (
+                    <img src={avatar} alt={name} className="w-full h-full object-cover" />
+                  ) : (
+                    <UserCircle className="w-16 h-16" />
                   )}
                 </div>
+                {isVerified && (
+                  <div className="absolute bottom-0 right-0 bg-white rounded-full p-0.5 shadow-sm border border-gray-100" title="Verified Worker">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                  </div>
+                )}
+              </div>
 
-                <h1 className="text-2xl font-bold text-gray-900 leading-tight">
-                  {name}
-                </h1>
-                <p className="text-sm font-semibold text-blue-600 mt-1">{skillName}</p>
+              <h1 className="text-xl font-bold text-gray-900 leading-tight">
+                {name}
+              </h1>
+              <p className="text-sm font-medium text-gray-600 mt-1">{skillName}</p>
 
-                <div className="flex items-center justify-center gap-1 mt-2">
-                  <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
-                  <span className="font-bold text-gray-900">{avgRating}</span>
-                  <span className="text-sm font-medium text-gray-500">({reviews.length} reviews)</span>
+              <div className="flex items-center justify-center gap-1 mt-2 mb-4">
+                <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                <span className="text-sm font-bold text-gray-900">{avgRating}</span>
+                <span className="text-xs font-medium text-gray-500">({reviews.length} reviews)</span>
+              </div>
+
+              <div className="w-full space-y-3 mb-6">
+                <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <MapPin className="w-4 h-4 text-gray-400 shrink-0" />
+                  <span className="truncate">{location}</span>
                 </div>
-
-                <div className="flex items-center justify-center gap-2 text-sm text-gray-600 mt-3 w-full bg-gray-50 py-2 rounded-lg border border-gray-100">
-                  <MapPin className="w-4 h-4 text-gray-400" />
-                  <span className="font-medium">{location}</span>
+                {worker.expectedDailyWage && (
+                  <div className="flex items-center gap-3 text-sm text-gray-600">
+                    <DollarSign className="w-4 h-4 text-gray-400 shrink-0" />
+                    <span>₹{worker.expectedDailyWage} / day</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-3 text-sm text-gray-600">
+                  <CalendarCheck className="w-4 h-4 text-gray-400 shrink-0" />
+                  <span className={status === 'ACTIVE' ? 'text-emerald-600 font-medium' : ''}>{statusLabels[status] || statusLabels.ACTIVE}</span>
                 </div>
+              </div>
 
-                <div className="w-full grid grid-cols-2 gap-3 mt-6">
-                  <button className="py-2.5 bg-white border border-gray-300 hover:bg-gray-50 hover:border-gray-400 text-gray-700 text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm">
-                    <MessageSquare className="w-4 h-4 text-gray-500" />
-                    Message
-                  </button>
-                  <button 
-                    onClick={() => setIsHireModalOpen(true)}
-                    className="py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2"
-                  >
-                    <Briefcase className="w-4 h-4" />
-                    Hire Now
-                  </button>
-                </div>
+              <div className="w-full flex flex-col gap-3">
+                <button 
+                  onClick={() => setIsHireModalOpen(true)}
+                  className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-2"
+                >
+                  <Briefcase className="w-4 h-4" />
+                  Hire Worker
+                </button>
+                <button className="w-full py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-semibold rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm">
+                  <MessageSquare className="w-4 h-4 text-gray-500" />
+                  Send Message
+                </button>
               </div>
             </div>
 
             {/* Agency info */}
             {agencyName && (
-              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm flex flex-col gap-3">
-                <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                  <Building2 className="w-4 h-4 text-blue-600" /> Current Agency
-                </h3>
-                <div className="bg-blue-50 text-blue-800 p-4 rounded-xl border border-blue-100 font-semibold text-sm">
-                  {agencyName}
+              <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm flex flex-col gap-2">
+                <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">Associated Agency</h3>
+                <div className="flex items-center gap-3 mt-1">
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <Building2 className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <span className="text-sm font-semibold text-gray-900">{agencyName}</span>
                 </div>
               </div>
             )}
@@ -160,181 +164,113 @@ export default function ClientWorkerProfilePage() {
           <div className="flex-1 w-full space-y-6">
             
             {/* Professional Overview */}
-            <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-200 shadow-sm">
-              <h2 className="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <Star className="w-5 h-5 text-amber-500 fill-amber-500" /> Professional Overview
-              </h2>
+            <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-200 shadow-sm space-y-8">
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-                <div className="bg-gray-50 rounded-xl p-5 border border-gray-100 hover:border-gray-300 transition-colors">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center shrink-0">
-                      <Briefcase className="w-4 h-4 text-blue-600" />
-                    </div>
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Experience</p>
-                  </div>
-                  <p className="font-black text-gray-900 text-lg">{experience}</p>
-                </div>
-                
-                <div className="bg-gray-50 rounded-xl p-5 border border-gray-100 hover:border-gray-300 transition-colors">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
-                      <CalendarCheck className="w-4 h-4 text-emerald-600" />
-                    </div>
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Availability</p>
-                  </div>
-                  <p className="font-black text-gray-900 text-lg">{statusLabels[status] || statusLabels.ACTIVE}</p>
-                </div>
-                
-                {worker.expectedDailyWage && (
-                  <div className="bg-gray-50 rounded-xl p-5 border border-gray-100 hover:border-gray-300 transition-colors">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
-                        <DollarSign className="w-4 h-4 text-amber-600" />
-                      </div>
-                      <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Expected Wage</p>
-                    </div>
-                    <p className="font-black text-gray-900 text-lg">₹{worker.expectedDailyWage} <span className="text-sm font-medium text-gray-500">/ day</span></p>
-                  </div>
+              {/* About Section */}
+              <div>
+                <h2 className="text-lg font-bold text-gray-900 mb-4">About</h2>
+                {worker.notes ? (
+                  <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{worker.notes}</p>
+                ) : (
+                  <p className="text-sm text-gray-500 italic">No description provided.</p>
                 )}
               </div>
 
-              {worker.notes && (
+              <hr className="border-gray-100" />
+
+              {/* Work Details & Stats */}
+              <div>
+                <h2 className="text-lg font-bold text-gray-900 mb-4">Work Details</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Experience</p>
+                    <p className="text-sm font-bold text-gray-900">{experience}</p>
+                  </div>
+                  {worker.joiningDate && (
+                    <div>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Member Since</p>
+                      <p className="text-sm font-bold text-gray-900">{new Date(worker.joiningDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</p>
+                    </div>
+                  )}
+                  {worker.gender && (
+                    <div>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Gender</p>
+                      <p className="text-sm font-bold text-gray-900 capitalize">{worker.gender.toLowerCase()}</p>
+                    </div>
+                  )}
+                  {worker.dateOfBirth && (
+                    <div>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Age</p>
+                      <p className="text-sm font-bold text-gray-900">{new Date().getFullYear() - new Date(worker.dateOfBirth).getFullYear()} Years</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <hr className="border-gray-100" />
+
+              {/* Skills & Languages */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                  <h3 className="text-sm font-bold text-gray-900 mb-3">About</h3>
-                  <div className="prose prose-sm max-w-none text-gray-600 bg-gray-50 p-5 rounded-xl border border-gray-100 leading-relaxed">
-                    <p>{worker.notes}</p>
-                  </div>
+                  <h2 className="text-sm font-bold text-gray-900 mb-3">Skills & Expertise</h2>
+                  {allSkills.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {allSkills.map((s, idx) => (
+                        <span key={idx} className="px-3 py-1 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg">
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500">No skills specified.</p>
+                  )}
                 </div>
-              )}
-            </div>
 
-            {/* Skills & Languages */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Skills */}
-              {(allSkills.length > 0) && (
-                <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-200 shadow-sm h-full">
-                  <h3 className="text-base font-bold text-gray-900 mb-5 flex items-center gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-indigo-500" /> Skills & Expertise
-                  </h3>
-                  <div className="flex flex-wrap gap-2.5">
-                    {allSkills.map((s, idx) => (
-                      <span key={idx} className="px-4 py-2 bg-indigo-50 text-indigo-700 border border-indigo-100 text-sm font-semibold rounded-xl">
-                        {s}
-                      </span>
-                    ))}
-                  </div>
+                <div>
+                  <h2 className="text-sm font-bold text-gray-900 mb-3">Languages</h2>
+                  {languages.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {languages.map((l, idx) => (
+                        <span key={idx} className="px-3 py-1 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg">
+                          {l}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500">No languages specified.</p>
+                  )}
                 </div>
-              )}
-
-              {/* Languages */}
-              {(languages.length > 0) && (
-                <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-200 shadow-sm h-full">
-                  <h3 className="text-base font-bold text-gray-900 mb-5 flex items-center gap-2">
-                    <Languages className="w-5 h-5 text-teal-500" /> Languages
-                  </h3>
-                  <div className="flex flex-wrap gap-2.5">
-                    {languages.map((l, idx) => (
-                      <span key={idx} className="px-4 py-2 bg-teal-50 text-teal-700 border border-teal-100 text-sm font-semibold rounded-xl">
-                        {l}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Additional Details */}
-            <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-200 shadow-sm mt-6">
-              <h3 className="text-base font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <UserCircle className="w-5 h-5 text-purple-500" /> Additional Details
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                
-                {worker.phone && (
-                  <div className="flex flex-col gap-1">
-                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Phone</span>
-                    <span className="text-sm font-semibold text-gray-800">{worker.phone}</span>
-                  </div>
-                )}
-                
-                {worker.gender && (
-                  <div className="flex flex-col gap-1">
-                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Gender</span>
-                    <span className="text-sm font-semibold text-gray-800 capitalize">{worker.gender.toLowerCase()}</span>
-                  </div>
-                )}
-
-                {worker.dateOfBirth && (
-                  <div className="flex flex-col gap-1">
-                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Age</span>
-                    <span className="text-sm font-semibold text-gray-800">
-                      {new Date().getFullYear() - new Date(worker.dateOfBirth).getFullYear()} Years
-                    </span>
-                  </div>
-                )}
-
-                {worker.joiningDate && (
-                  <div className="flex flex-col gap-1">
-                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Member Since</span>
-                    <span className="text-sm font-semibold text-gray-800">
-                      {new Date(worker.joiningDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-                    </span>
-                  </div>
-                )}
-
-                {worker.expectedSalary && (
-                  <div className="flex flex-col gap-1">
-                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Expected Salary</span>
-                    <span className="text-sm font-semibold text-gray-800">₹{worker.expectedSalary}/month</span>
-                  </div>
-                )}
-
-                {worker.workerCode && (
-                  <div className="flex flex-col gap-1">
-                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Worker ID</span>
-                    <span className="text-sm font-semibold text-gray-800">{worker.workerCode}</span>
-                  </div>
-                )}
-                
               </div>
+
             </div>
 
             {/* Client Reviews */}
-            <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-200 shadow-sm mt-6">
-              <h3 className="text-base font-bold text-gray-900 mb-6 flex items-center gap-2">
-                <Star className="w-5 h-5 text-amber-500 fill-amber-500" /> Client Reviews
-              </h3>
+            <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-200 shadow-sm">
+              <h2 className="text-lg font-bold text-gray-900 mb-6">Work History & Reviews</h2>
               
               {reviews.length > 0 ? (
-                <div className="space-y-5">
+                <div className="space-y-6">
                   {reviews.map((review) => (
-                    <div key={review.id} className="pb-5 border-b border-gray-100 last:border-0 last:pb-0">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 overflow-hidden">
-                            {review.reviewer?.user?.avatar ? (
-                              <img src={review.reviewer.user.avatar} alt="Client Avatar" className="w-full h-full object-cover" />
-                            ) : (
-                              <UserCircle className="w-6 h-6" />
-                            )}
-                          </div>
-                          <div>
-                            <p className="text-sm font-bold text-gray-900">
-                              {review.reviewer?.companyName || `${review.reviewer?.user?.firstName || ''} ${review.reviewer?.user?.lastName || ''}`.trim() || 'Client'}
-                            </p>
-                            <p className="text-xs font-medium text-gray-500">
+                    <div key={review.id} className="pb-6 border-b border-gray-100 last:border-0 last:pb-0">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <p className="text-sm font-bold text-gray-900">
+                            {review.reviewer?.companyName || `${review.reviewer?.user?.firstName || ''} ${review.reviewer?.user?.lastName || ''}`.trim() || 'Client'}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <div className="flex items-center">
+                              {[...Array(5)].map((_, i) => (
+                                <Star key={i} className={`w-3.5 h-3.5 ${i < review.rating ? 'text-amber-500 fill-amber-500' : 'text-gray-300'}`} />
+                              ))}
+                            </div>
+                            <span className="text-xs font-medium text-gray-500">
                               {new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                            </p>
+                            </span>
                           </div>
-                        </div>
-                        <div className="flex items-center bg-amber-50 px-2 py-1 rounded-lg">
-                          <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500 mr-1" />
-                          <span className="text-xs font-bold text-amber-700">{review.rating}</span>
                         </div>
                       </div>
                       {review.comment && (
-                        <p className="text-sm text-gray-600 mt-3 leading-relaxed bg-gray-50/50 p-3 rounded-xl border border-gray-50">
+                        <p className="text-sm text-gray-700 leading-relaxed">
                           {review.comment}
                         </p>
                       )}
@@ -342,8 +278,8 @@ export default function ClientWorkerProfilePage() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <p className="text-sm font-semibold text-gray-500">No reviews yet for this worker.</p>
+                <div className="py-6">
+                  <p className="text-sm text-gray-500 italic">No reviews yet for this worker.</p>
                 </div>
               )}
             </div>
