@@ -6,7 +6,7 @@ import { X, Briefcase, MapPin, Calendar, DollarSign, ListChecks, CheckCircle2, C
 import api from "../../../api/axios";
 import { jobRequirementApi } from "../../job-requirement/api/jobRequirement.api";
 
-export default function ClientJobCreationModal({ isOpen, onClose }) {
+export default function ClientJobCreationModal({ isOpen, onClose, mode = "create", jobData = null }) {
   const [activeTab, setActiveTab] = useState(0);
   const [customSkills, setCustomSkills] = useState([]);
   const [newSkillText, setNewSkillText] = useState("");
@@ -34,6 +34,33 @@ export default function ClientJobCreationModal({ isOpen, onClose }) {
       notes: ""
     }
   });
+
+  useEffect(() => {
+    if (mode === "edit" && jobData && isOpen) {
+      reset({
+        title: jobData.title || "",
+        categoryId: jobData.categoryId || "",
+        requiredSkillIds: jobData.requiredSkills?.map(rs => rs.skillId) || [],
+        requiredWorkers: jobData.requiredWorkers || 1,
+        genderPreference: jobData.genderPreference || "Any",
+        experienceRequired: jobData.experienceRequired || "",
+        duration: jobData.duration || "",
+        salaryType: jobData.salaryType || "DAILY",
+        salaryAmount: jobData.salaryAmount || "",
+        locationId: jobData.locationId || "",
+        startDate: jobData.startDate ? jobData.startDate.split('T')[0] : "",
+        endDate: jobData.endDate ? jobData.endDate.split('T')[0] : "",
+        locationText: jobData.location?.name?.split(',')[0]?.trim() || "",
+        locationState: jobData.location?.name?.split(',')[1]?.trim() || "",
+        accommodation: jobData.accommodation || false,
+        food: jobData.food || false,
+        transport: jobData.transport || false,
+        notes: jobData.notes || ""
+      });
+    } else if (mode === "create" && isOpen) {
+      reset();
+    }
+  }, [mode, jobData, isOpen, reset]);
 
   const selectedSkills = watch("requiredSkillIds") || [];
 
@@ -83,6 +110,18 @@ export default function ClientJobCreationModal({ isOpen, onClose }) {
     },
     onError: (error) => {
       toast.error(error.response?.data?.message || "Failed to post job");
+    }
+  });
+
+  const updateJobMutation = useMutation({
+    mutationFn: (data) => jobRequirementApi.updateJobRequirement(jobData.id, data),
+    onSuccess: () => {
+      toast.success("Job Requirement updated successfully!");
+      queryClient.invalidateQueries(["clientJobs"]);
+      onClose();
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || "Failed to update job");
     }
   });
 
@@ -148,7 +187,11 @@ export default function ClientJobCreationModal({ isOpen, onClose }) {
     if (!payload.categoryId) delete payload.categoryId;
     if (!payload.locationId) delete payload.locationId;
 
-    createJobMutation.mutate(payload);
+    if (mode === "edit") {
+      updateJobMutation.mutate(payload);
+    } else {
+      createJobMutation.mutate(payload);
+    }
   };
 
   const handleNext = async () => {
@@ -465,10 +508,10 @@ export default function ClientJobCreationModal({ isOpen, onClose }) {
               <button
                 type="submit"
                 form="job-creation-form"
-                disabled={createJobMutation.isPending}
+                disabled={mode === "edit" ? updateJobMutation.isPending : createJobMutation.isPending}
                 className="px-6 py-2.5 bg-green-600 text-white text-sm font-bold rounded-xl hover:bg-green-700 shadow-sm shadow-green-200 transition-colors disabled:opacity-50"
               >
-                {createJobMutation.isPending ? "Posting..." : "Post Job Requirement"}
+                {mode === "edit" ? (updateJobMutation.isPending ? "Updating..." : "Update Job Requirement") : (createJobMutation.isPending ? "Posting..." : "Post Job Requirement")}
               </button>
             )}
           </div>

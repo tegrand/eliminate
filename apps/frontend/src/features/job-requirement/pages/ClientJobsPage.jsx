@@ -175,8 +175,11 @@ export default function ClientJobsPage() {
     updateStatusMutation.mutate({ id, status });
   };
 
+  const [selectedJob, setSelectedJob] = useState(null);
+
   const handleEdit = (job) => {
-    toast.error("Edit form feature coming soon! You can use status update instead.");
+    setSelectedJob(job);
+    setIsCreateModalOpen(true);
   };
 
   let jobs = Array.isArray(data) ? data : data?.data || [];
@@ -221,7 +224,10 @@ export default function ClientJobsPage() {
           </button>
           
           <button 
-            onClick={() => setIsCreateModalOpen(true)}
+            onClick={() => {
+              setSelectedJob(null);
+              setIsCreateModalOpen(true);
+            }}
             className="px-5 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-sm shadow-blue-200 transition-colors flex items-center gap-2 text-sm"
           >
             <Plus className="w-4 h-4" /> Post a New Job
@@ -275,7 +281,10 @@ export default function ClientJobsPage() {
           <h3 className="text-lg font-bold text-gray-900">No jobs posted yet</h3>
           <p className="text-sm text-gray-500 mt-1 max-w-sm mb-6">Create your first job requirement to start finding workers.</p>
           <button 
-            onClick={() => setIsCreateModalOpen(true)}
+            onClick={() => {
+              setSelectedJob(null);
+              setIsCreateModalOpen(true);
+            }}
             className="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-sm shadow-blue-200 transition-colors flex items-center gap-2 text-sm"
           >
             <Plus className="w-4 h-4" /> Post a New Job
@@ -298,7 +307,12 @@ export default function ClientJobsPage() {
       {/* Creation Modal */}
       <ClientJobCreationModal 
         isOpen={isCreateModalOpen} 
-        onClose={() => setIsCreateModalOpen(false)} 
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          setSelectedJob(null);
+        }} 
+        mode={selectedJob ? "edit" : "create"}
+        jobData={selectedJob}
       />
 
       {/* Category Manager Modal */}
