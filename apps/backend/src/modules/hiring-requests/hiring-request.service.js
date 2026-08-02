@@ -2,15 +2,38 @@ import prisma from "../../config/prisma.js";
 import AppError from "../../shared/errors/app-error.js";
 
 export const createHiringRequest = async (clientId, data) => {
-  return await prisma.hiringRequest.create({
-    data: {
-      ...data,
-      clientId,
-    },
-    include: {
-      agency: true,
-      worker: true,
+  return await prisma.$transaction(async (tx) => {
+    let jobRequirementId = data.jobRequirementId;
+
+    if (!jobRequirementId) {
+      const newJob = await tx.jobRequirement.create({
+        data: {
+          requirementCode: `REQ-${Date.now().toString().slice(-6)}`,
+          clientId,
+          title: data.title || "Custom Hiring Request",
+          description: data.description || data.notes || "",
+          requiredWorkers: 1,
+          startDate: data.startDate,
+          endDate: data.endDate,
+          salaryAmount: data.proposedRate,
+          status: "OPEN",
+          notes: data.notes
+        }
+      });
+      jobRequirementId = newJob.id;
     }
+
+    return await tx.hiringRequest.create({
+      data: {
+        ...data,
+        jobRequirementId,
+        clientId,
+      },
+      include: {
+        agency: true,
+        worker: true,
+      }
+    });
   });
 };
 
