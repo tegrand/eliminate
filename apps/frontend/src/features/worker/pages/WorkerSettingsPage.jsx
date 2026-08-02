@@ -109,6 +109,10 @@ export default function WorkerSettingsPage() {
     onError: (e) => toast.error(e.response?.data?.message || "Failed to save settings")
   });
 
+  const onSaveAllSettings = (data) => {
+    updateProfile(data);
+  };
+
   const { mutate: change, isPending } = useMutation({
     mutationFn: (d) => usersApi.changePassword({ currentPassword: d.currentPassword, newPassword: d.newPassword }),
     onSuccess: () => { toast.success("Password changed!"); reset(); },
