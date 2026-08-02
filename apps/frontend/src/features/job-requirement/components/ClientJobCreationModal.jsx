@@ -8,9 +8,11 @@ import { jobRequirementApi } from "../../job-requirement/api/jobRequirement.api"
 
 export default function ClientJobCreationModal({ isOpen, onClose }) {
   const [activeTab, setActiveTab] = useState(0);
+  const [customSkills, setCustomSkills] = useState([]);
+  const [newSkillText, setNewSkillText] = useState("");
   const queryClient = useQueryClient();
 
-  const { register, handleSubmit, formState: { errors }, reset, trigger } = useForm({
+  const { register, handleSubmit, formState: { errors }, reset, trigger, watch, setValue } = useForm({
     defaultValues: {
       title: "",
       categoryId: "",
@@ -25,12 +27,15 @@ export default function ClientJobCreationModal({ isOpen, onClose }) {
       startDate: "",
       endDate: "",
       locationText: "",
+      locationState: "",
       accommodation: false,
       food: false,
       transport: false,
       notes: ""
     }
   });
+
+  const selectedSkills = watch("requiredSkillIds") || [];
 
   const { data: categoriesData } = useQuery({ queryKey: ["categories"], queryFn: async () => (await api.get("/categories")).data });
   const { data: skillsData } = useQuery({ queryKey: ["skills"], queryFn: async () => (await api.get("/skills")).data });
@@ -39,6 +44,33 @@ export default function ClientJobCreationModal({ isOpen, onClose }) {
   const categories = Array.isArray(categoriesData?.data?.items) ? categoriesData.data.items : (Array.isArray(categoriesData?.data) ? categoriesData.data : (Array.isArray(categoriesData) ? categoriesData : []));
   const skills = Array.isArray(skillsData?.data?.items) ? skillsData.data.items : (Array.isArray(skillsData?.data) ? skillsData.data : (Array.isArray(skillsData) ? skillsData : []));
   const locations = Array.isArray(locationsData?.data?.items) ? locationsData.data.items : (Array.isArray(locationsData?.data) ? locationsData.data : (Array.isArray(locationsData) ? locationsData : []));
+
+  const handleAddCustomSkill = () => {
+    const name = newSkillText.trim();
+    if (name) {
+      const existsInCustom = customSkills.find(s => s.name.toLowerCase() === name.toLowerCase());
+      if (existsInCustom) {
+        setNewSkillText("");
+        return;
+      }
+      
+      const existsInApi = skills.find(s => s.name.toLowerCase() === name.toLowerCase());
+      const tempId = existsInApi ? existsInApi.id : `custom_${Date.now()}`;
+      
+      setCustomSkills([...customSkills, { id: tempId, name }]);
+      const current = watch("requiredSkillIds") || [];
+      if (!current.includes(tempId)) {
+        setValue("requiredSkillIds", [...current, tempId], { shouldValidate: true });
+      }
+      setNewSkillText("");
+    }
+  };
+
+  const handleRemoveCustomSkill = (idToRemove) => {
+    setCustomSkills(customSkills.filter(s => s.id !== idToRemove));
+    const current = watch("requiredSkillIds") || [];
+    setValue("requiredSkillIds", current.filter(id => id !== idToRemove), { shouldValidate: true });
+  };
 
   const createJobMutation = useMutation({
     mutationFn: (data) => jobRequirementApi.createJobRequirement(data),
@@ -56,17 +88,41 @@ export default function ClientJobCreationModal({ isOpen, onClose }) {
 
   const onSubmit = async (data) => {
     let finalLocationId = data.locationId;
+    let finalSkillIds = [];
+
+    for (const skillId of data.requiredSkillIds || []) {
+      if (!skillId) continue;
+      if (typeof skillId === 'string' && skillId.startsWith('custom_')) {
+        const customSkill = customSkills.find(s => s.id === skillId);
+        if (customSkill) {
+          try {
+            const code = customSkill.name.toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/(^-|-$)/g, '').substring(0, 20);
+            const res = await api.post("/skills", { name: customSkill.name, code, isActive: true });
+            finalSkillIds.push(res.data.data.id);
+          } catch (err) {
+            console.error("Failed to create skill", err);
+          }
+        }
+      } else {
+        finalSkillIds.push(skillId);
+      }
+    }
     
-    if (data.locationText) {
+    let finalLocationName = data.locationText;
+    if (data.locationText && data.locationState) {
+      finalLocationName = `${data.locationText}, ${data.locationState}`;
+    }
+
+    if (finalLocationName) {
       try {
-        const searchRes = await api.get(`/locations?search=${encodeURIComponent(data.locationText)}`);
-        const existing = searchRes.data.data.items.find(l => l.name.toLowerCase() === data.locationText.toLowerCase());
+        const searchRes = await api.get(`/locations?search=${encodeURIComponent(finalLocationName)}`);
+        const existing = searchRes.data.data.items.find(l => l.name.toLowerCase() === finalLocationName.toLowerCase());
         
         if (existing) {
           finalLocationId = existing.id;
         } else {
-          const code = data.locationText.toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/(^-|-$)/g, '').substring(0, 20);
-          const res = await api.post("/locations", { name: data.locationText, code, isActive: true });
+          const code = finalLocationName.toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/(^-|-$)/g, '').substring(0, 20);
+          const res = await api.post("/locations", { name: finalLocationName, code, isActive: true });
           finalLocationId = res.data.data.id;
         }
       } catch (err) {
@@ -80,13 +136,14 @@ export default function ClientJobCreationModal({ isOpen, onClose }) {
       ...data,
       requiredWorkers: parseInt(data.requiredWorkers, 10),
       salaryAmount: data.salaryAmount ? parseFloat(data.salaryAmount) : null,
-      requiredSkillIds: data.requiredSkillIds.filter(Boolean),
+      requiredSkillIds: finalSkillIds,
       startDate: data.startDate ? new Date(data.startDate).toISOString() : null,
       endDate: data.endDate ? new Date(data.endDate).toISOString() : null,
       locationId: finalLocationId || null
     };
     
     delete payload.locationText;
+    delete payload.locationState;
 
     if (!payload.categoryId) delete payload.categoryId;
     if (!payload.locationId) delete payload.locationId;
@@ -172,7 +229,7 @@ export default function ClientJobCreationModal({ isOpen, onClose }) {
             {/* Tab 1: Basic Details */}
             {activeTab === 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5 animate-fade-in">
-                <div className="md:col-span-2">
+                <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Job Title *</label>
                   <input 
                     type="text" 
@@ -194,16 +251,38 @@ export default function ClientJobCreationModal({ isOpen, onClose }) {
                   </select>
                 </div>
 
-                <div>
+                <div className="md:col-span-2">
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Required Skills</label>
-                  <select 
-                    {...register("requiredSkillIds")}
-                    multiple
-                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 bg-white min-h-[50px]"
-                  >
-                    {skills.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                  </select>
-                  <p className="text-xs text-gray-400 mt-1">Hold Ctrl/Cmd to select multiple</p>
+                  <div className="w-full flex flex-wrap items-center gap-2 px-3 py-2 min-h-[46px] rounded-xl border border-gray-200 bg-white focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-500 transition-all">
+                    {customSkills.map(s => (
+                      <span
+                        key={s.id}
+                        className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 border border-blue-200"
+                      >
+                        {s.name}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveCustomSkill(s.id)}
+                          className="text-blue-500 hover:text-blue-700 focus:outline-none"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                    <input 
+                      type="text" 
+                      value={newSkillText}
+                      onChange={(e) => setNewSkillText(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddCustomSkill();
+                        }
+                      }}
+                      className="flex-1 min-w-[120px] bg-transparent outline-none text-sm text-gray-700 placeholder-gray-400"
+                      placeholder={customSkills.length === 0 ? "Type a skill and press Enter..." : ""}
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -289,12 +368,20 @@ export default function ClientJobCreationModal({ isOpen, onClose }) {
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-2">
                     <MapPin className="w-4 h-4 text-gray-400" /> Location
                   </label>
-                  <input 
-                    type="text"
-                    {...register("locationText")}
-                    placeholder="e.g. Ernakulam"
-                    className="w-full px-3 py-2.5 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 bg-white outline-none transition-all"
-                  />
+                  <div className="flex gap-3">
+                    <input 
+                      type="text"
+                      {...register("locationText")}
+                      placeholder="City (e.g. Ernakulam)"
+                      className="w-1/2 px-3 py-2.5 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 bg-white outline-none transition-all"
+                    />
+                    <input 
+                      type="text"
+                      {...register("locationState")}
+                      placeholder="State (e.g. Kerala)"
+                      className="w-1/2 px-3 py-2.5 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 bg-white outline-none transition-all"
+                    />
+                  </div>
                 </div>
 
                 <div>

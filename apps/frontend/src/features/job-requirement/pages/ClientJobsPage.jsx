@@ -85,9 +85,19 @@ function JobCard({ job, onDelete, onUpdateStatus, onEdit }) {
           <MapPin className="w-4 h-4 text-gray-400" />
           <span className="line-clamp-1">{job.location?.name || "Any Location"}</span>
         </div>
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <Users className="w-4 h-4 text-blue-400" />
-          <span>{job.requiredWorkers} Worker{job.requiredWorkers > 1 ? "s" : ""} Required</span>
+        <div className="flex flex-col gap-1 text-sm text-gray-600">
+          <div className="flex items-center gap-2">
+            <Users className="w-4 h-4 text-blue-400" />
+            <span>{job.requiredWorkers} Required</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Users className="w-4 h-4 text-green-400" />
+            <span>{job.assignedCount || 0} Assigned</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Users className="w-4 h-4 text-orange-400" />
+            <span>{Math.max(0, (job.requiredWorkers || 0) - (job.assignedCount || 0))} Vacanc{Math.max(0, (job.requiredWorkers || 0) - (job.assignedCount || 0)) === 1 ? 'y' : 'ies'}</span>
+          </div>
         </div>
       </div>
     </div>

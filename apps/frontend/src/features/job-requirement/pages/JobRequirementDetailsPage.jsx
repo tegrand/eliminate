@@ -125,10 +125,18 @@ function DetailsTab({ job }) {
   return (
     <div className="space-y-8">
       {/* Overview Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
         <div className="space-y-1">
-          <p className="text-sm font-medium text-gray-500 flex items-center gap-1.5"><Users className="w-4 h-4" /> Required Workers</p>
+          <p className="text-sm font-medium text-gray-500 flex items-center gap-1.5"><Users className="w-4 h-4" /> Required</p>
           <p className="text-lg font-semibold text-gray-900">{job.requiredWorkers}</p>
+        </div>
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-gray-500 flex items-center gap-1.5"><Users className="w-4 h-4 text-blue-500" /> Assigned</p>
+          <p className="text-lg font-semibold text-gray-900">{job.assignedCount || 0}</p>
+        </div>
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-gray-500 flex items-center gap-1.5"><Users className="w-4 h-4 text-green-500" /> Vacancy</p>
+          <p className="text-lg font-semibold text-gray-900">{Math.max(0, (job.requiredWorkers || 0) - (job.assignedCount || 0))}</p>
         </div>
         <div className="space-y-1">
           <p className="text-sm font-medium text-gray-500 flex items-center gap-1.5"><Calendar className="w-4 h-4" /> Duration</p>

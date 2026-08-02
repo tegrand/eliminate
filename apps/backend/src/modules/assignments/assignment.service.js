@@ -34,6 +34,11 @@ export const listAssignments = async (filters, user) => {
         include: {
           worker: { include: { user: { select: { firstName: true, lastName: true } } } }
         }
+      },
+      hiringRequest: {
+        include: {
+          jobRequirement: true
+        }
       }
     },
     orderBy: { createdAt: 'desc' }

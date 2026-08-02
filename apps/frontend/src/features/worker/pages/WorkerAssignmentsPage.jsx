@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Briefcase, Calendar, MapPin, Building2, CheckCircle, XCircle, Clock } from "lucide-react";
+import { Loader2, Briefcase, Calendar, MapPin, Building2, CheckCircle, XCircle, Clock, Users } from "lucide-react";
 import { workerApi } from "../api/worker.api";
 import { format, isAfter, isBefore, isSameDay } from "date-fns";
 
@@ -135,6 +135,20 @@ export default function WorkerAssignmentsPage() {
                       <span className="truncate">{assignment.siteLocation.name}</span>
                     </div>
                   )}
+                  <div className="flex flex-col gap-1 mt-2 text-sm text-slate-600 border-t border-slate-100 pt-3">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-blue-400" />
+                      <span>{assignment.hiringRequest?.jobRequirement?.requiredWorkers || 0} Required</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-green-400" />
+                      <span>{assignment.hiringRequest?.jobRequirement?.assignedCount || 0} Assigned</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-orange-400" />
+                      <span>{Math.max(0, (assignment.hiringRequest?.jobRequirement?.requiredWorkers || 0) - (assignment.hiringRequest?.jobRequirement?.assignedCount || 0))} Vacanc{Math.max(0, (assignment.hiringRequest?.jobRequirement?.requiredWorkers || 0) - (assignment.hiringRequest?.jobRequirement?.assignedCount || 0)) === 1 ? 'y' : 'ies'}</span>
+                    </div>
+                  </div>
                 </div>
                 
                 {assignment.agreedRate && (

@@ -1,12 +1,29 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { X, Briefcase, Calendar, DollarSign, Loader2 } from "lucide-react";
+import { X, Briefcase, Calendar, DollarSign, Loader2, Link, Edit3 } from "lucide-react";
 import api from "../../../api/axios";
+import { jobRequirementApi } from "../../job-requirement/api/jobRequirement.api";
 
 export default function ClientHiringModal({ isOpen, onClose, targetId, targetType, targetName }) {
+  const [hiringMode, setHiringMode] = useState("custom"); // "custom" or "existing"
+  const [selectedJobId, setSelectedJobId] = useState("");
   const queryClient = useQueryClient();
+
+  const { data: jobsData, isLoading: isLoadingJobs } = useQuery({
+    queryKey: ["clientJobs", "open"],
+    queryFn: async () => {
+      const res = await jobRequirementApi.getJobRequirements({ limit: 100 });
+      const raw = res.data?.items || res.data?.data || res.data || [];
+      let allJobs = Array.isArray(raw) ? raw : (raw.data || []);
+      if (!Array.isArray(allJobs)) allJobs = [];
+      return allJobs.filter(job => job.status === "OPEN" || job.status === "DRAFT");
+    },
+    enabled: isOpen
+  });
+
+  const openJobs = jobsData || [];
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({
     defaultValues: {
@@ -33,14 +50,26 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
   });
 
   const onSubmit = (data) => {
-    const payload = {
-      title: data.title,
-      description: data.description,
-      proposedRate: data.proposedRate ? parseFloat(data.proposedRate) : null,
-      startDate: data.startDate ? new Date(data.startDate).toISOString() : null,
-      endDate: data.endDate ? new Date(data.endDate).toISOString() : null,
-      notes: data.notes
-    };
+    let payload = {};
+
+    if (hiringMode === "existing" && selectedJobId) {
+      const selectedJob = openJobs.find(job => job.id === selectedJobId);
+      payload = {
+        jobRequirementId: selectedJobId,
+        title: selectedJob ? selectedJob.title : "Job Hiring Request",
+        proposedRate: data.proposedRate ? parseFloat(data.proposedRate) : undefined,
+        notes: data.notes
+      };
+    } else {
+      payload = {
+        title: data.title,
+        description: data.description,
+        proposedRate: data.proposedRate ? parseFloat(data.proposedRate) : undefined,
+        startDate: data.startDate ? new Date(data.startDate).toISOString() : undefined,
+        endDate: data.endDate ? new Date(data.endDate).toISOString() : undefined,
+        notes: data.notes
+      };
+    }
 
     if (targetType === "WORKER") {
       payload.targetWorkerId = targetId;
@@ -55,104 +84,162 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden animate-slide-up">
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col overflow-hidden animate-slide-up">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gray-50/50">
+        <div className="flex items-center justify-between px-6 py-3 border-b border-gray-100 bg-gray-50/50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-              <Briefcase className="w-5 h-5 text-blue-600" />
+            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+              <Briefcase className="w-4 h-4 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900">Hire {targetName}</h2>
-              <p className="text-xs text-gray-500">Send a direct hiring request and proposed terms.</p>
+              <h2 className="text-base font-bold text-gray-900">Hire {targetName}</h2>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Mode Selector */}
+        <div className="flex px-5 py-3 border-b border-gray-100 bg-white gap-3">
+          <button
+            type="button"
+            onClick={() => setHiringMode("custom")}
+            className={`flex-1 py-2 px-3 rounded-xl border-2 flex items-center justify-center gap-2 font-semibold text-sm transition-all ${
+              hiringMode === "custom" 
+                ? "border-blue-600 bg-blue-50 text-blue-700" 
+                : "border-gray-100 bg-white text-gray-500 hover:border-gray-200"
+            }`}
+          >
+            <Edit3 className="w-4 h-4" /> Create Custom Request
+          </button>
+          <button
+            type="button"
+            onClick={() => setHiringMode("existing")}
+            className={`flex-1 py-2 px-3 rounded-xl border-2 flex items-center justify-center gap-2 font-semibold text-sm transition-all ${
+              hiringMode === "existing" 
+                ? "border-blue-600 bg-blue-50 text-blue-700" 
+                : "border-gray-100 bg-white text-gray-500 hover:border-gray-200"
+            }`}
+          >
+            <Link className="w-4 h-4" /> Hire for Existing Job
           </button>
         </div>
 
         {/* Form Content */}
-        <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
-          <form id="hiring-form" onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <div className="flex-1 overflow-y-auto p-5 scrollbar-hide">
+          <form id="hiring-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Project / Job Title *</label>
-              <input 
-                type="text" 
-                {...register("title", { required: "Title is required" })}
-                className="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none"
-                placeholder="e.g. Electrical Wiring for New Office"
-              />
-              {errors.title && <span className="text-red-500 text-xs mt-1 block">{errors.title.message}</span>}
-            </div>
+            {hiringMode === "existing" ? (
+              <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Select an Active Job Requirement</label>
+                {isLoadingJobs ? (
+                  <div className="flex items-center gap-2 text-sm text-gray-500 py-2">
+                    <Loader2 className="w-4 h-4 animate-spin" /> Loading your jobs...
+                  </div>
+                ) : openJobs.length === 0 ? (
+                  <p className="text-sm text-red-500 bg-red-50 p-3 rounded-lg border border-red-100">
+                    You don't have any open jobs. Please create one first or use a custom request.
+                  </p>
+                ) : (
+                  <select
+                    value={selectedJobId}
+                    onChange={(e) => setSelectedJobId(e.target.value)}
+                    required={hiringMode === "existing"}
+                    className="w-full px-3 py-2 text-sm rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 bg-white outline-none"
+                  >
+                    <option value="">-- Choose a job --</option>
+                    {openJobs.map(job => (
+                      <option key={job.id} value={job.id}>{job.title} ({job.requirementCode})</option>
+                    ))}
+                  </select>
+                )}
+                <p className="text-xs text-gray-500 mt-1.5">
+                  The candidate will receive a request to join this specific job posting.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Project / Job Title *</label>
+                  <input 
+                    type="text" 
+                    {...register("title", { required: hiringMode === "custom" ? "Title is required" : false })}
+                    className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none"
+                    placeholder="e.g. Electrical Wiring for New Office"
+                  />
+                  {errors.title && <span className="text-red-500 text-xs mt-1 block">{errors.title.message}</span>}
+                </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Brief Description</label>
-              <textarea 
-                {...register("description")}
-                rows="3"
-                className="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 resize-none outline-none"
-                placeholder="Describe what needs to be done..."
-              ></textarea>
-            </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">Brief Description</label>
+                  <textarea 
+                    {...register("description")}
+                    rows="1"
+                    className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 resize-none outline-none"
+                    placeholder="Describe what needs to be done..."
+                  ></textarea>
+                </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-gray-400" /> Start Date
+                  </label>
+                  <input 
+                    type="date" 
+                    {...register("startDate")}
+                    className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1.5">
+                    <Calendar className="w-3.5 h-3.5 text-gray-400" /> End Date (Optional)
+                  </label>
+                  <input 
+                    type="date" 
+                    {...register("endDate")}
+                    className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Common fields (Rate & Notes) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-gray-100">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-gray-400" /> Start Date
+                <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1.5">
+                  <DollarSign className="w-3.5 h-3.5 text-emerald-500" /> Proposed Rate (₹)
                 </label>
                 <input 
-                  type="date" 
-                  {...register("startDate")}
-                  className="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none"
+                  type="number" 
+                  min="0"
+                  {...register("proposedRate")}
+                  className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 outline-none"
+                  placeholder="e.g. 5000"
                 />
               </div>
-              
+
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-gray-400" /> End Date (Optional)
-                </label>
-                <input 
-                  type="date" 
-                  {...register("endDate")}
-                  className="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none"
-                />
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Additional Notes</label>
+                <textarea 
+                  {...register("notes")}
+                  rows="1"
+                  className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 resize-none outline-none"
+                  placeholder="Any special terms or conditions..."
+                ></textarea>
               </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-emerald-500" /> Proposed Total Rate (₹)
-              </label>
-              <input 
-                type="number" 
-                min="0"
-                {...register("proposedRate")}
-                className="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 outline-none"
-                placeholder="e.g. 5000"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Additional Notes / Terms</label>
-              <textarea 
-                {...register("notes")}
-                rows="2"
-                className="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 resize-none outline-none"
-                placeholder="Any special terms or conditions..."
-              ></textarea>
             </div>
 
           </form>
         </div>
 
         {/* Footer Actions */}
-        <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-end gap-3">
+        <div className="px-5 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
