@@ -435,6 +435,28 @@ export const acceptJobInvitation = async (userId, id, user) => {
   const req = await prisma.hiringRequest.findFirst({ where: { id, targetWorkerId: worker.id, status: 'PENDING' } });
   if (!req) throw new AppError('Invitation not found', 404);
   
+  // Check attendance
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const attendance = await prisma.workerAttendance.findFirst({
+    where: {
+      workerId: worker.id,
+      date: {
+        gte: today,
+        lt: new Date(today.getTime() + 24 * 60 * 60 * 1000)
+      }
+    }
+  });
+
+  if (!attendance) {
+    throw new AppError("You must mark your attendance for today before accepting an invitation", 400);
+  }
+
+  if (attendance.status === "LEAVE" || attendance.status === "ABSENT") {
+    throw new AppError(`You cannot accept an invitation because your attendance is marked as ${attendance.status}`, 400);
+  }
+
   // Call the actual service that handles all the assignment creation logic
   return hiringRequestService.updateHiringRequestStatus(id, 'ACCEPTED', user);
 };
