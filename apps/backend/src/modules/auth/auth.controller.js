@@ -84,3 +84,8 @@ export const resendVerification = asyncHandler(async (req, res) => {
   await authService.resendVerification(req.validatedData);
   return ApiResponse.success(res, "If your email is registered and unverified, a verification link has been sent.", null);
 });
+
+export const verifyPassword = asyncHandler(async (req, res) => {
+  await authService.verifyPassword(req.user.id, req.body.password);
+  return ApiResponse.success(res, "Password verified successfully", null);
+});

@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { usersApi } from "../../../api/users.api";
 import { Lock, Eye, EyeOff, Loader2, BarChart2, CheckCircle2, FileText, Upload, MapPin, Briefcase, Palette } from "lucide-react";
@@ -11,16 +11,80 @@ import { documentsApi } from "../../../api/documents.api";
 
 export default function WorkerSettingsPage() {
   const { user } = useAuth();
-  const percent = calculateWorkerProfileCompletion(user);
   const [show, setShow] = useState({ current: false, new: false, confirm: false });
   const [docType, setDocType] = useState("AADHAAR");
   const [docFile, setDocFile] = useState(null);
+  
+  const { register: regSettings, handleSubmit: handleSettingsSubmit } = useForm({
+    defaultValues: {
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
+      phone: user?.phone || "",
+      email: user?.email || ""
+    }
+  });
+  
   const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  
+  const { data: documentsRes, refetch: refetchDocuments } = useQuery({
+    queryKey: ["workerDocuments"],
+    queryFn: () => documentsApi.getMyDocuments()
+  });
+  const existingDocs = documentsRes?.data?.data || [];
+  const currentDocTypeDoc = existingDocs.find(d => d.documentType === docType);
+
+  const [workPrefsSaved, setWorkPrefsSaved] = useState(() => localStorage.getItem("workPrefsSaved") === "true");
+  const [locPrefsSaved, setLocPrefsSaved] = useState(() => localStorage.getItem("locPrefsSaved") === "true");
+  const [docsUploaded, setDocsUploaded] = useState(() => localStorage.getItem("docsUploaded") === "true");
+
+  useEffect(() => {
+    if (documentsRes) {
+      const uploaded = existingDocs.length > 0;
+      setDocsUploaded(uploaded);
+      localStorage.setItem("docsUploaded", uploaded.toString());
+    }
+  }, [existingDocs.length, documentsRes]);
+
+  const isBasicComplete = !!(user?.firstName || user?.name) && !!(user?.phone || user?.email);
+  const checklist = [
+    { label: "Basic Information", complete: isBasicComplete },
+    { label: "Work Preferences", complete: workPrefsSaved },
+    { label: "Location Preferences", complete: locPrefsSaved },
+    { label: "Documents", complete: docsUploaded }
+  ];
+  const percent = Math.round((checklist.filter(i => i.complete).length / 4) * 100);
+
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [password, setPassword] = useState("");
+  const [showDocumentViewer, setShowDocumentViewer] = useState(false);
+
+  const { mutate: verifyPwd, isPending: isVerifying } = useMutation({
+    mutationFn: (pwd) => usersApi.verifyPassword({ password: pwd }),
+    onSuccess: () => {
+      setShowPasswordModal(false);
+      setPassword("");
+      setShowDocumentViewer(true);
+    },
+    onError: (e) => toast.error(e.response?.data?.message || "Invalid password")
+  });
+
+  const { mutate: deleteDoc, isPending: isDeleting } = useMutation({
+    mutationFn: (id) => documentsApi.deleteDocument(id),
+    onSuccess: () => {
+      toast.success("Document removed");
+      setShowDocumentViewer(false);
+      setDocFile(null);
+      queryClient.invalidateQueries({ queryKey: ["workerDocuments"] });
+      refetchDocuments();
+    },
+    onError: (e) => toast.error(e.response?.data?.message || "Failed to remove document")
+  });
   
   const { mutate: uploadDoc, isPending: isUploadingDoc } = useMutation({
     mutationFn: (data) => documentsApi.uploadDocument(data),
-    onSuccess: () => { toast.success("Document uploaded successfully!"); setDocFile(null); },
+    onSuccess: () => { toast.success("Document uploaded successfully!"); setDocFile(null); refetchDocuments(); },
     onError: (e) => toast.error(e.response?.data?.message || "Failed to upload document"),
   });
   
@@ -33,6 +97,18 @@ export default function WorkerSettingsPage() {
     uploadDoc(formData);
   };
   
+  const { mutate: updateProfile, isPending: isUpdatingProfile } = useMutation({
+    mutationFn: (data) => usersApi.updateProfile(data),
+    onSuccess: () => {
+      localStorage.setItem("workPrefsSaved", "true");
+      localStorage.setItem("locPrefsSaved", "true");
+      setWorkPrefsSaved(true);
+      setLocPrefsSaved(true);
+      toast.success("Settings saved successfully!");
+    },
+    onError: (e) => toast.error(e.response?.data?.message || "Failed to save settings")
+  });
+
   const { mutate: change, isPending } = useMutation({
     mutationFn: (d) => usersApi.changePassword({ currentPassword: d.currentPassword, newPassword: d.newPassword }),
     onSuccess: () => { toast.success("Password changed!"); reset(); },
@@ -83,76 +159,21 @@ export default function WorkerSettingsPage() {
           <div className="flex-1 w-full">
             <p className="text-[11px] text-gray-500 mb-2 font-medium">Complete your profile to get better matches and opportunities.</p>
             <div className="space-y-1">
-              {[
-                "Basic Information",
-                "Work Preferences",
-                "Location Preferences",
-                "Documents"
-              ].map((item, i) => (
+              {checklist.map((item, i) => (
                 <div key={i} className="flex items-center justify-between group">
                   <div className="flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">{item}</span>
+                    <CheckCircle2 className={`w-5 h-5 transition-colors ${item.complete ? "text-emerald-500" : "text-gray-300"}`} />
+                    <span className={`text-sm font-medium transition-colors ${item.complete ? "text-gray-700 group-hover:text-gray-900" : "text-gray-400"}`}>
+                      {item.label}
+                    </span>
                   </div>
-                  <span className="text-xs font-semibold text-gray-400">Complete</span>
+                  <span className={`text-xs font-semibold ${item.complete ? "text-emerald-600" : "text-gray-400"}`}>
+                    {item.complete ? "Complete" : "Pending"}
+                  </span>
                 </div>
               ))}
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* Theme Settings Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
-        <div className="px-3 py-2 border-b border-gray-100 flex items-center justify-between bg-white">
-          <div className="flex items-center gap-1.5">
-            <Palette className="w-3.5 h-3.5 text-blue-600" />
-            <h3 className="text-sm font-semibold text-gray-900">App Theme</h3>
-          </div>
-        </div>
-
-        <div className="flex-1 flex flex-col">
-          <form onSubmit={(e) => { e.preventDefault(); toast.success("Theme applied successfully!"); }} className="flex flex-col h-full">
-            <div className="p-3 space-y-2 flex-1 flex flex-col justify-center">
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-gray-700 mb-1.5">Select Theme</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {/* Light Theme */}
-                  <label className="cursor-pointer group">
-                    <input type="radio" name="theme" value="light" defaultChecked className="sr-only peer" />
-                    <div className="border border-gray-200 rounded-lg p-2 flex flex-col items-center gap-1.5 transition-all peer-checked:border-blue-600 peer-checked:bg-blue-50/50 hover:bg-gray-50">
-                      <div className="w-full h-6 bg-white border border-gray-200 rounded shadow-sm"></div>
-                      <span className="text-[10px] font-semibold text-gray-700">Light</span>
-                    </div>
-                  </label>
-                  {/* Dark Theme */}
-                  <label className="cursor-pointer group">
-                    <input type="radio" name="theme" value="dark" className="sr-only peer" />
-                    <div className="border border-gray-200 rounded-lg p-2 flex flex-col items-center gap-1.5 transition-all peer-checked:border-blue-600 peer-checked:bg-blue-50/50 hover:bg-gray-50">
-                      <div className="w-full h-6 bg-slate-900 border border-slate-700 rounded shadow-sm"></div>
-                      <span className="text-[10px] font-semibold text-gray-700">Dark</span>
-                    </div>
-                  </label>
-                  {/* System Theme */}
-                  <label className="cursor-pointer group">
-                    <input type="radio" name="theme" value="system" className="sr-only peer" />
-                    <div className="border border-gray-200 rounded-lg p-2 flex flex-col items-center gap-1.5 transition-all peer-checked:border-blue-600 peer-checked:bg-blue-50/50 hover:bg-gray-50">
-                      <div className="w-full h-6 bg-gradient-to-r from-white to-slate-900 border border-gray-200 rounded shadow-sm"></div>
-                      <span className="text-[10px] font-semibold text-gray-700">System</span>
-                    </div>
-                  </label>
-                </div>
-              </div>
-            </div>
-            
-            <div className="px-3 py-2 bg-gray-50 border-t border-gray-200 flex justify-end mt-auto">
-              <button type="submit"
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-md transition-colors">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                Apply Theme
-              </button>
-            </div>
-          </form>
         </div>
       </div>
 
@@ -178,42 +199,93 @@ export default function WorkerSettingsPage() {
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-gray-700">Upload File</label>
-                <div className="relative border-2 border-dashed border-gray-200 rounded-lg p-5 flex flex-col items-center justify-center gap-2 hover:border-blue-400 hover:bg-blue-50/50 transition-all cursor-pointer">
-                  <input type="file" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={e => setDocFile(e.target.files[0])} accept=".jpg,.jpeg,.png,.pdf" />
-                  <Upload className="w-6 h-6 text-gray-400" />
-                  <p className="text-xs text-gray-500 text-center">
-                    {docFile ? (
-                      <span className="font-medium text-blue-600">{docFile.name}</span>
-                    ) : (
-                      <><span className="font-medium text-blue-600">Click to upload</span> or drag and drop<br/>SVG, PNG, JPG or PDF (max. 5MB)</>
-                    )}
-                  </p>
-                </div>
+                {currentDocTypeDoc ? (
+                  <div className="border border-gray-200 rounded-lg p-5 flex flex-col items-center justify-center gap-3 bg-gray-50 h-[120px]">
+                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-gray-900">Document Uploaded</p>
+                      <p className="text-xs text-gray-500">You have already uploaded this document</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="relative border-2 border-dashed border-gray-200 rounded-lg p-5 flex flex-col items-center justify-center gap-2 hover:border-blue-400 hover:bg-blue-50/50 transition-all cursor-pointer h-[120px]">
+                    <input type="file" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={e => setDocFile(e.target.files[0])} accept=".jpg,.jpeg,.png,.pdf" />
+                    <Upload className="w-6 h-6 text-gray-400" />
+                    <p className="text-xs text-gray-500 text-center">
+                      {docFile ? (
+                        <span className="font-medium text-blue-600">{docFile.name}</span>
+                      ) : (
+                        <><span className="font-medium text-blue-600">Click to upload</span> or drag and drop<br/>SVG, PNG, JPG or PDF (max. 5MB)</>
+                      )}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
             
             <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 flex justify-end mt-auto">
-              <button type="submit" disabled={isUploadingDoc}
-                className="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors">
-                {isUploadingDoc ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                Upload Document
-              </button>
+              {currentDocTypeDoc ? (
+                <button type="button" onClick={() => setShowPasswordModal(true)}
+                  className="flex items-center gap-2 px-5 py-2 bg-gray-900 hover:bg-black text-white text-sm font-medium rounded-lg transition-colors">
+                  <Eye className="w-4 h-4" />
+                  View Document
+                </button>
+              ) : (
+                <button type="submit" disabled={isUploadingDoc}
+                  className="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors">
+                  {isUploadingDoc ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                  Upload Document
+                </button>
+              )}
             </div>
           </form>
         </div>
       </div>
+      </div>
 
-      {/* Work Preferences Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
-        <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-white">
-          <div className="flex items-center gap-2">
-            <Briefcase className="w-4 h-4 text-blue-600" />
-            <h3 className="font-semibold text-gray-900">Work Preferences</h3>
+      <form onSubmit={handleSettingsSubmit(onSaveAllSettings)} className="space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          
+          {/* Basic Information Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+            <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-white">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-blue-600" />
+                <h3 className="font-semibold text-gray-900">Basic Information</h3>
+              </div>
+            </div>
+            <div className="p-4 space-y-3 flex-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-gray-700">First Name</label>
+                  <input {...regSettings("firstName")} type="text" placeholder="First Name" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-sm font-semibold text-gray-700">Last Name</label>
+                  <input {...regSettings("lastName")} type="text" placeholder="Last Name" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
+                </div>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700">Phone</label>
+                <input {...regSettings("phone")} type="tel" placeholder="Phone Number" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700">Email</label>
+                <input {...regSettings("email")} type="email" placeholder="Email Address" disabled className="w-full px-3 py-2 border border-gray-200 bg-gray-50 text-gray-500 rounded-lg text-sm outline-none cursor-not-allowed" />
+              </div>
+            </div>
           </div>
-        </div>
 
-        <div className="flex-1 flex flex-col">
-          <form onSubmit={(e) => { e.preventDefault(); toast.success("Work preferences updated!"); }} className="flex flex-col h-full">
+          {/* Work Preferences Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+            <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-white">
+              <div className="flex items-center gap-2">
+                <Briefcase className="w-4 h-4 text-blue-600" />
+                <h3 className="font-semibold text-gray-900">Work Preferences</h3>
+              </div>
+            </div>
             <div className="p-4 space-y-3 flex-1">
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-gray-700">Preferred Work Type</label>
@@ -229,29 +301,16 @@ export default function WorkerSettingsPage() {
                 </div>
               </div>
             </div>
-            
-            <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 flex justify-end mt-auto">
-              <button type="submit"
-                className="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
-                <CheckCircle2 className="w-4 h-4" />
-                Save Preferences
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      {/* Location Preferences Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
-        <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-white">
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-blue-600" />
-            <h3 className="font-semibold text-gray-900">Location Preferences</h3>
           </div>
-        </div>
 
-        <div className="flex-1 flex flex-col">
-          <form onSubmit={(e) => { e.preventDefault(); toast.success("Location preferences updated!"); }} className="flex flex-col h-full">
+          {/* Location Preferences Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+            <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-white">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-blue-600" />
+                <h3 className="font-semibold text-gray-900">Location Preferences</h3>
+              </div>
+            </div>
             <div className="p-4 space-y-3 flex-1">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
@@ -263,12 +322,10 @@ export default function WorkerSettingsPage() {
                   <input type="text" placeholder="e.g. Kerala" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
                 </div>
               </div>
-              
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-gray-700">Max Travel Distance (km)</label>
                 <input type="number" placeholder="e.g. 50" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
               </div>
-              
               <label className="flex items-center gap-3 cursor-pointer">
                 <div className="relative">
                   <input type="checkbox" className="sr-only" />
@@ -278,17 +335,20 @@ export default function WorkerSettingsPage() {
                 <span className="text-sm font-semibold text-gray-700">Willing to Relocate</span>
               </label>
             </div>
-            
-            <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 flex justify-end mt-auto">
-              <button type="submit"
-                className="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
-                <CheckCircle2 className="w-4 h-4" />
-                Save Location
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
-      </div>
+
+        {/* Global Save Button */}
+        <div className="flex justify-end mt-4">
+          <button type="submit" disabled={isUpdatingProfile}
+            className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl shadow-sm hover:shadow transition-all">
+            {isUpdatingProfile ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+            {isUpdatingProfile ? "Saving..." : "Save All Settings"}
+          </button>
+        </div>
+      </form>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
         <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-white">
@@ -339,6 +399,63 @@ export default function WorkerSettingsPage() {
 
 
       </div>
+      {/* Password Modal */}
+      {showPasswordModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+              <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                <Lock className="w-4 h-4 text-blue-600" /> Security Verification
+              </h3>
+              <button onClick={() => setShowPasswordModal(false)} className="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            </div>
+            <div className="p-5">
+              <p className="text-sm text-gray-600 mb-4">Please enter your login password to view this document.</p>
+              <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter password"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none" />
+            </div>
+            <div className="px-5 py-3 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
+              <button onClick={() => setShowPasswordModal(false)} className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">Cancel</button>
+              <button onClick={() => verifyPwd(password)} disabled={isVerifying || !password}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg transition-colors flex items-center gap-2">
+                {isVerifying ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Document Viewer Modal */}
+      {showDocumentViewer && currentDocTypeDoc && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
+            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
+              <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                <FileText className="w-4 h-4 text-blue-600" /> {currentDocTypeDoc.documentType} Document
+              </h3>
+              <button onClick={() => setShowDocumentViewer(false)} className="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            </div>
+            <div className="p-5 flex-1 overflow-auto flex items-center justify-center bg-gray-50 min-h-[50vh]">
+              {currentDocTypeDoc.documentUrl.match(/\.(jpeg|jpg|gif|png)$/i) != null ? (
+                <img src={currentDocTypeDoc.documentUrl.startsWith('http') ? currentDocTypeDoc.documentUrl : `http://localhost:5000${currentDocTypeDoc.documentUrl.startsWith('/') ? '' : '/'}${currentDocTypeDoc.documentUrl}`} alt="Document" className="max-w-full max-h-full object-contain rounded border border-gray-200" />
+              ) : (
+                <iframe src={currentDocTypeDoc.documentUrl.startsWith('http') ? currentDocTypeDoc.documentUrl : `http://localhost:5000${currentDocTypeDoc.documentUrl.startsWith('/') ? '' : '/'}${currentDocTypeDoc.documentUrl}`} className="w-full h-[60vh] border border-gray-200 rounded" title="Document"></iframe>
+              )}
+            </div>
+            <div className="px-5 py-3 bg-white flex justify-between gap-3 border-t border-gray-100">
+              <button type="button" onClick={() => {
+                if (window.confirm("Are you sure you want to remove this document?")) {
+                  deleteDoc(currentDocTypeDoc.id);
+                }
+              }} disabled={isDeleting}
+                className="px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2">
+                {isDeleting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Remove Document"}
+              </button>
+              <button onClick={() => setShowDocumentViewer(false)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

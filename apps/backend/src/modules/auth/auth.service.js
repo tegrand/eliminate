@@ -500,3 +500,11 @@ export const verifyEmail = async (data) => {
     },
   });
 };
+
+export const verifyPassword = async (userId, password) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new AppError("User not found", 404);
+  const isValid = await bcrypt.compare(password, user.passwordHash);
+  if (!isValid) throw new AppError("Invalid password", 401);
+  return true;
+};

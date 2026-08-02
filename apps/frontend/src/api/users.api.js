@@ -7,4 +7,5 @@ export const usersApi = {
   getActiveSessions: () => api.get("/users/sessions"),
   revokeAllSessions: () => api.delete("/users/sessions"),
   changePassword: (data) => api.patch("/auth/change-password", data),
+  verifyPassword: (data) => api.post("/auth/verify-password", data),
 };
