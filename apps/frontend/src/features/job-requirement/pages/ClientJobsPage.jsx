@@ -11,94 +11,97 @@ import { companyApi } from "../../client/api/company.api";
 // A small component to render each job card beautifully
 // A small component to render each job card beautifully
 function JobCard({ job, onDelete, onUpdateStatus, onEdit }) {
-
   const getStatusColor = (status) => {
     switch (status) {
-      case "OPEN": return "bg-green-100 text-green-700";
-      case "DRAFT": return "bg-gray-100 text-gray-700";
-      case "PARTIALLY_FILLED": return "bg-blue-100 text-blue-700";
-      case "FILLED": return "bg-purple-100 text-purple-700";
-      case "COMPLETED": return "bg-emerald-100 text-emerald-700";
-      case "CANCELLED": return "bg-red-100 text-red-700";
-      default: return "bg-gray-100 text-gray-700";
+      case "OPEN": return "bg-green-50 text-green-700 border-green-200";
+      case "DRAFT": return "bg-gray-50 text-gray-700 border-gray-200";
+      case "PARTIALLY_FILLED": return "bg-blue-50 text-blue-700 border-blue-200";
+      case "FILLED": return "bg-purple-50 text-purple-700 border-purple-200";
+      case "COMPLETED": return "bg-emerald-50 text-emerald-700 border-emerald-200";
+      case "CANCELLED": return "bg-red-50 text-red-700 border-red-200";
+      default: return "bg-gray-50 text-gray-700 border-gray-200";
     }
   };
 
+  const vacancies = Math.max(0, (job.requiredWorkers || 0) - (job.assignedCount || 0));
+
   return (
-    <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all group flex flex-col h-full relative">
-      <div className="flex items-start justify-between mb-3 relative">
-        <div className="pr-20">
-          <span className="text-xs font-bold text-gray-400 mb-1 block uppercase tracking-wider">{job.requirementCode}</span>
-          <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">{job.title}</h3>
+    <div className="bg-white rounded-2xl border border-gray-200 hover:border-blue-300 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full overflow-hidden">
+      {/* Top Header Section */}
+      <div className="p-5 pb-4 border-b border-gray-50">
+        <div className="flex justify-between items-start mb-2">
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{job.requirementCode}</span>
+          <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold border ${getStatusColor(job.status)}`}>
+            {job.status.replace("_", " ")}
+          </span>
         </div>
+        <h3 className="text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+          {job.title}
+        </h3>
+      </div>
+
+      {/* Details Section */}
+      <div className="p-5 flex-1 flex flex-col gap-4">
+        <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
+          <div className="flex items-center gap-1.5">
+            <Calendar className="w-3.5 h-3.5 text-gray-400" />
+            <span>{job.startDate ? new Date(job.startDate).toLocaleDateString() : "Not Specified"}</span>
+          </div>
+          <span className="text-gray-300">|</span>
+          <div className="flex items-center gap-1.5">
+            <MapPin className="w-3.5 h-3.5 text-gray-400" />
+            <span className="line-clamp-1">{job.location?.name || "Any Location"}</span>
+          </div>
+        </div>
+
+        {/* Stats row */}
+        <div className="flex items-center gap-2 mt-auto pt-2">
+          <div className="flex-1 bg-gray-50 rounded-xl p-2.5 text-center border border-gray-100 transition-colors hover:bg-gray-100">
+            <span className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-0.5">Required</span>
+            <span className="block text-sm font-black text-gray-800">{job.requiredWorkers}</span>
+          </div>
+          <div className="flex-1 bg-green-50/50 rounded-xl p-2.5 text-center border border-green-100 transition-colors hover:bg-green-50">
+            <span className="block text-[10px] font-bold text-green-600 uppercase tracking-wider mb-0.5">Assigned</span>
+            <span className="block text-sm font-black text-green-700">{job.assignedCount || 0}</span>
+          </div>
+          <div className="flex-1 bg-orange-50/50 rounded-xl p-2.5 text-center border border-orange-100 transition-colors hover:bg-orange-50">
+            <span className="block text-[10px] font-bold text-orange-600 uppercase tracking-wider mb-0.5">Vacant</span>
+            <span className="block text-sm font-black text-orange-700">{vacancies}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer Actions */}
+      <div className="px-5 py-3.5 bg-gray-50/50 border-t border-gray-100 flex items-center justify-end gap-1">
+        <button 
+          onClick={() => onEdit(job)}
+          className="px-3 py-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-1.5 text-xs font-semibold"
+        >
+          <Edit2 className="w-3.5 h-3.5" /> Edit
+        </button>
         
-        {/* Top-Right Action Icons (Neutral/Monochrome) */}
-        <div className="absolute top-0 right-0 flex items-center gap-1">
+        {(job.status === "OPEN" || job.status === "DRAFT") ? (
           <button 
-            onClick={() => onEdit(job)}
-            className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-            title="Edit Details"
+            onClick={() => onUpdateStatus(job.id, "CANCELLED")}
+            className="px-3 py-1.5 text-gray-500 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors flex items-center gap-1.5 text-xs font-semibold"
           >
-            <Edit2 className="w-4 h-4" />
+            <XCircle className="w-3.5 h-3.5" /> Cancel
           </button>
-          
-          {(job.status === "OPEN" || job.status === "DRAFT") ? (
-            <button 
-              onClick={() => onUpdateStatus(job.id, "CANCELLED")}
-              className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-              title="Cancel Job"
-            >
-              <XCircle className="w-4 h-4" />
-            </button>
-          ) : (
-            <button 
-              onClick={() => onUpdateStatus(job.id, "OPEN")}
-              className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-              title="Reopen Job"
-            >
-              <RotateCcw className="w-4 h-4" />
-            </button>
-          )}
-          
+        ) : (
           <button 
-            onClick={() => onDelete(job.id)}
-            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-            title="Delete Job"
+            onClick={() => onUpdateStatus(job.id, "OPEN")}
+            className="px-3 py-1.5 text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors flex items-center gap-1.5 text-xs font-semibold"
           >
-            <Trash2 className="w-4 h-4" />
+            <RotateCcw className="w-3.5 h-3.5" /> Reopen
           </button>
-        </div>
-      </div>
-
-      <div className="mb-3">
-        <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${getStatusColor(job.status)}`}>
-          {job.status.replace("_", " ")}
-        </span>
-      </div>
-
-      <div className="flex flex-col gap-2 mt-auto">
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <Calendar className="w-4 h-4 text-orange-400" />
-          <span>{job.startDate ? new Date(job.startDate).toLocaleDateString() : "Not Specified"}</span>
-        </div>
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <MapPin className="w-4 h-4 text-gray-400" />
-          <span className="line-clamp-1">{job.location?.name || "Any Location"}</span>
-        </div>
-        <div className="flex flex-col gap-1 text-sm text-gray-600">
-          <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-blue-400" />
-            <span>{job.requiredWorkers} Required</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-green-400" />
-            <span>{job.assignedCount || 0} Assigned</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-orange-400" />
-            <span>{Math.max(0, (job.requiredWorkers || 0) - (job.assignedCount || 0))} Vacanc{Math.max(0, (job.requiredWorkers || 0) - (job.assignedCount || 0)) === 1 ? 'y' : 'ies'}</span>
-          </div>
-        </div>
+        )}
+        
+        <button 
+          onClick={() => onDelete(job.id)}
+          className="px-3 py-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-1.5 text-xs font-semibold"
+        >
+          <Trash2 className="w-3.5 h-3.5" /> Delete
+        </button>
       </div>
     </div>
   );
