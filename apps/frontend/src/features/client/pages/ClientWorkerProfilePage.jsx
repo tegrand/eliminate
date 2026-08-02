@@ -44,7 +44,7 @@ export default function ClientWorkerProfilePage() {
   const name = `${firstName} ${lastName}`.trim() || worker.user?.name || worker.name || "Unknown Worker";
   
   const skillName = worker.primarySkill?.name || (typeof worker.primarySkill === 'string' ? worker.primarySkill : null) || worker.skills?.[0]?.skill?.name || "General Worker";
-  const experience = worker.experienceYears ? `${worker.experienceYears} Years Experience` : "Experience N/A";
+  const experience = worker.experienceYears != null ? `${worker.experienceYears} Years Experience` : "Experience N/A";
   
   let location = "Location not specified";
   if (worker.city && worker.state) location = `${worker.city}, ${worker.state}`;
@@ -65,6 +65,9 @@ export default function ClientWorkerProfilePage() {
 
   const languages = worker.languages?.length > 0 ? worker.languages.map(l => l.language?.name).filter(Boolean) : [];
   const allSkills = worker.skills?.length > 0 ? worker.skills.map(s => s.skill?.name).filter(Boolean) : [skillName];
+
+  const reviews = worker.reviews || [];
+  const avgRating = reviews.length > 0 ? (reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length).toFixed(1) : 0;
 
   return (
     <div className="w-full h-[calc(100vh-4rem)] bg-[#f8f9fa] overflow-y-auto scrollbar-hide py-8 px-4 sm:px-8 lg:px-12 animate-fade-in">
@@ -112,6 +115,12 @@ export default function ClientWorkerProfilePage() {
                   {name}
                 </h1>
                 <p className="text-sm font-semibold text-blue-600 mt-1">{skillName}</p>
+
+                <div className="flex items-center justify-center gap-1 mt-2">
+                  <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
+                  <span className="font-bold text-gray-900">{avgRating}</span>
+                  <span className="text-sm font-medium text-gray-500">({reviews.length} reviews)</span>
+                </div>
 
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-600 mt-3 w-full bg-gray-50 py-2 rounded-lg border border-gray-100">
                   <MapPin className="w-4 h-4 text-gray-400" />
@@ -289,6 +298,54 @@ export default function ClientWorkerProfilePage() {
                 )}
                 
               </div>
+            </div>
+
+            {/* Client Reviews */}
+            <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-200 shadow-sm mt-6">
+              <h3 className="text-base font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <Star className="w-5 h-5 text-amber-500 fill-amber-500" /> Client Reviews
+              </h3>
+              
+              {reviews.length > 0 ? (
+                <div className="space-y-5">
+                  {reviews.map((review) => (
+                    <div key={review.id} className="pb-5 border-b border-gray-100 last:border-0 last:pb-0">
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 overflow-hidden">
+                            {review.reviewer?.user?.avatar ? (
+                              <img src={review.reviewer.user.avatar} alt="Client Avatar" className="w-full h-full object-cover" />
+                            ) : (
+                              <UserCircle className="w-6 h-6" />
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-gray-900">
+                              {review.reviewer?.companyName || `${review.reviewer?.user?.firstName || ''} ${review.reviewer?.user?.lastName || ''}`.trim() || 'Client'}
+                            </p>
+                            <p className="text-xs font-medium text-gray-500">
+                              {new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center bg-amber-50 px-2 py-1 rounded-lg">
+                          <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500 mr-1" />
+                          <span className="text-xs font-bold text-amber-700">{review.rating}</span>
+                        </div>
+                      </div>
+                      {review.comment && (
+                        <p className="text-sm text-gray-600 mt-3 leading-relaxed bg-gray-50/50 p-3 rounded-xl border border-gray-50">
+                          {review.comment}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-sm font-semibold text-gray-500">No reviews yet for this worker.</p>
+                </div>
+              )}
             </div>
 
           </div>

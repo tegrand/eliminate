@@ -88,6 +88,27 @@ const workerSelect = {
       profileType: true,
     },
   },
+  reviews: {
+    select: {
+      id: true,
+      rating: true,
+      comment: true,
+      createdAt: true,
+      reviewer: {
+        select: {
+          companyName: true,
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+              avatar: true
+            }
+          }
+        }
+      }
+    },
+    orderBy: { createdAt: 'desc' }
+  }
 };
 
 export const createWorker = async (userId, data) => {
