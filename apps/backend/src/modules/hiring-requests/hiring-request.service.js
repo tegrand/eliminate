@@ -104,6 +104,39 @@ export const updateHiringRequestStatus = async (id, status, user) => {
             status: "ACTIVE"
           }
         });
+
+        // Also if this hiring request is tied to a specific job requirement, update that job requirement
+        if (req.jobRequirementId) {
+          const existingApp = await tx.jobApplication.findUnique({
+            where: {
+              jobRequirementId_workerId: {
+                jobRequirementId: req.jobRequirementId,
+                workerId: req.targetWorkerId
+              }
+            }
+          });
+
+          if (existingApp) {
+            await tx.jobApplication.update({
+              where: { id: existingApp.id },
+              data: { status: "ACCEPTED" }
+            });
+          } else {
+            await tx.jobApplication.create({
+              data: {
+                jobRequirementId: req.jobRequirementId,
+                workerId: req.targetWorkerId,
+                status: "ACCEPTED"
+              }
+            });
+          }
+
+          // Increment assigned count
+          await tx.jobRequirement.update({
+            where: { id: req.jobRequirementId },
+            data: { assignedCount: { increment: 1 } }
+          });
+        }
       }
 
       // Create Notification
