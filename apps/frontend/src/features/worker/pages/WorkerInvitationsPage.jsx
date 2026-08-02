@@ -48,6 +48,7 @@ export default function WorkerInvitationsPage() {
     onSuccess: () => {
       toast.success("Job invitation accepted!");
       queryClient.invalidateQueries(["workerJobInvitations"]);
+      queryClient.invalidateQueries(["workerAssignments"]);
     },
     onError: () => toast.error("Failed to accept job invitation")
   });
