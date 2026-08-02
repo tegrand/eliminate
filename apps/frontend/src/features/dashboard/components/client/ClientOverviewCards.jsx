@@ -42,7 +42,7 @@ const cards = (stats, t) => [
     value: stats?.assignedWorkers || 0,
     sub: t('clientDashboard.assignedWorkersSub') || "Currently working",
     gradient: "from-emerald-500 to-emerald-600",
-    link: ROUTES.CLIENT_WORKERS,
+    link: "#",
   },
   {
     label: "Total Spend",

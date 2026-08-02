@@ -9,6 +9,18 @@ export const getSettings = async () => {
   }, {});
 };
 
+export const getPublicSettings = async () => {
+  const publicKeys = ["platform_fee_percentage"];
+  const settings = await prisma.systemSetting.findMany({
+    where: { key: { in: publicKeys } }
+  });
+  
+  return settings.reduce((acc, setting) => {
+    acc[setting.key] = setting.value;
+    return acc;
+  }, {});
+};
+
 export const updateSettings = async (settingsObject) => {
   const updatedSettings = [];
   

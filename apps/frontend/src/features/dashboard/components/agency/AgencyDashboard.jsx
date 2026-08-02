@@ -15,7 +15,7 @@ export default function AgencyDashboard() {
       // Falling back to existing dashboardData for now.
       // If agency-specific endpoint exists, replace this.
       const res = await dashboardApi.getDashboardData();
-      return res.data;
+      return res.data?.data || res.data;
     }
   });
 

@@ -181,8 +181,13 @@ export const getWorkers = async ({
     if (worker.expectedDailyWage && platformFeePercentage > 0) {
       const wage = parseFloat(worker.expectedDailyWage);
       if (!isNaN(wage)) {
+        worker.baseExpectedDailyWage = worker.expectedDailyWage;
+        worker.platformFee = String(Math.round(wage * platformFeePercentage / 100));
         worker.expectedDailyWage = String(Math.round(wage + (wage * platformFeePercentage / 100)));
       }
+    } else {
+      worker.baseExpectedDailyWage = worker.expectedDailyWage;
+      worker.platformFee = "0";
     }
     return worker;
   });
@@ -221,8 +226,28 @@ export const getWorkerById = async (id, user) => {
     if (worker.expectedDailyWage && platformFeePercentage > 0) {
       const wage = parseFloat(worker.expectedDailyWage);
       if (!isNaN(wage)) {
+        worker.baseExpectedDailyWage = worker.expectedDailyWage;
+        worker.platformFee = String(Math.round(wage * platformFeePercentage / 100));
         worker.expectedDailyWage = String(Math.round(wage + (wage * platformFeePercentage / 100)));
       }
+    } else {
+      worker.baseExpectedDailyWage = worker.expectedDailyWage;
+      worker.platformFee = "0";
+    }
+  } else {
+    // If worker viewing their own profile, still pass the base and calculated fee for display, but keep expectedDailyWage as base
+    const feeSetting = await prisma.systemSetting.findUnique({ where: { key: "platform_fee_percentage" } });
+    const platformFeePercentage = feeSetting && !isNaN(parseFloat(feeSetting.value)) ? parseFloat(feeSetting.value) : 0;
+    
+    if (worker.expectedDailyWage && platformFeePercentage > 0) {
+      const wage = parseFloat(worker.expectedDailyWage);
+      if (!isNaN(wage)) {
+        worker.baseExpectedDailyWage = worker.expectedDailyWage;
+        worker.platformFee = String(Math.round(wage * platformFeePercentage / 100));
+      }
+    } else {
+      worker.baseExpectedDailyWage = worker.expectedDailyWage;
+      worker.platformFee = "0";
     }
   }
 

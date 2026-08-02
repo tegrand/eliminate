@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { workerApi } from "../api/worker.api";
+import { settingsApi } from "../../../api/settings.api";
 import Button from "../../../components/ui/button/Button";
 import MyDocumentsPage from "../../documents/pages/MyDocumentsPage";
 
@@ -40,6 +41,17 @@ export default function WorkerProfilePage() {
       return res.data ?? res;
     }
   });
+
+  const { data: systemSettings } = useQuery({
+    queryKey: ["publicSettings"],
+    queryFn: settingsApi.getPublicSettings,
+    staleTime: 5 * 60 * 1000 // 5 minutes
+  });
+
+  const platformFeePercentage = systemSettings?.data?.platform_fee_percentage 
+    ? parseFloat(systemSettings.data.platform_fee_percentage) 
+    : 0;
+
 
   useEffect(() => {
     if (profileData) {
@@ -273,6 +285,22 @@ export default function WorkerProfilePage() {
                     className="w-full pl-9 pr-3 py-2 text-[13px] font-medium bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none"
                   />
                 </div>
+                {formData.expectedDailyWage && platformFeePercentage > 0 && (
+                  <div className="mt-2 text-[11px] font-medium p-2 bg-slate-50 border border-slate-100 rounded-lg text-slate-600 flex flex-col gap-1">
+                    <div className="flex justify-between">
+                      <span>Base Wage:</span>
+                      <span>₹{formData.expectedDailyWage}</span>
+                    </div>
+                    <div className="flex justify-between text-indigo-600">
+                      <span>Platform Fee ({platformFeePercentage}%):</span>
+                      <span>+ ₹{Math.round(formData.expectedDailyWage * (platformFeePercentage / 100))}</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-slate-900 border-t border-slate-200 pt-1 mt-1">
+                      <span>Client Pays:</span>
+                      <span>₹{Math.round(parseFloat(formData.expectedDailyWage) + (formData.expectedDailyWage * (platformFeePercentage / 100)))}</span>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

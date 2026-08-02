@@ -11,7 +11,7 @@ export default function ClientDashboard() {
     queryKey: ["clientDashboard"],
     queryFn: async () => {
       const res = await dashboardApi.getDashboardData();
-      return res.data;
+      return res.data?.data || res.data;
     }
   });
 

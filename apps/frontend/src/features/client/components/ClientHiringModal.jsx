@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -6,7 +6,7 @@ import { X, Briefcase, Calendar, DollarSign, Loader2, Link, Edit3 } from "lucide
 import api from "../../../api/axios";
 import { jobRequirementApi } from "../../job-requirement/api/jobRequirement.api";
 
-export default function ClientHiringModal({ isOpen, onClose, targetId, targetType, targetName }) {
+export default function ClientHiringModal({ isOpen, onClose, targetId, targetType, targetName, targetRate, targetBaseRate, targetPlatformFee }) {
   const [hiringMode, setHiringMode] = useState("custom"); // "custom" or "existing"
   const [selectedJobId, setSelectedJobId] = useState("");
   const queryClient = useQueryClient();
@@ -25,16 +25,23 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
 
   const openJobs = jobsData || [];
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+  const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm({
     defaultValues: {
       title: "",
       description: "",
-      proposedRate: "",
+      proposedRate: targetRate || "",
       startDate: "",
       endDate: "",
       notes: ""
     }
   });
+
+  // Re-sync rate when targetRate changes
+  useEffect(() => {
+    if (targetRate) {
+      setValue("proposedRate", targetRate);
+    }
+  }, [targetRate, setValue]);
 
   const createRequestMutation = useMutation({
     mutationFn: (data) => api.post("/hiring-requests", data),
@@ -218,10 +225,27 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
                 <input 
                   type="number" 
                   min="0"
+                  readOnly={!!targetRate}
                   {...register("proposedRate")}
-                  className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 outline-none"
+                  className={`w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 outline-none ${!!targetRate ? 'bg-gray-100 text-gray-600 font-bold cursor-not-allowed' : 'bg-white'}`}
                   placeholder="e.g. 5000"
                 />
+                {targetRate && targetBaseRate && targetPlatformFee && (
+                  <div className="mt-2 text-[11px] font-medium p-2 bg-slate-50 border border-slate-100 rounded-lg text-slate-600 flex flex-col gap-1">
+                    <div className="flex justify-between">
+                      <span>Base Wage:</span>
+                      <span>₹{targetBaseRate}</span>
+                    </div>
+                    <div className="flex justify-between text-indigo-600">
+                      <span>Platform Fee:</span>
+                      <span>+ ₹{targetPlatformFee}</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-slate-900 border-t border-slate-200 pt-1 mt-1">
+                      <span>You Pay:</span>
+                      <span>₹{targetRate}</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div>

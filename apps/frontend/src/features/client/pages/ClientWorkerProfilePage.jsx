@@ -295,6 +295,9 @@ export default function ClientWorkerProfilePage() {
         targetId={worker.id}
         targetType="WORKER"
         targetName={name}
+        targetRate={worker.expectedDailyWage}
+        targetBaseRate={worker.baseExpectedDailyWage}
+        targetPlatformFee={worker.platformFee}
       />
     </div>
   );
