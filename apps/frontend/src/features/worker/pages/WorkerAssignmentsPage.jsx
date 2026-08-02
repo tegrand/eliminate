@@ -148,6 +148,17 @@ export default function WorkerAssignmentsPage() {
                       <Users className="w-4 h-4 text-orange-400" />
                       <span>{Math.max(0, (assignment.hiringRequest?.jobRequirement?.requiredWorkers || 0) - (assignment.hiringRequest?.jobRequirement?.assignedCount || 0))} Vacanc{Math.max(0, (assignment.hiringRequest?.jobRequirement?.requiredWorkers || 0) - (assignment.hiringRequest?.jobRequirement?.assignedCount || 0)) === 1 ? 'y' : 'ies'}</span>
                     </div>
+                    {assignment.assignedWorkers?.length > 0 && (
+                      <div className="mt-2 text-xs text-slate-500">
+                        <span className="font-semibold text-slate-700">Assigned Workers: </span>
+                        {assignment.assignedWorkers.map((aw, i) => (
+                          <span key={i}>
+                            {aw.worker?.user?.firstName} {aw.worker?.user?.lastName}
+                            {i < assignment.assignedWorkers.length - 1 ? ", " : ""}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
                 

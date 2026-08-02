@@ -80,7 +80,7 @@ export const updateHiringRequestStatus = async (id, status, user) => {
       });
 
       // Create Assignment
-      await tx.assignment.create({
+      const newAssignment = await tx.assignment.create({
         data: {
           assignmentCode: `ASN-${Date.now().toString().slice(-6)}`,
           hiringRequestId: req.id,
@@ -95,8 +95,16 @@ export const updateHiringRequestStatus = async (id, status, user) => {
         }
       });
 
-      // If independent worker, auto-assign them to this assignment?
-      // For now, the assignment is created. We will handle the worker linking in Assignment module.
+      // If independent worker, auto-assign them to this assignment
+      if (req.targetWorkerId) {
+        await tx.assignmentWorker.create({
+          data: {
+            assignmentId: newAssignment.id,
+            workerId: req.targetWorkerId,
+            status: "ACTIVE"
+          }
+        });
+      }
 
       // Create Notification
       await tx.notification.create({
