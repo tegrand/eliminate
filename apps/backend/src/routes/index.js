@@ -29,6 +29,7 @@ import reviewRoutes from "../modules/reviews/review.routes.js";
 import reportsRoutes from "../modules/reports/reports.routes.js";
 import complaintsRoutes from "../modules/complaints/complaints.routes.js";
 import settingsRoutes from "../modules/settings/settings.routes.js";
+import paymentRoutes from "../modules/payments/payment.routes.js";
 
 const router = Router();
 
@@ -58,6 +59,7 @@ router.use("/my-documents", workerDocumentsRoutes);
 router.use("/reviews", reviewRoutes);
 router.use("/reports", reportsRoutes);
 router.use("/complaints", complaintsRoutes);
+router.use("/payments", paymentRoutes);
 
 // Master Data Routes
 router.use("/skills", skillRoutes);
@@ -78,9 +80,9 @@ router.get("/health", (req, res) => {
   });
 });
 
-export default router; 
- 
- 
- 
- 
- 
+export default router;
+
+
+
+
+

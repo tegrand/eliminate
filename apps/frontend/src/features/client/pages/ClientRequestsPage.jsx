@@ -8,6 +8,7 @@ import {
 import api from "../../../api/axios";
 import { toast } from "sonner";
 import { ROUTES } from "../../../routes/routePaths";
+import { paymentApi } from "../../../api/payment.api";
 
 export default function ClientRequestsPage() {
   const [requests, setRequests] = useState([]);
@@ -39,12 +40,79 @@ export default function ClientRequestsPage() {
     return matchesFilter && matchesSearch;
   });
 
+  const handlePayment = async (hiringRequestId) => {
+    try {
+      setLoading(true);
+      
+      // Load Razorpay Script
+      const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
+      if (!res) {
+        toast.error("Razorpay SDK failed to load. Are you online?");
+        setLoading(false);
+        return;
+      }
+
+      // Create order
+      const { data: orderData } = await paymentApi.createOrder(hiringRequestId);
+      const order = orderData.data;
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_TKxFWf5rY0ETtj",
+        amount: order.amount,
+        currency: order.currency,
+        name: "ELIMINATE",
+        description: "Payment for Hiring Request",
+        order_id: order.id,
+        handler: async function (response) {
+          try {
+            await paymentApi.verifyPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+            toast.success("Payment successful!");
+            fetchRequests();
+          } catch (err) {
+            toast.error("Payment verification failed.");
+          }
+        },
+        theme: { color: "#2563EB" },
+      };
+
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.open();
+
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to initiate payment");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadScript = (src) => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = src;
+      script.onload = () => {
+        resolve(true);
+      };
+      script.onerror = () => {
+        resolve(false);
+      };
+      document.body.appendChild(script);
+    });
+  };
+
   const getStatusBadge = (status) => {
     switch (status) {
       case 'PENDING':
         return <span className="px-3 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-full text-xs font-semibold flex items-center gap-1.5"><Clock className="w-3.5 h-3.5" /> Pending Review</span>;
       case 'ACCEPTED':
-        return <span className="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-xs font-semibold flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" /> Accepted</span>;
+        return <span className="px-3 py-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-full text-xs font-semibold flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" /> Accepted</span>;
+      case 'PAYMENT_PENDING':
+        return <span className="px-3 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded-full text-xs font-semibold flex items-center gap-1.5"><IndianRupee className="w-3.5 h-3.5" /> Pending Payment</span>;
+      case 'ACTIVE':
+        return <span className="px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-xs font-semibold flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" /> Active</span>;
       case 'REJECTED':
         return <span className="px-3 py-1 bg-red-50 text-red-700 border border-red-200 rounded-full text-xs font-semibold flex items-center gap-1.5"><XCircle className="w-3.5 h-3.5" /> Declined</span>;
       default:
@@ -89,7 +157,7 @@ export default function ClientRequestsPage() {
 
           <div className="mt-8 border-b border-gray-100">
             <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-[-1px]">
-              {['ALL', 'PENDING', 'ACCEPTED', 'REJECTED'].map(f => (
+              {['ALL', 'PENDING', 'ACCEPTED', 'PAYMENT_PENDING', 'ACTIVE', 'REJECTED'].map(f => (
                 <button
                   key={f}
                   onClick={() => setFilter(f)}
@@ -196,6 +264,19 @@ export default function ClientRequestsPage() {
                     <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4 sm:gap-6 border-t border-gray-100 sm:border-0 pt-4 sm:pt-0 mt-2 sm:mt-0">
                       {getStatusBadge(req.status)}
                       
+                      {req.status === 'PAYMENT_PENDING' && (
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handlePayment(req.id);
+                          }}
+                          disabled={loading}
+                          className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50"
+                        >
+                          <IndianRupee className="w-4 h-4" /> Pay Now
+                        </button>
+                      )}
+
                       <button className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-600 transition-colors group-hover:bg-blue-50 group-hover:text-blue-600">
                         <ChevronRight className="w-5 h-5" />
                       </button>

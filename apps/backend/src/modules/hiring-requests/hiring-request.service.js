@@ -91,76 +91,15 @@ export const updateHiringRequestStatus = async (id, status, user) => {
   });
   if (!request) throw new AppError("Hiring Request not found", 404);
 
-  // If accepting, we need to create an Assignment
   if (status === "ACCEPTED") {
     // Prevent double acceptance
-    if (request.status === "ACCEPTED") throw new AppError("Request is already accepted", 400);
+    if (request.status === "PAYMENT_PENDING" || request.status === "ACTIVE") throw new AppError("Request is already processed", 400);
 
     const updatedRequest = await prisma.$transaction(async (tx) => {
       const req = await tx.hiringRequest.update({
         where: { id },
-        data: { status }
+        data: { status: "PAYMENT_PENDING" }
       });
-
-      // Create Assignment
-      const newAssignment = await tx.assignment.create({
-        data: {
-          assignmentCode: `ASN-${Date.now().toString().slice(-6)}`,
-          hiringRequestId: req.id,
-          clientId: req.clientId,
-          agencyId: req.targetAgencyId || undefined,
-          title: req.title,
-          description: req.description,
-          agreedRate: req.proposedRate,
-          startDate: req.startDate,
-          endDate: req.endDate,
-          status: "ACTIVE"
-        }
-      });
-
-      // If independent worker, auto-assign them to this assignment
-      if (req.targetWorkerId) {
-        await tx.assignmentWorker.create({
-          data: {
-            assignmentId: newAssignment.id,
-            workerId: req.targetWorkerId,
-            status: "ACTIVE"
-          }
-        });
-
-        // Also if this hiring request is tied to a specific job requirement, update that job requirement
-        if (req.jobRequirementId) {
-          const existingApp = await tx.jobApplication.findUnique({
-            where: {
-              jobRequirementId_workerId: {
-                jobRequirementId: req.jobRequirementId,
-                workerId: req.targetWorkerId
-              }
-            }
-          });
-
-          if (existingApp) {
-            await tx.jobApplication.update({
-              where: { id: existingApp.id },
-              data: { status: "ACCEPTED" }
-            });
-          } else {
-            await tx.jobApplication.create({
-              data: {
-                jobRequirementId: req.jobRequirementId,
-                workerId: req.targetWorkerId,
-                status: "ACCEPTED"
-              }
-            });
-          }
-
-          // Increment assigned count
-          await tx.jobRequirement.update({
-            where: { id: req.jobRequirementId },
-            data: { assignedCount: { increment: 1 } }
-          });
-        }
-      }
 
       // Create Notification
       await tx.notification.create({
@@ -168,13 +107,15 @@ export const updateHiringRequestStatus = async (id, status, user) => {
           userId: request.client.userId,
           type: "HIRING_ACCEPTED",
           title: "Hiring Request Accepted",
-          message: `Your hiring request "${req.title}" has been accepted and an assignment has been created.`,
-          link: "/assignments"
+          message: `Your hiring request "${req.title}" has been accepted. Please complete the payment to start the work.`,
+          link: "/client/requests"
         }
       });
 
       return req;
     });
+
+    return updatedRequest;
 
     return updatedRequest;
   } else {

@@ -883,6 +883,8 @@ model Notification {
 enum HiringRequestStatus {
   PENDING
   ACCEPTED
+  PAYMENT_PENDING
+  ACTIVE
   REJECTED
   CANCELLED
 }
@@ -907,6 +909,8 @@ model HiringRequest {
   agency         Agency?         @relation(fields: [targetAgencyId], references: [id])
   worker         Worker?         @relation(fields: [targetWorkerId], references: [id])
   jobRequirement JobRequirement? @relation(fields: [jobRequirementId], references: [id])
+  
+  payments       PaymentTransaction[]
 
   assignment Assignment?
 
@@ -1205,4 +1209,19 @@ model SystemSetting {
   updatedAt   DateTime @updatedAt
 
   @@index([key])
+}
+
+model PaymentTransaction {
+  id               String   @id @default(uuid())
+  orderId          String   // Razorpay Order ID
+  paymentId        String?  // Razorpay Payment ID
+  amount           Decimal
+  currency         String   @default("INR")
+  status           String   @default("PENDING") // PENDING, SUCCESS, FAILED
+  hiringRequestId  String
+  
+  hiringRequest    HiringRequest @relation(fields: [hiringRequestId], references: [id])
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }
