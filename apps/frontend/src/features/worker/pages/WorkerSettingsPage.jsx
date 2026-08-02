@@ -15,13 +15,15 @@ export default function WorkerSettingsPage() {
   const [docType, setDocType] = useState("AADHAAR");
   const [docFile, setDocFile] = useState(null);
   
-  const { register: regSettings, handleSubmit: handleSettingsSubmit } = useForm({
+  const { register: regSettings, handleSubmit: handleSettingsSubmit, formState: { isDirty: isSettingsDirty }, reset: resetSettings } = useForm({
     defaultValues: {
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",
       phone: user?.phone || ""
     }
   });
+  
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   
   const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
   const navigate = useNavigate();
@@ -98,11 +100,17 @@ export default function WorkerSettingsPage() {
   
   const { mutate: updateProfile, isPending: isUpdatingProfile } = useMutation({
     mutationFn: (data) => usersApi.updateProfile(data),
-    onSuccess: () => {
+    onSuccess: (res) => {
       localStorage.setItem("workPrefsSaved", "true");
       localStorage.setItem("locPrefsSaved", "true");
       setWorkPrefsSaved(true);
       setLocPrefsSaved(true);
+      setHasUnsavedChanges(false);
+      resetSettings({
+        firstName: res?.data?.data?.firstName || user?.firstName || "",
+        lastName: res?.data?.data?.lastName || user?.lastName || "",
+        phone: res?.data?.data?.phone || user?.phone || ""
+      });
       toast.success("Settings saved successfully!");
     },
     onError: (e) => toast.error(e.response?.data?.message || "Failed to save settings")
@@ -291,7 +299,7 @@ export default function WorkerSettingsPage() {
                 <div className="flex flex-wrap gap-2">
                   {["Daily Wage", "Contract", "Monthly Salary", "Part-Time"].map(type => (
                     <label key={type} className="cursor-pointer relative">
-                      <input type="checkbox" className="peer sr-only" />
+                      <input type="checkbox" className="peer sr-only" onChange={() => setHasUnsavedChanges(true)} />
                       <div className="px-3 py-1.5 border-2 border-gray-100 rounded-lg text-xs font-semibold text-gray-600 transition-all peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 peer-checked:shadow-sm hover:border-blue-200 hover:bg-blue-50/50">
                         {type}
                       </div>
@@ -314,20 +322,20 @@ export default function WorkerSettingsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm font-semibold text-gray-700">Preferred District</label>
-                  <input type="text" placeholder="e.g. Ernakulam" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
+                  <input type="text" onChange={() => setHasUnsavedChanges(true)} placeholder="e.g. Ernakulam" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm font-semibold text-gray-700">Preferred State</label>
-                  <input type="text" placeholder="e.g. Kerala" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
+                  <input type="text" onChange={() => setHasUnsavedChanges(true)} placeholder="e.g. Kerala" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
                 </div>
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-gray-700">Max Travel Distance (km)</label>
-                <input type="number" placeholder="e.g. 50" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
+                <input type="number" onChange={() => setHasUnsavedChanges(true)} placeholder="e.g. 50" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
               </div>
               <label className="flex items-center gap-3 cursor-pointer">
                 <div className="relative">
-                  <input type="checkbox" className="sr-only" />
+                  <input type="checkbox" onChange={() => setHasUnsavedChanges(true)} className="sr-only" />
                   <div className="block w-10 h-5 bg-slate-300 rounded-full transition-colors peer-checked:bg-blue-600"></div>
                   <div className="absolute left-[2px] top-[2px] bg-white w-4 h-4 rounded-full transition-transform"></div>
                 </div>
@@ -386,14 +394,21 @@ export default function WorkerSettingsPage() {
 
       </div>
 
-      {/* Global Save Button */}
-      <div className="flex justify-end mt-4">
-        <button type="submit" form="main-settings-form" disabled={isUpdatingProfile}
-          className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl shadow-sm hover:shadow transition-all">
-          {isUpdatingProfile ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-          {isUpdatingProfile ? "Saving..." : "Save All Settings"}
-        </button>
-      </div>
+      {/* Global Save Popup */}
+      {(isSettingsDirty || hasUnsavedChanges) && (
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] flex justify-between items-center z-40 animate-in slide-in-from-bottom-full duration-300 md:ml-64">
+          <div className="hidden sm:block">
+            <p className="text-sm font-medium text-gray-900">You have unsaved changes</p>
+            <p className="text-xs text-gray-500">Please save your settings to apply the changes.</p>
+          </div>
+          <button type="submit" form="main-settings-form" disabled={isUpdatingProfile}
+            className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl shadow-sm hover:shadow transition-all w-full sm:w-auto justify-center">
+            {isUpdatingProfile ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+            {isUpdatingProfile ? "Saving..." : "Save Settings"}
+          </button>
+        </div>
+      )}
+      
       {/* Password Modal */}
       {showPasswordModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
