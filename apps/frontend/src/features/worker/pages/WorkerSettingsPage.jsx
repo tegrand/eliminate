@@ -48,14 +48,12 @@ export default function WorkerSettingsPage() {
     }
   }, [existingDocs.length, documentsRes]);
 
-  const isBasicComplete = !!(user?.firstName || user?.name) && !!(user?.phone || user?.email);
   const checklist = [
-    { label: "Basic Information", complete: isBasicComplete },
     { label: "Work Preferences", complete: workPrefsSaved },
     { label: "Location Preferences", complete: locPrefsSaved },
     { label: "Documents", complete: docsUploaded }
   ];
-  const percent = Math.round((checklist.filter(i => i.complete).length / 4) * 100);
+  const percent = Math.round((checklist.filter(i => i.complete).length / 3) * 100);
 
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [password, setPassword] = useState("");
