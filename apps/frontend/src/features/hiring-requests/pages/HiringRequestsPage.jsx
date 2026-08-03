@@ -41,12 +41,12 @@ export default function HiringRequestsPage() {
   const requests = data || [];
 
   return (
-    <div className="w-full flex flex-col animate-fade-in h-[calc(100vh-4rem)] overflow-y-auto scrollbar-hide">
+    <div className="w-full flex flex-col animate-fade-in">
       
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-xl font-bold text-gray-900 tracking-tight flex items-center gap-2.5">
-          <Briefcase className="w-6 h-6 text-indigo-600" />
+        <h1 className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight flex items-center gap-2.5">
+          <Briefcase className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-600" />
           {isClient ? "My Job Requests" : "Hiring Requests"}
         </h1>
         <p className="text-sm text-gray-500 mt-1.5 max-w-2xl">
@@ -94,7 +94,7 @@ export default function HiringRequestsPage() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {requests.map(req => {
             const targetName = req.targetAgencyId 
               ? (req.agency?.agencyName || req.agency?.user?.firstName + " " + req.agency?.user?.lastName) 

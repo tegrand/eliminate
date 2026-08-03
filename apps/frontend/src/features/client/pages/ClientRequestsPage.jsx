@@ -125,8 +125,8 @@ export default function ClientRequestsPage() {
   };
 
   return (
-    <div className="w-full h-[calc(100vh-4rem)] bg-[#f4f7f9] overflow-y-auto scrollbar-hide py-8 px-4 sm:px-8 lg:px-12 animate-fade-in">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div className="w-full bg-[#f4f7f9] animate-fade-in">
+      <div className="max-w-6xl mx-auto space-y-4">
         
         {/* Header Section */}
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sm:p-8">

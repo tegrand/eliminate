@@ -95,7 +95,7 @@ export default function WorkerListPage() {
   const availableSkills = [...new Set(rawWorkers.map(w => w.primarySkill?.name || (typeof w.primarySkill === 'string' ? w.primarySkill : null) || w.skills?.[0]?.name).filter(Boolean))];
 
   return (
-    <div className="w-full h-[calc(100vh-4rem)] px-4 pb-4 pt-4 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
+    <div className="w-full h-[calc(100vh-4rem)] pb-4 pt-2 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
       <WorkerToolbar 
         totalWorkers={displayedWorkers.length} 
         availableStatuses={availableStatuses}
@@ -110,7 +110,7 @@ export default function WorkerListPage() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col flex-1 overflow-hidden">
         {!(user?.profileType === "AGENCY" && viewMode !== "my") && (
           <div className="border-b border-gray-100 px-6 pt-1 flex-shrink-0">
-            <nav className="-mb-px flex space-x-8 overflow-x-auto" aria-label="Tabs">
+            <nav className="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto scrollbar-hide" aria-label="Tabs">
               {tabs.map((tab) => (
                 <Link
                   key={tab.name}
@@ -119,7 +119,7 @@ export default function WorkerListPage() {
                     currentStatus === tab.value
                       ? "border-indigo-600 text-indigo-700 font-bold"
                       : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 font-semibold",
-                    "whitespace-nowrap border-b-2 py-3 px-1 text-[13px] transition-colors"
+                    "whitespace-nowrap border-b-2 py-3 px-1 text-[12px] sm:text-[13px] transition-colors"
                   )}
                 >
                   {tab.name}
@@ -129,7 +129,7 @@ export default function WorkerListPage() {
           </div>
         )}
 
-        <div className="px-6 pb-4 flex flex-col flex-1 overflow-hidden">
+        <div className="px-3 sm:px-6 pb-4 flex flex-col flex-1 overflow-hidden">
           <div className="mt-3 flex-1 overflow-hidden flex flex-col">
             <WorkerTable 
               workers={displayedWorkers} 

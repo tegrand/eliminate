@@ -53,13 +53,13 @@ export default function WorkerAttendancePage() {
   });
 
   return (
-    <div className="w-full max-w-5xl mx-auto py-8 space-y-6 animate-fade-in">
+    <div className="w-full max-w-5xl mx-auto py-2 space-y-4 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">{t('workerAttendance.title')}</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900">{t('workerAttendance.title')}</h1>
         <p className="text-sm text-slate-500 mt-1">{t('workerAttendance.subtitle')}</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Actions Panel */}
         <div className="md:col-span-1 space-y-6">
           <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">

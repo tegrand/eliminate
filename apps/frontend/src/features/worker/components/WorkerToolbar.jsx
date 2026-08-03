@@ -25,7 +25,7 @@ export default function WorkerToolbar({ totalWorkers, availableStatuses, availab
   return (
     <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4 mb-3">
       <div className="pb-1">
-        <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Workers</h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight">Workers</h2>
         <p className="text-sm text-slate-500 mt-1">
           Manage and monitor your workforce
         </p>

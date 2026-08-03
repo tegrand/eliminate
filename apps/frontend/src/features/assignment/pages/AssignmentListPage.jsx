@@ -17,15 +17,15 @@ export default function AssignmentListPage() {
   const assignments = data || [];
 
   return (
-    <div className="w-full flex flex-col animate-fade-in h-[calc(100vh-4rem)] overflow-y-auto scrollbar-hide py-6 px-4 sm:px-8 lg:px-12 bg-[#f8f9fa]">
+    <div className="w-full flex flex-col animate-fade-in min-h-[calc(100vh-4rem)] bg-[#f8f9fa]">
       <div className="max-w-6xl mx-auto w-full">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-xl font-bold text-gray-900 tracking-tight flex items-center gap-2.5">
-            <UserCheck className="w-6 h-6 text-emerald-600" />
+        <div className="mb-4">
+          <h1 className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight flex items-center gap-2.5">
+            <UserCheck className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600" />
             Assignments
           </h1>
-          <p className="text-sm text-gray-500 mt-1.5 max-w-2xl">
+          <p className="text-xs sm:text-sm text-gray-500 mt-1 max-w-2xl">
             Track active jobs, contracts, and assigned workforce.
           </p>
         </div>
@@ -50,7 +50,7 @@ export default function AssignmentListPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {assignments.map(assignment => (
               <div key={assignment.id} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm relative group hover:shadow-md transition-shadow flex flex-col">
                 <div className="flex items-start justify-between mb-4">

@@ -162,7 +162,7 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm flex flex-col h-full">
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-x-auto overflow-y-auto">
         <DataTable 
           columns={columns} 
           data={workers || []} 

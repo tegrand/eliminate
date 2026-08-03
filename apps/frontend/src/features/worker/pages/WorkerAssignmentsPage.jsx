@@ -51,9 +51,9 @@ export default function WorkerAssignmentsPage() {
   const currentAssignments = categorized[activeTab] || [];
 
   return (
-    <div className="w-full max-w-7xl mx-auto py-6 px-4 sm:px-6 space-y-6 animate-fade-in">
+    <div className="w-full max-w-7xl mx-auto py-2 space-y-4 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">My Assignments</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900">My Assignments</h1>
         <p className="text-sm text-slate-500 mt-1">Track and manage your work assignments.</p>
       </div>
 
@@ -62,7 +62,7 @@ export default function WorkerAssignmentsPage() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`py-3 px-6 text-sm font-semibold border-b-2 whitespace-nowrap transition-colors ${
+            className={`py-2.5 sm:py-3 px-4 sm:px-6 text-xs sm:text-sm font-semibold border-b-2 whitespace-nowrap transition-colors ${
               activeTab === tab.id 
                 ? "border-indigo-600 text-indigo-600" 
                 : "border-transparent text-gray-500 hover:text-gray-700"

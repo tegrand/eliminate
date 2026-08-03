@@ -43,7 +43,7 @@ export default function ClientListPage() {
   const availableDistricts = [...new Set(rawClients.map(c => c.district).filter(Boolean))];
 
   return (
-    <div className="w-full h-[calc(100vh-4rem)] px-4 pb-4 pt-4 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
+    <div className="w-full h-[calc(100vh-4rem)] pb-4 pt-2 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
       <ClientToolbar 
         totalClients={pagination.total || 0} 
         availableStatuses={availableStatuses} 
@@ -54,7 +54,7 @@ export default function ClientListPage() {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col flex-1 overflow-hidden">
         <div className="border-b border-gray-100 px-6 pt-1 flex-shrink-0">
-          <nav className="-mb-px flex space-x-8 overflow-x-auto" aria-label="Tabs">
+          <nav className="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto scrollbar-hide" aria-label="Tabs">
             {tabs.map((tab) => (
               <Link
                 key={tab.name}
@@ -72,7 +72,7 @@ export default function ClientListPage() {
           </nav>
         </div>
 
-        <div className="px-6 pb-4 flex flex-col flex-1 overflow-hidden">
+        <div className="px-3 sm:px-6 pb-4 flex flex-col flex-1 overflow-hidden">
           <div className="mt-3 flex-1 overflow-hidden flex flex-col">
             <ClientTable 
               clients={displayedClients} 

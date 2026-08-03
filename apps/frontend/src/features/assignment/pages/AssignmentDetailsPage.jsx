@@ -178,22 +178,22 @@ export default function AssignmentDetailsPage() {
   const selectedDayObj = scheduleDays.find(d => d.date.toDateString() === selectedDate) || scheduleDays[0];
 
   return (
-    <div className="max-w-5xl mx-auto py-5 px-4 sm:px-6 lg:px-8 animate-fade-in space-y-4 h-[calc(100vh-4rem)] overflow-y-auto scrollbar-hide bg-[#f8f9fa]">
+    <div className="max-w-[1400px] mx-auto py-3 px-3 sm:px-4 animate-fade-in space-y-4 min-h-[calc(100vh-4rem)] overflow-y-auto scrollbar-hide bg-[#f8f9fa]">
       
       {/* Header */}
       <div className="flex flex-col gap-2">
         <div>
           <Link
             to="/assignments"
-            className="inline-flex items-center text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors mb-3 bg-white px-3.5 py-1.5 rounded-lg border border-gray-200 shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
+            className="inline-flex items-center text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors mb-2 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
           >
-            <ArrowLeft className="mr-1.5 h-4 w-4" />
+            <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Assignments
           </Link>
           <div className="flex flex-col">
-            <div className="flex items-center gap-2.5">
-              <h1 className="text-[22px] font-bold text-gray-900 tracking-tight">{assignment.title}</h1>
-              <span className={`px-2.5 py-0.5 rounded-full text-[10px] tracking-wider uppercase font-bold ${
+            <div className="flex items-center gap-3">
+              <h1 className="text-xl sm:text-[26px] font-bold text-gray-900 tracking-tight">{assignment.title}</h1>
+              <span className={`px-2.5 py-1 rounded-full text-[10px] tracking-wider uppercase font-bold ${
                 assignment.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-600' :
                 assignment.status === 'COMPLETED' ? 'bg-blue-50 text-blue-600' :
                 'bg-gray-100 text-gray-600'
@@ -201,7 +201,7 @@ export default function AssignmentDetailsPage() {
                 {assignment.status}
               </span>
             </div>
-            <p className="mt-0.5 text-[11px] text-gray-500 font-medium uppercase tracking-wider">
+            <p className="mt-1.5 text-xs text-gray-500 font-medium uppercase tracking-wider">
               {assignment.assignmentCode}
             </p>
           </div>
@@ -209,123 +209,123 @@ export default function AssignmentDetailsPage() {
       </div>
 
       {/* Top Cards Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4">
         
         {/* Card 1: Assignment Tracking (col-span-5) */}
-        <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)] flex flex-col lg:col-span-5">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2.5">
-              <div className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
-                <Activity className="h-4.5 w-4.5" />
+        <section className="rounded-[20px] border border-gray-100 bg-white p-6 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] flex flex-col lg:col-span-5">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
+                <Activity className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-[14px] font-bold text-gray-900">Assignment Tracking</h2>
+                <h2 className="text-base font-bold text-gray-900">Assignment Tracking</h2>
                 <p className="text-[11px] text-gray-500 mt-0.5">Current progress and timeline.</p>
               </div>
             </div>
             <button className="text-gray-400 hover:text-gray-600">
-               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
+               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
             </button>
           </div>
 
-          <div className="grid grid-cols-4 gap-2.5 mb-5">
+          <div className="grid grid-cols-4 gap-3 mb-8">
             <div className="p-3 bg-[#fbfbfc] rounded-xl border border-gray-50 flex flex-col justify-between">
-              <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1 mb-2"><CalendarDays className="w-3 h-3" /> Start Date</span>
-              <span className="text-[13px] font-bold text-gray-900">{assignment.startDate ? new Date(assignment.startDate).toLocaleDateString('en-US') : 'N/A'}</span>
+              <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-3"><CalendarDays className="w-3.5 h-3.5" /> Start Date</span>
+              <span className="text-sm font-bold text-gray-900">{assignment.startDate ? new Date(assignment.startDate).toLocaleDateString('en-US') : 'N/A'}</span>
             </div>
             <div className="p-3 bg-[#fbfbfc] rounded-xl border border-gray-50 flex flex-col justify-between">
-              <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1 mb-2"><CalendarCheck className="w-3 h-3" /> End Date</span>
-              <span className="text-[13px] font-bold text-gray-900">{assignment.endDate ? new Date(assignment.endDate).toLocaleDateString('en-US') : 'N/A'}</span>
+              <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-3"><CalendarCheck className="w-3.5 h-3.5" /> End Date</span>
+              <span className="text-sm font-bold text-gray-900">{assignment.endDate ? new Date(assignment.endDate).toLocaleDateString('en-US') : 'N/A'}</span>
             </div>
             <div className="p-3 bg-[#fbfbfc] rounded-xl border border-gray-50 flex flex-col justify-between">
-              <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1 mb-2"><Users className="w-3 h-3" /> Workers</span>
-              <span className="text-[13px] font-bold text-gray-900">{assignedWorkers.length} Assigned</span>
+              <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-3"><Users className="w-3.5 h-3.5" /> Workers</span>
+              <span className="text-sm font-bold text-gray-900">{assignedWorkers.length} Assigned</span>
             </div>
             <div className="p-3 bg-[#fbfbfc] rounded-xl border border-gray-50 flex flex-col justify-between">
-              <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1 mb-2"><Activity className="w-3 h-3" /> Status</span>
-              <span className={`text-[13px] font-bold uppercase tracking-wider ${assignment.status === 'ACTIVE' ? 'text-emerald-500' : 'text-gray-900'}`}>{assignment.status}</span>
+              <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-3"><Activity className="w-3.5 h-3.5" /> Status</span>
+              <span className={`text-sm font-bold uppercase tracking-wider ${assignment.status === 'ACTIVE' ? 'text-emerald-500' : 'text-gray-900'}`}>{assignment.status}</span>
             </div>
           </div>
 
-          <div className="mt-auto">
-             <div className="flex justify-between items-center mb-2">
-               <span className="text-[12px] font-semibold text-gray-800">Overall Progress</span>
-               <span className="text-[12px] font-bold text-blue-600">{progress}%</span>
+          <div className="mt-auto pt-2">
+             <div className="flex justify-between items-center mb-2.5">
+               <span className="text-[13px] font-semibold text-gray-800">Overall Progress</span>
+               <span className="text-[13px] font-bold text-blue-600">{progress}%</span>
              </div>
-             <div className="h-[8px] w-full bg-gray-100 rounded-full overflow-hidden">
+             <div className="h-[10px] w-full bg-gray-100 rounded-full overflow-hidden">
                 <div className="h-full bg-blue-600 rounded-full transition-all duration-1000" style={{ width: `${progress}%` }} />
              </div>
           </div>
         </section>
 
         {/* Card 2: Overview (col-span-3) */}
-        <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)] flex flex-col lg:col-span-3">
-          <div className="flex items-center gap-2.5 mb-5">
-            <div className="h-9 w-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500">
-              <Building2 className="h-4 w-4" />
+        <section className="rounded-[20px] border border-gray-100 bg-white p-6 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] flex flex-col lg:col-span-3">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500">
+              <Building2 className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-[14px] font-bold text-gray-900">Overview</h2>
+              <h2 className="text-base font-bold text-gray-900">Overview</h2>
             </div>
           </div>
 
-          <div className="space-y-3 mt-auto">
-            <div className="p-3.5 bg-[#fbfbfc] rounded-xl border border-gray-50 flex items-center justify-between">
+          <div className="space-y-4 mt-auto">
+            <div className="p-4 bg-[#fbfbfc] rounded-xl border border-gray-50 flex items-center justify-between">
               <div>
-                <span className="text-[11px] font-semibold text-gray-800 block mb-0.5">Client</span>
-                <span className="text-[12px] font-medium text-gray-500">{assignment.client?.companyName || '-'}</span>
+                <span className="text-[12px] font-semibold text-gray-800 block mb-1">Client</span>
+                <span className="text-[13px] font-medium text-gray-500">{assignment.client?.companyName || '-'}</span>
               </div>
-              <div className="w-8 h-8 rounded-full border border-blue-100 text-blue-400 flex items-center justify-center bg-white shadow-sm">
+              <div className="w-9 h-9 rounded-full border border-blue-100 text-blue-400 flex items-center justify-center bg-white shadow-sm">
                 <UserRound className="w-4 h-4" />
               </div>
             </div>
 
-            <div className="p-3.5 bg-[#fbfbfc] rounded-xl border border-gray-50 flex items-center justify-between">
-              <span className="text-[11px] font-semibold text-gray-800">Agreed Rate</span>
-              <span className="text-[14px] font-bold text-emerald-500">{assignment.agreedRate ? `₹${assignment.agreedRate}` : '-'}</span>
+            <div className="p-4 bg-[#fbfbfc] rounded-xl border border-gray-50 flex items-center justify-between">
+              <span className="text-[12px] font-semibold text-gray-800">Agreed Rate</span>
+              <span className="text-[15px] font-bold text-emerald-500">{assignment.agreedRate ? `₹${assignment.agreedRate}` : '-'}</span>
             </div>
           </div>
         </section>
 
         {/* Card 3: Work Schedule (col-span-4) */}
-        <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)] flex flex-col lg:col-span-4">
-          <div className="flex items-center gap-2.5 mb-4">
-            <div className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
-              <CalendarDays className="h-4 w-4" />
+        <section className="rounded-[20px] border border-gray-100 bg-white p-6 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] flex flex-col lg:col-span-4">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
+              <CalendarDays className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-[14px] font-bold text-gray-900">Work Schedule</h2>
+              <h2 className="text-base font-bold text-gray-900">Work Schedule</h2>
               <p className="text-[11px] text-gray-500 mt-0.5">Total {scheduleDays.length} Days</p>
             </div>
           </div>
 
-          <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-2">
+          <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-3">
              {scheduleDays.map(d => {
                const isSelected = selectedDate === d.date.toDateString();
                return (
                  <button 
                    key={d.dayNum}
                    onClick={() => setSelectedDate(d.date.toDateString())}
-                   className={`flex-shrink-0 flex flex-col items-center justify-center w-[68px] h-[68px] rounded-xl border transition-all ${
+                   className={`flex-shrink-0 flex flex-col items-center justify-center w-[76px] h-[76px] rounded-xl border transition-all ${
                      isSelected 
-                      ? 'border-blue-300 bg-white shadow-[0_2px_8px_-4px_rgba(59,130,246,0.3)]' 
-                      : 'border-gray-100 bg-[#fbfbfc] hover:border-gray-200'
+                      ? 'border-blue-300 bg-white shadow-[0_2px_12px_-4px_rgba(59,130,246,0.3)]' 
+                      : 'border-gray-50 bg-[#fbfbfc] hover:border-gray-200'
                    }`}
                  >
-                    <span className={`text-[12px] font-bold mb-1 ${isSelected ? 'text-blue-600' : 'text-gray-400'}`}>Day {d.dayNum}</span>
-                    <span className={`text-[10px] font-semibold ${isSelected ? 'text-blue-500' : 'text-gray-400'}`}>{d.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })}</span>
+                    <span className={`text-[13px] font-bold mb-1.5 ${isSelected ? 'text-blue-600' : 'text-gray-400'}`}>Day {d.dayNum}</span>
+                    <span className={`text-[11px] font-semibold ${isSelected ? 'text-blue-500' : 'text-gray-400'}`}>{d.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })}</span>
                  </button>
                )
              })}
           </div>
 
-          <div className="mt-auto pt-3 relative">
-             <div className="w-full h-[3px] bg-gray-100 rounded-full overflow-hidden absolute top-0 left-0">
+          <div className="mt-auto pt-4 relative">
+             <div className="w-full h-[4px] bg-gray-100 rounded-full overflow-hidden absolute top-0 left-0">
                 <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${(selectedDayObj?.dayNum / scheduleDays.length) * 100}%` }} />
              </div>
-             <div className="bg-[#fbfbfc] rounded-xl p-3 flex items-center gap-2 border border-gray-50 mt-3">
-                <div className="w-4 h-4 rounded-full border border-blue-200 flex items-center justify-center flex-shrink-0 text-blue-500 bg-white">
-                  <span className="text-[8px] font-bold">i</span>
+             <div className="bg-[#fbfbfc] rounded-xl p-3.5 flex items-center gap-3 border border-gray-50 mt-4">
+                <div className="w-[18px] h-[18px] rounded-full border border-blue-200 flex items-center justify-center flex-shrink-0 text-blue-500 bg-white">
+                  <span className="text-[9px] font-bold">i</span>
                 </div>
                 <p className="text-[11px] text-gray-600 font-medium">Day {selectedDayObj?.dayNum || 1} is active. Other days are upcoming.</p>
              </div>
@@ -334,30 +334,30 @@ export default function AssignmentDetailsPage() {
       </div>
 
       {/* Attendance Tracker */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
-        <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-[0_2px_8px_-4px_rgba(0,0,0,0.04)] lg:col-span-8">
-           <div className="flex items-center gap-2.5 mb-5">
-             <div className="h-9 w-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500">
-               <Clock className="h-4 w-4" />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mt-6">
+        <section className="rounded-[20px] border border-gray-100 bg-white p-6 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] lg:col-span-8">
+           <div className="flex items-center gap-3 mb-8">
+             <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500">
+               <Clock className="h-5 w-5" />
              </div>
              <div>
-               <h2 className="text-[14px] font-bold text-gray-900">Attendance Tracker</h2>
+               <h2 className="text-base font-bold text-gray-900">Attendance Tracker</h2>
                <p className="text-[11px] text-gray-500 mt-0.5">Track attendance and working hours.</p>
              </div>
            </div>
 
-           <div className="flex flex-col md:flex-row gap-3 mb-5">
+           <div className="flex flex-col md:flex-row gap-5 mb-8">
               {/* Selected Date Box */}
-              <div className="w-full md:w-[130px] h-[90px] bg-indigo-50/50 rounded-xl flex flex-col items-center justify-center text-indigo-700 shrink-0 border border-indigo-50">
-                 <span className="text-[14px] font-bold mb-1">Day {selectedDayObj?.dayNum}</span>
-                 <span className="text-[12px] font-semibold text-indigo-600">{selectedDayObj?.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })}</span>
+              <div className="w-full md:w-[150px] h-[105px] bg-indigo-50/50 rounded-2xl flex flex-col items-center justify-center text-indigo-700 shrink-0 border border-indigo-50">
+                 <span className="text-[15px] font-bold mb-1.5">Day {selectedDayObj?.dayNum}</span>
+                 <span className="text-[13px] font-semibold text-indigo-600">{selectedDayObj?.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })}</span>
               </div>
 
               {/* Workers list for that day */}
               <div className="flex-1 space-y-3">
                  {assignedWorkers.length === 0 ? (
-                   <div className="h-[90px] bg-[#fbfbfc] rounded-xl border border-gray-50 flex items-center justify-center p-4">
-                     <p className="text-xs text-gray-400 font-medium">No workers assigned.</p>
+                   <div className="h-[105px] bg-[#fbfbfc] rounded-2xl border border-gray-50 flex items-center justify-center p-4">
+                     <p className="text-sm text-gray-400 font-medium">No workers assigned.</p>
                    </div>
                  ) : (
                    assignedWorkers.map(aw => {
@@ -366,14 +366,14 @@ export default function AssignmentDetailsPage() {
                      const isMarkingThis = markingAttendance[`${w.id}_${selectedDate}`];
                      
                      return (
-                       <div key={w.id} className="bg-[#fbfbfc] rounded-xl border border-gray-50 p-3.5 flex items-center justify-between">
-                         <div className="flex items-center gap-3">
-                           <div className="w-10 h-10 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0">
-                             <UserRound className="w-5 h-5" />
+                       <div key={w.id} className="bg-[#fbfbfc] rounded-[16px] border border-gray-50 p-4 flex items-center justify-between">
+                         <div className="flex items-center gap-4">
+                           <div className="w-12 h-12 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0">
+                             <UserRound className="w-[22px] h-[22px]" />
                            </div>
                            <div>
-                             <p className="text-[14px] font-bold text-gray-900">{w.user?.firstName} {w.user?.lastName}</p>
-                             <p className="text-[12px] text-gray-500 font-medium">Worker ID: {w.workerCode}</p>
+                             <p className="text-[15px] font-bold text-gray-900">{w.user?.firstName} {w.user?.lastName}</p>
+                             <p className="text-[12px] text-gray-500 font-medium mt-0.5">Worker ID: {w.workerCode}</p>
                            </div>
                          </div>
 
@@ -440,18 +440,18 @@ export default function AssignmentDetailsPage() {
            </div>
 
            {/* ATTENDANCE LOG table */}
-           <div className="mt-5">
-              <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-3 pl-1">ATTENDANCE LOG</p>
+           <div className="mt-8">
+              <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-4 pl-1">ATTENDANCE LOG</p>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
                   <thead className="bg-[#fbfbfc] text-gray-700 text-[12px] font-semibold border-y border-gray-100">
                     <tr>
-                      <th className="px-4 py-3 font-semibold">Date</th>
-                      <th className="px-4 py-3 font-semibold">Worker</th>
-                      <th className="px-4 py-3 font-semibold">Status</th>
-                      <th className="px-4 py-3 font-semibold">Marked At</th>
-                      <th className="px-4 py-3 font-semibold">Check Out</th>
-                      <th className="px-4 py-3 font-semibold">Hours Worked</th>
+                      <th className="px-4 py-3.5 font-semibold">Date</th>
+                      <th className="px-4 py-3.5 font-semibold">Worker</th>
+                      <th className="px-4 py-3.5 font-semibold">Status</th>
+                      <th className="px-4 py-3.5 font-semibold">Marked At</th>
+                      <th className="px-4 py-3.5 font-semibold">Check Out</th>
+                      <th className="px-4 py-3.5 font-semibold">Hours Worked</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
