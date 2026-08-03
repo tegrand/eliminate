@@ -178,22 +178,22 @@ export default function AssignmentDetailsPage() {
   const selectedDayObj = scheduleDays.find(d => d.date.toDateString() === selectedDate) || scheduleDays[0];
 
   return (
-    <div className="max-w-6xl mx-auto py-5 px-4 sm:px-6 lg:px-8 animate-fade-in space-y-5 h-[calc(100vh-4rem)] overflow-y-auto scrollbar-hide bg-[#f8f9fa]">
+    <div className="max-w-[1400px] mx-auto py-8 px-4 sm:px-6 lg:px-8 animate-fade-in space-y-6 h-[calc(100vh-4rem)] overflow-y-auto scrollbar-hide bg-[#f8f9fa]">
       
       {/* Header */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-5">
         <div>
           <Link
             to="/assignments"
-            className="inline-flex items-center text-sm font-bold text-gray-700 hover:text-indigo-600 transition-colors mb-4 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm"
+            className="inline-flex items-center text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors mb-5 bg-white px-4 py-2 rounded-xl border border-gray-200 shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Assignments
           </Link>
           <div className="flex flex-col">
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-black text-gray-900 tracking-tight">{assignment.title}</h1>
-              <span className={`px-2.5 py-0.5 rounded-full text-[10px] tracking-wider uppercase font-bold ${
+              <h1 className="text-[26px] font-bold text-gray-900 tracking-tight">{assignment.title}</h1>
+              <span className={`px-2.5 py-1 rounded-full text-[10px] tracking-wider uppercase font-bold ${
                 assignment.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-600' :
                 assignment.status === 'COMPLETED' ? 'bg-blue-50 text-blue-600' :
                 'bg-gray-100 text-gray-600'
@@ -201,303 +201,310 @@ export default function AssignmentDetailsPage() {
                 {assignment.status}
               </span>
             </div>
-            <p className="mt-1 text-xs text-gray-500 font-bold uppercase tracking-wider">
+            <p className="mt-1.5 text-xs text-gray-500 font-medium uppercase tracking-wider">
               {assignment.assignmentCode}
             </p>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      {/* Top Cards Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         
-        {/* Card 1: Assignment Tracking */}
-        <section className="rounded-3xl border border-gray-100 bg-white p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col">
-          <div className="flex items-center justify-between mb-5">
+        {/* Card 1: Assignment Tracking (col-span-5) */}
+        <section className="rounded-[20px] border border-gray-100 bg-white p-6 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] flex flex-col lg:col-span-5">
+          <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-2xl bg-indigo-50/50 flex items-center justify-center text-indigo-500">
+              <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
                 <Activity className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-sm font-black text-gray-900">Assignment Tracking</h2>
-                <p className="text-[10px] text-gray-500">Current progress and timeline.</p>
+                <h2 className="text-base font-bold text-gray-900">Assignment Tracking</h2>
+                <p className="text-[11px] text-gray-500 mt-0.5">Current progress and timeline.</p>
               </div>
             </div>
+            <button className="text-gray-400 hover:text-gray-600">
+               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
+            </button>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 mb-6">
-            <div className="p-3 bg-[#f8f9fa] rounded-2xl border border-gray-50">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5 mb-1"><CalendarDays className="w-3 h-3" /> Start Date</span>
-              <span className="text-xs font-black text-gray-900">{assignment.startDate ? new Date(assignment.startDate).toLocaleDateString() : 'N/A'}</span>
+          <div className="grid grid-cols-4 gap-3 mb-8">
+            <div className="p-3 bg-[#fbfbfc] rounded-xl border border-gray-50 flex flex-col justify-between">
+              <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-3"><CalendarDays className="w-3.5 h-3.5" /> Start Date</span>
+              <span className="text-sm font-bold text-gray-900">{assignment.startDate ? new Date(assignment.startDate).toLocaleDateString('en-US') : 'N/A'}</span>
             </div>
-            <div className="p-3 bg-[#f8f9fa] rounded-2xl border border-gray-50">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5 mb-1"><CalendarCheck className="w-3 h-3" /> End Date</span>
-              <span className="text-xs font-black text-gray-900">{assignment.endDate ? new Date(assignment.endDate).toLocaleDateString() : 'N/A'}</span>
+            <div className="p-3 bg-[#fbfbfc] rounded-xl border border-gray-50 flex flex-col justify-between">
+              <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-3"><CalendarCheck className="w-3.5 h-3.5" /> End Date</span>
+              <span className="text-sm font-bold text-gray-900">{assignment.endDate ? new Date(assignment.endDate).toLocaleDateString('en-US') : 'N/A'}</span>
             </div>
-            <div className="p-3 bg-[#f8f9fa] rounded-2xl border border-gray-50">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5 mb-1"><Users className="w-3 h-3" /> Workers</span>
-              <span className="text-xs font-black text-gray-900">{assignedWorkers.length} Assigned</span>
+            <div className="p-3 bg-[#fbfbfc] rounded-xl border border-gray-50 flex flex-col justify-between">
+              <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-3"><Users className="w-3.5 h-3.5" /> Workers</span>
+              <span className="text-sm font-bold text-gray-900">{assignedWorkers.length} Assigned</span>
             </div>
-            <div className="p-3 bg-[#f8f9fa] rounded-2xl border border-gray-50">
-              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5 mb-1"><Activity className="w-3 h-3" /> Status</span>
-              <span className={`text-xs font-black uppercase tracking-wider ${assignment.status === 'ACTIVE' ? 'text-emerald-600' : 'text-gray-900'}`}>{assignment.status}</span>
+            <div className="p-3 bg-[#fbfbfc] rounded-xl border border-gray-50 flex flex-col justify-between">
+              <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-3"><Activity className="w-3.5 h-3.5" /> Status</span>
+              <span className={`text-sm font-bold uppercase tracking-wider ${assignment.status === 'ACTIVE' ? 'text-emerald-500' : 'text-gray-900'}`}>{assignment.status}</span>
             </div>
           </div>
 
-          <div className="mt-auto">
+          <div className="mt-auto pt-2">
              <div className="flex justify-between items-center mb-2.5">
-               <span className="text-[11px] font-bold text-gray-700">Overall Progress</span>
-               <span className="text-xs font-black text-indigo-600">{progress}%</span>
+               <span className="text-[13px] font-semibold text-gray-800">Overall Progress</span>
+               <span className="text-[13px] font-bold text-blue-600">{progress}%</span>
              </div>
-             <div className="h-2.5 w-full bg-[#f8f9fa] rounded-full overflow-hidden">
-                <div className="h-full bg-indigo-600 rounded-full transition-all duration-1000" style={{ width: `${progress}%` }} />
+             <div className="h-[10px] w-full bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-full bg-blue-600 rounded-full transition-all duration-1000" style={{ width: `${progress}%` }} />
              </div>
           </div>
         </section>
 
-        {/* Card 2: Overview */}
-        <section className="rounded-3xl border border-gray-100 bg-white p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="h-10 w-10 rounded-2xl bg-indigo-50/50 flex items-center justify-center text-indigo-500">
+        {/* Card 2: Overview (col-span-3) */}
+        <section className="rounded-[20px] border border-gray-100 bg-white p-6 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] flex flex-col lg:col-span-3">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500">
               <Building2 className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-sm font-black text-gray-900">Overview</h2>
+              <h2 className="text-base font-bold text-gray-900">Overview</h2>
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="p-4 bg-[#f8f9fa] rounded-2xl border border-gray-50 flex items-center justify-between">
+          <div className="space-y-4 mt-auto">
+            <div className="p-4 bg-[#fbfbfc] rounded-xl border border-gray-50 flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Client</span>
-                <span className="text-xs font-black text-gray-900">{assignment.client?.companyName || '-'}</span>
+                <span className="text-[12px] font-semibold text-gray-800 block mb-1">Client</span>
+                <span className="text-[13px] font-medium text-gray-500">{assignment.client?.companyName || '-'}</span>
               </div>
-              <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center">
-                <UserRound className="w-4 h-4 text-indigo-400" />
+              <div className="w-9 h-9 rounded-full border border-blue-100 text-blue-400 flex items-center justify-center bg-white shadow-sm">
+                <UserRound className="w-4 h-4" />
               </div>
             </div>
 
-            <div className="p-4 bg-[#f8f9fa] rounded-2xl border border-gray-50 flex items-center justify-between mt-auto">
-              <span className="text-[11px] font-bold text-gray-700">Agreed Rate</span>
-              <span className="text-sm font-black text-emerald-600">{assignment.agreedRate ? `₹${assignment.agreedRate}` : '-'}</span>
+            <div className="p-4 bg-[#fbfbfc] rounded-xl border border-gray-50 flex items-center justify-between">
+              <span className="text-[12px] font-semibold text-gray-800">Agreed Rate</span>
+              <span className="text-[15px] font-bold text-emerald-500">{assignment.agreedRate ? `₹${assignment.agreedRate}` : '-'}</span>
             </div>
           </div>
         </section>
 
-        {/* Card 3: Work Schedule */}
-        <section className="rounded-3xl border border-gray-100 bg-white p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="h-10 w-10 rounded-2xl bg-indigo-50/50 flex items-center justify-center text-indigo-500">
+        {/* Card 3: Work Schedule (col-span-4) */}
+        <section className="rounded-[20px] border border-gray-100 bg-white p-6 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] flex flex-col lg:col-span-4">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
               <CalendarDays className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-sm font-black text-gray-900">Work Schedule</h2>
-              <p className="text-[10px] text-gray-500">Total {scheduleDays.length} Days</p>
+              <h2 className="text-base font-bold text-gray-900">Work Schedule</h2>
+              <p className="text-[11px] text-gray-500 mt-0.5">Total {scheduleDays.length} Days</p>
             </div>
           </div>
 
-          <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-2">
+          <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-3">
              {scheduleDays.map(d => {
                const isSelected = selectedDate === d.date.toDateString();
                return (
                  <button 
                    key={d.dayNum}
                    onClick={() => setSelectedDate(d.date.toDateString())}
-                   className={`flex-shrink-0 flex flex-col items-center justify-center w-[72px] h-[72px] rounded-[20px] border transition-all ${
+                   className={`flex-shrink-0 flex flex-col items-center justify-center w-[76px] h-[76px] rounded-xl border transition-all ${
                      isSelected 
-                      ? 'border-indigo-400 bg-indigo-50/50 text-indigo-700' 
-                      : 'border-[#f0f0f0] bg-white text-gray-400 hover:border-indigo-200 hover:bg-gray-50'
+                      ? 'border-blue-300 bg-white shadow-[0_2px_12px_-4px_rgba(59,130,246,0.3)]' 
+                      : 'border-gray-50 bg-[#fbfbfc] hover:border-gray-200'
                    }`}
                  >
-                    <span className={`text-xs font-black mb-1 ${isSelected ? 'text-indigo-600' : 'text-gray-500'}`}>Day {d.dayNum}</span>
-                    <span className="text-[10px] font-bold opacity-80">{d.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })}</span>
+                    <span className={`text-[13px] font-bold mb-1.5 ${isSelected ? 'text-blue-600' : 'text-gray-400'}`}>Day {d.dayNum}</span>
+                    <span className={`text-[11px] font-semibold ${isSelected ? 'text-blue-500' : 'text-gray-400'}`}>{d.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })}</span>
                  </button>
                )
              })}
           </div>
 
           <div className="mt-auto pt-4 relative">
-             <div className="w-full h-1 bg-[#f8f9fa] rounded-full overflow-hidden absolute top-0 left-0">
-                <div className="h-full bg-indigo-400 rounded-full transition-all" style={{ width: `${(selectedDayObj?.dayNum / scheduleDays.length) * 100}%` }} />
+             <div className="w-full h-[4px] bg-gray-100 rounded-full overflow-hidden absolute top-0 left-0">
+                <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${(selectedDayObj?.dayNum / scheduleDays.length) * 100}%` }} />
              </div>
-             <div className="bg-[#f8f9fa] rounded-2xl p-3 flex items-start gap-2 border border-gray-50 mt-3">
-                <div className="w-4 h-4 rounded-full border border-indigo-200 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <span className="text-[8px] font-bold text-indigo-500">i</span>
+             <div className="bg-[#fbfbfc] rounded-xl p-3.5 flex items-center gap-3 border border-gray-50 mt-4">
+                <div className="w-[18px] h-[18px] rounded-full border border-blue-200 flex items-center justify-center flex-shrink-0 text-blue-500 bg-white">
+                  <span className="text-[9px] font-bold">i</span>
                 </div>
-                <p className="text-[10px] text-gray-500 font-medium leading-relaxed">Day {selectedDayObj?.dayNum || 1} is active. Other days are upcoming.</p>
+                <p className="text-[11px] text-gray-600 font-medium">Day {selectedDayObj?.dayNum || 1} is active. Other days are upcoming.</p>
              </div>
           </div>
         </section>
       </div>
 
       {/* Attendance Tracker */}
-      <section className="rounded-3xl border border-gray-100 bg-white p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] mt-5">
-         <div className="flex items-center gap-3 mb-6">
-           <div className="h-10 w-10 rounded-2xl bg-indigo-50/50 flex items-center justify-center text-indigo-500">
-             <Clock3 className="h-5 w-5" />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mt-6">
+        <section className="rounded-[20px] border border-gray-100 bg-white p-6 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] lg:col-span-8">
+           <div className="flex items-center gap-3 mb-8">
+             <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500">
+               <Clock className="h-5 w-5" />
+             </div>
+             <div>
+               <h2 className="text-base font-bold text-gray-900">Attendance Tracker</h2>
+               <p className="text-[11px] text-gray-500 mt-0.5">Track attendance and working hours.</p>
+             </div>
            </div>
-           <div>
-             <h2 className="text-sm font-black text-gray-900">Attendance Tracker</h2>
-             <p className="text-[10px] text-gray-500">Track attendance and working hours.</p>
-           </div>
-         </div>
 
-         <div className="flex flex-col md:flex-row gap-4 mb-6">
-            {/* Selected Date Box */}
-            <div className="w-full md:w-[140px] h-[100px] bg-indigo-50/50 rounded-3xl border border-indigo-50 flex flex-col items-center justify-center text-indigo-700 shrink-0">
-               <span className="text-sm font-black mb-1">Day {selectedDayObj?.dayNum}</span>
-               <span className="text-xs font-bold text-indigo-500">{selectedDayObj?.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })}</span>
-            </div>
-
-            {/* Workers list for that day */}
-            <div className="flex-1 space-y-3">
-               {assignedWorkers.length === 0 ? (
-                 <div className="h-full bg-[#f8f9fa] rounded-3xl border border-gray-50 flex items-center justify-center p-4">
-                   <p className="text-xs text-gray-400 font-medium">No workers assigned.</p>
-                 </div>
-               ) : (
-                 assignedWorkers.map(aw => {
-                   const w = aw.worker;
-                   const record = attendanceData?.find(a => a.workerId === w.id && new Date(a.date).toDateString() === selectedDate);
-                   const isMarkingThis = markingAttendance[`${w.id}_${selectedDate}`];
-                   
-                   return (
-                     <div key={w.id} className="bg-[#f8f9fa] rounded-2xl border border-gray-50 p-3.5 flex items-center justify-between">
-                       <div className="flex items-center gap-4">
-                         <div className="w-12 h-12 rounded-full bg-indigo-50/80 text-indigo-400 flex items-center justify-center shrink-0">
-                           <UserRound className="w-5 h-5" />
-                         </div>
-                         <div>
-                           <p className="text-sm font-black text-gray-900">{w.user?.firstName} {w.user?.lastName}</p>
-                           <p className="text-[10px] text-gray-400 font-bold tracking-wider uppercase mt-0.5">Worker ID: {w.workerCode}</p>
-                         </div>
-                       </div>
-
-                       <div className="relative">
-                          <button 
-                            disabled={!isClient || isMarkingThis}
-                            onClick={() => { if(isClient) setActiveAttendancePopup(`${w.id}_${selectedDate}`) }}
-                            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
-                              record ? 
-                                record.status === 'PRESENT' ? 'bg-emerald-50/80 text-emerald-600' :
-                                record.status === 'ABSENT' ? 'bg-red-50/80 text-red-600' :
-                                'bg-amber-50/80 text-amber-600'
-                              : 'bg-white border border-[#e5e7eb] text-gray-600 hover:bg-gray-50 shadow-sm'
-                            } ${!isClient ? 'cursor-default' : 'hover:scale-[1.02] active:scale-[0.98]'}`}
-                          >
-                            {isMarkingThis ? (
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                            ) : record ? (
-                               <>
-                                 <div className={`w-2.5 h-2.5 rounded-full ${record.status === 'PRESENT' ? 'bg-emerald-500' : record.status === 'ABSENT' ? 'bg-red-500' : 'bg-amber-500'}`} />
-                                 {record.status === 'HALF_DAY' ? 'Half Day' : record.status === 'PRESENT' ? 'Present' : 'Absent'}
-                               </>
-                            ) : (
-                               <>
-                                 <div className="w-2.5 h-2.5 rounded-full bg-gray-300" />
-                                 Mark Status
-                               </>
-                            )}
-                          </button>
-
-                          {/* Popup menu for marking */}
-                          {isClient && activeAttendancePopup === `${w.id}_${selectedDate}` && (
-                            <div className="absolute right-0 top-full mt-2 z-50 bg-white border border-gray-100 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-2 min-w-[140px]">
-                              {[
-                                { status: 'PRESENT', label: 'Present', color: 'bg-emerald-500 hover:bg-emerald-600', dot: 'bg-emerald-400' },
-                                { status: 'HALF_DAY', label: 'Half Day', color: 'bg-amber-500 hover:bg-amber-600', dot: 'bg-amber-400' },
-                                { status: 'ABSENT', label: 'Absent', color: 'bg-red-500 hover:bg-red-600', dot: 'bg-red-400' },
-                              ].map(opt => (
-                                <button
-                                  key={opt.status}
-                                  onClick={() => {
-                                    setActiveAttendancePopup(null);
-                                    handleMarkAttendance(w.id, opt.status, new Date(selectedDate));
-                                  }}
-                                  className={`w-full text-left text-[11px] font-bold text-white px-3 py-2 rounded-xl mb-1 transition-colors flex items-center gap-2 ${opt.color}`}
-                                >
-                                  {opt.label}
-                                </button>
-                              ))}
-                              <button
-                                onClick={() => setActiveAttendancePopup(null)}
-                                className="w-full text-[11px] font-bold text-gray-400 hover:text-gray-600 px-3 py-1.5 text-center mt-1"
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          )}
-                       </div>
-                     </div>
-                   )
-                 })
-               )}
-            </div>
-         </div>
-
-         {/* ATTENDANCE LOG table */}
-         <div className="mt-8">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 pl-1">Attendance Log</p>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-[#f8f9fa] text-gray-500 text-[10px] font-black uppercase tracking-wider border-y border-gray-100">
-                  <tr>
-                    <th className="px-4 py-3">Date</th>
-                    <th className="px-4 py-3">Worker</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Marked At</th>
-                    <th className="px-4 py-3">Check Out</th>
-                    <th className="px-4 py-3">Hours Worked</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {attendanceData && attendanceData.length > 0 ? (
-                    attendanceData.map((att) => {
-                      const workerName = `${att.worker?.user?.firstName || ''} ${att.worker?.user?.lastName || ''}`.trim();
-                      return (
-                        <tr key={att.id} className="hover:bg-gray-50/50 transition-colors">
-                          <td className="px-4 py-3.5 font-bold text-gray-800 text-xs">{new Date(att.date).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })}</td>
-                          <td className="px-4 py-3.5 text-gray-600 text-xs font-bold">{workerName}</td>
-                          <td className="px-4 py-3.5">
-                            <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-bold ${
-                              att.status === 'PRESENT' ? 'text-emerald-600' :
-                              att.status === 'ABSENT' ? 'text-red-600' :
-                              att.status === 'HALF_DAY' ? 'text-amber-600' :
-                              'text-gray-600'
-                            }`}>
-                              <div className={`w-1.5 h-1.5 rounded-full ${att.status === 'PRESENT' ? 'bg-emerald-500' : att.status === 'ABSENT' ? 'bg-red-500' : 'bg-amber-500'}`} />
-                              {att.status === 'HALF_DAY' ? 'Half Day' : att.status === 'PRESENT' ? 'Present' : 'Absent'}
-                            </span>
-                          </td>
-                          <td className="px-4 py-3.5 text-gray-500 font-bold text-xs">
-                            {att.checkInTime ? new Date(att.checkInTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : <span className="text-gray-300">—</span>}
-                          </td>
-                          <td className="px-4 py-3.5 text-gray-500 font-bold text-xs">
-                            {att.checkOutTime ? new Date(att.checkOutTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : <span className="text-gray-300">—</span>}
-                          </td>
-                          <td className="px-4 py-3.5 text-xs font-bold text-gray-800">
-                            {att.totalHours ? `${att.totalHours}h` : '-'}
-                            {att.overtimeHours > 0 && <span className="ml-1 text-[10px] text-purple-500">+{att.overtimeHours}h OT</span>}
-                          </td>
-                        </tr>
-                      )
-                    })
-                  ) : (
-                    <tr>
-                      <td colSpan={6} className="px-4 py-8 text-center text-gray-400 text-xs font-bold">
-                        No attendance records yet.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-              <div className="p-3 border-t border-gray-100 bg-[#f8f9fa]/50 flex justify-center rounded-b-2xl">
-                 <button className="flex items-center gap-2 text-xs font-bold text-indigo-600 hover:text-indigo-700 transition-colors">
-                    <Activity className="w-3.5 h-3.5" /> View Full Attendance History
-                 </button>
+           <div className="flex flex-col md:flex-row gap-5 mb-8">
+              {/* Selected Date Box */}
+              <div className="w-full md:w-[150px] h-[105px] bg-indigo-50/50 rounded-2xl flex flex-col items-center justify-center text-indigo-700 shrink-0 border border-indigo-50">
+                 <span className="text-[15px] font-bold mb-1.5">Day {selectedDayObj?.dayNum}</span>
+                 <span className="text-[13px] font-semibold text-indigo-600">{selectedDayObj?.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })}</span>
               </div>
-            </div>
-         </div>
-      </section>
+
+              {/* Workers list for that day */}
+              <div className="flex-1 space-y-3">
+                 {assignedWorkers.length === 0 ? (
+                   <div className="h-[105px] bg-[#fbfbfc] rounded-2xl border border-gray-50 flex items-center justify-center p-4">
+                     <p className="text-sm text-gray-400 font-medium">No workers assigned.</p>
+                   </div>
+                 ) : (
+                   assignedWorkers.map(aw => {
+                     const w = aw.worker;
+                     const record = attendanceData?.find(a => a.workerId === w.id && new Date(a.date).toDateString() === selectedDate);
+                     const isMarkingThis = markingAttendance[`${w.id}_${selectedDate}`];
+                     
+                     return (
+                       <div key={w.id} className="bg-[#fbfbfc] rounded-[16px] border border-gray-50 p-4 flex items-center justify-between">
+                         <div className="flex items-center gap-4">
+                           <div className="w-12 h-12 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0">
+                             <UserRound className="w-[22px] h-[22px]" />
+                           </div>
+                           <div>
+                             <p className="text-[15px] font-bold text-gray-900">{w.user?.firstName} {w.user?.lastName}</p>
+                             <p className="text-[12px] text-gray-500 font-medium mt-0.5">Worker ID: {w.workerCode}</p>
+                           </div>
+                         </div>
+
+                         <div className="relative">
+                            <button 
+                              disabled={!isClient || isMarkingThis}
+                              onClick={() => { if(isClient) setActiveAttendancePopup(`${w.id}_${selectedDate}`) }}
+                              className={`px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2 transition-all ${
+                                record ? 
+                                  record.status === 'PRESENT' ? 'bg-emerald-50 text-emerald-600' :
+                                  record.status === 'ABSENT' ? 'bg-red-50 text-red-600' :
+                                  'bg-amber-50 text-amber-600'
+                                : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 shadow-sm'
+                              } ${!isClient ? 'cursor-default' : 'hover:scale-[1.02] active:scale-[0.98]'}`}
+                            >
+                              {isMarkingThis ? (
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              ) : record ? (
+                                 <>
+                                   <div className={`w-2 h-2 rounded-full ${record.status === 'PRESENT' ? 'bg-emerald-500' : record.status === 'ABSENT' ? 'bg-red-500' : 'bg-amber-500'}`} />
+                                   {record.status === 'HALF_DAY' ? 'Half Day' : record.status === 'PRESENT' ? 'Present' : 'Absent'}
+                                 </>
+                              ) : (
+                                 <>
+                                   <div className="w-2 h-2 rounded-full bg-gray-300" />
+                                   Mark Status
+                                 </>
+                              )}
+                            </button>
+
+                            {/* Popup menu for marking */}
+                            {isClient && activeAttendancePopup === `${w.id}_${selectedDate}` && (
+                              <div className="absolute right-0 top-full mt-2 z-50 bg-white border border-gray-100 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-2 min-w-[140px]">
+                                {[
+                                  { status: 'PRESENT', label: 'Present', color: 'bg-emerald-500 hover:bg-emerald-600' },
+                                  { status: 'HALF_DAY', label: 'Half Day', color: 'bg-amber-500 hover:bg-amber-600' },
+                                  { status: 'ABSENT', label: 'Absent', color: 'bg-red-500 hover:bg-red-600' },
+                                ].map(opt => (
+                                  <button
+                                    key={opt.status}
+                                    onClick={() => {
+                                      setActiveAttendancePopup(null);
+                                      handleMarkAttendance(w.id, opt.status, new Date(selectedDate));
+                                    }}
+                                    className={`w-full text-left text-[11px] font-bold text-white px-3 py-2 rounded-xl mb-1 transition-colors flex items-center gap-2 ${opt.color}`}
+                                  >
+                                    {opt.label}
+                                  </button>
+                                ))}
+                                <button
+                                  onClick={() => setActiveAttendancePopup(null)}
+                                  className="w-full text-[11px] font-bold text-gray-400 hover:text-gray-600 px-3 py-1.5 text-center mt-1"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            )}
+                         </div>
+                       </div>
+                     )
+                   })
+                 )}
+              </div>
+           </div>
+
+           {/* ATTENDANCE LOG table */}
+           <div className="mt-8">
+              <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-4 pl-1">ATTENDANCE LOG</p>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-[#fbfbfc] text-gray-700 text-[12px] font-semibold border-y border-gray-100">
+                    <tr>
+                      <th className="px-4 py-3.5 font-semibold">Date</th>
+                      <th className="px-4 py-3.5 font-semibold">Worker</th>
+                      <th className="px-4 py-3.5 font-semibold">Status</th>
+                      <th className="px-4 py-3.5 font-semibold">Marked At</th>
+                      <th className="px-4 py-3.5 font-semibold">Check Out</th>
+                      <th className="px-4 py-3.5 font-semibold">Hours Worked</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {attendanceData && attendanceData.length > 0 ? (
+                      attendanceData.map((att) => {
+                        const workerName = `${att.worker?.user?.firstName || ''} ${att.worker?.user?.lastName || ''}`.trim();
+                        return (
+                          <tr key={att.id} className="hover:bg-gray-50/50 transition-colors">
+                            <td className="px-4 py-4 text-gray-900 text-[13px]">{new Date(att.date).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })}</td>
+                            <td className="px-4 py-4 text-gray-900 text-[13px]">{workerName}</td>
+                            <td className="px-4 py-4">
+                              <span className={`inline-flex items-center gap-1.5 text-[12px] font-semibold ${
+                                att.status === 'PRESENT' ? 'text-emerald-600' :
+                                att.status === 'ABSENT' ? 'text-red-600' :
+                                att.status === 'HALF_DAY' ? 'text-amber-600' :
+                                'text-gray-600'
+                              }`}>
+                                <div className={`w-[7px] h-[7px] rounded-full ${att.status === 'PRESENT' ? 'bg-emerald-500' : att.status === 'ABSENT' ? 'bg-red-500' : 'bg-amber-500'}`} />
+                                {att.status === 'HALF_DAY' ? 'Half Day' : att.status === 'PRESENT' ? 'Present' : 'Absent'}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4 text-gray-900 font-medium text-[13px]">
+                              {att.checkInTime ? new Date(att.checkInTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : <span className="text-gray-300">—</span>}
+                            </td>
+                            <td className="px-4 py-4 text-gray-900 font-medium text-[13px]">
+                              {att.checkOutTime ? new Date(att.checkOutTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : <span className="text-gray-400">—</span>}
+                            </td>
+                            <td className="px-4 py-4 text-[13px] font-bold text-gray-900">
+                              {att.totalHours ? `${att.totalHours}h` : '0h 0m'}
+                              {att.overtimeHours > 0 && <span className="ml-1 text-[10px] text-purple-500">+{att.overtimeHours}h OT</span>}
+                            </td>
+                          </tr>
+                        )
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan={6} className="px-4 py-8 text-center text-gray-400 text-xs font-bold">
+                          No attendance records yet.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+                <div className="p-4 border-t border-gray-100 flex justify-center">
+                   <button className="flex items-center gap-2 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                      View Full Attendance History
+                   </button>
+                </div>
+              </div>
+           </div>
+        </section>
+      </div>
       
       {!isClient && (
         <AssignWorkerModal 
