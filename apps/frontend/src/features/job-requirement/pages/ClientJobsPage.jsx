@@ -236,7 +236,7 @@ export default function ClientJobsPage() {
             }}
             className="px-5 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-sm shadow-blue-200 transition-colors flex items-center gap-2 text-sm"
           >
-            <Plus className="w-4 h-4" /> Post a New Job
+            <Plus className="w-4 h-4" /> Create Job
           </button>
         </div>
       </div>
@@ -267,7 +267,7 @@ export default function ClientJobsPage() {
             }}
             className="px-6 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-sm shadow-blue-200 transition-colors flex items-center gap-2 text-sm"
           >
-            <Plus className="w-4 h-4" /> Post a New Job
+            <Plus className="w-4 h-4" /> Create Job
           </button>
         </div>
       ) : (

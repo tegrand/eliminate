@@ -96,6 +96,25 @@ export const updateHiringRequestStatus = async (id, status, user) => {
     if (request.status === "PAYMENT_PENDING" || request.status === "ACTIVE") throw new AppError("Request is already processed", 400);
 
     const updatedRequest = await prisma.$transaction(async (tx) => {
+      // Slot Checking: Prevent accepting if worker already has an active assignment on these dates
+      if (request.targetWorkerId && request.startDate && request.endDate) {
+        const overlappingAssignment = await tx.assignmentWorker.findFirst({
+          where: {
+            workerId: request.targetWorkerId,
+            status: "ACTIVE",
+            assignment: {
+              status: "ACTIVE",
+              startDate: { lte: request.endDate },
+              endDate: { gte: request.startDate }
+            }
+          }
+        });
+
+        if (overlappingAssignment) {
+          throw new AppError("You are already assigned to another job during these dates", 400);
+        }
+      }
+
       const req = await tx.hiringRequest.update({
         where: { id },
         data: { status: "PAYMENT_PENDING" }

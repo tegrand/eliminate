@@ -465,3 +465,41 @@ export const rejectJobInvitation = async (userId, id, user) => {
   
   return hiringRequestService.updateHiringRequestStatus(id, 'REJECTED', user);
 };
+
+export const getWorkerAvailability = async (workerId) => {
+  const worker = await prisma.worker.findUnique({ where: { id: workerId } });
+  if (!worker) throw new AppError("Worker not found", 404);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const activeAssignments = await prisma.assignmentWorker.findMany({
+    where: {
+      workerId,
+      status: "ACTIVE",
+      assignment: {
+        status: "ACTIVE",
+        endDate: { gte: today }
+      }
+    },
+    include: {
+      assignment: {
+        select: {
+          startDate: true,
+          endDate: true,
+          title: true
+        }
+      }
+    }
+  });
+
+  const bookedDates = activeAssignments
+    .filter(a => a.assignment.startDate && a.assignment.endDate)
+    .map(a => ({
+      startDate: a.assignment.startDate,
+      endDate: a.assignment.endDate,
+      title: a.assignment.title
+    }));
+
+  return bookedDates;
+};

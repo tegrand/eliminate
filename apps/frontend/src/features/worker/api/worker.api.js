@@ -9,6 +9,10 @@ export const workerApi = {
     const response = await api.get(`/workers/${id}`);
     return response.data;
   },
+  getWorkerAvailability: async (id) => {
+    const response = await api.get(`/workers/${id}/availability`);
+    return response.data;
+  },
   getMyWorkerProfile: async () => {
     const response = await api.get("/workers/my-profile");
     return response.data;

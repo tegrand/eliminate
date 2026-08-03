@@ -75,3 +75,8 @@ export const rejectJobInvitation = asyncHandler(async (req, res) => {
   const result = await workerService.rejectJobInvitation(req.user.id, req.params.id, req.user);
   return ApiResponse.success(res, "Job invitation rejected", result, 200);
 });
+
+export const getWorkerAvailability = asyncHandler(async (req, res) => {
+  const result = await workerService.getWorkerAvailability(req.params.id);
+  return ApiResponse.success(res, "Worker availability retrieved successfully", result, 200);
+});

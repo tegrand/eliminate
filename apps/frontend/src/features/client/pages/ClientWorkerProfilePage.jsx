@@ -8,10 +8,12 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import ClientHiringModal from "../components/ClientHiringModal";
+import WorkerAvailabilityModal from "../components/WorkerAvailabilityModal";
 
 export default function ClientWorkerProfilePage() {
   const { id } = useParams();
   const [isHireModalOpen, setIsHireModalOpen] = useState(false);
+  const [isAvailabilityModalOpen, setIsAvailabilityModalOpen] = useState(false);
 
   const { data: workerData, isLoading, error } = useQuery({
     queryKey: ["workerForClient", id],
@@ -136,15 +138,20 @@ export default function ClientWorkerProfilePage() {
               </div>
 
               {/* Action Buttons */}
-              <div className="space-y-2 mb-6">
-                <button 
+              <div className="flex flex-col gap-2 pt-4 border-t border-gray-100 mt-2">
+                <button
                   onClick={() => setIsHireModalOpen(true)}
-                  className="w-full py-2 bg-[#0f62fe] hover:bg-blue-700 text-white text-[13px] font-bold rounded-xl flex items-center justify-center gap-2 transition-colors"
+                  className="w-full px-4 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-sm shadow-blue-200"
                 >
-                  <Briefcase className="w-3.5 h-3.5" /> Hire Worker
+                  Hire Now
+                  <ChevronRight className="w-4 h-4" />
                 </button>
-                <button className="w-full py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-[13px] font-bold rounded-xl flex items-center justify-center gap-2 transition-colors shadow-sm">
-                  <MessageSquare className="w-3.5 h-3.5 text-gray-500" /> Send Message
+                <button
+                  onClick={() => setIsAvailabilityModalOpen(true)}
+                  className="w-full px-4 py-2.5 bg-white text-gray-700 font-bold border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 shadow-sm"
+                >
+                  <Calendar className="w-4 h-4 text-gray-400" />
+                  Check Availability
                 </button>
               </div>
 
@@ -305,6 +312,13 @@ export default function ClientWorkerProfilePage() {
         targetRate={worker.expectedDailyWage}
         targetBaseRate={worker.baseExpectedDailyWage}
         targetPlatformFee={worker.platformFee}
+      />
+
+      <WorkerAvailabilityModal
+        isOpen={isAvailabilityModalOpen}
+        onClose={() => setIsAvailabilityModalOpen(false)}
+        workerId={id}
+        workerName={name}
       />
     </div>
   );

@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import { X, Briefcase, Calendar, DollarSign, Loader2, Link, Edit3 } from "lucide-react";
+import { X, Briefcase, DollarSign, Loader2, Link, Edit3 } from "lucide-react";
+import SlotCalendarPicker from "./SlotCalendarPicker";
 import api from "../../../api/axios";
 import { jobRequirementApi } from "../../job-requirement/api/jobRequirement.api";
 
@@ -25,7 +26,7 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
 
   const openJobs = jobsData || [];
 
-  const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm({
+  const { register, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm({
     defaultValues: {
       title: "",
       description: "",
@@ -80,7 +81,7 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
       payload = {
         title: data.title,
         description: data.description,
-        proposedRate: data.proposedRate ? parseFloat(data.proposedRate) : undefined,
+        proposedRate: targetRate ? parseFloat(targetRate) : (data.proposedRate ? parseFloat(data.proposedRate) : undefined),
         startDate: data.startDate ? new Date(data.startDate).toISOString() : undefined,
         endDate: data.endDate ? new Date(data.endDate).toISOString() : undefined,
         notes: data.notes
@@ -201,26 +202,17 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
                   ></textarea>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-gray-400" /> Start Date
-                  </label>
-                  <input 
-                    type="date" 
-                    {...register("startDate")}
-                    className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none"
+                <div className="md:col-span-2">
+                  <SlotCalendarPicker 
+                    workerId={targetWorkerId}
+                    startDate={watch("startDate")}
+                    endDate={watch("endDate")}
+                    onChange={(start, end) => {
+                      setValue("startDate", start, { shouldValidate: true });
+                      setValue("endDate", end, { shouldValidate: true });
+                    }}
                   />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-gray-400" /> End Date (Optional)
-                  </label>
-                  <input 
-                    type="date" 
-                    {...register("endDate")}
-                    className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none"
-                  />
+                  {!watch("startDate") && <p className="text-xs text-orange-500 mt-1">Please select a valid date slot.</p>}
                 </div>
               </div>
             )}

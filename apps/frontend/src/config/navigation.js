@@ -113,6 +113,12 @@ export const NAVIGATION_CONFIG = [
         roles: ["CLIENT"],
       },
       {
+        title: "Assignments",
+        path: ROUTES.ASSIGNMENTS,
+        icon: UserCheck,
+        roles: ["CLIENT"],
+      },
+      {
         title: "My Requests",
         path: ROUTES.CLIENT_REQUESTS,
         icon: Briefcase,

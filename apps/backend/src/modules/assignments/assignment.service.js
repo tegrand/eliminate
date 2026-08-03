@@ -140,6 +140,26 @@ export const assignWorker = async (assignmentId, workerId, user) => {
     if (assignment.agencyId !== agency.id) throw new AppError("Unauthorized", 403);
   }
 
+  // Slot Checking: Prevent assigning if worker already has an active assignment on these dates
+  if (assignment.startDate && assignment.endDate) {
+    const overlappingAssignment = await prisma.assignmentWorker.findFirst({
+      where: {
+        workerId,
+        status: "ACTIVE",
+        assignment: {
+          status: "ACTIVE",
+          startDate: { lte: assignment.endDate },
+          endDate: { gte: assignment.startDate },
+          id: { not: assignmentId }
+        }
+      }
+    });
+
+    if (overlappingAssignment) {
+      throw new AppError("Worker is already assigned to another job during these dates", 400);
+    }
+  }
+
   const existing = await prisma.assignmentWorker.findUnique({
     where: {
       assignmentId_workerId: {

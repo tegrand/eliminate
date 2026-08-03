@@ -229,7 +229,7 @@ export default function ClientJobCreationModal({ isOpen, onClose, mode = "create
               <Briefcase className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900">Post a New Job</h2>
+              <h2 className="text-lg font-bold text-gray-900">Create Job</h2>
               <p className="text-xs text-gray-500">Find the perfect workers for your project.</p>
             </div>
           </div>
