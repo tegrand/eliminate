@@ -153,17 +153,17 @@ export default function AssignmentDetailsPage() {
   const successfulPayments = assignment.hiringRequest?.payments?.filter(p => p.status === 'SUCCESS')?.length || 0;
   const isBalancePaid = successfulPayments >= 2;
 
-  // Calculate days for Work Schedule
+  // Calculate days for Work Schedule — show ALL days from start to end
+  const todayDateStr = new Date().toDateString();
   const scheduleDays = [];
   if (assignment?.startDate) {
     const start = new Date(assignment.startDate);
     const end = assignment.endDate ? new Date(assignment.endDate) : new Date();
-    const clampedEnd = end > new Date() ? new Date() : end;
     
     const cursor = new Date(start);
     cursor.setHours(0, 0, 0, 0);
     let dayNum = 1;
-    while (cursor <= clampedEnd && dayNum <= 60) {
+    while (cursor <= end && dayNum <= 90) {
       scheduleDays.push({ date: new Date(cursor), dayNum });
       cursor.setDate(cursor.getDate() + 1);
       dayNum++;
@@ -302,18 +302,31 @@ export default function AssignmentDetailsPage() {
           <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-3">
              {scheduleDays.map(d => {
                const isSelected = selectedDate === d.date.toDateString();
+               const isToday = d.date.toDateString() === todayDateStr;
+               const isPast = d.date < new Date() && !isToday;
+               const isFuture = d.date > new Date() && !isToday;
                return (
                  <button 
                    key={d.dayNum}
                    onClick={() => setSelectedDate(d.date.toDateString())}
                    className={`flex-shrink-0 flex flex-col items-center justify-center w-[76px] h-[76px] rounded-xl border transition-all ${
-                     isSelected 
-                      ? 'border-blue-300 bg-white shadow-[0_2px_12px_-4px_rgba(59,130,246,0.3)]' 
-                      : 'border-gray-50 bg-[#fbfbfc] hover:border-gray-200'
+                     isSelected && isToday
+                      ? 'border-blue-400 bg-blue-600 shadow-[0_4px_14px_-4px_rgba(59,130,246,0.5)]'
+                      : isSelected
+                      ? 'border-blue-300 bg-white shadow-[0_2px_12px_-4px_rgba(59,130,246,0.3)]'
+                      : isToday
+                      ? 'border-blue-400 bg-blue-600 shadow-[0_4px_14px_-4px_rgba(59,130,246,0.5)]'
+                      : isPast
+                      ? 'border-gray-100 bg-[#fbfbfc] hover:border-gray-200'
+                      : 'border-dashed border-gray-200 bg-white hover:border-blue-200 opacity-60'
                    }`}
                  >
-                    <span className={`text-[13px] font-bold mb-1.5 ${isSelected ? 'text-blue-600' : 'text-gray-400'}`}>Day {d.dayNum}</span>
-                    <span className={`text-[11px] font-semibold ${isSelected ? 'text-blue-500' : 'text-gray-400'}`}>{d.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })}</span>
+                    <span className={`text-[13px] font-bold mb-1.5 ${
+                      isToday ? 'text-white' : isSelected ? 'text-blue-600' : 'text-gray-400'
+                    }`}>Day {d.dayNum}</span>
+                    <span className={`text-[11px] font-semibold ${
+                      isToday ? 'text-blue-100' : isSelected ? 'text-blue-500' : 'text-gray-400'
+                    }`}>{d.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })}</span>
                  </button>
                )
              })}
@@ -327,7 +340,14 @@ export default function AssignmentDetailsPage() {
                 <div className="w-[18px] h-[18px] rounded-full border border-blue-200 flex items-center justify-center flex-shrink-0 text-blue-500 bg-white">
                   <span className="text-[9px] font-bold">i</span>
                 </div>
-                <p className="text-[11px] text-gray-600 font-medium">Day {selectedDayObj?.dayNum || 1} is active. Other days are upcoming.</p>
+                 <p className="text-[11px] text-gray-600 font-medium">
+                   {selectedDayObj?.date.toDateString() === todayDateStr
+                     ? `Day ${selectedDayObj?.dayNum} — Today (Active)`
+                     : selectedDayObj?.date > new Date(todayDateStr)
+                     ? `Day ${selectedDayObj?.dayNum} is upcoming.`
+                     : `Day ${selectedDayObj?.dayNum} — ${selectedDayObj?.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+                   }
+                 </p>
              </div>
           </div>
         </section>
