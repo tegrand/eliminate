@@ -204,7 +204,7 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
 
                 <div className="md:col-span-2">
                   <SlotCalendarPicker 
-                    workerId={targetWorkerId}
+                    workerId={targetType === "WORKER" ? targetId : null}
                     startDate={watch("startDate")}
                     endDate={watch("endDate")}
                     onChange={(start, end) => {
