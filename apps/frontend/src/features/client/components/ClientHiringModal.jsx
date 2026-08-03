@@ -100,8 +100,8 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col overflow-hidden animate-slide-up">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-md animate-fade-in">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-[800px] max-h-[75vh] flex flex-col overflow-hidden animate-slide-up">
         
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-3 border-b border-gray-100 bg-gray-50/50">
@@ -180,81 +180,84 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Project / Job Title *</label>
-                  <input 
-                    type="text" 
-                    {...register("title", { required: hiringMode === "custom" ? "Title is required" : false })}
-                    className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none"
-                    placeholder="e.g. Electrical Wiring for New Office"
-                  />
-                  {errors.title && <span className="text-red-500 text-xs mt-1 block">{errors.title.message}</span>}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">Project / Job Title *</label>
+                    <input 
+                      type="text" 
+                      {...register("title", { required: hiringMode === "custom" ? "Title is required" : false })}
+                      className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none bg-gray-50/50 hover:bg-white"
+                      placeholder="e.g. Electrical Wiring for New Office"
+                    />
+                    {errors.title && <span className="text-red-500 text-xs mt-1 block">{errors.title.message}</span>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">Brief Description</label>
+                    <textarea 
+                      {...register("description")}
+                      rows="3"
+                      className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 resize-none outline-none bg-gray-50/50 hover:bg-white"
+                      placeholder="Describe what needs to be done in a few words..."
+                    ></textarea>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1">Brief Description</label>
-                  <textarea 
-                    {...register("description")}
-                    rows="1"
-                    className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 resize-none outline-none"
-                    placeholder="Describe what needs to be done..."
-                  ></textarea>
-                </div>
-
-                <div className="md:col-span-2">
-                  <SlotCalendarPicker 
-                    workerId={targetType === "WORKER" ? targetId : null}
-                    startDate={watch("startDate")}
-                    endDate={watch("endDate")}
-                    onChange={(start, end) => {
-                      setValue("startDate", start, { shouldValidate: true });
-                      setValue("endDate", end, { shouldValidate: true });
-                    }}
-                  />
-                  {!watch("startDate") && <p className="text-xs text-orange-500 mt-1">Please select a valid date slot.</p>}
+                <div className="space-y-4">
+                  <div>
+                    <SlotCalendarPicker 
+                      workerId={targetType === "WORKER" ? targetId : null}
+                      startDate={watch("startDate")}
+                      endDate={watch("endDate")}
+                      onChange={(start, end) => {
+                        setValue("startDate", start, { shouldValidate: true });
+                        setValue("endDate", end, { shouldValidate: true });
+                      }}
+                    />
+                    {!watch("startDate") && <p className="text-xs text-orange-500 mt-1.5 font-medium">Please select a valid date slot.</p>}
+                  </div>
                 </div>
               </div>
             )}
 
             {/* Common fields (Rate & Notes) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-gray-100">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-4 border-t border-gray-100">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1.5">
-                  <DollarSign className="w-3.5 h-3.5 text-emerald-500" /> Proposed Rate (₹)
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                  <DollarSign className="w-4 h-4 text-emerald-500" /> Proposed Rate (₹)
                 </label>
                 <input 
                   type="number" 
                   min="0"
                   readOnly={!!targetRate}
                   {...register("proposedRate")}
-                  className={`w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 outline-none ${!!targetRate ? 'bg-gray-100 text-gray-600 font-bold cursor-not-allowed' : 'bg-white'}`}
+                  className={`w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 outline-none transition-colors ${!!targetRate ? 'bg-gray-100 text-gray-600 font-bold cursor-not-allowed' : 'bg-gray-50/50 hover:bg-white'}`}
                   placeholder="e.g. 5000"
                 />
                 {targetRate && targetBaseRate && targetPlatformFee && (
-                  <div className="mt-2 text-[11px] font-medium p-2 bg-slate-50 border border-slate-100 rounded-lg text-slate-600 flex flex-col gap-1">
-                    <div className="flex justify-between">
+                  <div className="mt-2 text-xs font-medium p-2.5 bg-slate-50 border border-slate-100 rounded-xl text-slate-600 flex flex-col gap-1.5 shadow-sm">
+                    <div className="flex justify-between items-center">
                       <span>Base Wage:</span>
                       <span>₹{targetBaseRate}</span>
                     </div>
-                    <div className="flex justify-between text-indigo-600">
+                    <div className="flex justify-between items-center text-indigo-600">
                       <span>Platform Fee:</span>
                       <span>+ ₹{targetPlatformFee}</span>
                     </div>
-                    <div className="flex justify-between font-bold text-slate-900 border-t border-slate-200 pt-1 mt-1">
+                    <div className="flex justify-between items-center font-bold text-slate-900 border-t border-slate-200 pt-1.5 mt-0.5">
                       <span>You Pay:</span>
-                      <span>₹{targetRate}</span>
+                      <span className="text-sm">₹{targetRate}</span>
                     </div>
                   </div>
                 )}
               </div>
-
+              
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Additional Notes</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Additional Notes</label>
                 <textarea 
                   {...register("notes")}
-                  rows="1"
-                  className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 resize-none outline-none"
+                  rows={targetRate ? "4" : "3"}
+                  className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 resize-none outline-none bg-gray-50/50 hover:bg-white transition-colors"
                   placeholder="Any special terms or conditions..."
                 ></textarea>
               </div>
