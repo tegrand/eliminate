@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Users, UserRound, Clock3, CalendarCheck, CalendarDays, Activity, UserPlus, Loader2, Building2, CheckCircle, Star } from "lucide-react";
+import { ArrowLeft, Users, UserRound, Clock3, CalendarCheck, CalendarDays, Activity, UserPlus, Loader2, Building2, CheckCircle, Star, CreditCard } from "lucide-react";
 import api from "../../../api/axios";
 import { useAuth } from "../../../hooks/useAuth";
+import { paymentApi } from "../../../api/payment.api";
+import toast from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 import AssignWorkerModal from "../components/AssignWorkerModal";
 import ReviewModal from "../components/ReviewModal";
 
@@ -16,6 +19,8 @@ export default function AssignmentDetailsPage() {
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [reviewTarget, setReviewTarget] = useState(null); // { workerId, agencyId, name }
+  const [isPaying, setIsPaying] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: assignment, isLoading, error } = useQuery({
     queryKey: ["assignment", id],
@@ -69,6 +74,58 @@ export default function AssignmentDetailsPage() {
     setIsReviewModalOpen(true);
   };
 
+  const handlePayBalance = async () => {
+    if (!assignment?.hiringRequestId) return;
+    try {
+      setIsPaying(true);
+      if (!window.Razorpay) {
+        await new Promise((resolve) => {
+          const script = document.createElement("script");
+          script.src = "https://checkout.razorpay.com/v1/checkout.js";
+          script.onload = () => resolve();
+          document.body.appendChild(script);
+        });
+      }
+
+      const { data: orderData } = await paymentApi.createOrder(assignment.hiringRequestId);
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "Tegrand Eliminate",
+        description: "Final Balance Payment",
+        order_id: orderData.id,
+        handler: async function (response) {
+          try {
+            await paymentApi.verifyPayment({
+              orderId: response.razorpay_order_id,
+              paymentId: response.razorpay_payment_id,
+              signature: response.razorpay_signature,
+            });
+            toast.success("Final payment successful!");
+            queryClient.invalidateQueries({ queryKey: ["assignment", id] });
+          } catch (err) {
+            toast.error("Payment verification failed");
+          }
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", function (response) {
+        toast.error(response.error.description);
+      });
+      rzp.open();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Payment initiation failed");
+    } finally {
+      setIsPaying(false);
+    }
+  };
+
+  const successfulPayments = assignment.hiringRequest?.payments?.filter(p => p.status === 'SUCCESS')?.length || 0;
+  const isBalancePaid = successfulPayments >= 2;
+
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 animate-fade-in space-y-6 h-[calc(100vh-4rem)] overflow-y-auto scrollbar-hide">
       
@@ -115,12 +172,24 @@ export default function AssignmentDetailsPage() {
             </>
           )}
           {isClient && assignment.status === 'COMPLETED' && (
-            <button 
-              onClick={() => handleOpenReview(null, assignment.agencyId, assignment.agency?.agencyName || 'Agency')}
-              className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-sm shadow-amber-200 transition-colors flex items-center gap-2"
-            >
-              <Star className="w-4 h-4 fill-current" /> Rate Project
-            </button>
+            <>
+              {!isBalancePaid && (
+                <button 
+                  onClick={handlePayBalance}
+                  disabled={isPaying}
+                  className="bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-300 text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-sm shadow-emerald-200 transition-colors flex items-center gap-2"
+                >
+                  {isPaying ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />}
+                  Pay Balance
+                </button>
+              )}
+              <button 
+                onClick={() => handleOpenReview(null, assignment.agencyId, assignment.agency?.agencyName || 'Agency')}
+                className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-sm shadow-amber-200 transition-colors flex items-center gap-2"
+              >
+                <Star className="w-4 h-4 fill-current" /> Rate Project
+              </button>
+            </>
           )}
         </div>
       </div>

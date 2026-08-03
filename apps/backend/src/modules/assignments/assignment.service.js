@@ -57,6 +57,12 @@ export const getAssignment = async (id, user) => {
         include: {
           worker: { include: { user: { select: { firstName: true, lastName: true, avatar: true } } } }
         }
+      },
+      hiringRequest: {
+        include: {
+          payments: true,
+          jobRequirement: true
+        }
       }
     }
   });

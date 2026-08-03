@@ -3,6 +3,9 @@ import { toast } from "sonner";
 import { dashboardApi } from "../../api/dashboard.api";
 import WorkerTopStatsWidget from "./WorkerTopStatsWidget";
 import DashboardChartsRow from "../charts/DashboardChartsRow";
+import WorkerJobsWidget from "./WorkerJobsWidget";
+import WorkerActivityWidget from "./WorkerActivityWidget";
+import WorkerProfileWidget from "./WorkerProfileWidget";
 import api from "../../../../api/axios";
 
 export default function WorkerDashboard() {
@@ -68,6 +71,22 @@ export default function WorkerDashboard() {
         donutTotal={data.chartData?.donutTotal || 0}
         donutData={data.chartData?.donutData || []}
       />
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <WorkerJobsWidget 
+            activeJob={data.activeJob}
+            upcomingJobs={data.upcomingJobs} 
+          />
+          <WorkerActivityWidget notifications={data.notifications} />
+        </div>
+        <div className="space-y-6">
+          <WorkerProfileWidget 
+            profile={data.profile}
+            onStatusChange={handleStatusChange}
+          />
+        </div>
+      </div>
     </div>
   );
 }
