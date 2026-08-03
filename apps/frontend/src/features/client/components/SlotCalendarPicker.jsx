@@ -180,9 +180,9 @@ export default function SlotCalendarPicker({ workerId, startDate, endDate, onCha
       </button>
 
       {isOpen && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)}></div>
-          <div className="absolute z-50 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 p-3 w-[260px] left-0 animate-fade-in origin-top-left">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm animate-fade-in">
+          <div className="absolute inset-0" onClick={() => setIsOpen(false)}></div>
+          <div className="relative z-10 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 w-[280px] animate-fade-in">
             {isLoading && (
               <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-10 rounded-2xl backdrop-blur-sm">
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
@@ -214,7 +214,7 @@ export default function SlotCalendarPicker({ workerId, startDate, endDate, onCha
               </button>
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
