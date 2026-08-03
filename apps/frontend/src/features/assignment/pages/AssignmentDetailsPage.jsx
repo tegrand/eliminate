@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { ArrowLeft, Users, UserRound, Clock3, CalendarCheck, CalendarDays, Activity, UserPlus, Loader2, Building2, CheckCircle, Star, CreditCard, UserCheck, UserX, Clock } from "lucide-react";
@@ -21,8 +21,17 @@ export default function AssignmentDetailsPage() {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [reviewTarget, setReviewTarget] = useState(null);
   const [isPaying, setIsPaying] = useState(false);
-  const [markingAttendance, setMarkingAttendance] = useState({}); // { workerId: 'PRESENT'|'ABSENT'|'HALF_DAY'|null }
+  const [markingAttendance, setMarkingAttendance] = useState({});
+  const [activeAttendancePopup, setActiveAttendancePopup] = useState(null);
   const queryClient = useQueryClient();
+
+  // Close popup when clicking outside
+  useEffect(() => {
+    if (!activeAttendancePopup) return;
+    const handler = () => setActiveAttendancePopup(null);
+    const timer = setTimeout(() => document.addEventListener('click', handler), 0);
+    return () => { clearTimeout(timer); document.removeEventListener('click', handler); };
+  }, [activeAttendancePopup]);
 
   const { data: assignment, isLoading, error } = useQuery({
     queryKey: ["assignment", id],
@@ -76,16 +85,19 @@ export default function AssignmentDetailsPage() {
     setIsReviewModalOpen(true);
   };
 
-  const handleMarkAttendance = async (workerId, status) => {
-    setMarkingAttendance(prev => ({ ...prev, [workerId]: status }));
+  const handleMarkAttendance = async (workerId, status, date) => {
+    const dateStr = date ? date.toDateString() : new Date().toDateString();
+    const key = `${workerId}_${dateStr}`;
+    setMarkingAttendance(prev => ({ ...prev, [key]: status }));
     try {
-      await assignmentApi.markAttendance(id, { workerId, status });
-      toast.success(`Marked ${status.toLowerCase().replace('_', ' ')} for worker`);
+      const datePayload = date || new Date();
+      await assignmentApi.markAttendance(id, { workerId, status, date: datePayload.toISOString() });
+      toast.success(`Marked ${status.toLowerCase().replace('_', ' ')}`);
       queryClient.invalidateQueries({ queryKey: ["assignmentAttendance", id] });
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to mark attendance");
     } finally {
-      setMarkingAttendance(prev => ({ ...prev, [workerId]: null }));
+      setMarkingAttendance(prev => ({ ...prev, [key]: null }));
     }
   };
 
@@ -288,69 +300,138 @@ export default function AssignmentDetailsPage() {
               </div>
               <div>
                 <h2 className="text-base font-bold text-gray-900">Attendance Tracker</h2>
-                <p className="text-xs text-gray-500">{isClient ? "Mark and view daily attendance for all assigned workers." : "Your recorded attendance for this assignment."}</p>
+                <p className="text-xs text-gray-500">{isClient ? "Click a day box to mark attendance for each worker." : "Your recorded attendance for this assignment."}</p>
               </div>
             </div>
           </div>
 
-          {/* Client: Mark Today's Attendance for Each Worker */}
-          {isClient && assignedWorkers.length > 0 && (
-            <div className="mb-4 p-3 bg-indigo-50 rounded-xl border border-indigo-100">
-              <p className="text-xs font-bold text-indigo-700 uppercase tracking-wider mb-3">Mark Today's Attendance — {new Date().toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
-              <div className="flex flex-col gap-2">
-                {assignedWorkers.map((aw) => {
-                  const w = aw.worker;
-                  const wName = `${w?.user?.firstName || ''} ${w?.user?.lastName || ''}`.trim();
-                  const today = new Date().toDateString();
-                  const todayRecord = attendanceData?.find(a => a.workerId === w?.id && new Date(a.date).toDateString() === today);
-                  const isMarkingThis = markingAttendance[w?.id];
-                  return (
-                    <div key={aw.id} className="flex items-center justify-between gap-3 bg-white px-3 py-2 rounded-lg border border-indigo-100">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-                          <UserRound className="w-4 h-4 text-gray-400" />
-                        </div>
-                        <span className="text-sm font-semibold text-gray-800 truncate">{wName}</span>
-                        {todayRecord && (
-                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider ${
-                            todayRecord.status === 'PRESENT' ? 'bg-emerald-100 text-emerald-700' :
-                            todayRecord.status === 'ABSENT' ? 'bg-red-100 text-red-700' :
-                            todayRecord.status === 'HALF_DAY' ? 'bg-amber-100 text-amber-700' :
-                            'bg-gray-100 text-gray-600'
-                          }`}>{todayRecord.status.replace('_',' ')} • {todayRecord.checkInTime ? new Date(todayRecord.checkInTime).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : ''}</span>
-                        )}
+          {/* Day Grid per Worker */}
+          {assignedWorkers.length > 0 && assignment.startDate && (
+            <div className="mb-5 space-y-3">
+              {assignedWorkers.map((aw) => {
+                const w = aw.worker;
+                const wName = `${w?.user?.firstName || ''} ${w?.user?.lastName || ''}`.trim();
+
+                // Build day list from assignment start to end (or today if ongoing)
+                const startDate = new Date(assignment.startDate);
+                const endDate = assignment.endDate
+                  ? new Date(assignment.endDate)
+                  : new Date();
+                const clampedEnd = endDate > new Date() ? new Date() : endDate;
+
+                const days = [];
+                const cursor = new Date(startDate);
+                cursor.setHours(0, 0, 0, 0);
+                let dayNum = 1;
+                while (cursor <= clampedEnd && dayNum <= 60) {
+                  days.push({ date: new Date(cursor), dayNum });
+                  cursor.setDate(cursor.getDate() + 1);
+                  dayNum++;
+                }
+
+                return (
+                  <div key={aw.id} className="bg-gray-50 rounded-xl p-3 border border-gray-100">
+                    <div className="flex items-center gap-2 mb-2.5">
+                      <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                        <UserRound className="w-3.5 h-3.5 text-indigo-500" />
                       </div>
-                      <div className="flex items-center gap-1.5 flex-shrink-0">
-                        <button
-                          disabled={!!isMarkingThis}
-                          onClick={() => handleMarkAttendance(w.id, 'PRESENT')}
-                          className="flex items-center gap-1 px-2.5 py-1 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white text-xs font-bold rounded-lg transition-colors"
-                        >
-                          {isMarkingThis === 'PRESENT' ? <Loader2 className="w-3 h-3 animate-spin" /> : <UserCheck className="w-3 h-3" />} Present
-                        </button>
-                        <button
-                          disabled={!!isMarkingThis}
-                          onClick={() => handleMarkAttendance(w.id, 'HALF_DAY')}
-                          className="flex items-center gap-1 px-2.5 py-1 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white text-xs font-bold rounded-lg transition-colors"
-                        >
-                          {isMarkingThis === 'HALF_DAY' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Clock className="w-3 h-3" />} Half
-                        </button>
-                        <button
-                          disabled={!!isMarkingThis}
-                          onClick={() => handleMarkAttendance(w.id, 'ABSENT')}
-                          className="flex items-center gap-1 px-2.5 py-1 bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white text-xs font-bold rounded-lg transition-colors"
-                        >
-                          {isMarkingThis === 'ABSENT' ? <Loader2 className="w-3 h-3 animate-spin" /> : <UserX className="w-3 h-3" />} Absent
-                        </button>
-                      </div>
+                      <span className="text-xs font-bold text-gray-800">{wName}</span>
                     </div>
-                  );
-                })}
-              </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {days.map(({ date, dayNum }) => {
+                        const dateStr = date.toDateString();
+                        const record = attendanceData?.find(
+                          a => a.workerId === w?.id && new Date(a.date).toDateString() === dateStr
+                        );
+                        const isMarkingThis = markingAttendance[`${w?.id}_${dateStr}`];
+                        const isToday = date.toDateString() === new Date().toDateString();
+
+                        const bgColor = record
+                          ? record.status === 'PRESENT' ? 'bg-emerald-500 text-white border-emerald-600'
+                          : record.status === 'ABSENT' ? 'bg-red-400 text-white border-red-500'
+                          : record.status === 'HALF_DAY' ? 'bg-amber-400 text-white border-amber-500'
+                          : 'bg-gray-200 text-gray-600 border-gray-300'
+                          : isToday
+                            ? 'bg-indigo-100 text-indigo-700 border-indigo-300 border-dashed'
+                            : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300 hover:bg-indigo-50';
+
+                        return (
+                          <div key={dayNum} className="relative">
+                            <button
+                              disabled={isMarkingThis || (!isClient && !record)}
+                              onClick={() => {
+                                if (!isClient) return;
+                                setActiveAttendancePopup(prev =>
+                                  prev === `${w.id}_${dateStr}` ? null : `${w.id}_${dateStr}`
+                                );
+                              }}
+                              title={record ? `${record.status.replace('_',' ')} ${record.checkInTime ? '• ' + new Date(record.checkInTime).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : ''}` : `Day ${dayNum} — ${date.toLocaleDateString('en-IN',{day:'numeric',month:'short'})}`}
+                              className={`w-10 h-10 rounded-lg border text-[10px] font-bold flex flex-col items-center justify-center transition-all ${bgColor} ${isMarkingThis ? 'opacity-60' : ''} ${isClient && !record ? 'cursor-pointer' : record ? 'cursor-pointer' : 'cursor-default'}`}
+                            >
+                              {isMarkingThis ? (
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                              ) : (
+                                <>
+                                  <span className="leading-none">{dayNum}</span>
+                                  {record && (
+                                    <span className="text-[8px] leading-none opacity-80 mt-0.5">
+                                      {record.status === 'PRESENT' ? 'P' : record.status === 'ABSENT' ? 'A' : 'H'}
+                                    </span>
+                                  )}
+                                </>
+                              )}
+                            </button>
+
+                            {/* Popup for status selection */}
+                            {isClient && activeAttendancePopup === `${w.id}_${dateStr}` && (
+                              <div className="absolute z-50 top-12 left-0 bg-white border border-gray-200 rounded-xl shadow-xl p-2 min-w-[140px]">
+                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider px-1 mb-1.5">
+                                  Day {dayNum} — {date.toLocaleDateString('en-IN',{day:'numeric',month:'short'})}
+                                </p>
+                                {[
+                                  { status: 'PRESENT', label: 'Present', color: 'bg-emerald-500 hover:bg-emerald-600' },
+                                  { status: 'HALF_DAY', label: 'Half Day', color: 'bg-amber-500 hover:bg-amber-600' },
+                                  { status: 'ABSENT', label: 'Absent', color: 'bg-red-500 hover:bg-red-600' },
+                                ].map(opt => (
+                                  <button
+                                    key={opt.status}
+                                    onClick={() => {
+                                      setActiveAttendancePopup(null);
+                                      handleMarkAttendance(w.id, opt.status, date);
+                                    }}
+                                    className={`w-full text-left text-xs font-bold text-white px-2.5 py-1.5 rounded-lg mb-1 transition-colors ${opt.color}`}
+                                  >
+                                    {opt.label}
+                                  </button>
+                                ))}
+                                <button
+                                  onClick={() => setActiveAttendancePopup(null)}
+                                  className="w-full text-xs text-gray-400 hover:text-gray-600 px-2.5 py-1 text-left"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {/* Legend */}
+                    <div className="flex items-center gap-3 mt-2">
+                      <span className="flex items-center gap-1 text-[10px] text-gray-400"><span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block" />Present</span>
+                      <span className="flex items-center gap-1 text-[10px] text-gray-400"><span className="w-2.5 h-2.5 rounded-sm bg-amber-400 inline-block" />Half Day</span>
+                      <span className="flex items-center gap-1 text-[10px] text-gray-400"><span className="w-2.5 h-2.5 rounded-sm bg-red-400 inline-block" />Absent</span>
+                      <span className="flex items-center gap-1 text-[10px] text-gray-400"><span className="w-2.5 h-2.5 rounded-sm border border-dashed border-indigo-400 inline-block" />Today</span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
 
+          {/* History Table */}
           <div className="overflow-x-auto">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Attendance Log</p>
             <table className="w-full text-sm text-left">
               <thead className="bg-gray-50 text-gray-600 text-xs font-semibold border-b border-gray-200">
                 <tr>
@@ -395,8 +476,8 @@ export default function AssignmentDetailsPage() {
                   })
                 ) : (
                   <tr>
-                    <td colSpan={6} className="px-3 py-8 text-center text-gray-400 text-xs">
-                      No attendance records yet. {isClient ? "Use the quick mark buttons above to record today's attendance." : "Your agency/client will mark your attendance here."}
+                    <td colSpan={6} className="px-3 py-6 text-center text-gray-400 text-xs">
+                      No attendance records yet. {isClient ? "Click a day box above to mark attendance." : "Your client will mark your attendance here."}
                     </td>
                   </tr>
                 )}
@@ -404,6 +485,7 @@ export default function AssignmentDetailsPage() {
             </table>
           </div>
         </section>
+
 
 
         {/* Assigned Workers */}
