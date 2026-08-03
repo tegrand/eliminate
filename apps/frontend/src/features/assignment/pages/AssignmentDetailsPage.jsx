@@ -292,203 +292,186 @@ export default function AssignmentDetailsPage() {
         </section>
 
         {/* Attendance (Full width) */}
-        <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm lg:col-span-3">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-                <Clock3 className="h-4 w-4" />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-gray-900">Attendance Tracker</h2>
-                <p className="text-xs text-gray-500">{isClient ? "Click a day box to mark attendance for each worker." : "Your recorded attendance for this assignment."}</p>
-              </div>
+        <section className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm lg:col-span-3">
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="h-7 w-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+              <Clock3 className="h-3.5 w-3.5" />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-gray-900">Attendance Tracker</h2>
+              <p className="text-[11px] text-gray-400">{isClient ? "Click each day to mark attendance. Next day unlocks after previous is marked." : "Your daily attendance for this assignment."}</p>
             </div>
           </div>
 
-          {/* Day Grid per Worker */}
-          {assignedWorkers.length > 0 && assignment.startDate && (
-            <div className="mb-5 space-y-3">
+          {assignedWorkers.length > 0 && assignment.startDate ? (
+            <div className="space-y-2">
               {assignedWorkers.map((aw) => {
                 const w = aw.worker;
                 const wName = `${w?.user?.firstName || ''} ${w?.user?.lastName || ''}`.trim();
+                const workerRecords = attendanceData?.filter(a => a.workerId === w?.id) || [];
 
-                // Build day list from assignment start to end (or today if ongoing)
+                // Build days up to today only
                 const startDate = new Date(assignment.startDate);
-                const endDate = assignment.endDate
-                  ? new Date(assignment.endDate)
-                  : new Date();
-                const clampedEnd = endDate > new Date() ? new Date() : endDate;
+                startDate.setHours(0, 0, 0, 0);
+                const endDate = assignment.endDate ? new Date(assignment.endDate) : new Date();
+                const today = new Date();
+                today.setHours(23, 59, 59, 999);
+                const clampedEnd = endDate > today ? today : endDate;
 
                 const days = [];
                 const cursor = new Date(startDate);
-                cursor.setHours(0, 0, 0, 0);
                 let dayNum = 1;
-                while (cursor <= clampedEnd && dayNum <= 60) {
+                while (cursor <= clampedEnd && dayNum <= 90) {
                   days.push({ date: new Date(cursor), dayNum });
                   cursor.setDate(cursor.getDate() + 1);
                   dayNum++;
                 }
 
+                // Progressive unlock: day N is visible only if day N-1 is marked (or it's day 1)
+                const getRecord = (date) => workerRecords.find(
+                  a => new Date(a.date).toDateString() === date.toDateString()
+                );
+
+                const visibleDays = days.filter(({ date, dayNum }) => {
+                  if (dayNum === 1) return true;
+                  const prevDay = days[dayNum - 2];
+                  return !!getRecord(prevDay.date);
+                });
+
                 return (
-                  <div key={aw.id} className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-                    <div className="flex items-center gap-2 mb-2.5">
-                      <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                        <UserRound className="w-3.5 h-3.5 text-indigo-500" />
+                  <div key={aw.id} className="border border-gray-100 rounded-xl overflow-hidden">
+                    {/* Worker row with inline day boxes */}
+                    <div className="flex items-center gap-2 px-3 py-2 bg-gray-50">
+                      {/* Worker name — fixed width */}
+                      <div className="flex items-center gap-1.5 min-w-[120px] max-w-[120px]">
+                        <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                          <UserRound className="w-3 h-3 text-indigo-500" />
+                        </div>
+                        <span className="text-[11px] font-bold text-gray-700 truncate">{wName}</span>
                       </div>
-                      <span className="text-xs font-bold text-gray-800">{wName}</span>
+
+                      {/* Day boxes */}
+                      <div className="flex items-center gap-1 flex-wrap">
+                        {visibleDays.map(({ date, dayNum }) => {
+                          const dateStr = date.toDateString();
+                          const record = getRecord(date);
+                          const isMarkingThis = markingAttendance[`${w?.id}_${dateStr}`];
+                          const isToday = date.toDateString() === new Date().toDateString();
+
+                          const boxStyle = record
+                            ? record.status === 'PRESENT' ? 'bg-emerald-500 text-white border-emerald-500'
+                            : record.status === 'ABSENT' ? 'bg-red-400 text-white border-red-400'
+                            : 'bg-amber-400 text-white border-amber-400'
+                            : isToday
+                              ? 'bg-indigo-50 text-indigo-600 border-indigo-300 border-dashed'
+                              : 'bg-white text-gray-400 border-gray-200 hover:border-indigo-300 hover:bg-indigo-50';
+
+                          return (
+                            <div key={dayNum} className="relative">
+                              <button
+                                disabled={!!isMarkingThis || !isClient}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (!isClient) return;
+                                  setActiveAttendancePopup(prev =>
+                                    prev === `${w.id}_${dateStr}` ? null : `${w.id}_${dateStr}`
+                                  );
+                                }}
+                                title={`Day ${dayNum} — ${date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}${record ? ` • ${record.status.replace('_', ' ')}` : ''}`}
+                                className={`w-8 h-8 rounded-md border text-[9px] font-bold flex flex-col items-center justify-center transition-all ${boxStyle} ${isClient ? 'cursor-pointer' : 'cursor-default'}`}
+                              >
+                                {isMarkingThis ? (
+                                  <Loader2 className="w-2.5 h-2.5 animate-spin" />
+                                ) : (
+                                  <>
+                                    <span className="leading-none text-[10px]">{dayNum}</span>
+                                    {record && (
+                                      <span className="text-[7px] leading-none opacity-90">
+                                        {record.status === 'PRESENT' ? 'P' : record.status === 'ABSENT' ? 'A' : 'H'}
+                                      </span>
+                                    )}
+                                  </>
+                                )}
+                              </button>
+
+                              {/* Status popup */}
+                              {isClient && activeAttendancePopup === `${w.id}_${dateStr}` && (
+                                <div
+                                  className="absolute z-50 top-10 left-0 bg-white border border-gray-200 rounded-xl shadow-xl p-2 min-w-[130px]"
+                                  onClick={e => e.stopPropagation()}
+                                >
+                                  <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wider px-1 mb-1.5">
+                                    Day {dayNum} · {date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                                  </p>
+                                  {[
+                                    { status: 'PRESENT', label: '✓ Present', color: 'bg-emerald-500 hover:bg-emerald-600' },
+                                    { status: 'HALF_DAY', label: '½ Half Day', color: 'bg-amber-500 hover:bg-amber-600' },
+                                    { status: 'ABSENT', label: '✕ Absent', color: 'bg-red-500 hover:bg-red-600' },
+                                  ].map(opt => (
+                                    <button
+                                      key={opt.status}
+                                      onClick={() => {
+                                        setActiveAttendancePopup(null);
+                                        handleMarkAttendance(w.id, opt.status, date);
+                                      }}
+                                      className={`w-full text-left text-[11px] font-bold text-white px-2.5 py-1.5 rounded-lg mb-1 last:mb-0 transition-colors ${opt.color}`}
+                                    >
+                                      {opt.label}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+
+                        {/* Locked upcoming days indicator */}
+                        {days.length > visibleDays.length && (
+                          <span className="text-[10px] text-gray-300 font-medium px-1">
+                            +{days.length - visibleDays.length} locked
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {days.map(({ date, dayNum }) => {
-                        const dateStr = date.toDateString();
-                        const record = attendanceData?.find(
-                          a => a.workerId === w?.id && new Date(a.date).toDateString() === dateStr
-                        );
-                        const isMarkingThis = markingAttendance[`${w?.id}_${dateStr}`];
-                        const isToday = date.toDateString() === new Date().toDateString();
 
-                        const bgColor = record
-                          ? record.status === 'PRESENT' ? 'bg-emerald-500 text-white border-emerald-600'
-                          : record.status === 'ABSENT' ? 'bg-red-400 text-white border-red-500'
-                          : record.status === 'HALF_DAY' ? 'bg-amber-400 text-white border-amber-500'
-                          : 'bg-gray-200 text-gray-600 border-gray-300'
-                          : isToday
-                            ? 'bg-indigo-100 text-indigo-700 border-indigo-300 border-dashed'
-                            : 'bg-white text-gray-500 border-gray-200 hover:border-indigo-300 hover:bg-indigo-50';
-
-                        return (
-                          <div key={dayNum} className="relative">
-                            <button
-                              disabled={isMarkingThis || (!isClient && !record)}
-                              onClick={() => {
-                                if (!isClient) return;
-                                setActiveAttendancePopup(prev =>
-                                  prev === `${w.id}_${dateStr}` ? null : `${w.id}_${dateStr}`
-                                );
-                              }}
-                              title={record ? `${record.status.replace('_',' ')} ${record.checkInTime ? '• ' + new Date(record.checkInTime).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : ''}` : `Day ${dayNum} — ${date.toLocaleDateString('en-IN',{day:'numeric',month:'short'})}`}
-                              className={`w-10 h-10 rounded-lg border text-[10px] font-bold flex flex-col items-center justify-center transition-all ${bgColor} ${isMarkingThis ? 'opacity-60' : ''} ${isClient && !record ? 'cursor-pointer' : record ? 'cursor-pointer' : 'cursor-default'}`}
-                            >
-                              {isMarkingThis ? (
-                                <Loader2 className="w-3 h-3 animate-spin" />
-                              ) : (
-                                <>
-                                  <span className="leading-none">{dayNum}</span>
-                                  {record && (
-                                    <span className="text-[8px] leading-none opacity-80 mt-0.5">
-                                      {record.status === 'PRESENT' ? 'P' : record.status === 'ABSENT' ? 'A' : 'H'}
+                    {/* Attendance results — directly below this worker's row */}
+                    {workerRecords.length > 0 && (
+                      <div className="px-3 py-2 bg-white border-t border-gray-50">
+                        <div className="flex flex-wrap gap-x-3 gap-y-1">
+                          {workerRecords
+                            .sort((a, b) => new Date(a.date) - new Date(b.date))
+                            .map((rec) => {
+                              const dNum = Math.round((new Date(rec.date) - new Date(assignment.startDate)) / (1000 * 60 * 60 * 24)) + 1;
+                              return (
+                                <span key={rec.id} className="flex items-center gap-1 text-[10px]">
+                                  <span className={`font-bold px-1.5 py-0.5 rounded ${
+                                    rec.status === 'PRESENT' ? 'bg-emerald-100 text-emerald-700' :
+                                    rec.status === 'ABSENT' ? 'bg-red-100 text-red-700' :
+                                    'bg-amber-100 text-amber-700'
+                                  }`}>Day {dNum}</span>
+                                  <span className="text-gray-400">{rec.status.replace('_', ' ')}</span>
+                                  {rec.checkInTime && (
+                                    <span className="text-gray-300 font-mono">
+                                      {new Date(rec.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </span>
                                   )}
-                                </>
-                              )}
-                            </button>
-
-                            {/* Popup for status selection */}
-                            {isClient && activeAttendancePopup === `${w.id}_${dateStr}` && (
-                              <div className="absolute z-50 top-12 left-0 bg-white border border-gray-200 rounded-xl shadow-xl p-2 min-w-[140px]">
-                                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider px-1 mb-1.5">
-                                  Day {dayNum} — {date.toLocaleDateString('en-IN',{day:'numeric',month:'short'})}
-                                </p>
-                                {[
-                                  { status: 'PRESENT', label: 'Present', color: 'bg-emerald-500 hover:bg-emerald-600' },
-                                  { status: 'HALF_DAY', label: 'Half Day', color: 'bg-amber-500 hover:bg-amber-600' },
-                                  { status: 'ABSENT', label: 'Absent', color: 'bg-red-500 hover:bg-red-600' },
-                                ].map(opt => (
-                                  <button
-                                    key={opt.status}
-                                    onClick={() => {
-                                      setActiveAttendancePopup(null);
-                                      handleMarkAttendance(w.id, opt.status, date);
-                                    }}
-                                    className={`w-full text-left text-xs font-bold text-white px-2.5 py-1.5 rounded-lg mb-1 transition-colors ${opt.color}`}
-                                  >
-                                    {opt.label}
-                                  </button>
-                                ))}
-                                <button
-                                  onClick={() => setActiveAttendancePopup(null)}
-                                  className="w-full text-xs text-gray-400 hover:text-gray-600 px-2.5 py-1 text-left"
-                                >
-                                  Cancel
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                    {/* Legend */}
-                    <div className="flex items-center gap-3 mt-2">
-                      <span className="flex items-center gap-1 text-[10px] text-gray-400"><span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block" />Present</span>
-                      <span className="flex items-center gap-1 text-[10px] text-gray-400"><span className="w-2.5 h-2.5 rounded-sm bg-amber-400 inline-block" />Half Day</span>
-                      <span className="flex items-center gap-1 text-[10px] text-gray-400"><span className="w-2.5 h-2.5 rounded-sm bg-red-400 inline-block" />Absent</span>
-                      <span className="flex items-center gap-1 text-[10px] text-gray-400"><span className="w-2.5 h-2.5 rounded-sm border border-dashed border-indigo-400 inline-block" />Today</span>
-                    </div>
+                                </span>
+                              );
+                            })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
             </div>
+          ) : (
+            <p className="text-center text-xs text-gray-400 py-4">No workers assigned yet.</p>
           )}
-
-          {/* History Table */}
-          <div className="overflow-x-auto">
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Attendance Log</p>
-            <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 text-gray-600 text-xs font-semibold border-b border-gray-200">
-                <tr>
-                  <th className="px-3 py-2.5">Date</th>
-                  <th className="px-3 py-2.5">Worker</th>
-                  <th className="px-3 py-2.5">Status</th>
-                  <th className="px-3 py-2.5">Marked At</th>
-                  <th className="px-3 py-2.5">Check Out</th>
-                  <th className="px-3 py-2.5">Hours</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {attendanceData && attendanceData.length > 0 ? (
-                  attendanceData.map((att) => {
-                    const workerName = `${att.worker?.user?.firstName || ''} ${att.worker?.user?.lastName || ''}`.trim();
-                    return (
-                      <tr key={att.id} className="hover:bg-gray-50">
-                        <td className="px-3 py-2.5 font-medium text-gray-900 text-xs">{new Date(att.date).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'2-digit'})}</td>
-                        <td className="px-3 py-2.5 text-gray-700 text-xs font-medium">{workerName}</td>
-                        <td className="px-3 py-2.5">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            att.status === 'PRESENT' ? 'bg-emerald-100 text-emerald-700' :
-                            att.status === 'ABSENT' ? 'bg-red-100 text-red-700' :
-                            att.status === 'HALF_DAY' ? 'bg-amber-100 text-amber-700' :
-                            'bg-gray-100 text-gray-700'
-                          }`}>
-                            {att.status.replace("_", " ")}
-                          </span>
-                        </td>
-                        <td className="px-3 py-2.5 text-gray-500 font-mono text-xs">
-                          {att.checkInTime ? new Date(att.checkInTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : <span className="text-gray-300">—</span>}
-                        </td>
-                        <td className="px-3 py-2.5 text-gray-500 font-mono text-xs">
-                          {att.checkOutTime ? new Date(att.checkOutTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : <span className="text-gray-300">—</span>}
-                        </td>
-                        <td className="px-3 py-2.5 text-xs font-medium text-gray-700">
-                          {att.totalHours ? `${att.totalHours}h` : '-'}
-                          {att.overtimeHours > 0 && <span className="ml-1 text-[10px] text-purple-600">+{att.overtimeHours}h OT</span>}
-                        </td>
-                      </tr>
-                    )
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan={6} className="px-3 py-6 text-center text-gray-400 text-xs">
-                      No attendance records yet. {isClient ? "Click a day box above to mark attendance." : "Your client will mark your attendance here."}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
         </section>
 
-
-
         {/* Assigned Workers */}
+
         <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm lg:col-span-3">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
