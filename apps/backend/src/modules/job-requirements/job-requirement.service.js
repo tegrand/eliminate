@@ -19,6 +19,7 @@ const jobRequirementSelect = {
   salaryAmount: true,
   priority: true,
   status: true,
+  assignedCount: true,
   notes: true,
   createdAt: true,
   updatedAt: true,
@@ -157,6 +158,17 @@ export const updateJobRequirement = async (id, data) => {
 
   if (!existing) throw new AppError("Job requirement not found", 404);
 
+  if (existing.startDate) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const startDate = new Date(existing.startDate);
+    startDate.setHours(0, 0, 0, 0);
+
+    if (startDate <= today) {
+      throw new AppError("Cannot edit a job that has already started", 400);
+    }
+  }
+
   // Validate relationships if they are being updated
   await validateRelations(null, data.categoryId, data.locationId);
 
@@ -187,6 +199,17 @@ export const deleteJobRequirement = async (id) => {
   });
 
   if (!existing) throw new AppError("Job requirement not found", 404);
+
+  if (existing.startDate) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const startDate = new Date(existing.startDate);
+    startDate.setHours(0, 0, 0, 0);
+
+    if (startDate <= today) {
+      throw new AppError("Cannot delete a job that has already started", 400);
+    }
+  }
 
   await prisma.jobRequirement.update({
     where: { id },

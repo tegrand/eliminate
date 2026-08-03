@@ -11,7 +11,6 @@ import {
   CreditCard,
   FileText,
   Bell,
-  Search,
   DollarSign,
   UserCircle,
   Briefcase,
@@ -53,12 +52,7 @@ export const NAVIGATION_CONFIG = [
         icon: Bell,
         roles: ["WORKER"],
       },
-      {
-        title: "Find Work",
-        path: ROUTES.FIND_WORK,
-        icon: Search,
-        roles: ["WORKER"],
-      },
+
       {
         title: "My Jobs",
         path: ROUTES.MY_JOBS,

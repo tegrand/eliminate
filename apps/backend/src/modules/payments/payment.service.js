@@ -17,7 +17,17 @@ export const createOrder = async (hiringRequestId, userId) => {
   if (hiringRequest.client.userId !== userId) throw new Error("Unauthorized");
   if (!hiringRequest.proposedRate) throw new Error("Proposed rate is not set");
 
-  const amountInPaise = Math.round(parseFloat(hiringRequest.proposedRate) * 100);
+  // Check existing transactions to determine if this is advance or final payment
+  const existingTransactions = await prisma.paymentTransaction.findMany({
+    where: { hiringRequestId, status: "SUCCESS" }
+  });
+
+  const isAdvancePayment = existingTransactions.length === 0;
+  
+  // 30% for advance, 70% for final payment
+  const multiplier = isAdvancePayment ? 0.3 : 0.7;
+  const amountToPay = parseFloat(hiringRequest.proposedRate) * multiplier;
+  const amountInPaise = Math.round(amountToPay * 100);
 
   const options = {
     amount: amountInPaise,
@@ -31,7 +41,7 @@ export const createOrder = async (hiringRequestId, userId) => {
   await prisma.paymentTransaction.create({
     data: {
       orderId: order.id,
-      amount: hiringRequest.proposedRate,
+      amount: amountToPay,
       hiringRequestId: hiringRequest.id,
       status: "PENDING"
     }
@@ -69,36 +79,63 @@ export const verifyPayment = async (orderId, paymentId, signature) => {
     }
   });
 
-  // Update HiringRequest to ACTIVE
-  const updatedReq = await prisma.hiringRequest.update({
-    where: { id: transaction.hiringRequestId },
-    data: { status: "ACTIVE" }
+  // Check how many successful transactions this hiring request has NOW (including the one we just marked)
+  const successfulTxCount = await prisma.paymentTransaction.count({
+    where: { hiringRequestId: transaction.hiringRequestId, status: "SUCCESS" }
   });
 
-  // Create Assignment
-  const newAssignment = await prisma.assignment.create({
-    data: {
-      assignmentCode: `ASN-${Date.now().toString().slice(-6)}`,
-      hiringRequestId: updatedReq.id,
-      clientId: updatedReq.clientId,
-      agencyId: updatedReq.targetAgencyId || undefined,
-      title: updatedReq.title,
-      description: updatedReq.description,
-      agreedRate: updatedReq.proposedRate,
-      startDate: updatedReq.startDate,
-      endDate: updatedReq.endDate,
-      status: "ACTIVE"
-    }
-  });
+  if (successfulTxCount === 1) {
+    // First payment (Advance) completed -> ACTIVE
+    const updatedReq = await prisma.hiringRequest.update({
+      where: { id: transaction.hiringRequestId },
+      data: { status: "ACTIVE" }
+    });
 
-  // Assign worker
-  if (updatedReq.targetWorkerId) {
-    await prisma.assignmentWorker.create({
+    // Create Assignment
+    const newAssignment = await prisma.assignment.create({
       data: {
-        assignmentId: newAssignment.id,
-        workerId: updatedReq.targetWorkerId,
+        assignmentCode: `ASN-${Date.now().toString().slice(-6)}`,
+        hiringRequestId: updatedReq.id,
+        clientId: updatedReq.clientId,
+        agencyId: updatedReq.targetAgencyId || undefined,
+        title: updatedReq.title,
+        description: updatedReq.description,
+        agreedRate: updatedReq.proposedRate,
+        startDate: updatedReq.startDate,
+        endDate: updatedReq.endDate,
         status: "ACTIVE"
       }
+    });
+
+    // Assign worker
+    if (updatedReq.targetWorkerId) {
+      await prisma.assignmentWorker.create({
+        data: {
+          assignmentId: newAssignment.id,
+          workerId: updatedReq.targetWorkerId,
+          status: "ACTIVE"
+        }
+      });
+
+      // Increment assigned count on JobRequirement
+      if (updatedReq.jobRequirementId) {
+        await prisma.jobRequirement.update({
+          where: { id: updatedReq.jobRequirementId },
+          data: { assignedCount: { increment: 1 } }
+        });
+      }
+    }
+  } else {
+    // Second payment (Final) completed -> COMPLETED
+    await prisma.hiringRequest.update({
+      where: { id: transaction.hiringRequestId },
+      data: { status: "COMPLETED" }
+    });
+    
+    // Also mark Assignment as completed
+    await prisma.assignment.updateMany({
+      where: { hiringRequestId: transaction.hiringRequestId },
+      data: { status: "COMPLETED" }
     });
   }
 
@@ -137,34 +174,61 @@ export const processWebhook = async (rawBody, signature) => {
         }
       });
 
-      const updatedReq = await prisma.hiringRequest.update({
-        where: { id: transaction.hiringRequestId },
-        data: { status: "ACTIVE" }
+      // Check how many successful transactions this hiring request has NOW
+      const successfulTxCount = await prisma.paymentTransaction.count({
+        where: { hiringRequestId: transaction.hiringRequestId, status: "SUCCESS" }
       });
 
-      // Create Assignment
-      const newAssignment = await prisma.assignment.create({
-        data: {
-          assignmentCode: `ASN-${Date.now().toString().slice(-6)}`,
-          hiringRequestId: updatedReq.id,
-          clientId: updatedReq.clientId,
-          agencyId: updatedReq.targetAgencyId || undefined,
-          title: updatedReq.title,
-          description: updatedReq.description,
-          agreedRate: updatedReq.proposedRate,
-          startDate: updatedReq.startDate,
-          endDate: updatedReq.endDate,
-          status: "ACTIVE"
-        }
-      });
+      if (successfulTxCount === 1) {
+        // First payment (Advance)
+        const updatedReq = await prisma.hiringRequest.update({
+          where: { id: transaction.hiringRequestId },
+          data: { status: "ACTIVE" }
+        });
 
-      if (updatedReq.targetWorkerId) {
-        await prisma.assignmentWorker.create({
+        // Create Assignment
+        const newAssignment = await prisma.assignment.create({
           data: {
-            assignmentId: newAssignment.id,
-            workerId: updatedReq.targetWorkerId,
+            assignmentCode: `ASN-${Date.now().toString().slice(-6)}`,
+            hiringRequestId: updatedReq.id,
+            clientId: updatedReq.clientId,
+            agencyId: updatedReq.targetAgencyId || undefined,
+            title: updatedReq.title,
+            description: updatedReq.description,
+            agreedRate: updatedReq.proposedRate,
+            startDate: updatedReq.startDate,
+            endDate: updatedReq.endDate,
             status: "ACTIVE"
           }
+        });
+
+        if (updatedReq.targetWorkerId) {
+          await prisma.assignmentWorker.create({
+            data: {
+              assignmentId: newAssignment.id,
+              workerId: updatedReq.targetWorkerId,
+              status: "ACTIVE"
+            }
+          });
+
+          // Increment assigned count on JobRequirement
+          if (updatedReq.jobRequirementId) {
+            await prisma.jobRequirement.update({
+              where: { id: updatedReq.jobRequirementId },
+              data: { assignedCount: { increment: 1 } }
+            });
+          }
+        }
+      } else {
+        // Final payment
+        await prisma.hiringRequest.update({
+          where: { id: transaction.hiringRequestId },
+          data: { status: "COMPLETED" }
+        });
+        
+        await prisma.assignment.updateMany({
+          where: { hiringRequestId: transaction.hiringRequestId },
+          data: { status: "COMPLETED" }
         });
       }
     }

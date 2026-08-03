@@ -319,10 +319,16 @@ export default function WorkerInvitationsPage() {
                     </div>
                   )}
                   {selectedInvite.jobRequirement?.requiredWorkers && (
-                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
-                      <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Required Workers</p>
-                      <p className="font-bold text-slate-900">{selectedInvite.jobRequirement.requiredWorkers}</p>
-                    </div>
+                    <>
+                      <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Required Workers</p>
+                        <p className="font-bold text-slate-900">{selectedInvite.jobRequirement.requiredWorkers}</p>
+                      </div>
+                      <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">
+                        <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Assigned Workers</p>
+                        <p className="font-bold text-slate-900">{selectedInvite.jobRequirement.assignedCount || 0}</p>
+                      </div>
+                    </>
                   )}
                   {selectedInvite.jobRequirement?.shift && (
                     <div className="bg-slate-50 p-3 rounded-lg border border-slate-100">

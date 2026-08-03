@@ -262,7 +262,15 @@ export default function ClientRequestsPage() {
 
                     {/* Right: Status & Action */}
                     <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4 sm:gap-6 border-t border-gray-100 sm:border-0 pt-4 sm:pt-0 mt-2 sm:mt-0">
-                      {getStatusBadge(req.status)}
+                      
+                      <div className="flex flex-col items-center sm:items-end gap-2">
+                        {req.status === 'PAYMENT_PENDING' && (
+                          <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-100 whitespace-nowrap">
+                            Advance (30%): ₹{Math.round(parseFloat(req.proposedRate) * 0.3)}
+                          </span>
+                        )}
+                        {getStatusBadge(req.status)}
+                      </div>
                       
                       {req.status === 'PAYMENT_PENDING' && (
                         <button 
@@ -271,9 +279,9 @@ export default function ClientRequestsPage() {
                             handlePayment(req.id);
                           }}
                           disabled={loading}
-                          className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50"
+                          className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50 w-full sm:w-auto justify-center"
                         >
-                          <IndianRupee className="w-4 h-4" /> Pay Now
+                          <IndianRupee className="w-4 h-4" /> Pay Advance
                         </button>
                       )}
 

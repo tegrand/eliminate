@@ -30,7 +30,6 @@ import WorkerDetailsPage from "../features/worker/pages/WorkerDetailsPage";
 
 import WorkerSettingsPage from "../features/worker/pages/WorkerSettingsPage";
 import WorkerInvitationsPage from "../features/worker/pages/WorkerInvitationsPage";
-import WorkerMarketplacePage from "../features/worker/pages/WorkerMarketplacePage";
 import WorkerAssignmentsPage from "../features/worker/pages/WorkerAssignmentsPage";
 import WorkerAttendancePage from "../features/worker/pages/WorkerAttendancePage";
 import WorkerNotificationsPage from "../features/worker/pages/WorkerNotificationsPage";
@@ -126,7 +125,6 @@ const AppRouter = () => {
             <Route path={ROUTES.WORKER_SETTINGS} element={<WorkerSettingsPage />} />
 
             <Route path={ROUTES.MY_INVITATIONS} element={<WorkerInvitationsPage />} />
-            <Route path={ROUTES.FIND_WORK} element={<WorkerMarketplacePage />} />
             <Route path={ROUTES.MY_JOBS} element={<WorkerAssignmentsPage />} />
             <Route path={ROUTES.MY_ATTENDANCE} element={<WorkerAttendancePage />} />
             <Route path="/worker/notifications" element={<WorkerNotificationsPage />} />

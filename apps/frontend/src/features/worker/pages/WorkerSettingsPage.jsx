@@ -3,7 +3,8 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { usersApi } from "../../../api/users.api";
-import { Lock, Eye, EyeOff, Loader2, BarChart2, CheckCircle2, FileText, Upload, MapPin, Briefcase, Palette } from "lucide-react";
+import { workerApi } from "../api/worker.api";
+import { Lock, Eye, EyeOff, Loader2, BarChart2, CheckCircle2, FileText, Upload, MapPin, Briefcase, Palette, IndianRupee } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
 import { calculateWorkerProfileCompletion } from "../../../utils/profileCompletion";
@@ -14,6 +15,7 @@ export default function WorkerSettingsPage() {
   const [show, setShow] = useState({ current: false, new: false, confirm: false });
   const [docType, setDocType] = useState("AADHAAR");
   const [docFile, setDocFile] = useState(null);
+  const [expectedWage, setExpectedWage] = useState("");
   
   const { register: regSettings, handleSubmit: handleSettingsSubmit, formState: { isDirty: isSettingsDirty }, reset: resetSettings } = useForm({
     defaultValues: {
@@ -37,6 +39,33 @@ export default function WorkerSettingsPage() {
   const currentDocTypeDoc = existingDocs.find(d => d.documentType === docType);
 
   const [workPrefsSaved, setWorkPrefsSaved] = useState(() => localStorage.getItem("workPrefsSaved") === "true");
+
+  const { data: workerProfileRes } = useQuery({
+    queryKey: ["myWorkerProfile"],
+    queryFn: () => workerApi.getMyWorkerProfile(),
+  });
+
+  useEffect(() => {
+    const wage = workerProfileRes?.data?.expectedDailyWage || workerProfileRes?.expectedDailyWage || "";
+    if (wage) setExpectedWage(String(wage));
+  }, [workerProfileRes]);
+
+  const { mutate: saveWage, isPending: isSavingWage } = useMutation({
+    mutationFn: (wage) => workerApi.updateMyWorkerProfile({ expectedDailyWage: String(wage) }),
+    onSuccess: () => {
+      toast.success("Daily wage updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["myWorkerProfile"] });
+    },
+    onError: (e) => toast.error(e.response?.data?.message || "Failed to update wage"),
+  });
+
+  const handleSaveWage = () => {
+    if (!expectedWage || isNaN(Number(expectedWage)) || Number(expectedWage) < 0) {
+      return toast.error("Please enter a valid daily wage amount");
+    }
+    saveWage(expectedWage);
+  };
+
   const [locPrefsSaved, setLocPrefsSaved] = useState(() => localStorage.getItem("locPrefsSaved") === "true");
   const [docsUploaded, setDocsUploaded] = useState(() => localStorage.getItem("docsUploaded") === "true");
 
@@ -340,6 +369,47 @@ export default function WorkerSettingsPage() {
                 </div>
                 <span className="text-sm font-semibold text-gray-700">Willing to Relocate</span>
               </label>
+            </div>
+          </div>
+
+          {/* Expected Daily Wage Section */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
+            <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-white">
+              <div className="flex items-center gap-2">
+                <IndianRupee className="w-4 h-4 text-emerald-600" />
+                <h3 className="font-semibold text-gray-900">Expected Daily Wage</h3>
+              </div>
+            </div>
+            <div className="p-4 flex-1">
+              <p className="text-xs text-gray-500 mb-3">Set your expected daily wage. This will be shown to clients when they view your profile and used as the proposed rate in hiring requests.</p>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700">Daily Wage (₹)</label>
+                <div className="relative">
+                  <IndianRupee className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="number"
+                    min="0"
+                    value={expectedWage}
+                    onChange={(e) => setExpectedWage(e.target.value)}
+                    placeholder="e.g. 800"
+                    className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 outline-none transition-all"
+                  />
+                </div>
+                {expectedWage && !isNaN(Number(expectedWage)) && Number(expectedWage) > 0 && (
+                  <p className="text-xs text-gray-400 mt-1">Clients will be charged platform fee on top of this amount.</p>
+                )}
+              </div>
+            </div>
+            <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 flex justify-end">
+              <button
+                type="button"
+                onClick={handleSaveWage}
+                disabled={isSavingWage}
+                className="flex items-center gap-2 px-5 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors"
+              >
+                {isSavingWage ? <Loader2 className="w-4 h-4 animate-spin" /> : <IndianRupee className="w-4 h-4" />}
+                {isSavingWage ? "Saving..." : "Save Wage"}
+              </button>
             </div>
           </div>
         </form>

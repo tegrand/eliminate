@@ -25,6 +25,15 @@ function JobCard({ job, onDelete, onUpdateStatus, onEdit }) {
 
   const vacancies = Math.max(0, (job.requiredWorkers || 0) - (job.assignedCount || 0));
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  let isJobStarted = false;
+  if (job.startDate) {
+    const sDate = new Date(job.startDate);
+    sDate.setHours(0, 0, 0, 0);
+    isJobStarted = sDate <= today;
+  }
+
   return (
     <div className="bg-white rounded-xl border border-gray-200 hover:border-blue-300 shadow-sm hover:shadow-lg transition-all duration-300 group flex flex-col h-full overflow-hidden">
       {/* Top Header Section */}
@@ -74,8 +83,12 @@ function JobCard({ job, onDelete, onUpdateStatus, onEdit }) {
       {/* Footer Actions */}
       <div className="px-4 py-2.5 bg-gray-50/50 border-t border-gray-100 flex items-center justify-end gap-1">
         <button 
-          onClick={() => onEdit(job)}
-          className="px-2.5 py-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-1.5 text-xs font-semibold"
+          onClick={() => !isJobStarted && onEdit(job)}
+          disabled={isJobStarted}
+          className={`px-2.5 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-xs font-semibold ${
+            isJobStarted ? "text-gray-400 cursor-not-allowed opacity-50" : "text-gray-500 hover:text-blue-600 hover:bg-blue-50"
+          }`}
+          title={isJobStarted ? "Cannot edit a confirmed job that has already started" : ""}
         >
           <Edit2 className="w-3.5 h-3.5" /> Edit
         </button>
@@ -97,8 +110,12 @@ function JobCard({ job, onDelete, onUpdateStatus, onEdit }) {
         )}
         
         <button 
-          onClick={() => onDelete(job)}
-          className="px-2.5 py-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-1.5 text-xs font-semibold"
+          onClick={() => !isJobStarted && onDelete(job)}
+          disabled={isJobStarted}
+          className={`px-2.5 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 text-xs font-semibold ${
+            isJobStarted ? "text-gray-400 cursor-not-allowed opacity-50" : "text-gray-500 hover:text-red-600 hover:bg-red-50"
+          }`}
+          title={isJobStarted ? "Cannot delete a confirmed job that has already started" : ""}
         >
           <Trash2 className="w-3.5 h-3.5" /> Delete
         </button>

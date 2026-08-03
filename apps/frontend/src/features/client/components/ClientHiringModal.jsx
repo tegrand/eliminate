@@ -29,19 +29,28 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
     defaultValues: {
       title: "",
       description: "",
-      proposedRate: targetRate || "",
+      proposedRate: "",
       startDate: "",
       endDate: "",
       notes: ""
     }
   });
 
-  // Re-sync rate when targetRate changes
+  // Pre-fill rate whenever modal opens or targetRate changes
   useEffect(() => {
-    if (targetRate) {
-      setValue("proposedRate", targetRate);
+    if (isOpen) {
+      reset({
+        title: "",
+        description: "",
+        proposedRate: targetRate || "",
+        startDate: "",
+        endDate: "",
+        notes: ""
+      });
+      setHiringMode("custom");
+      setSelectedJobId("");
     }
-  }, [targetRate, setValue]);
+  }, [isOpen, targetRate, reset]);
 
   const createRequestMutation = useMutation({
     mutationFn: (data) => api.post("/hiring-requests", data),

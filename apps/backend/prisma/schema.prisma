@@ -856,7 +856,9 @@ model HiringRequest {
   endDate      DateTime?
   notes        String?
 
-  status HiringRequestStatus @default(PENDING)
+  status             HiringRequestStatus @default(PENDING)
+  advancePercentage  Int                 @default(30)
+  advancePaid        Boolean             @default(false)
 
   client         Client          @relation(fields: [clientId], references: [id])
   agency         Agency?         @relation(fields: [targetAgencyId], references: [id])
@@ -1044,6 +1046,7 @@ model PaymentTransaction {
   amount          Decimal
   currency        String  @default("INR")
   status          String  @default("PENDING") // PENDING, SUCCESS, FAILED
+  paymentType     String  @default("FULL")    // ADVANCE, FINAL, FULL
   hiringRequestId String
 
   hiringRequest HiringRequest @relation(fields: [hiringRequestId], references: [id])
