@@ -62,23 +62,23 @@ export default function SlotCalendarPicker({ workerId, startDate, endDate, onCha
 
   const renderHeader = () => {
     return (
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-3">
         <button 
           type="button"
           onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-          className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-1 hover:bg-gray-100 rounded-full transition-colors"
         >
-          <ChevronLeft className="w-5 h-5 text-gray-600" />
+          <ChevronLeft className="w-4 h-4 text-gray-600" />
         </button>
-        <span className="text-sm font-bold text-gray-900">
+        <span className="text-xs font-bold text-gray-900">
           {format(currentMonth, "MMMM yyyy")}
         </span>
         <button 
           type="button"
           onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-          className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-1 hover:bg-gray-100 rounded-full transition-colors"
         >
-          <ChevronRight className="w-5 h-5 text-gray-600" />
+          <ChevronRight className="w-4 h-4 text-gray-600" />
         </button>
       </div>
     );
@@ -89,12 +89,12 @@ export default function SlotCalendarPicker({ workerId, startDate, endDate, onCha
     const startDate = startOfWeek(currentMonth);
     for (let i = 0; i < 7; i++) {
       days.push(
-        <div key={i} className="text-center text-xs font-semibold text-gray-400 mb-2">
-          {format(addDays(startDate, i), "EEEEEE")}
+        <div key={i} className="text-center text-[10px] font-semibold text-gray-400 mb-1">
+          {format(addDays(startDate, i), "EEEEE")}
         </div>
       );
     }
-    return <div className="grid grid-cols-7 mb-2">{days}</div>;
+    return <div className="grid grid-cols-7 mb-1">{days}</div>;
   };
 
   const renderCells = () => {
@@ -120,7 +120,7 @@ export default function SlotCalendarPicker({ workerId, startDate, endDate, onCha
         const isPast = isPastDate(day);
         const disabled = isBooked || isPast;
 
-        let cellClasses = "flex items-center justify-center h-10 w-10 rounded-full text-sm font-medium mx-auto cursor-pointer transition-colors ";
+        let cellClasses = "flex items-center justify-center h-8 w-8 rounded-full text-xs font-medium mx-auto cursor-pointer transition-colors ";
 
         if (!isSameMonth(day, monthStart)) {
           cellClasses += "text-gray-300 pointer-events-none ";
@@ -135,7 +135,7 @@ export default function SlotCalendarPicker({ workerId, startDate, endDate, onCha
         }
 
         days.push(
-          <div key={day} className="py-1">
+          <div key={day} className="py-0.5">
             <div
               className={cellClasses}
               onClick={() => !disabled && handleDateClick(cloneDay)}
@@ -182,17 +182,17 @@ export default function SlotCalendarPicker({ workerId, startDate, endDate, onCha
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)}></div>
-          <div className="absolute z-50 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 p-4 w-[320px] left-0 animate-fade-in origin-top-left">
+          <div className="absolute z-50 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 p-3 w-[260px] left-0 animate-fade-in origin-top-left">
             {isLoading && (
               <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-10 rounded-2xl backdrop-blur-sm">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
               </div>
             )}
             
             <div className="flex justify-between items-center mb-2 pb-2 border-b border-gray-50">
-              <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Select Slot</span>
-              <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-gray-600 p-1">
-                <X className="w-4 h-4" />
+              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Select Slot</span>
+              <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-gray-600 p-0.5">
+                <X className="w-3.5 h-3.5" />
               </button>
             </div>
             
@@ -200,10 +200,10 @@ export default function SlotCalendarPicker({ workerId, startDate, endDate, onCha
             {renderDays()}
             {renderCells()}
             
-            <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-gray-100 border border-gray-200"></div>
-                <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">Booked</span>
+            <div className="mt-3 pt-2 border-t border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full bg-gray-100 border border-gray-200"></div>
+                <span className="text-[9px] font-medium text-gray-500 uppercase tracking-wider">Booked</span>
               </div>
               <button 
                 type="button" 
