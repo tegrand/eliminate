@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Briefcase, Calendar, MapPin, Building2, CheckCircle, XCircle, Clock, Users } from "lucide-react";
+import { Loader2, Briefcase, Calendar, MapPin, Building2, CheckCircle, XCircle, Clock, Users, ChevronRight } from "lucide-react";
 import { workerApi } from "../api/worker.api";
 import { format, isAfter, isBefore, isSameDay } from "date-fns";
 
@@ -97,7 +98,7 @@ export default function WorkerAssignmentsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 xl:gap-5">
             {currentAssignments.map(assignment => (
-              <div key={assignment.id} className="bg-white rounded-xl border border-gray-200 hover:border-indigo-300 shadow-sm hover:shadow-lg transition-all duration-300 group flex flex-col h-full overflow-hidden">
+              <Link key={assignment.id} to={`/assignments/${assignment.id}`} className="bg-white rounded-xl border border-gray-200 hover:border-indigo-300 shadow-sm hover:shadow-lg transition-all duration-300 group flex flex-col h-full overflow-hidden no-underline">
                 {/* Header */}
                 <div className="px-3 py-2.5 border-b border-gray-50 flex items-center justify-between gap-2">
                   <div className="flex flex-col">
@@ -188,10 +189,18 @@ export default function WorkerAssignmentsPage() {
                 {assignment.agreedRate && (
                   <div className="px-3 py-2 bg-emerald-50/30 border-t border-emerald-100 flex items-center justify-between">
                     <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Agreed Rate</span>
-                    <span className="text-sm font-black text-emerald-700">₹{assignment.agreedRate}/day</span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-sm font-black text-emerald-700">₹{assignment.agreedRate}/day</span>
+                      <ChevronRight className="w-3.5 h-3.5 text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
                   </div>
                 )}
-              </div>
+                {!assignment.agreedRate && (
+                  <div className="px-3 py-2 bg-gray-50 border-t border-gray-100 flex items-center justify-end">
+                    <ChevronRight className="w-3.5 h-3.5 text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
+                )}
+              </Link>
             ))}
           </div>
         )}

@@ -1,5 +1,6 @@
 import prisma from "../../config/prisma.js";
 import AppError from "../../shared/errors/app-error.js";
+import { startOfDay } from "date-fns";
 
 export const listAssignments = async (filters, user) => {
   const where = {};
@@ -98,6 +99,47 @@ export const getAssignmentAttendance = async (id, user) => {
   });
 
   return attendance;
+};
+
+export const markAssignmentAttendance = async (assignmentId, { workerId, status, date }, user) => {
+  // Only clients/agencies can mark attendance for their assignments
+  const assignment = await prisma.assignment.findUnique({
+    where: { id: assignmentId },
+    include: {
+      assignedWorkers: true,
+      client: true
+    }
+  });
+
+  if (!assignment) throw new AppError("Assignment not found", 404);
+
+  // Verify the worker is actually in this assignment
+  const isAssigned = assignment.assignedWorkers.some(aw => aw.workerId === workerId);
+  if (!isAssigned) throw new AppError("Worker is not assigned to this assignment", 400);
+
+  const attendanceDate = date ? startOfDay(new Date(date)) : startOfDay(new Date());
+
+  const existing = await prisma.workerAttendance.findUnique({
+    where: { workerId_date: { workerId, date: attendanceDate } }
+  });
+
+  const nowTime = new Date();
+  const dataToSet = {
+    workerId,
+    date: attendanceDate,
+    status,
+    // Set checkInTime when marking PRESENT for the first time
+    ...(status === 'PRESENT' && { checkInTime: nowTime })
+  };
+
+  if (existing) {
+    return prisma.workerAttendance.update({
+      where: { id: existing.id },
+      data: { status, ...(status === 'PRESENT' && !existing.checkInTime && { checkInTime: nowTime }) }
+    });
+  }
+
+  return prisma.workerAttendance.create({ data: dataToSet });
 };
 
 export const updateAssignmentStatus = async (id, status, user) => {

@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, Users, UserRound, Clock3, CalendarCheck, CalendarDays, Activity, UserPlus, Loader2, Building2, CheckCircle, Star, CreditCard } from "lucide-react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { ArrowLeft, Users, UserRound, Clock3, CalendarCheck, CalendarDays, Activity, UserPlus, Loader2, Building2, CheckCircle, Star, CreditCard, UserCheck, UserX, Clock } from "lucide-react";
 import api from "../../../api/axios";
 import { useAuth } from "../../../hooks/useAuth";
 import { paymentApi } from "../../../api/payment.api";
+import { assignmentApi } from "../api/assignment.api";
 import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import AssignWorkerModal from "../components/AssignWorkerModal";
@@ -18,8 +19,9 @@ export default function AssignmentDetailsPage() {
 
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
-  const [reviewTarget, setReviewTarget] = useState(null); // { workerId, agencyId, name }
+  const [reviewTarget, setReviewTarget] = useState(null);
   const [isPaying, setIsPaying] = useState(false);
+  const [markingAttendance, setMarkingAttendance] = useState({}); // { workerId: 'PRESENT'|'ABSENT'|'HALF_DAY'|null }
   const queryClient = useQueryClient();
 
   const { data: assignment, isLoading, error } = useQuery({
@@ -72,6 +74,19 @@ export default function AssignmentDetailsPage() {
   const handleOpenReview = (workerId, agencyId, name) => {
     setReviewTarget({ workerId, agencyId, name });
     setIsReviewModalOpen(true);
+  };
+
+  const handleMarkAttendance = async (workerId, status) => {
+    setMarkingAttendance(prev => ({ ...prev, [workerId]: status }));
+    try {
+      await assignmentApi.markAttendance(id, { workerId, status });
+      toast.success(`Marked ${status.toLowerCase().replace('_', ' ')} for worker`);
+      queryClient.invalidateQueries({ queryKey: ["assignmentAttendance", id] });
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to mark attendance");
+    } finally {
+      setMarkingAttendance(prev => ({ ...prev, [workerId]: null }));
+    }
   };
 
   const handlePayBalance = async () => {
@@ -127,7 +142,7 @@ export default function AssignmentDetailsPage() {
   const isBalancePaid = successfulPayments >= 2;
 
   return (
-    <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 animate-fade-in space-y-5 h-[calc(100vh-4rem)] overflow-y-auto scrollbar-hide">
+    <div className="max-w-6xl mx-auto py-5 px-4 sm:px-6 lg:px-8 animate-fade-in space-y-5 h-[calc(100vh-4rem)] overflow-y-auto scrollbar-hide">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -272,33 +287,91 @@ export default function AssignmentDetailsPage() {
                 <Clock3 className="h-4 w-4" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-gray-900">Worker Attendance Tracker</h2>
-                <p className="text-xs text-gray-500">View daily attendance (Present, Absent, Half Day, Overtime).</p>
+                <h2 className="text-base font-bold text-gray-900">Attendance Tracker</h2>
+                <p className="text-xs text-gray-500">{isClient ? "Mark and view daily attendance for all assigned workers." : "Your recorded attendance for this assignment."}</p>
               </div>
             </div>
           </div>
 
+          {/* Client: Mark Today's Attendance for Each Worker */}
+          {isClient && assignedWorkers.length > 0 && (
+            <div className="mb-4 p-3 bg-indigo-50 rounded-xl border border-indigo-100">
+              <p className="text-xs font-bold text-indigo-700 uppercase tracking-wider mb-3">Mark Today's Attendance — {new Date().toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}</p>
+              <div className="flex flex-col gap-2">
+                {assignedWorkers.map((aw) => {
+                  const w = aw.worker;
+                  const wName = `${w?.user?.firstName || ''} ${w?.user?.lastName || ''}`.trim();
+                  const today = new Date().toDateString();
+                  const todayRecord = attendanceData?.find(a => a.workerId === w?.id && new Date(a.date).toDateString() === today);
+                  const isMarkingThis = markingAttendance[w?.id];
+                  return (
+                    <div key={aw.id} className="flex items-center justify-between gap-3 bg-white px-3 py-2 rounded-lg border border-indigo-100">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                          <UserRound className="w-4 h-4 text-gray-400" />
+                        </div>
+                        <span className="text-sm font-semibold text-gray-800 truncate">{wName}</span>
+                        {todayRecord && (
+                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wider ${
+                            todayRecord.status === 'PRESENT' ? 'bg-emerald-100 text-emerald-700' :
+                            todayRecord.status === 'ABSENT' ? 'bg-red-100 text-red-700' :
+                            todayRecord.status === 'HALF_DAY' ? 'bg-amber-100 text-amber-700' :
+                            'bg-gray-100 text-gray-600'
+                          }`}>{todayRecord.status.replace('_',' ')} • {todayRecord.checkInTime ? new Date(todayRecord.checkInTime).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : ''}</span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <button
+                          disabled={!!isMarkingThis}
+                          onClick={() => handleMarkAttendance(w.id, 'PRESENT')}
+                          className="flex items-center gap-1 px-2.5 py-1 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white text-xs font-bold rounded-lg transition-colors"
+                        >
+                          {isMarkingThis === 'PRESENT' ? <Loader2 className="w-3 h-3 animate-spin" /> : <UserCheck className="w-3 h-3" />} Present
+                        </button>
+                        <button
+                          disabled={!!isMarkingThis}
+                          onClick={() => handleMarkAttendance(w.id, 'HALF_DAY')}
+                          className="flex items-center gap-1 px-2.5 py-1 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white text-xs font-bold rounded-lg transition-colors"
+                        >
+                          {isMarkingThis === 'HALF_DAY' ? <Loader2 className="w-3 h-3 animate-spin" /> : <Clock className="w-3 h-3" />} Half
+                        </button>
+                        <button
+                          disabled={!!isMarkingThis}
+                          onClick={() => handleMarkAttendance(w.id, 'ABSENT')}
+                          className="flex items-center gap-1 px-2.5 py-1 bg-red-500 hover:bg-red-600 disabled:opacity-50 text-white text-xs font-bold rounded-lg transition-colors"
+                        >
+                          {isMarkingThis === 'ABSENT' ? <Loader2 className="w-3 h-3 animate-spin" /> : <UserX className="w-3 h-3" />} Absent
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 text-gray-700 font-semibold border-b border-gray-200">
+              <thead className="bg-gray-50 text-gray-600 text-xs font-semibold border-b border-gray-200">
                 <tr>
-                  <th className="px-4 py-3">Date</th>
-                  <th className="px-4 py-3">Worker Name</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">In - Out</th>
-                  <th className="px-4 py-3">Overtime</th>
+                  <th className="px-3 py-2.5">Date</th>
+                  <th className="px-3 py-2.5">Worker</th>
+                  <th className="px-3 py-2.5">Status</th>
+                  <th className="px-3 py-2.5">Marked At</th>
+                  <th className="px-3 py-2.5">Check Out</th>
+                  <th className="px-3 py-2.5">Hours</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-50">
                 {attendanceData && attendanceData.length > 0 ? (
                   attendanceData.map((att) => {
-                    const workerName = `${att.worker?.user?.firstName} ${att.worker?.user?.lastName || ''}`.trim();
+                    const workerName = `${att.worker?.user?.firstName || ''} ${att.worker?.user?.lastName || ''}`.trim();
                     return (
                       <tr key={att.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 font-medium text-gray-900">{new Date(att.date).toLocaleDateString()}</td>
-                        <td className="px-4 py-3 text-gray-700">{workerName}</td>
-                        <td className="px-4 py-3">
-                          <span className={`px-2 py-1 rounded text-xs font-bold ${
+                        <td className="px-3 py-2.5 font-medium text-gray-900 text-xs">{new Date(att.date).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'2-digit'})}</td>
+                        <td className="px-3 py-2.5 text-gray-700 text-xs font-medium">{workerName}</td>
+                        <td className="px-3 py-2.5">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                             att.status === 'PRESENT' ? 'bg-emerald-100 text-emerald-700' :
                             att.status === 'ABSENT' ? 'bg-red-100 text-red-700' :
                             att.status === 'HALF_DAY' ? 'bg-amber-100 text-amber-700' :
@@ -307,20 +380,23 @@ export default function AssignmentDetailsPage() {
                             {att.status.replace("_", " ")}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-gray-500 font-mono text-xs">
-                          {att.checkInTime ? new Date(att.checkInTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '--'} - 
-                          {att.checkOutTime ? new Date(att.checkOutTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '--'}
+                        <td className="px-3 py-2.5 text-gray-500 font-mono text-xs">
+                          {att.checkInTime ? new Date(att.checkInTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : <span className="text-gray-300">—</span>}
                         </td>
-                        <td className="px-4 py-3 font-medium text-gray-900">
-                          {att.overtimeHours ? `${att.overtimeHours} hrs` : '-'}
+                        <td className="px-3 py-2.5 text-gray-500 font-mono text-xs">
+                          {att.checkOutTime ? new Date(att.checkOutTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : <span className="text-gray-300">—</span>}
+                        </td>
+                        <td className="px-3 py-2.5 text-xs font-medium text-gray-700">
+                          {att.totalHours ? `${att.totalHours}h` : '-'}
+                          {att.overtimeHours > 0 && <span className="ml-1 text-[10px] text-purple-600">+{att.overtimeHours}h OT</span>}
                         </td>
                       </tr>
                     )
                   })
                 ) : (
                   <tr>
-                    <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
-                      No attendance records found for this assignment yet.
+                    <td colSpan={6} className="px-3 py-8 text-center text-gray-400 text-xs">
+                      No attendance records yet. {isClient ? "Use the quick mark buttons above to record today's attendance." : "Your agency/client will mark your attendance here."}
                     </td>
                   </tr>
                 )}
@@ -328,6 +404,7 @@ export default function AssignmentDetailsPage() {
             </table>
           </div>
         </section>
+
 
         {/* Assigned Workers */}
         <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm lg:col-span-3">

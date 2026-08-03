@@ -4,6 +4,7 @@ import {
   listAssignments,
   getAssignment,
   getAssignmentAttendance,
+  markAssignmentAttendance,
   updateAssignmentStatus,
   assignWorker,
   removeWorker
@@ -34,6 +35,12 @@ router.get(
   "/:id/attendance",
   validate(assignmentIdParamSchema, "params"),
   getAssignmentAttendance
+);
+
+router.post(
+  "/:id/attendance",
+  validate(assignmentIdParamSchema, "params"),
+  markAssignmentAttendance
 );
 
 router.patch(
