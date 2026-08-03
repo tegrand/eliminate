@@ -127,7 +127,7 @@ export default function AssignmentDetailsPage() {
   const isBalancePaid = successfulPayments >= 2;
 
   return (
-    <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 animate-fade-in space-y-6 h-[calc(100vh-4rem)] overflow-y-auto scrollbar-hide">
+    <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 animate-fade-in space-y-5 h-[calc(100vh-4rem)] overflow-y-auto scrollbar-hide">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -140,7 +140,7 @@ export default function AssignmentDetailsPage() {
             Back to Assignments
           </Link>
           <div className="flex items-center gap-3">
-            <h1 className="text-3xl font-bold text-gray-900">{assignment.title}</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{assignment.title}</h1>
             <div className={`px-3 py-1 rounded-full text-xs font-bold border ${
               assignment.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
               assignment.status === 'COMPLETED' ? 'bg-blue-50 text-blue-700 border-blue-200' :
@@ -194,13 +194,13 @@ export default function AssignmentDetailsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         
         {/* Assignment Tracking & Progress (Spans 2 columns on lg) */}
-        <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm lg:col-span-2 flex flex-col">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
-              <Activity className="h-5 w-5" />
+        <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm lg:col-span-2 flex flex-col">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+              <Activity className="h-4 w-4" />
             </div>
             <div>
               <h2 className="text-lg font-bold text-gray-900">Assignment Tracking</h2>
@@ -208,20 +208,20 @@ export default function AssignmentDetailsPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+            <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
               <span className="text-xs font-semibold text-gray-500 uppercase flex items-center gap-1.5 mb-1"><CalendarDays className="w-3.5 h-3.5" /> Start Date</span>
               <span className="text-sm font-bold text-gray-900">{assignment.startDate ? new Date(assignment.startDate).toLocaleDateString() : 'N/A'}</span>
             </div>
-            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+            <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
               <span className="text-xs font-semibold text-gray-500 uppercase flex items-center gap-1.5 mb-1"><CalendarCheck className="w-3.5 h-3.5" /> End Date</span>
               <span className="text-sm font-bold text-gray-900">{assignment.endDate ? new Date(assignment.endDate).toLocaleDateString() : 'N/A'}</span>
             </div>
-            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+            <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
               <span className="text-xs font-semibold text-gray-500 uppercase flex items-center gap-1.5 mb-1"><Users className="w-3.5 h-3.5" /> Workers</span>
               <span className="text-sm font-bold text-gray-900">{assignedWorkers.length} Assigned</span>
             </div>
-            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+            <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
               <span className="text-xs font-semibold text-gray-500 uppercase flex items-center gap-1.5 mb-1"><Activity className="w-3.5 h-3.5" /> Status</span>
               <span className={`text-sm font-bold ${assignment.status === 'ACTIVE' ? 'text-emerald-600' : 'text-gray-900'}`}>{assignment.status}</span>
             </div>
@@ -242,9 +242,9 @@ export default function AssignmentDetailsPage() {
         </section>
 
         {/* Overview (Spans 1 column on lg) */}
-        <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Overview</h2>
-          <div className="space-y-4">
+        <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <h2 className="text-base font-bold text-gray-900 mb-3">Overview</h2>
+          <div className="space-y-3">
             {assignment.client && (
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
                 <span className="text-sm font-semibold text-gray-500 flex items-center gap-2"><Building2 className="w-4 h-4" /> Client</span>
@@ -265,15 +265,15 @@ export default function AssignmentDetailsPage() {
         </section>
 
         {/* Attendance (Full width) */}
-        <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm lg:col-span-3">
+        <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm lg:col-span-3">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-                <Clock3 className="h-5 w-5" />
+              <div className="h-9 w-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                <Clock3 className="h-4 w-4" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-gray-900">Worker Attendance Tracker</h2>
-                <p className="text-sm text-gray-500">View daily attendance (Present, Absent, Half Day, Overtime).</p>
+                <h2 className="text-base font-bold text-gray-900">Worker Attendance Tracker</h2>
+                <p className="text-xs text-gray-500">View daily attendance (Present, Absent, Half Day, Overtime).</p>
               </div>
             </div>
           </div>
@@ -330,15 +330,15 @@ export default function AssignmentDetailsPage() {
         </section>
 
         {/* Assigned Workers */}
-        <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm lg:col-span-3">
+        <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm lg:col-span-3">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
-                <Users className="h-5 w-5" />
+              <div className="h-9 w-9 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+                <Users className="h-4 w-4" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-gray-900">Assigned Workers</h2>
-                <p className="text-sm text-gray-500">Workers attached to this assignment.</p>
+                <h2 className="text-base font-bold text-gray-900">Assigned Workers</h2>
+                <p className="text-xs text-gray-500">Workers attached to this assignment.</p>
               </div>
             </div>
             <span className="bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-lg text-sm">{assignedWorkers.length}</span>

@@ -95,11 +95,11 @@ export default function WorkerAssignmentsPage() {
             <p className="text-slate-500">You don't have any assignments in this category right now.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 xl:gap-5">
             {currentAssignments.map(assignment => (
               <div key={assignment.id} className="bg-white rounded-xl border border-gray-200 hover:border-indigo-300 shadow-sm hover:shadow-lg transition-all duration-300 group flex flex-col h-full overflow-hidden">
                 {/* Header */}
-                <div className="px-4 py-3 border-b border-gray-50 flex items-center justify-between gap-3">
+                <div className="px-3 py-2.5 border-b border-gray-50 flex items-center justify-between gap-2">
                   <div className="flex flex-col">
                     <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">
                       {assignment.hiringRequest?.jobRequirement?.requirementCode || "ASSIGNMENT"}
@@ -127,8 +127,8 @@ export default function WorkerAssignmentsPage() {
                 </div>
 
                 {/* Body */}
-                <div className="px-4 py-3 flex-1 flex flex-col gap-3">
-                  <div className="flex flex-col gap-2 text-xs text-gray-600">
+                <div className="px-3 py-2.5 flex-1 flex flex-col gap-2">
+                  <div className="flex flex-col gap-1.5 text-xs text-gray-600">
                     <div className="flex items-center gap-1.5">
                       <Building2 className="w-3.5 h-3.5 text-gray-400 shrink-0" />
                       <span className="truncate font-medium">{assignment.client?.companyName || "Private Client"}</span>
@@ -186,7 +186,7 @@ export default function WorkerAssignmentsPage() {
 
                 {/* Footer */}
                 {assignment.agreedRate && (
-                  <div className="px-4 py-2.5 bg-emerald-50/30 border-t border-emerald-100 flex items-center justify-between">
+                  <div className="px-3 py-2 bg-emerald-50/30 border-t border-emerald-100 flex items-center justify-between">
                     <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Agreed Rate</span>
                     <span className="text-sm font-black text-emerald-700">₹{assignment.agreedRate}/day</span>
                   </div>

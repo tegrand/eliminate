@@ -52,15 +52,15 @@ export default function AgencyTeamAssignmentsPage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 xl:gap-5">
         {assignments.map(team => {
           const totalRequired = team.roles.reduce((sum, r) => sum + r.count, 0);
           const totalAssigned = team.roles.reduce((sum, r) => sum + (r.assigned || 0), 0);
           const progress = Math.round((totalAssigned / totalRequired) * 100) || 0;
 
           return (
-            <div key={team.id} className="bg-white rounded-2xl border border-gray-100 p-6 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] hover:shadow-[0_8px_20px_-6px_rgba(6,81,237,0.15)] transition-all duration-300 flex flex-col">
-              <div className="flex justify-between items-start mb-5">
+            <div key={team.id} className="bg-white rounded-2xl border border-gray-100 p-5 shadow-[0_2px_10px_-3px_rgba(6,81,237,0.1)] hover:shadow-[0_8px_20px_-6px_rgba(6,81,237,0.15)] transition-all duration-300 flex flex-col">
+              <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="font-semibold text-gray-900 text-lg leading-tight mb-1">{team.project}</h3>
                   <div className="flex items-center gap-1.5 text-sm font-medium text-indigo-600">
@@ -73,12 +73,12 @@ export default function AgencyTeamAssignmentsPage() {
                 </span>
               </div>
               
-              <div className="mb-6 bg-gray-50 rounded-xl p-4 border border-gray-100">
-                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <div className="mb-5 bg-gray-50 rounded-xl p-3 border border-gray-100">
+                <h4 className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                   <UserCheck className="w-3.5 h-3.5" />
                   Team Composition
                 </h4>
-                <div className="space-y-2.5">
+                <div className="space-y-2">
                   {team.roles.map((role, idx) => (
                     <div key={idx} className="flex items-center justify-between">
                       <span className="text-sm font-medium text-gray-700">{role.name}</span>
@@ -111,7 +111,7 @@ export default function AgencyTeamAssignmentsPage() {
                 </div>
               </div>
               
-              <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
+              <div className="pt-3 border-t border-gray-100 flex justify-between items-center">
                 <div className="flex items-center gap-1.5 text-xs text-gray-500 font-medium">
                   <Calendar className="w-3.5 h-3.5" />
                   Created {team.date}
