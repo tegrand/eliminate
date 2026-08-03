@@ -153,385 +153,351 @@ export default function AssignmentDetailsPage() {
   const successfulPayments = assignment.hiringRequest?.payments?.filter(p => p.status === 'SUCCESS')?.length || 0;
   const isBalancePaid = successfulPayments >= 2;
 
+  // Calculate days for Work Schedule
+  const scheduleDays = [];
+  if (assignment?.startDate) {
+    const start = new Date(assignment.startDate);
+    const end = assignment.endDate ? new Date(assignment.endDate) : new Date();
+    const clampedEnd = end > new Date() ? new Date() : end;
+    
+    const cursor = new Date(start);
+    cursor.setHours(0, 0, 0, 0);
+    let dayNum = 1;
+    while (cursor <= clampedEnd && dayNum <= 60) {
+      scheduleDays.push({ date: new Date(cursor), dayNum });
+      cursor.setDate(cursor.getDate() + 1);
+      dayNum++;
+    }
+  }
+
+  // Initialize selectedDate state
+  const [selectedDate, setSelectedDate] = useState(() => {
+    return new Date().toDateString();
+  });
+
+  const selectedDayObj = scheduleDays.find(d => d.date.toDateString() === selectedDate) || scheduleDays[0];
+
   return (
-    <div className="max-w-6xl mx-auto py-5 px-4 sm:px-6 lg:px-8 animate-fade-in space-y-5 h-[calc(100vh-4rem)] overflow-y-auto scrollbar-hide">
+    <div className="max-w-6xl mx-auto py-5 px-4 sm:px-6 lg:px-8 animate-fade-in space-y-5 h-[calc(100vh-4rem)] overflow-y-auto scrollbar-hide bg-[#f8f9fa]">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col gap-4">
         <div>
           <Link
             to="/assignments"
-            className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-indigo-600 transition-colors mb-4 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm"
+            className="inline-flex items-center text-sm font-bold text-gray-700 hover:text-indigo-600 transition-colors mb-4 bg-white px-4 py-2 rounded-full border border-gray-200 shadow-sm"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Assignments
           </Link>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-gray-900">{assignment.title}</h1>
-            <div className={`px-3 py-1 rounded-full text-xs font-bold border ${
-              assignment.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-              assignment.status === 'COMPLETED' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-              'bg-gray-50 text-gray-600 border-gray-200'
-            }`}>
-              {assignment.status}
+          <div className="flex flex-col">
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl font-black text-gray-900 tracking-tight">{assignment.title}</h1>
+              <span className={`px-2.5 py-0.5 rounded-full text-[10px] tracking-wider uppercase font-bold ${
+                assignment.status === 'ACTIVE' ? 'bg-emerald-50 text-emerald-600' :
+                assignment.status === 'COMPLETED' ? 'bg-blue-50 text-blue-600' :
+                'bg-gray-100 text-gray-600'
+              }`}>
+                {assignment.status}
+              </span>
             </div>
+            <p className="mt-1 text-xs text-gray-500 font-bold uppercase tracking-wider">
+              {assignment.assignmentCode}
+            </p>
           </div>
-          <p className="mt-2 text-sm text-gray-500 font-mono">
-            {assignment.assignmentCode}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          {!isClient && (
-            <>
-              <button 
-                onClick={() => setIsAssignModalOpen(true)}
-                className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold text-sm px-4 py-2.5 rounded-xl shadow-sm transition-colors flex items-center gap-2"
-              >
-                <UserPlus className="w-4 h-4" /> Assign Worker
-              </button>
-              <button 
-                onClick={() => navigate("/attendance/bulk")} 
-                className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-sm shadow-indigo-200 transition-colors flex items-center gap-2"
-              >
-                <Clock3 className="w-4 h-4" /> Mark Attendance
-              </button>
-            </>
-          )}
-          {isClient && assignment.status === 'COMPLETED' && (
-            <>
-              {!isBalancePaid && (
-                <button 
-                  onClick={handlePayBalance}
-                  disabled={isPaying}
-                  className="bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-300 text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-sm shadow-emerald-200 transition-colors flex items-center gap-2"
-                >
-                  {isPaying ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />}
-                  Pay Balance
-                </button>
-              )}
-              <button 
-                onClick={() => handleOpenReview(null, assignment.agencyId, assignment.agency?.agencyName || 'Agency')}
-                className="bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-sm shadow-amber-200 transition-colors flex items-center gap-2"
-              >
-                <Star className="w-4 h-4 fill-current" /> Rate Project
-              </button>
-            </>
-          )}
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         
-        {/* Assignment Tracking & Progress (Spans 2 columns on lg) */}
-        <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm lg:col-span-2 flex flex-col">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
-              <Activity className="h-4 w-4" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-gray-900">Assignment Tracking</h2>
-              <p className="text-sm text-gray-500">Current progress and timeline.</p>
+        {/* Card 1: Assignment Tracking */}
+        <section className="rounded-3xl border border-gray-100 bg-white p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-2xl bg-indigo-50/50 flex items-center justify-center text-indigo-500">
+                <Activity className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="text-sm font-black text-gray-900">Assignment Tracking</h2>
+                <p className="text-[10px] text-gray-500">Current progress and timeline.</p>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-            <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
-              <span className="text-xs font-semibold text-gray-500 uppercase flex items-center gap-1.5 mb-1"><CalendarDays className="w-3.5 h-3.5" /> Start Date</span>
-              <span className="text-sm font-bold text-gray-900">{assignment.startDate ? new Date(assignment.startDate).toLocaleDateString() : 'N/A'}</span>
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="p-3 bg-[#f8f9fa] rounded-2xl border border-gray-50">
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5 mb-1"><CalendarDays className="w-3 h-3" /> Start Date</span>
+              <span className="text-xs font-black text-gray-900">{assignment.startDate ? new Date(assignment.startDate).toLocaleDateString() : 'N/A'}</span>
             </div>
-            <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
-              <span className="text-xs font-semibold text-gray-500 uppercase flex items-center gap-1.5 mb-1"><CalendarCheck className="w-3.5 h-3.5" /> End Date</span>
-              <span className="text-sm font-bold text-gray-900">{assignment.endDate ? new Date(assignment.endDate).toLocaleDateString() : 'N/A'}</span>
+            <div className="p-3 bg-[#f8f9fa] rounded-2xl border border-gray-50">
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5 mb-1"><CalendarCheck className="w-3 h-3" /> End Date</span>
+              <span className="text-xs font-black text-gray-900">{assignment.endDate ? new Date(assignment.endDate).toLocaleDateString() : 'N/A'}</span>
             </div>
-            <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
-              <span className="text-xs font-semibold text-gray-500 uppercase flex items-center gap-1.5 mb-1"><Users className="w-3.5 h-3.5" /> Workers</span>
-              <span className="text-sm font-bold text-gray-900">{assignedWorkers.length} Assigned</span>
+            <div className="p-3 bg-[#f8f9fa] rounded-2xl border border-gray-50">
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5 mb-1"><Users className="w-3 h-3" /> Workers</span>
+              <span className="text-xs font-black text-gray-900">{assignedWorkers.length} Assigned</span>
             </div>
-            <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
-              <span className="text-xs font-semibold text-gray-500 uppercase flex items-center gap-1.5 mb-1"><Activity className="w-3.5 h-3.5" /> Status</span>
-              <span className={`text-sm font-bold ${assignment.status === 'ACTIVE' ? 'text-emerald-600' : 'text-gray-900'}`}>{assignment.status}</span>
+            <div className="p-3 bg-[#f8f9fa] rounded-2xl border border-gray-50">
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5 mb-1"><Activity className="w-3 h-3" /> Status</span>
+              <span className={`text-xs font-black uppercase tracking-wider ${assignment.status === 'ACTIVE' ? 'text-emerald-600' : 'text-gray-900'}`}>{assignment.status}</span>
             </div>
           </div>
 
           <div className="mt-auto">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-semibold text-gray-700">Overall Progress</span>
-              <span className="text-sm font-bold text-indigo-600">{progress}%</span>
-            </div>
-            <div className="w-full bg-gray-100 rounded-full h-2.5">
-              <div 
-                className="bg-indigo-600 h-2.5 rounded-full transition-all duration-1000" 
-                style={{ width: `${progress}%` }}
-              ></div>
-            </div>
+             <div className="flex justify-between items-center mb-2.5">
+               <span className="text-[11px] font-bold text-gray-700">Overall Progress</span>
+               <span className="text-xs font-black text-indigo-600">{progress}%</span>
+             </div>
+             <div className="h-2.5 w-full bg-[#f8f9fa] rounded-full overflow-hidden">
+                <div className="h-full bg-indigo-600 rounded-full transition-all duration-1000" style={{ width: `${progress}%` }} />
+             </div>
           </div>
         </section>
 
-        {/* Overview (Spans 1 column on lg) */}
-        <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
-          <h2 className="text-base font-bold text-gray-900 mb-3">Overview</h2>
-          <div className="space-y-3">
-            {assignment.client && (
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                <span className="text-sm font-semibold text-gray-500 flex items-center gap-2"><Building2 className="w-4 h-4" /> Client</span>
-                <span className="text-sm font-bold text-gray-900">{assignment.client.companyName || assignment.client.user?.firstName}</span>
-              </div>
-            )}
-            {assignment.agency && (
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                <span className="text-sm font-semibold text-gray-500 flex items-center gap-2"><Users className="w-4 h-4" /> Agency</span>
-                <span className="text-sm font-bold text-gray-900">{assignment.agency.agencyName || assignment.agency.user?.firstName}</span>
-              </div>
-            )}
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-              <span className="text-sm font-semibold text-gray-500">Agreed Rate</span>
-              <span className="text-sm font-bold text-emerald-600">{assignment.agreedRate ? `₹${assignment.agreedRate}` : 'TBD'}</span>
-            </div>
-          </div>
-        </section>
-
-        {/* Attendance (Full width) */}
-        <section className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm lg:col-span-3">
-          <div className="flex items-center gap-2.5 mb-3">
-            <div className="h-7 w-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
-              <Clock3 className="h-3.5 w-3.5" />
+        {/* Card 2: Overview */}
+        <section className="rounded-3xl border border-gray-100 bg-white p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="h-10 w-10 rounded-2xl bg-indigo-50/50 flex items-center justify-center text-indigo-500">
+              <Building2 className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-gray-900">Attendance Tracker</h2>
-              <p className="text-[11px] text-gray-400">{isClient ? "Click each day to mark attendance. Next day unlocks after previous is marked." : "Your daily attendance for this assignment."}</p>
+              <h2 className="text-sm font-black text-gray-900">Overview</h2>
             </div>
           </div>
 
-          {assignedWorkers.length > 0 && assignment.startDate ? (
-            <div className="space-y-2">
-              {assignedWorkers.map((aw) => {
-                const w = aw.worker;
-                const wName = `${w?.user?.firstName || ''} ${w?.user?.lastName || ''}`.trim();
-                const workerRecords = attendanceData?.filter(a => a.workerId === w?.id) || [];
-
-                // Build days up to today only
-                const startDate = new Date(assignment.startDate);
-                startDate.setHours(0, 0, 0, 0);
-                const endDate = assignment.endDate ? new Date(assignment.endDate) : new Date();
-                const today = new Date();
-                today.setHours(23, 59, 59, 999);
-                const clampedEnd = endDate > today ? today : endDate;
-
-                const days = [];
-                const cursor = new Date(startDate);
-                let dayNum = 1;
-                while (cursor <= clampedEnd && dayNum <= 90) {
-                  days.push({ date: new Date(cursor), dayNum });
-                  cursor.setDate(cursor.getDate() + 1);
-                  dayNum++;
-                }
-
-                // Progressive unlock: day N is visible only if day N-1 is marked (or it's day 1)
-                const getRecord = (date) => workerRecords.find(
-                  a => new Date(a.date).toDateString() === date.toDateString()
-                );
-
-                const visibleDays = days.filter(({ date, dayNum }) => {
-                  if (dayNum === 1) return true;
-                  const prevDay = days[dayNum - 2];
-                  return !!getRecord(prevDay.date);
-                });
-
-                return (
-                  <div key={aw.id} className="border border-gray-100 rounded-xl overflow-hidden">
-                    {/* Worker row with inline day boxes */}
-                    <div className="flex items-center gap-2 px-3 py-2 bg-gray-50">
-                      {/* Worker name — fixed width */}
-                      <div className="flex items-center gap-1.5 min-w-[120px] max-w-[120px]">
-                        <div className="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
-                          <UserRound className="w-3 h-3 text-indigo-500" />
-                        </div>
-                        <span className="text-[11px] font-bold text-gray-700 truncate">{wName}</span>
-                      </div>
-
-                      {/* Day boxes */}
-                      <div className="flex items-center gap-1 flex-wrap">
-                        {visibleDays.map(({ date, dayNum }) => {
-                          const dateStr = date.toDateString();
-                          const record = getRecord(date);
-                          const isMarkingThis = markingAttendance[`${w?.id}_${dateStr}`];
-                          const isToday = date.toDateString() === new Date().toDateString();
-
-                          const boxStyle = record
-                            ? record.status === 'PRESENT' ? 'bg-emerald-500 text-white border-emerald-500'
-                            : record.status === 'ABSENT' ? 'bg-red-400 text-white border-red-400'
-                            : 'bg-amber-400 text-white border-amber-400'
-                            : isToday
-                              ? 'bg-indigo-50 text-indigo-600 border-indigo-300 border-dashed'
-                              : 'bg-white text-gray-400 border-gray-200 hover:border-indigo-300 hover:bg-indigo-50';
-
-                          return (
-                            <div key={dayNum} className="relative">
-                              <button
-                                disabled={!!isMarkingThis || !isClient}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (!isClient) return;
-                                  setActiveAttendancePopup(prev =>
-                                    prev === `${w.id}_${dateStr}` ? null : `${w.id}_${dateStr}`
-                                  );
-                                }}
-                                title={`Day ${dayNum} — ${date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}${record ? ` • ${record.status.replace('_', ' ')}` : ''}`}
-                                className={`w-8 h-8 rounded-md border text-[9px] font-bold flex flex-col items-center justify-center transition-all ${boxStyle} ${isClient ? 'cursor-pointer' : 'cursor-default'}`}
-                              >
-                                {isMarkingThis ? (
-                                  <Loader2 className="w-2.5 h-2.5 animate-spin" />
-                                ) : (
-                                  <>
-                                    <span className="leading-none text-[10px]">{dayNum}</span>
-                                    {record && (
-                                      <span className="text-[7px] leading-none opacity-90">
-                                        {record.status === 'PRESENT' ? 'P' : record.status === 'ABSENT' ? 'A' : 'H'}
-                                      </span>
-                                    )}
-                                  </>
-                                )}
-                              </button>
-
-                              {/* Status popup */}
-                              {isClient && activeAttendancePopup === `${w.id}_${dateStr}` && (
-                                <div
-                                  className="absolute z-50 top-10 left-0 bg-white border border-gray-200 rounded-xl shadow-xl p-2 min-w-[130px]"
-                                  onClick={e => e.stopPropagation()}
-                                >
-                                  <p className="text-[9px] font-bold text-gray-400 uppercase tracking-wider px-1 mb-1.5">
-                                    Day {dayNum} · {date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-                                  </p>
-                                  {[
-                                    { status: 'PRESENT', label: '✓ Present', color: 'bg-emerald-500 hover:bg-emerald-600' },
-                                    { status: 'HALF_DAY', label: '½ Half Day', color: 'bg-amber-500 hover:bg-amber-600' },
-                                    { status: 'ABSENT', label: '✕ Absent', color: 'bg-red-500 hover:bg-red-600' },
-                                  ].map(opt => (
-                                    <button
-                                      key={opt.status}
-                                      onClick={() => {
-                                        setActiveAttendancePopup(null);
-                                        handleMarkAttendance(w.id, opt.status, date);
-                                      }}
-                                      className={`w-full text-left text-[11px] font-bold text-white px-2.5 py-1.5 rounded-lg mb-1 last:mb-0 transition-colors ${opt.color}`}
-                                    >
-                                      {opt.label}
-                                    </button>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-
-                        {/* Locked upcoming days indicator */}
-                        {days.length > visibleDays.length && (
-                          <span className="text-[10px] text-gray-300 font-medium px-1">
-                            +{days.length - visibleDays.length} locked
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Attendance results — directly below this worker's row */}
-                    {workerRecords.length > 0 && (
-                      <div className="px-3 py-2 bg-white border-t border-gray-50">
-                        <div className="flex flex-wrap gap-x-3 gap-y-1">
-                          {workerRecords
-                            .sort((a, b) => new Date(a.date) - new Date(b.date))
-                            .map((rec) => {
-                              const dNum = Math.round((new Date(rec.date) - new Date(assignment.startDate)) / (1000 * 60 * 60 * 24)) + 1;
-                              return (
-                                <span key={rec.id} className="flex items-center gap-1 text-[10px]">
-                                  <span className={`font-bold px-1.5 py-0.5 rounded ${
-                                    rec.status === 'PRESENT' ? 'bg-emerald-100 text-emerald-700' :
-                                    rec.status === 'ABSENT' ? 'bg-red-100 text-red-700' :
-                                    'bg-amber-100 text-amber-700'
-                                  }`}>Day {dNum}</span>
-                                  <span className="text-gray-400">{rec.status.replace('_', ' ')}</span>
-                                  {rec.checkInTime && (
-                                    <span className="text-gray-300 font-mono">
-                                      {new Date(rec.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                    </span>
-                                  )}
-                                </span>
-                              );
-                            })}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <p className="text-center text-xs text-gray-400 py-4">No workers assigned yet.</p>
-          )}
-        </section>
-
-        {/* Assigned Workers */}
-
-        <section className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm lg:col-span-3">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="h-9 w-9 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
-                <Users className="h-4 w-4" />
-              </div>
+          <div className="space-y-4">
+            <div className="p-4 bg-[#f8f9fa] rounded-2xl border border-gray-50 flex items-center justify-between">
               <div>
-                <h2 className="text-base font-bold text-gray-900">Assigned Workers</h2>
-                <p className="text-xs text-gray-500">Workers attached to this assignment.</p>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">Client</span>
+                <span className="text-xs font-black text-gray-900">{assignment.client?.companyName || '-'}</span>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center">
+                <UserRound className="w-4 h-4 text-indigo-400" />
               </div>
             </div>
-            <span className="bg-emerald-100 text-emerald-700 font-bold px-2.5 py-1 rounded-lg text-sm">{assignedWorkers.length}</span>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {assignedWorkers.length === 0 ? (
-              <div className="col-span-full text-center p-8 bg-gray-50 rounded-xl border border-gray-100 border-dashed text-gray-500 text-sm">
-                No workers assigned yet. Click 'Assign Worker' to add someone to this assignment.
-              </div>
-            ) : (
-              assignedWorkers.map((aw) => {
-                const w = aw.worker;
-                const name = `${w?.user?.firstName || w?.firstName} ${w?.user?.lastName || w?.lastName || ''}`.trim();
-                return (
-                  <div key={aw.id} className="flex items-center justify-between gap-3 rounded-xl border border-gray-100 p-4 hover:border-emerald-100 transition-colors group">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
-                        <UserRound className="w-5 h-5 text-gray-400" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="font-bold text-gray-900 truncate">{name}</p>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          <span className={`text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded ${aw.status === 'ACTIVE' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>{aw.status}</span>
-                          <span className="text-xs text-gray-500 truncate">{w?.workerCode || w?.id.substring(0,8)}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {!isClient && (
-                        <Link to={`/workers/${w.id}`} className="text-sm font-semibold text-emerald-600 hover:text-emerald-800 bg-emerald-50 px-3 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                          View
-                        </Link>
-                      )}
-                      {isClient && assignment.status === 'COMPLETED' && (
-                        <button 
-                          onClick={() => handleOpenReview(w.id, null, name)}
-                          className="text-amber-500 hover:text-amber-600 bg-amber-50 px-2 py-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 text-xs font-bold"
-                        >
-                          <Star className="w-3.5 h-3.5 fill-current" /> Rate
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                );
-              })
-            )}
+            <div className="p-4 bg-[#f8f9fa] rounded-2xl border border-gray-50 flex items-center justify-between mt-auto">
+              <span className="text-[11px] font-bold text-gray-700">Agreed Rate</span>
+              <span className="text-sm font-black text-emerald-600">{assignment.agreedRate ? `₹${assignment.agreedRate}` : '-'}</span>
+            </div>
           </div>
         </section>
 
+        {/* Card 3: Work Schedule */}
+        <section className="rounded-3xl border border-gray-100 bg-white p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="h-10 w-10 rounded-2xl bg-indigo-50/50 flex items-center justify-center text-indigo-500">
+              <CalendarDays className="h-5 w-5" />
+            </div>
+            <div>
+              <h2 className="text-sm font-black text-gray-900">Work Schedule</h2>
+              <p className="text-[10px] text-gray-500">Total {scheduleDays.length} Days</p>
+            </div>
+          </div>
+
+          <div className="flex gap-2.5 overflow-x-auto scrollbar-hide pb-2">
+             {scheduleDays.map(d => {
+               const isSelected = selectedDate === d.date.toDateString();
+               return (
+                 <button 
+                   key={d.dayNum}
+                   onClick={() => setSelectedDate(d.date.toDateString())}
+                   className={`flex-shrink-0 flex flex-col items-center justify-center w-[72px] h-[72px] rounded-[20px] border transition-all ${
+                     isSelected 
+                      ? 'border-indigo-400 bg-indigo-50/50 text-indigo-700' 
+                      : 'border-[#f0f0f0] bg-white text-gray-400 hover:border-indigo-200 hover:bg-gray-50'
+                   }`}
+                 >
+                    <span className={`text-xs font-black mb-1 ${isSelected ? 'text-indigo-600' : 'text-gray-500'}`}>Day {d.dayNum}</span>
+                    <span className="text-[10px] font-bold opacity-80">{d.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })}</span>
+                 </button>
+               )
+             })}
+          </div>
+
+          <div className="mt-auto pt-4 relative">
+             <div className="w-full h-1 bg-[#f8f9fa] rounded-full overflow-hidden absolute top-0 left-0">
+                <div className="h-full bg-indigo-400 rounded-full transition-all" style={{ width: `${(selectedDayObj?.dayNum / scheduleDays.length) * 100}%` }} />
+             </div>
+             <div className="bg-[#f8f9fa] rounded-2xl p-3 flex items-start gap-2 border border-gray-50 mt-3">
+                <div className="w-4 h-4 rounded-full border border-indigo-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-[8px] font-bold text-indigo-500">i</span>
+                </div>
+                <p className="text-[10px] text-gray-500 font-medium leading-relaxed">Day {selectedDayObj?.dayNum || 1} is active. Other days are upcoming.</p>
+             </div>
+          </div>
+        </section>
       </div>
+
+      {/* Attendance Tracker */}
+      <section className="rounded-3xl border border-gray-100 bg-white p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] mt-5">
+         <div className="flex items-center gap-3 mb-6">
+           <div className="h-10 w-10 rounded-2xl bg-indigo-50/50 flex items-center justify-center text-indigo-500">
+             <Clock3 className="h-5 w-5" />
+           </div>
+           <div>
+             <h2 className="text-sm font-black text-gray-900">Attendance Tracker</h2>
+             <p className="text-[10px] text-gray-500">Track attendance and working hours.</p>
+           </div>
+         </div>
+
+         <div className="flex flex-col md:flex-row gap-4 mb-6">
+            {/* Selected Date Box */}
+            <div className="w-full md:w-[140px] h-[100px] bg-indigo-50/50 rounded-3xl border border-indigo-50 flex flex-col items-center justify-center text-indigo-700 shrink-0">
+               <span className="text-sm font-black mb-1">Day {selectedDayObj?.dayNum}</span>
+               <span className="text-xs font-bold text-indigo-500">{selectedDayObj?.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })}</span>
+            </div>
+
+            {/* Workers list for that day */}
+            <div className="flex-1 space-y-3">
+               {assignedWorkers.length === 0 ? (
+                 <div className="h-full bg-[#f8f9fa] rounded-3xl border border-gray-50 flex items-center justify-center p-4">
+                   <p className="text-xs text-gray-400 font-medium">No workers assigned.</p>
+                 </div>
+               ) : (
+                 assignedWorkers.map(aw => {
+                   const w = aw.worker;
+                   const record = attendanceData?.find(a => a.workerId === w.id && new Date(a.date).toDateString() === selectedDate);
+                   const isMarkingThis = markingAttendance[`${w.id}_${selectedDate}`];
+                   
+                   return (
+                     <div key={w.id} className="bg-[#f8f9fa] rounded-2xl border border-gray-50 p-3.5 flex items-center justify-between">
+                       <div className="flex items-center gap-4">
+                         <div className="w-12 h-12 rounded-full bg-indigo-50/80 text-indigo-400 flex items-center justify-center shrink-0">
+                           <UserRound className="w-5 h-5" />
+                         </div>
+                         <div>
+                           <p className="text-sm font-black text-gray-900">{w.user?.firstName} {w.user?.lastName}</p>
+                           <p className="text-[10px] text-gray-400 font-bold tracking-wider uppercase mt-0.5">Worker ID: {w.workerCode}</p>
+                         </div>
+                       </div>
+
+                       <div className="relative">
+                          <button 
+                            disabled={!isClient || isMarkingThis}
+                            onClick={() => { if(isClient) setActiveAttendancePopup(`${w.id}_${selectedDate}`) }}
+                            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+                              record ? 
+                                record.status === 'PRESENT' ? 'bg-emerald-50/80 text-emerald-600' :
+                                record.status === 'ABSENT' ? 'bg-red-50/80 text-red-600' :
+                                'bg-amber-50/80 text-amber-600'
+                              : 'bg-white border border-[#e5e7eb] text-gray-600 hover:bg-gray-50 shadow-sm'
+                            } ${!isClient ? 'cursor-default' : 'hover:scale-[1.02] active:scale-[0.98]'}`}
+                          >
+                            {isMarkingThis ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : record ? (
+                               <>
+                                 <div className={`w-2.5 h-2.5 rounded-full ${record.status === 'PRESENT' ? 'bg-emerald-500' : record.status === 'ABSENT' ? 'bg-red-500' : 'bg-amber-500'}`} />
+                                 {record.status === 'HALF_DAY' ? 'Half Day' : record.status === 'PRESENT' ? 'Present' : 'Absent'}
+                               </>
+                            ) : (
+                               <>
+                                 <div className="w-2.5 h-2.5 rounded-full bg-gray-300" />
+                                 Mark Status
+                               </>
+                            )}
+                          </button>
+
+                          {/* Popup menu for marking */}
+                          {isClient && activeAttendancePopup === `${w.id}_${selectedDate}` && (
+                            <div className="absolute right-0 top-full mt-2 z-50 bg-white border border-gray-100 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-2 min-w-[140px]">
+                              {[
+                                { status: 'PRESENT', label: 'Present', color: 'bg-emerald-500 hover:bg-emerald-600', dot: 'bg-emerald-400' },
+                                { status: 'HALF_DAY', label: 'Half Day', color: 'bg-amber-500 hover:bg-amber-600', dot: 'bg-amber-400' },
+                                { status: 'ABSENT', label: 'Absent', color: 'bg-red-500 hover:bg-red-600', dot: 'bg-red-400' },
+                              ].map(opt => (
+                                <button
+                                  key={opt.status}
+                                  onClick={() => {
+                                    setActiveAttendancePopup(null);
+                                    handleMarkAttendance(w.id, opt.status, new Date(selectedDate));
+                                  }}
+                                  className={`w-full text-left text-[11px] font-bold text-white px-3 py-2 rounded-xl mb-1 transition-colors flex items-center gap-2 ${opt.color}`}
+                                >
+                                  {opt.label}
+                                </button>
+                              ))}
+                              <button
+                                onClick={() => setActiveAttendancePopup(null)}
+                                className="w-full text-[11px] font-bold text-gray-400 hover:text-gray-600 px-3 py-1.5 text-center mt-1"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          )}
+                       </div>
+                     </div>
+                   )
+                 })
+               )}
+            </div>
+         </div>
+
+         {/* ATTENDANCE LOG table */}
+         <div className="mt-8">
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 pl-1">Attendance Log</p>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="bg-[#f8f9fa] text-gray-500 text-[10px] font-black uppercase tracking-wider border-y border-gray-100">
+                  <tr>
+                    <th className="px-4 py-3">Date</th>
+                    <th className="px-4 py-3">Worker</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3">Marked At</th>
+                    <th className="px-4 py-3">Check Out</th>
+                    <th className="px-4 py-3">Hours Worked</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {attendanceData && attendanceData.length > 0 ? (
+                    attendanceData.map((att) => {
+                      const workerName = `${att.worker?.user?.firstName || ''} ${att.worker?.user?.lastName || ''}`.trim();
+                      return (
+                        <tr key={att.id} className="hover:bg-gray-50/50 transition-colors">
+                          <td className="px-4 py-3.5 font-bold text-gray-800 text-xs">{new Date(att.date).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })}</td>
+                          <td className="px-4 py-3.5 text-gray-600 text-xs font-bold">{workerName}</td>
+                          <td className="px-4 py-3.5">
+                            <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[10px] font-bold ${
+                              att.status === 'PRESENT' ? 'text-emerald-600' :
+                              att.status === 'ABSENT' ? 'text-red-600' :
+                              att.status === 'HALF_DAY' ? 'text-amber-600' :
+                              'text-gray-600'
+                            }`}>
+                              <div className={`w-1.5 h-1.5 rounded-full ${att.status === 'PRESENT' ? 'bg-emerald-500' : att.status === 'ABSENT' ? 'bg-red-500' : 'bg-amber-500'}`} />
+                              {att.status === 'HALF_DAY' ? 'Half Day' : att.status === 'PRESENT' ? 'Present' : 'Absent'}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3.5 text-gray-500 font-bold text-xs">
+                            {att.checkInTime ? new Date(att.checkInTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : <span className="text-gray-300">—</span>}
+                          </td>
+                          <td className="px-4 py-3.5 text-gray-500 font-bold text-xs">
+                            {att.checkOutTime ? new Date(att.checkOutTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : <span className="text-gray-300">—</span>}
+                          </td>
+                          <td className="px-4 py-3.5 text-xs font-bold text-gray-800">
+                            {att.totalHours ? `${att.totalHours}h` : '-'}
+                            {att.overtimeHours > 0 && <span className="ml-1 text-[10px] text-purple-500">+{att.overtimeHours}h OT</span>}
+                          </td>
+                        </tr>
+                      )
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={6} className="px-4 py-8 text-center text-gray-400 text-xs font-bold">
+                        No attendance records yet.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+              <div className="p-3 border-t border-gray-100 bg-[#f8f9fa]/50 flex justify-center rounded-b-2xl">
+                 <button className="flex items-center gap-2 text-xs font-bold text-indigo-600 hover:text-indigo-700 transition-colors">
+                    <Activity className="w-3.5 h-3.5" /> View Full Attendance History
+                 </button>
+              </div>
+            </div>
+         </div>
+      </section>
       
       {!isClient && (
         <AssignWorkerModal 
