@@ -381,8 +381,8 @@ export default function AssignmentDetailsPage() {
         </section>
       </div>
 
-      <div className="mt-4">
-        <section className="rounded-[16px] border border-gray-100 bg-white p-4 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)]">
+      <div className="mt-4 flex justify-end">
+        <section className="rounded-[16px] border border-gray-100 bg-white p-4 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] w-full lg:w-[60%]">
            <div className="flex items-center gap-2 mb-4">
              <div className="h-8 w-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-500">
                <Clock className="h-4 w-4" />
