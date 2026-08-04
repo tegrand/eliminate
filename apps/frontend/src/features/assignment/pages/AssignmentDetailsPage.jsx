@@ -381,31 +381,30 @@ export default function AssignmentDetailsPage() {
         </section>
       </div>
 
-      {/* Attendance Tracker */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mt-6">
-        <section className="rounded-[20px] border border-gray-100 bg-white p-6 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] lg:col-span-8">
-           <div className="flex items-center gap-3 mb-8">
-             <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500">
-               <Clock className="h-5 w-5" />
+      <div className="mt-4">
+        <section className="rounded-[16px] border border-gray-100 bg-white p-4 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)]">
+           <div className="flex items-center gap-2 mb-4">
+             <div className="h-8 w-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-500">
+               <Clock className="h-4 w-4" />
              </div>
              <div>
-               <h2 className="text-base font-bold text-gray-900">Attendance Tracker</h2>
-               <p className="text-[11px] text-gray-500 mt-0.5">Track attendance and working hours.</p>
+               <h2 className="text-sm font-bold text-gray-900">Attendance Tracker</h2>
+               <p className="text-[10px] text-gray-500">Track attendance and working hours.</p>
              </div>
            </div>
 
-           <div className="flex flex-col md:flex-row gap-5 mb-8">
+           <div className="flex flex-col md:flex-row gap-3 mb-4">
               {/* Selected Date Box */}
-              <div className="w-full md:w-[150px] h-[105px] bg-indigo-50/50 rounded-2xl flex flex-col items-center justify-center text-indigo-700 shrink-0 border border-indigo-50">
-                 <span className="text-[15px] font-bold mb-1.5">Day {selectedDayObj?.dayNum}</span>
-                 <span className="text-[13px] font-semibold text-indigo-600">{selectedDayObj?.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })}</span>
+              <div className="w-full md:w-[110px] h-[70px] bg-indigo-50/50 rounded-xl flex flex-col items-center justify-center text-indigo-700 shrink-0 border border-indigo-50">
+                 <span className="text-[13px] font-bold mb-0.5">Day {selectedDayObj?.dayNum}</span>
+                 <span className="text-[11px] font-semibold text-indigo-600">{selectedDayObj?.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })}</span>
               </div>
 
               {/* Workers list for that day */}
-              <div className="flex-1 space-y-3">
+              <div className="flex-1 space-y-2">
                  {assignedWorkers.length === 0 ? (
-                   <div className="h-[105px] bg-[#fbfbfc] rounded-2xl border border-gray-50 flex items-center justify-center p-4">
-                     <p className="text-sm text-gray-400 font-medium">No workers assigned.</p>
+                   <div className="h-[70px] bg-[#fbfbfc] rounded-xl border border-gray-50 flex items-center justify-center p-3">
+                     <p className="text-xs text-gray-400 font-medium">No workers assigned.</p>
                    </div>
                  ) : (
                    assignedWorkers.map(aw => {
@@ -414,14 +413,14 @@ export default function AssignmentDetailsPage() {
                      const isMarkingThis = markingAttendance[`${w.id}_${selectedDate}`];
                      
                      return (
-                       <div key={w.id} className="bg-[#fbfbfc] rounded-[16px] border border-gray-50 p-4 flex items-center justify-between">
-                         <div className="flex items-center gap-4">
-                           <div className="w-12 h-12 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0">
-                             <UserRound className="w-[22px] h-[22px]" />
+                       <div key={w.id} className="bg-[#fbfbfc] rounded-xl border border-gray-50 px-3 py-2.5 flex items-center justify-between">
+                         <div className="flex items-center gap-3">
+                           <div className="w-9 h-9 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0">
+                             <UserRound className="w-[18px] h-[18px]" />
                            </div>
                            <div>
-                             <p className="text-[15px] font-bold text-gray-900">{w.user?.firstName} {w.user?.lastName}</p>
-                             <p className="text-[12px] text-gray-500 font-medium mt-0.5">Worker ID: {w.workerCode}</p>
+                             <p className="text-[13px] font-bold text-gray-900">{w.user?.firstName} {w.user?.lastName}</p>
+                             <p className="text-[11px] text-gray-500 font-medium">Worker ID: {w.workerCode}</p>
                            </div>
                          </div>
 
@@ -488,18 +487,18 @@ export default function AssignmentDetailsPage() {
            </div>
 
            {/* ATTENDANCE LOG table */}
-           <div className="mt-8">
-              <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-4 pl-1">ATTENDANCE LOG</p>
+           <div className="mt-4">
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2 pl-1">ATTENDANCE LOG</p>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                  <thead className="bg-[#fbfbfc] text-gray-700 text-[12px] font-semibold border-y border-gray-100">
+                  <thead className="bg-[#fbfbfc] text-gray-700 text-[11px] font-semibold border-y border-gray-100">
                     <tr>
-                      <th className="px-4 py-3.5 font-semibold">Date</th>
-                      <th className="px-4 py-3.5 font-semibold">Worker</th>
-                      <th className="px-4 py-3.5 font-semibold">Status</th>
-                      <th className="px-4 py-3.5 font-semibold">Marked At</th>
-                      <th className="px-4 py-3.5 font-semibold">Check Out</th>
-                      <th className="px-4 py-3.5 font-semibold">Hours Worked</th>
+                      <th className="px-3 py-2.5 font-semibold">Date</th>
+                      <th className="px-3 py-2.5 font-semibold">Worker</th>
+                      <th className="px-3 py-2.5 font-semibold">Status</th>
+                      <th className="px-3 py-2.5 font-semibold">Marked At</th>
+                      <th className="px-3 py-2.5 font-semibold">Check Out</th>
+                      <th className="px-3 py-2.5 font-semibold">Hours Worked</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
