@@ -23,6 +23,8 @@ export default function AssignmentDetailsPage() {
   const [isPaying, setIsPaying] = useState(false);
   const [markingAttendance, setMarkingAttendance] = useState({});
   const [activeAttendancePopup, setActiveAttendancePopup] = useState(null);
+  // selectedDate MUST be here before any early returns to avoid hook order errors
+  const [selectedDate, setSelectedDate] = useState(() => new Date().toDateString());
   const queryClient = useQueryClient();
 
   // Close popup when clicking outside
@@ -170,10 +172,7 @@ export default function AssignmentDetailsPage() {
     }
   }
 
-  // Initialize selectedDate state
-  const [selectedDate, setSelectedDate] = useState(() => {
-    return new Date().toDateString();
-  });
+  // selectedDate already declared at top of component
 
   const selectedDayObj = scheduleDays.find(d => d.date.toDateString() === selectedDate) || scheduleDays[0];
 
@@ -301,33 +300,62 @@ export default function AssignmentDetailsPage() {
 
           <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-3">
              {scheduleDays.map(d => {
-               const isSelected = selectedDate === d.date.toDateString();
                const isToday = d.date.toDateString() === todayDateStr;
                const isPast = d.date < new Date() && !isToday;
-               const isFuture = d.date > new Date() && !isToday;
                return (
-                 <button 
-                   key={d.dayNum}
-                   onClick={() => setSelectedDate(d.date.toDateString())}
-                   className={`flex-shrink-0 flex flex-col items-center justify-center w-[76px] h-[76px] rounded-xl border transition-all ${
-                     isSelected && isToday
-                      ? 'border-blue-400 bg-blue-600 shadow-[0_4px_14px_-4px_rgba(59,130,246,0.5)]'
-                      : isSelected
-                      ? 'border-blue-300 bg-white shadow-[0_2px_12px_-4px_rgba(59,130,246,0.3)]'
-                      : isToday
-                      ? 'border-blue-400 bg-blue-600 shadow-[0_4px_14px_-4px_rgba(59,130,246,0.5)]'
-                      : isPast
-                      ? 'border-gray-100 bg-[#fbfbfc] hover:border-gray-200'
-                      : 'border-dashed border-gray-200 bg-white hover:border-blue-200 opacity-60'
-                   }`}
-                 >
-                    <span className={`text-[13px] font-bold mb-1.5 ${
-                      isToday ? 'text-white' : isSelected ? 'text-blue-600' : 'text-gray-400'
-                    }`}>Day {d.dayNum}</span>
-                    <span className={`text-[11px] font-semibold ${
-                      isToday ? 'text-blue-100' : isSelected ? 'text-blue-500' : 'text-gray-400'
-                    }`}>{d.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })}</span>
-                 </button>
+                 <div key={d.dayNum} className="relative flex-shrink-0">
+                   <button 
+                     onClick={isToday ? () => setActiveAttendancePopup(isToday ? `day_${d.dayNum}` : null) : undefined}
+                     disabled={!isToday}
+                     className={`flex flex-col items-center justify-center w-[76px] h-[76px] rounded-xl border transition-all ${
+                       isToday
+                        ? 'border-blue-400 bg-blue-600 shadow-[0_4px_14px_-4px_rgba(59,130,246,0.5)] cursor-pointer hover:bg-blue-700 active:scale-[0.97]'
+                        : isPast
+                        ? 'border-gray-100 bg-[#fbfbfc] cursor-default opacity-60'
+                        : 'border-dashed border-gray-200 bg-white cursor-default opacity-40'
+                     }`}
+                   >
+                      <span className={`text-[13px] font-bold mb-1.5 ${isToday ? 'text-white' : 'text-gray-400'}`}>Day {d.dayNum}</span>
+                      <span className={`text-[11px] font-semibold ${isToday ? 'text-blue-100' : 'text-gray-400'}`}>{d.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })}</span>
+                   </button>
+
+                   {/* Dropdown on today's day click */}
+                   {isToday && activeAttendancePopup === `day_${d.dayNum}` && assignedWorkers.length > 0 && (
+                     <div className="absolute left-0 top-full mt-2 z-50 bg-white border border-gray-100 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-3 min-w-[200px]" onClick={e => e.stopPropagation()}>
+                       <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Mark Attendance — Day {d.dayNum}</p>
+                       {assignedWorkers.map(aw => {
+                         const w = aw.worker;
+                         const record = attendanceData?.find(a => a.workerId === w.id && new Date(a.date).toDateString() === todayDateStr);
+                         const isMarkingThis = markingAttendance[`${w.id}_${todayDateStr}`];
+                         return (
+                           <div key={w.id} className="mb-3 last:mb-0">
+                             <p className="text-[12px] font-semibold text-gray-700 mb-1.5">{w.user?.firstName} {w.user?.lastName}</p>
+                             <div className="flex gap-1.5">
+                               {[
+                                 { status: 'PRESENT', label: 'Present', color: record?.status === 'PRESENT' ? 'bg-emerald-500 text-white' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-500 hover:text-white' },
+                                 { status: 'HALF_DAY', label: 'Half', color: record?.status === 'HALF_DAY' ? 'bg-amber-500 text-white' : 'bg-amber-50 text-amber-700 hover:bg-amber-500 hover:text-white' },
+                                 { status: 'ABSENT', label: 'Absent', color: record?.status === 'ABSENT' ? 'bg-red-500 text-white' : 'bg-red-50 text-red-600 hover:bg-red-500 hover:text-white' },
+                               ].map(opt => (
+                                 <button
+                                   key={opt.status}
+                                   disabled={!!isMarkingThis}
+                                   onClick={() => {
+                                     setActiveAttendancePopup(null);
+                                     handleMarkAttendance(w.id, opt.status, new Date(todayDateStr));
+                                   }}
+                                   className={`flex-1 text-[10px] font-bold px-2 py-1.5 rounded-lg transition-colors ${opt.color} ${isMarkingThis ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                 >
+                                   {isMarkingThis === opt.status ? '...' : opt.label}
+                                 </button>
+                               ))}
+                             </div>
+                           </div>
+                         );
+                       })}
+                       <button onClick={() => setActiveAttendancePopup(null)} className="w-full text-[10px] font-bold text-gray-400 hover:text-gray-600 pt-1.5 text-center border-t border-gray-100 mt-1">Close</button>
+                     </div>
+                   )}
+                 </div>
                )
              })}
           </div>
