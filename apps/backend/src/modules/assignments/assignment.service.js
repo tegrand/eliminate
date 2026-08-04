@@ -1,6 +1,6 @@
 import prisma from "../../config/prisma.js";
 import AppError from "../../shared/errors/app-error.js";
-import { startOfDay } from "date-fns";
+import { startOfDay, endOfDay, differenceInMinutes } from "date-fns";
 
 export const listAssignments = async (filters, user) => {
   const where = {};
@@ -86,7 +86,12 @@ export const getAssignmentAttendance = async (id, user) => {
 
   // Assuming attendance falls roughly in the assignment dates
   const where = { workerId: { in: workerIds } };
-  if (assignment.startDate) where.date = { gte: assignment.startDate };
+  if (assignment.startDate || assignment.endDate) {
+    where.date = {
+      ...(assignment.startDate && { gte: startOfDay(assignment.startDate) }),
+      ...(assignment.endDate && { lte: startOfDay(assignment.endDate) }),
+    };
+  }
   
   const attendance = await prisma.workerAttendance.findMany({
     where,
@@ -118,6 +123,12 @@ export const markAssignmentAttendance = async (assignmentId, { workerId, status,
   if (!isAssigned) throw new AppError("Worker is not assigned to this assignment", 400);
 
   const attendanceDate = date ? startOfDay(new Date(date)) : startOfDay(new Date());
+  if (assignment.startDate && attendanceDate < startOfDay(assignment.startDate)) {
+    throw new AppError("Attendance date is before the assignment start date", 400);
+  }
+  if (assignment.endDate && attendanceDate > startOfDay(assignment.endDate)) {
+    throw new AppError("Attendance date is after the assignment end date", 400);
+  }
 
   const existing = await prisma.workerAttendance.findUnique({
     where: { workerId_date: { workerId, date: attendanceDate } }
@@ -140,6 +151,47 @@ export const markAssignmentAttendance = async (assignmentId, { workerId, status,
   }
 
   return prisma.workerAttendance.create({ data: dataToSet });
+};
+
+export const checkoutAssignmentAttendance = async (assignmentId, { workerId, date }) => {
+  const assignment = await prisma.assignment.findUnique({
+    where: { id: assignmentId },
+    include: { assignedWorkers: true }
+  });
+  if (!assignment) throw new AppError("Assignment not found", 404);
+  if (!assignment.assignedWorkers.some((aw) => aw.workerId === workerId)) {
+    throw new AppError("Worker is not assigned to this assignment", 400);
+  }
+
+  const attendanceDate = date ? startOfDay(new Date(date)) : startOfDay(new Date());
+  let record = await prisma.workerAttendance.findFirst({
+    where: {
+      workerId,
+      date: { gte: startOfDay(attendanceDate), lte: endOfDay(attendanceDate) }
+    },
+    orderBy: { date: "desc" }
+  });
+  if (!record) {
+    record = await prisma.workerAttendance.findFirst({
+      where: { workerId, status: "PRESENT", checkInTime: { not: null }, checkOutTime: null },
+      orderBy: { date: "desc" }
+    });
+  }
+  if (!record?.checkInTime) throw new AppError("Worker must be marked present before checkout", 400);
+  if (record.checkOutTime) throw new AppError("Worker is already checked out", 400);
+
+  const checkOutTime = new Date();
+  const totalHours = differenceInMinutes(checkOutTime, record.checkInTime) / 60;
+  const overtimeHours = totalHours > 8 ? totalHours - 8 : 0;
+
+  return prisma.workerAttendance.update({
+    where: { id: record.id },
+    data: {
+      checkOutTime,
+      totalHours: Number(totalHours.toFixed(2)),
+      overtimeHours: Number(overtimeHours.toFixed(2)),
+    }
+  });
 };
 
 export const updateAssignmentStatus = async (id, status, user) => {

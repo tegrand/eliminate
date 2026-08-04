@@ -22,6 +22,11 @@ export const markAssignmentAttendance = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, "Attendance marked successfully", result, 200);
 });
 
+export const checkoutAssignmentAttendance = asyncHandler(async (req, res) => {
+  const result = await assignmentService.checkoutAssignmentAttendance(req.params.id, req.body, req.user);
+  return ApiResponse.success(res, "Worker checked out successfully", result, 200);
+});
+
 export const updateAssignmentStatus = asyncHandler(async (req, res) => {
   const { status } = req.validatedData;
   const assignment = await assignmentService.updateAssignmentStatus(req.params.id, status, req.user);

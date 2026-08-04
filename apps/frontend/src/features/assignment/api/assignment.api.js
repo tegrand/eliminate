@@ -8,5 +8,9 @@ export const assignmentApi = {
   markAttendance: async (assignmentId, data) => {
     const response = await api.post(`/assignments/${assignmentId}/attendance`, data);
     return response.data;
+  },
+  checkoutAttendance: async (assignmentId, data) => {
+    const response = await api.post(`/assignments/${assignmentId}/attendance/checkout`, data);
+    return response.data;
   }
 };

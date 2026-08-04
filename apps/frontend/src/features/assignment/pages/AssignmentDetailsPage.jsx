@@ -27,6 +27,13 @@ export default function AssignmentDetailsPage() {
   const [selectedDate, setSelectedDate] = useState(() => new Date().toDateString());
   const queryClient = useQueryClient();
 
+  const toAttendanceDate = (date = new Date()) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}T12:00:00`;
+  };
+
   // Close popup when clicking outside
   useEffect(() => {
     if (!activeAttendancePopup) return;
@@ -92,12 +99,26 @@ export default function AssignmentDetailsPage() {
     const key = `${workerId}_${dateStr}`;
     setMarkingAttendance(prev => ({ ...prev, [key]: status }));
     try {
-      const datePayload = date || new Date();
-      await assignmentApi.markAttendance(id, { workerId, status, date: datePayload.toISOString() });
+      await assignmentApi.markAttendance(id, { workerId, status, date: toAttendanceDate(date) });
       toast.success(`Marked ${status.toLowerCase().replace('_', ' ')}`);
       queryClient.invalidateQueries({ queryKey: ["assignmentAttendance", id] });
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to mark attendance");
+    } finally {
+      setMarkingAttendance(prev => ({ ...prev, [key]: null }));
+    }
+  };
+
+  const handleCheckoutAttendance = async (workerId, date) => {
+    const dateStr = date ? date.toDateString() : new Date().toDateString();
+    const key = `${workerId}_${dateStr}`;
+    setMarkingAttendance(prev => ({ ...prev, [key]: "CHECKOUT" }));
+    try {
+      await assignmentApi.checkoutAttendance(id, { workerId, date: toAttendanceDate(date) });
+      toast.success("Worker checked out successfully");
+      queryClient.invalidateQueries({ queryKey: ["assignmentAttendance", id] });
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to checkout worker");
     } finally {
       setMarkingAttendance(prev => ({ ...prev, [key]: null }));
     }
@@ -211,7 +232,7 @@ export default function AssignmentDetailsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4">
         
         {/* Card 1: Assignment Tracking (col-span-5) */}
-        <section className="rounded-[16px] border border-gray-100 bg-white p-4 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] flex flex-col lg:col-span-5">
+        <section className="rounded-[16px] border border-gray-100 bg-white p-4 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] flex flex-col lg:col-span-7">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
@@ -258,7 +279,7 @@ export default function AssignmentDetailsPage() {
         </section>
 
         {/* Card 2: Overview (col-span-3) */}
-        <section className="rounded-[16px] border border-gray-100 bg-white p-4 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] flex flex-col lg:col-span-3">
+        <section className="rounded-[16px] border border-gray-100 bg-white p-4 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] flex flex-col lg:col-span-5">
           <div className="flex items-center gap-2 mb-4">
             <div className="h-8 w-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-500">
               <Building2 className="h-4 w-4" />
@@ -287,8 +308,8 @@ export default function AssignmentDetailsPage() {
         </section>
 
         {/* Card 3: Work Schedule (col-span-4) */}
-        <section className="rounded-[16px] border border-gray-100 bg-white p-4 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] flex flex-col lg:col-span-4">
-          <div className="flex items-center gap-2 mb-4">
+        <section className="rounded-[16px] border border-gray-100 bg-white p-4 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] flex flex-col lg:col-span-12">
+          <div className="flex items-center justify-between gap-2 mb-4">
             <div className="h-8 w-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
               <CalendarDays className="h-4 w-4" />
             </div>
@@ -298,16 +319,16 @@ export default function AssignmentDetailsPage() {
             </div>
           </div>
 
-          <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-3">
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-3 border-b border-gray-100">
              {scheduleDays.map(d => {
                const isToday = d.date.toDateString() === todayDateStr;
                const isPast = d.date < new Date() && !isToday;
                return (
                  <div key={d.dayNum} className="relative flex-shrink-0">
                    <button 
-                     onClick={isToday ? () => setActiveAttendancePopup(isToday ? `day_${d.dayNum}` : null) : undefined}
+                     onClick={isToday ? () => setSelectedDate(d.date.toDateString()) : undefined}
                      disabled={!isToday}
-                     className={`flex flex-col items-center justify-center w-[58px] h-[58px] rounded-xl border transition-all ${
+                     className={`flex flex-col items-center justify-center w-[62px] h-[62px] rounded-xl border transition-all ${
                        isToday
                         ? 'border-blue-400 bg-blue-600 shadow-[0_4px_14px_-4px_rgba(59,130,246,0.5)] cursor-pointer hover:bg-blue-700 active:scale-[0.97]'
                         : isPast
@@ -320,7 +341,7 @@ export default function AssignmentDetailsPage() {
                    </button>
 
                    {/* Dropdown on today's day click */}
-                   {isToday && activeAttendancePopup === `day_${d.dayNum}` && assignedWorkers.length > 0 && (
+                   {false && isToday && activeAttendancePopup === `day_${d.dayNum}` && assignedWorkers.length > 0 && (
                      <div className="absolute left-0 top-full mt-2 z-50 bg-white border border-gray-100 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-3 min-w-[200px]" onClick={e => e.stopPropagation()}>
                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Mark Attendance — Day {d.dayNum}</p>
                        {assignedWorkers.map(aw => {
@@ -360,6 +381,41 @@ export default function AssignmentDetailsPage() {
              })}
           </div>
 
+          {/* Workers booked for this assignment */}
+          {false && assignedWorkers.length > 0 && (
+            <div className="mt-3 border-b border-gray-100 pb-3">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Booked Workers</p>
+                <span className="text-[10px] font-semibold text-gray-400">{assignedWorkers.length} assigned</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {assignedWorkers.map((aw) => {
+                  const worker = aw.worker;
+                  const popupKey = `schedule_${worker.id}_${todayDateStr}`;
+                  const todayRecord = attendanceData?.find((record) => record.workerId === worker.id && new Date(record.date).toDateString() === todayDateStr);
+                  return (
+                    <div key={worker.id} className="relative shrink-0">
+                      <div className="flex w-full items-center gap-2 rounded-lg border border-gray-100 bg-[#fbfbfc] px-2.5 py-2 text-left">
+                        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-50 text-indigo-500"><UserRound className="h-3.5 w-3.5" /></span>
+                        <span className="min-w-0 flex-1 truncate text-[11px] font-semibold text-gray-700">{worker.user?.firstName} {worker.user?.lastName}</span>
+                        {todayRecord && <span className={`h-2 w-2 rounded-full ${todayRecord.status === 'PRESENT' ? 'bg-emerald-500' : todayRecord.status === 'ABSENT' ? 'bg-red-500' : 'bg-amber-500'}`} />}
+                      </div>
+                      {false && isClient && activeAttendancePopup === popupKey && (
+                        <div className="absolute left-0 top-full z-50 mt-2 w-36 rounded-xl border border-gray-100 bg-white p-2 shadow-xl" onClick={(e) => e.stopPropagation()}>
+                          <p className="mb-1.5 text-[10px] font-bold text-gray-500">Today&apos;s status</p>
+                          {todayRecord?.status === "PRESENT" && !todayRecord?.checkOutTime && <button type="button" onClick={() => { setActiveAttendancePopup(null); handleCheckoutAttendance(worker.id, new Date(todayDateStr)); }} className="mb-1 w-full rounded-lg bg-blue-600 px-2 py-1.5 text-left text-[10px] font-bold text-white hover:bg-blue-700">{markingAttendance[`${worker.id}_${todayDateStr}`] === "CHECKOUT" ? "Checking out..." : "Checkout"}</button>}
+                          {[['PRESENT', 'Present', 'bg-emerald-500'], ['HALF_DAY', 'Half Day', 'bg-amber-500'], ['ABSENT', 'Absent', 'bg-red-500']].map(([status, label, color]) => (
+                            <button key={status} type="button" onClick={() => { setActiveAttendancePopup(null); handleMarkAttendance(worker.id, status, new Date(todayDateStr)); }} className={`mb-1 w-full rounded-lg px-2 py-1.5 text-left text-[10px] font-bold text-white ${color}`}>{label}</button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <div className="mt-auto pt-3 relative">
              <div className="w-full h-[3px] bg-gray-100 rounded-full overflow-hidden absolute top-0 left-0">
                 <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${(selectedDayObj?.dayNum / scheduleDays.length) * 100}%` }} />
@@ -381,8 +437,8 @@ export default function AssignmentDetailsPage() {
         </section>
       </div>
 
-      <div className="mt-4 flex justify-end">
-        <section className="rounded-[16px] border border-gray-100 bg-white p-4 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] w-full lg:w-[60%]">
+      <div className="mt-4">
+        <section className="rounded-[16px] border border-gray-100 bg-white p-4 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)]">
            <div className="flex items-center gap-2 mb-4">
              <div className="h-8 w-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-500">
                <Clock className="h-4 w-4" />
@@ -409,11 +465,12 @@ export default function AssignmentDetailsPage() {
                  ) : (
                    assignedWorkers.map(aw => {
                      const w = aw.worker;
-                     const record = attendanceData?.find(a => a.workerId === w.id && new Date(a.date).toDateString() === selectedDate);
+                     const record = attendanceData?.find(a => a.workerId === w.id && new Date(a.date).toDateString() === selectedDate)
+                       || attendanceData?.find(a => a.workerId === w.id && a.status === 'PRESENT' && !a.checkOutTime);
                      const isMarkingThis = markingAttendance[`${w.id}_${selectedDate}`];
                      
                      return (
-                       <div key={w.id} className="bg-[#fbfbfc] rounded-xl border border-gray-50 px-3 py-2.5 flex items-center justify-between">
+                       <div key={w.id} onClick={() => isClient && setActiveAttendancePopup(`${w.id}_${selectedDate}`)} className="bg-[#fbfbfc] rounded-xl border border-gray-50 px-3 py-2.5 flex items-center justify-between cursor-pointer hover:border-blue-200 hover:bg-blue-50/30 transition-colors">
                          <div className="flex items-center gap-3">
                            <div className="w-9 h-9 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0">
                              <UserRound className="w-[18px] h-[18px]" />
@@ -425,7 +482,8 @@ export default function AssignmentDetailsPage() {
                          </div>
 
                          <div className="relative">
-                            <button 
+                           <button 
+                              onClick={(event) => event.stopPropagation()}
                               disabled={!isClient || isMarkingThis}
                               onClick={() => { if(isClient) setActiveAttendancePopup(`${w.id}_${selectedDate}`) }}
                               className={`px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2 transition-all ${
@@ -454,6 +512,11 @@ export default function AssignmentDetailsPage() {
                             {/* Popup menu for marking */}
                             {isClient && activeAttendancePopup === `${w.id}_${selectedDate}` && (
                               <div className="absolute right-0 top-full mt-2 z-50 bg-white border border-gray-100 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] p-2 min-w-[140px]">
+                                {record?.checkOutTime && <div className="mb-2 rounded-lg bg-emerald-50 px-2.5 py-2 text-[10px] font-semibold text-emerald-700">
+                                  <div>Checked out: {new Date(record.checkOutTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
+                                  <div>Total hours: {Number(record.totalHours || 0).toFixed(2)}h</div>
+                                </div>}
+                                {record?.status === 'PRESENT' && record?.checkInTime && !record?.checkOutTime && <button onClick={() => { setActiveAttendancePopup(null); handleCheckoutAttendance(w.id, record.date ? new Date(record.date) : new Date(selectedDate)); }} className="w-full text-left text-[11px] font-bold text-white px-3 py-2 rounded-xl mb-1 bg-blue-600 hover:bg-blue-700">Checkout</button>}
                                 {[
                                   { status: 'PRESENT', label: 'Present', color: 'bg-emerald-500 hover:bg-emerald-600' },
                                   { status: 'HALF_DAY', label: 'Half Day', color: 'bg-amber-500 hover:bg-amber-600' },

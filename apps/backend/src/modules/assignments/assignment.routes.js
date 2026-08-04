@@ -5,6 +5,7 @@ import {
   getAssignment,
   getAssignmentAttendance,
   markAssignmentAttendance,
+  checkoutAssignmentAttendance,
   updateAssignmentStatus,
   assignWorker,
   removeWorker
@@ -13,7 +14,9 @@ import {
 import {
   updateAssignmentStatusSchema,
   assignmentIdParamSchema,
-  assignWorkerSchema
+  assignWorkerSchema,
+  markAssignmentAttendanceSchema,
+  checkoutAssignmentAttendanceSchema
 } from "./assignment.validation.js";
 
 import validate from "../../middleware/validate.middleware.js";
@@ -38,8 +41,16 @@ router.get(
 );
 
 router.post(
+  "/:id/attendance/checkout",
+  validate(assignmentIdParamSchema, "params"),
+  validate(checkoutAssignmentAttendanceSchema),
+  checkoutAssignmentAttendance
+);
+
+router.post(
   "/:id/attendance",
   validate(assignmentIdParamSchema, "params"),
+  validate(markAssignmentAttendanceSchema),
   markAssignmentAttendance
 );
 

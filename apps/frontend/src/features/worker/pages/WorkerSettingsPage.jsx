@@ -4,11 +4,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { usersApi } from "../../../api/users.api";
 import { workerApi } from "../api/worker.api";
-import { Lock, Eye, EyeOff, Loader2, BarChart2, CheckCircle2, FileText, Upload, MapPin, Briefcase, Palette, IndianRupee } from "lucide-react";
+import { Lock, Eye, EyeOff, Loader2, BarChart2, CheckCircle2, FileText, Upload, MapPin, Briefcase, Palette, IndianRupee, Languages, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
 import { calculateWorkerProfileCompletion } from "../../../utils/profileCompletion";
 import { documentsApi } from "../../../api/documents.api";
+import api from "../../../api/axios";
 
 export default function WorkerSettingsPage() {
   const { user } = useAuth();
@@ -16,6 +17,11 @@ export default function WorkerSettingsPage() {
   const [docType, setDocType] = useState("AADHAAR");
   const [docFile, setDocFile] = useState(null);
   const [expectedWage, setExpectedWage] = useState("");
+  const [experienceYears, setExperienceYears] = useState(() => localStorage.getItem("workerExperienceYears") || "");
+  const [workTypes, setWorkTypes] = useState(() => JSON.parse(localStorage.getItem("workerWorkTypes") || "[]"));
+  const [languageId, setLanguageId] = useState("");
+  const [skillsText, setSkillsText] = useState(() => localStorage.getItem("workerSkillsText") || "");
+  const [locationPreferences, setLocationPreferences] = useState(() => JSON.parse(localStorage.getItem("workerLocationPreferences") || "{}"));
   
   const { register: regSettings, handleSubmit: handleSettingsSubmit, formState: { isDirty: isSettingsDirty }, reset: resetSettings } = useForm({
     defaultValues: {
@@ -44,6 +50,21 @@ export default function WorkerSettingsPage() {
     queryKey: ["myWorkerProfile"],
     queryFn: () => workerApi.getMyWorkerProfile(),
   });
+  const workerProfile = workerProfileRes?.data?.data || workerProfileRes?.data || workerProfileRes;
+  const workerLanguages = workerProfile?.languages || [];
+
+  const { data: languagesRes } = useQuery({
+    queryKey: ["languages"],
+    queryFn: async () => (await api.get("/languages", { params: { limit: 100, sortBy: "name", sortOrder: "asc" } })).data,
+  });
+  const languageOptions = Array.isArray(languagesRes)
+    ? languagesRes
+    : languagesRes?.data?.items || languagesRes?.data?.data?.items || languagesRes?.items || languagesRes?.data || [];
+  const defaultLanguages = ["English", "Malayalam", "Hindi", "Tamil", "Kannada"];
+  const apiLanguages = Array.isArray(languageOptions) ? languageOptions : [];
+  const availableLanguages = defaultLanguages
+    .map((name) => apiLanguages.find((language) => language.name?.toLowerCase() === name.toLowerCase()) || ({ name, id: null }))
+    .filter((language) => !workerLanguages.some((item) => item.language?.name?.toLowerCase() === language.name.toLowerCase()));
 
   useEffect(() => {
     const wage = workerProfileRes?.data?.expectedDailyWage || workerProfileRes?.expectedDailyWage || "";
@@ -64,6 +85,68 @@ export default function WorkerSettingsPage() {
       return toast.error("Please enter a valid daily wage amount");
     }
     saveWage(expectedWage);
+  };
+
+  const saveWorkPreferences = () => {
+    localStorage.setItem("workerExperienceYears", experienceYears);
+    localStorage.setItem("workerWorkTypes", JSON.stringify(workTypes));
+    localStorage.setItem("workerSkillsText", skillsText);
+    setWorkPrefsSaved(true);
+    setHasUnsavedChanges(false);
+    toast.success("Work preferences saved successfully!");
+  };
+
+  const updateLocationPreference = (field, value) => {
+    setLocationPreferences((current) => ({ ...current, [field]: value }));
+    setHasUnsavedChanges(true);
+  };
+
+  const saveLocationPreferences = () => {
+    localStorage.setItem("workerLocationPreferences", JSON.stringify(locationPreferences));
+    localStorage.setItem("locPrefsSaved", "true");
+    setLocPrefsSaved(true);
+    setHasUnsavedChanges(false);
+    toast.success("Location preferences saved successfully!");
+  };
+
+  const toggleWorkType = (type) => {
+    setWorkTypes((current) => current.includes(type)
+      ? current.filter((item) => item !== type)
+      : [...current, type]);
+    setHasUnsavedChanges(true);
+  };
+
+  const addLanguage = async () => {
+    if (!languageId || !workerProfile?.id) return;
+    if (!languageId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)) {
+      return toast.error("This language is not available yet");
+    }
+    try {
+      await api.post(`/workers/${workerProfile.id}/languages`, {
+        languageId,
+        proficiencyLevel: "CONVERSATIONAL",
+        canSpeak: true,
+        canRead: true,
+        canWrite: false,
+        isPrimary: workerLanguages.length === 0,
+      });
+      setLanguageId("");
+      queryClient.invalidateQueries({ queryKey: ["myWorkerProfile"] });
+      toast.success("Language added successfully!");
+    } catch (e) {
+      toast.error(e.response?.data?.message || "Failed to add language");
+    }
+  };
+
+  const removeLanguage = async (id) => {
+    if (!workerProfile?.id) return;
+    try {
+      await api.delete(`/workers/${workerProfile.id}/languages/${id}`);
+      queryClient.invalidateQueries({ queryKey: ["myWorkerProfile"] });
+      toast.success("Language removed successfully!");
+    } catch (e) {
+      toast.error(e.response?.data?.message || "Failed to remove language");
+    }
   };
 
   const [locPrefsSaved, setLocPrefsSaved] = useState(() => localStorage.getItem("locPrefsSaved") === "true");
@@ -310,6 +393,10 @@ export default function WorkerSettingsPage() {
                 <label className="text-sm font-semibold text-gray-700">Phone</label>
                 <input {...regSettings("phone")} type="tel" placeholder="Phone Number" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
               </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700">Email</label>
+                <input value={user?.email || ""} readOnly type="email" placeholder="Email address" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500 outline-none" />
+              </div>
             </div>
           </div>
 
@@ -323,11 +410,11 @@ export default function WorkerSettingsPage() {
             </div>
             <div className="p-4 space-y-3 flex-1">
               <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-semibold text-gray-700">Preferred Work Type</label>
+                <label className="text-sm font-semibold text-gray-700">Work Type</label>
                 <div className="flex flex-wrap gap-2">
                   {["Daily Wage", "Contract", "Monthly Salary", "Part-Time"].map(type => (
                     <label key={type} className="cursor-pointer relative">
-                      <input type="checkbox" className="peer sr-only" onChange={() => setHasUnsavedChanges(true)} />
+                      <input type="checkbox" className="peer sr-only" checked={workTypes.includes(type)} onChange={() => toggleWorkType(type)} />
                       <div className="px-3 py-1.5 border-2 border-gray-100 rounded-lg text-xs font-semibold text-gray-600 transition-all peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 peer-checked:shadow-sm hover:border-blue-200 hover:bg-blue-50/50">
                         {type}
                       </div>
@@ -335,6 +422,34 @@ export default function WorkerSettingsPage() {
                   ))}
                 </div>
               </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700">Experience (Years)</label>
+                <select value={experienceYears} onChange={(e) => { setExperienceYears(e.target.value); setHasUnsavedChanges(true); }} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all">
+                  <option value="">Select experience</option>
+                  {Array.from({ length: 31 }, (_, year) => <option key={year} value={year}>{year} {year === 1 ? "Year" : "Years"}</option>)}
+                </select>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700">Skills <span className="font-normal text-gray-400">(Optional)</span></label>
+                <input type="text" value={skillsText} onChange={(e) => { setSkillsText(e.target.value); setHasUnsavedChanges(true); }} placeholder="e.g. Cleaning, Cooking, Driving" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
+                <p className="text-xs text-gray-400">Add skills separated by commas</p>
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700 flex items-center gap-1.5"><Languages className="w-4 h-4 text-blue-600" /> Languages</label>
+                <div className="flex gap-2">
+                  <select value={languageId} onChange={(e) => setLanguageId(e.target.value)} className="min-w-0 flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all">
+                    <option value="">Select a language</option>
+                    {availableLanguages.map((language) => <option key={language.name} value={language.id || language.name}>{language.name}</option>)}
+                  </select>
+                  <button type="button" onClick={addLanguage} disabled={!languageId} className="px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors">Add</button>
+                </div>
+                {workerLanguages.length > 0 && <div className="flex flex-wrap gap-2 mt-1">
+                  {workerLanguages.map((item) => <span key={item.language?.id} className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-blue-50 text-blue-700 text-xs font-medium">
+                    {item.language?.name}<button type="button" onClick={() => removeLanguage(item.language?.id)} aria-label={`Remove ${item.language?.name}`}><X className="w-3.5 h-3.5" /></button>
+                  </span>)}
+                </div>}
+              </div>
+              <button type="button" onClick={saveWorkPreferences} className="self-end px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">Save Work Preferences</button>
             </div>
           </div>
 
@@ -350,25 +465,26 @@ export default function WorkerSettingsPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm font-semibold text-gray-700">Preferred District</label>
-                  <input type="text" onChange={() => setHasUnsavedChanges(true)} placeholder="e.g. Ernakulam" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
+                  <input type="text" value={locationPreferences.district || ""} onChange={(e) => updateLocationPreference("district", e.target.value)} placeholder="e.g. Ernakulam" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
                 </div>
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm font-semibold text-gray-700">Preferred State</label>
-                  <input type="text" onChange={() => setHasUnsavedChanges(true)} placeholder="e.g. Kerala" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
+                  <input type="text" value={locationPreferences.state || ""} onChange={(e) => updateLocationPreference("state", e.target.value)} placeholder="e.g. Kerala" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
                 </div>
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-gray-700">Max Travel Distance (km)</label>
-                <input type="number" onChange={() => setHasUnsavedChanges(true)} placeholder="e.g. 50" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
+                <input type="number" value={locationPreferences.distance || ""} onChange={(e) => updateLocationPreference("distance", e.target.value)} placeholder="e.g. 50" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
               </div>
               <label className="flex items-center gap-3 cursor-pointer">
                 <div className="relative">
-                  <input type="checkbox" onChange={() => setHasUnsavedChanges(true)} className="sr-only" />
+                  <input type="checkbox" checked={Boolean(locationPreferences.relocate)} onChange={(e) => updateLocationPreference("relocate", e.target.checked)} className="sr-only" />
                   <div className="block w-10 h-5 bg-slate-300 rounded-full transition-colors peer-checked:bg-blue-600"></div>
                   <div className="absolute left-[2px] top-[2px] bg-white w-4 h-4 rounded-full transition-transform"></div>
                 </div>
                 <span className="text-sm font-semibold text-gray-700">Willing to Relocate</span>
               </label>
+              <button type="button" onClick={saveLocationPreferences} className="self-end px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">Save Location</button>
             </div>
           </div>
 
