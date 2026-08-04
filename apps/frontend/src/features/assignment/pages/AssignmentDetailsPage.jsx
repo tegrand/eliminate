@@ -211,90 +211,90 @@ export default function AssignmentDetailsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4">
         
         {/* Card 1: Assignment Tracking (col-span-5) */}
-        <section className="rounded-[20px] border border-gray-100 bg-white p-6 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] flex flex-col lg:col-span-5">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
-                <Activity className="h-5 w-5" />
+        <section className="rounded-[16px] border border-gray-100 bg-white p-4 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] flex flex-col lg:col-span-5">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                <Activity className="h-4 w-4" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-gray-900">Assignment Tracking</h2>
-                <p className="text-[11px] text-gray-500 mt-0.5">Current progress and timeline.</p>
+                <h2 className="text-sm font-bold text-gray-900">Assignment Tracking</h2>
+                <p className="text-[10px] text-gray-500">Current progress and timeline.</p>
               </div>
             </div>
             <button className="text-gray-400 hover:text-gray-600">
-               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
+               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>
             </button>
           </div>
 
-          <div className="grid grid-cols-4 gap-3 mb-8">
-            <div className="p-3 bg-[#fbfbfc] rounded-xl border border-gray-50 flex flex-col justify-between">
-              <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-3"><CalendarDays className="w-3.5 h-3.5" /> Start Date</span>
-              <span className="text-sm font-bold text-gray-900">{assignment.startDate ? new Date(assignment.startDate).toLocaleDateString('en-US') : 'N/A'}</span>
+          <div className="grid grid-cols-4 gap-2 mb-3">
+            <div className="p-2 bg-[#fbfbfc] rounded-lg border border-gray-50 flex flex-col justify-between">
+              <span className="text-[9px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1 mb-1.5"><CalendarDays className="w-3 h-3" /> Start</span>
+              <span className="text-xs font-bold text-gray-900">{assignment.startDate ? new Date(assignment.startDate).toLocaleDateString('en-US') : 'N/A'}</span>
             </div>
-            <div className="p-3 bg-[#fbfbfc] rounded-xl border border-gray-50 flex flex-col justify-between">
-              <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-3"><CalendarCheck className="w-3.5 h-3.5" /> End Date</span>
-              <span className="text-sm font-bold text-gray-900">{assignment.endDate ? new Date(assignment.endDate).toLocaleDateString('en-US') : 'N/A'}</span>
+            <div className="p-2 bg-[#fbfbfc] rounded-lg border border-gray-50 flex flex-col justify-between">
+              <span className="text-[9px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1 mb-1.5"><CalendarCheck className="w-3 h-3" /> End</span>
+              <span className="text-xs font-bold text-gray-900">{assignment.endDate ? new Date(assignment.endDate).toLocaleDateString('en-US') : 'N/A'}</span>
             </div>
-            <div className="p-3 bg-[#fbfbfc] rounded-xl border border-gray-50 flex flex-col justify-between">
-              <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-3"><Users className="w-3.5 h-3.5" /> Workers</span>
-              <span className="text-sm font-bold text-gray-900">{assignedWorkers.length} Assigned</span>
+            <div className="p-2 bg-[#fbfbfc] rounded-lg border border-gray-50 flex flex-col justify-between">
+              <span className="text-[9px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1 mb-1.5"><Users className="w-3 h-3" /> Workers</span>
+              <span className="text-xs font-bold text-gray-900">{assignedWorkers.length} Assigned</span>
             </div>
-            <div className="p-3 bg-[#fbfbfc] rounded-xl border border-gray-50 flex flex-col justify-between">
-              <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-3"><Activity className="w-3.5 h-3.5" /> Status</span>
-              <span className={`text-sm font-bold uppercase tracking-wider ${assignment.status === 'ACTIVE' ? 'text-emerald-500' : 'text-gray-900'}`}>{assignment.status}</span>
+            <div className="p-2 bg-[#fbfbfc] rounded-lg border border-gray-50 flex flex-col justify-between">
+              <span className="text-[9px] font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1 mb-1.5"><Activity className="w-3 h-3" /> Status</span>
+              <span className={`text-xs font-bold uppercase tracking-wider ${assignment.status === 'ACTIVE' ? 'text-emerald-500' : 'text-gray-900'}`}>{assignment.status}</span>
             </div>
           </div>
 
           <div className="mt-auto pt-2">
-             <div className="flex justify-between items-center mb-2.5">
-               <span className="text-[13px] font-semibold text-gray-800">Overall Progress</span>
-               <span className="text-[13px] font-bold text-blue-600">{progress}%</span>
+             <div className="flex justify-between items-center mb-1.5">
+               <span className="text-[11px] font-semibold text-gray-800">Overall Progress</span>
+               <span className="text-[11px] font-bold text-blue-600">{progress}%</span>
              </div>
-             <div className="h-[10px] w-full bg-gray-100 rounded-full overflow-hidden">
+             <div className="h-[7px] w-full bg-gray-100 rounded-full overflow-hidden">
                 <div className="h-full bg-blue-600 rounded-full transition-all duration-1000" style={{ width: `${progress}%` }} />
              </div>
           </div>
         </section>
 
         {/* Card 2: Overview (col-span-3) */}
-        <section className="rounded-[20px] border border-gray-100 bg-white p-6 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] flex flex-col lg:col-span-3">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500">
-              <Building2 className="h-5 w-5" />
+        <section className="rounded-[16px] border border-gray-100 bg-white p-4 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] flex flex-col lg:col-span-3">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="h-8 w-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-500">
+              <Building2 className="h-4 w-4" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-gray-900">Overview</h2>
+              <h2 className="text-sm font-bold text-gray-900">Overview</h2>
             </div>
           </div>
 
-          <div className="space-y-4 mt-auto">
-            <div className="p-4 bg-[#fbfbfc] rounded-xl border border-gray-50 flex items-center justify-between">
+          <div className="space-y-2 mt-auto">
+            <div className="p-3 bg-[#fbfbfc] rounded-lg border border-gray-50 flex items-center justify-between">
               <div>
-                <span className="text-[12px] font-semibold text-gray-800 block mb-1">Client</span>
-                <span className="text-[13px] font-medium text-gray-500">{assignment.client?.companyName || '-'}</span>
+                <span className="text-[11px] font-semibold text-gray-800 block mb-0.5">Client</span>
+                <span className="text-xs font-medium text-gray-500">{assignment.client?.companyName || '-'}</span>
               </div>
-              <div className="w-9 h-9 rounded-full border border-blue-100 text-blue-400 flex items-center justify-center bg-white shadow-sm">
-                <UserRound className="w-4 h-4" />
+              <div className="w-7 h-7 rounded-full border border-blue-100 text-blue-400 flex items-center justify-center bg-white shadow-sm">
+                <UserRound className="w-3.5 h-3.5" />
               </div>
             </div>
 
-            <div className="p-4 bg-[#fbfbfc] rounded-xl border border-gray-50 flex items-center justify-between">
-              <span className="text-[12px] font-semibold text-gray-800">Agreed Rate</span>
-              <span className="text-[15px] font-bold text-emerald-500">{assignment.agreedRate ? `₹${assignment.agreedRate}` : '-'}</span>
+            <div className="p-3 bg-[#fbfbfc] rounded-lg border border-gray-50 flex items-center justify-between">
+              <span className="text-[11px] font-semibold text-gray-800">Agreed Rate</span>
+              <span className="text-[13px] font-bold text-emerald-500">{assignment.agreedRate ? `₹${assignment.agreedRate}` : '-'}</span>
             </div>
           </div>
         </section>
 
         {/* Card 3: Work Schedule (col-span-4) */}
-        <section className="rounded-[20px] border border-gray-100 bg-white p-6 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] flex flex-col lg:col-span-4">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
-              <CalendarDays className="h-5 w-5" />
+        <section className="rounded-[16px] border border-gray-100 bg-white p-4 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.03)] flex flex-col lg:col-span-4">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="h-8 w-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+              <CalendarDays className="h-4 w-4" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-gray-900">Work Schedule</h2>
-              <p className="text-[11px] text-gray-500 mt-0.5">Total {scheduleDays.length} Days</p>
+              <h2 className="text-sm font-bold text-gray-900">Work Schedule</h2>
+              <p className="text-[10px] text-gray-500">Total {scheduleDays.length} Days</p>
             </div>
           </div>
 
@@ -307,7 +307,7 @@ export default function AssignmentDetailsPage() {
                    <button 
                      onClick={isToday ? () => setActiveAttendancePopup(isToday ? `day_${d.dayNum}` : null) : undefined}
                      disabled={!isToday}
-                     className={`flex flex-col items-center justify-center w-[76px] h-[76px] rounded-xl border transition-all ${
+                     className={`flex flex-col items-center justify-center w-[58px] h-[58px] rounded-xl border transition-all ${
                        isToday
                         ? 'border-blue-400 bg-blue-600 shadow-[0_4px_14px_-4px_rgba(59,130,246,0.5)] cursor-pointer hover:bg-blue-700 active:scale-[0.97]'
                         : isPast
@@ -315,8 +315,8 @@ export default function AssignmentDetailsPage() {
                         : 'border-dashed border-gray-200 bg-white cursor-default opacity-40'
                      }`}
                    >
-                      <span className={`text-[13px] font-bold mb-1.5 ${isToday ? 'text-white' : 'text-gray-400'}`}>Day {d.dayNum}</span>
-                      <span className={`text-[11px] font-semibold ${isToday ? 'text-blue-100' : 'text-gray-400'}`}>{d.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })}</span>
+                      <span className={`text-[11px] font-bold mb-1 ${isToday ? 'text-white' : 'text-gray-400'}`}>Day {d.dayNum}</span>
+                      <span className={`text-[10px] font-semibold ${isToday ? 'text-blue-100' : 'text-gray-400'}`}>{d.date.toLocaleDateString('en-US', { month: 'numeric', day: 'numeric' })}</span>
                    </button>
 
                    {/* Dropdown on today's day click */}
@@ -360,13 +360,13 @@ export default function AssignmentDetailsPage() {
              })}
           </div>
 
-          <div className="mt-auto pt-4 relative">
-             <div className="w-full h-[4px] bg-gray-100 rounded-full overflow-hidden absolute top-0 left-0">
+          <div className="mt-auto pt-3 relative">
+             <div className="w-full h-[3px] bg-gray-100 rounded-full overflow-hidden absolute top-0 left-0">
                 <div className="h-full bg-blue-500 rounded-full transition-all" style={{ width: `${(selectedDayObj?.dayNum / scheduleDays.length) * 100}%` }} />
              </div>
-             <div className="bg-[#fbfbfc] rounded-xl p-3.5 flex items-center gap-3 border border-gray-50 mt-4">
-                <div className="w-[18px] h-[18px] rounded-full border border-blue-200 flex items-center justify-center flex-shrink-0 text-blue-500 bg-white">
-                  <span className="text-[9px] font-bold">i</span>
+             <div className="bg-[#fbfbfc] rounded-lg p-2.5 flex items-center gap-2 border border-gray-50 mt-3">
+                <div className="w-[14px] h-[14px] rounded-full border border-blue-200 flex items-center justify-center flex-shrink-0 text-blue-500 bg-white">
+                  <span className="text-[8px] font-bold">i</span>
                 </div>
                  <p className="text-[11px] text-gray-600 font-medium">
                    {selectedDayObj?.date.toDateString() === todayDateStr
