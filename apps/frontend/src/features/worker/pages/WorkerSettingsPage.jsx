@@ -17,6 +17,7 @@ export default function WorkerSettingsPage() {
   const [docType, setDocType] = useState("AADHAAR");
   const [docFile, setDocFile] = useState(null);
   const [expectedWage, setExpectedWage] = useState("");
+  const [addressLine1, setAddressLine1] = useState("");
   const [experienceYears, setExperienceYears] = useState(() => localStorage.getItem("workerExperienceYears") || "");
   const [workTypes, setWorkTypes] = useState(() => JSON.parse(localStorage.getItem("workerWorkTypes") || "[]"));
   const [languageId, setLanguageId] = useState("");
@@ -69,6 +70,8 @@ export default function WorkerSettingsPage() {
   useEffect(() => {
     const wage = workerProfileRes?.data?.expectedDailyWage || workerProfileRes?.expectedDailyWage || "";
     if (wage) setExpectedWage(String(wage));
+    const addr = workerProfileRes?.data?.addressLine1 || workerProfileRes?.addressLine1 || "";
+    if (addr) setAddressLine1(addr);
   }, [workerProfileRes]);
 
   const { mutate: saveWage, isPending: isSavingWage } = useMutation({
@@ -229,6 +232,13 @@ export default function WorkerSettingsPage() {
   const onSaveAllSettings = (data) => {
     const { email, ...rest } = data;
     updateProfile(rest);
+    if (addressLine1 !== (workerProfile?.addressLine1 || "")) {
+      workerApi.updateMyWorkerProfile({ addressLine1 }).catch(e => {
+        toast.error("Failed to save address");
+      }).finally(() => {
+        queryClient.invalidateQueries({ queryKey: ["myWorkerProfile"] });
+      });
+    }
   };
 
   const { mutate: change, isPending } = useMutation({
@@ -396,6 +406,10 @@ export default function WorkerSettingsPage() {
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-gray-700">Email</label>
                 <input value={user?.email || ""} readOnly type="email" placeholder="Email address" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-500 outline-none" />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700">Address</label>
+                <input value={addressLine1} onChange={(e) => { setAddressLine1(e.target.value); setHasUnsavedChanges(true); }} type="text" placeholder="Your Address" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
               </div>
             </div>
           </div>
