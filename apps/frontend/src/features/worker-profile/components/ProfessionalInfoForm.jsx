@@ -64,8 +64,8 @@ export default function ProfessionalInfoForm({ data, onSave, saving }) {
   const workerId = data?.id;
 
   const [formData, setFormData] = useState({
-    experienceYears: data?.experienceYears ?? "",
-    expectedSalary: data?.expectedSalary || "",
+    totalExperienceYears: data?.totalExperienceYears ?? "",
+    expectedDailyWage: data?.expectedDailyWage || "",
     preferredLocations: Array.isArray(data?.preferredLocations) ? data.preferredLocations : [],
   });
 
@@ -198,8 +198,8 @@ export default function ProfessionalInfoForm({ data, onSave, saving }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     const payload = {
-      experienceYears: formData.experienceYears !== "" ? parseInt(formData.experienceYears) : null,
-      expectedSalary: formData.expectedSalary || undefined,
+      totalExperienceYears: formData.totalExperienceYears !== "" ? parseInt(formData.totalExperienceYears) : null,
+      expectedDailyWage: formData.expectedDailyWage || undefined,
       preferredLocations: formData.preferredLocations,
     };
     onSave(payload);
@@ -226,8 +226,8 @@ export default function ProfessionalInfoForm({ data, onSave, saving }) {
               <label className={labelClass}>Total Experience (Years)</label>
               <input
                 type="number"
-                name="experienceYears"
-                value={formData.experienceYears}
+                name="totalExperienceYears"
+                value={formData.totalExperienceYears}
                 onChange={handleChange}
                 className={inputClass}
                 placeholder="e.g. 5"
@@ -239,8 +239,8 @@ export default function ProfessionalInfoForm({ data, onSave, saving }) {
               <label className={labelClass}>Expected Daily Wage</label>
               <input
                 type="text"
-                name="expectedSalary"
-                value={formData.expectedSalary}
+                name="expectedDailyWage"
+                value={formData.expectedDailyWage}
                 onChange={handleChange}
                 className={inputClass}
                 placeholder="e.g. ₹1000/day"

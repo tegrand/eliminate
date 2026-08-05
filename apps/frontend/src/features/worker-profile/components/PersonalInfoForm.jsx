@@ -7,6 +7,7 @@ export default function PersonalInfoForm({ data, onSave, saving }) {
     lastName: data?.lastName || "",
     dateOfBirth: data?.dateOfBirth ? new Date(data.dateOfBirth).toISOString().split('T')[0] : "",
     gender: data?.gender || "",
+    addressLine1: data?.addressLine1 || "",
     notes: data?.notes || "",
   });
 
@@ -117,6 +118,19 @@ export default function PersonalInfoForm({ data, onSave, saving }) {
               <option value="OTHER">Other</option>
             </select>
           </div>
+        </div>
+
+        {/* Address */}
+        <div>
+          <label className={labelClass}>Address</label>
+          <input
+            type="text"
+            name="addressLine1"
+            value={formData.addressLine1}
+            onChange={handleChange}
+            className={inputClass}
+            placeholder="Enter your address"
+          />
         </div>
 
         {/* Bio */}
