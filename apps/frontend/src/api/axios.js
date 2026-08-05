@@ -2,9 +2,9 @@ import axios from "axios";
 
 // 1. Create the base Axios instance
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api/v1",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:7000/api/v1",
   withCredentials: true, // Enables sending/receiving HttpOnly cookies automatically
-  timeout: 30000, 
+  timeout: 30000,
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
@@ -70,7 +70,7 @@ axiosInstance.interceptors.response.use(
       try {
         const { data } = await axiosInstance.post("/auth/refresh-token");
         const newToken = data.data.accessToken;
-        
+
         // Update storage
         if (localStorage.getItem("accessToken")) {
           localStorage.setItem("accessToken", newToken);
@@ -80,7 +80,7 @@ axiosInstance.interceptors.response.use(
 
         processQueue(null, newToken);
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        
+
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);

@@ -68,7 +68,7 @@ export const getJobRequirements = async (clientId, query) => {
 
   const skip = (page - 1) * limit;
 
-  const [total, data] = await Promise.all([
+  const [total, rawData] = await Promise.all([
     prisma.jobRequirement.count({ where }),
     prisma.jobRequirement.findMany({
       where,
@@ -78,9 +78,24 @@ export const getJobRequirements = async (clientId, query) => {
       include: {
         category: true,
         location: true,
+        _count: {
+          select: {
+            applications: {
+              where: { status: "ACCEPTED" }
+            },
+            hiringRequests: {
+              where: { status: { in: ["ACCEPTED", "PAYMENT_PENDING", "ACTIVE"] } }
+            }
+          }
+        }
       },
     }),
   ]);
+
+  const data = rawData.map(job => ({
+    ...job,
+    assignedCount: (job._count?.applications || 0) + (job._count?.hiringRequests || 0)
+  }));
 
   return { total, data, page: Number(page), limit: Number(limit) };
 };
@@ -99,6 +114,16 @@ export const getJobRequirementById = async (id, clientId) => {
             include: { user: true }
           }
         }
+      },
+      _count: {
+        select: {
+          applications: {
+            where: { status: "ACCEPTED" }
+          },
+          hiringRequests: {
+            where: { status: { in: ["ACCEPTED", "PAYMENT_PENDING", "ACTIVE"] } }
+          }
+        }
       }
     },
   });
@@ -106,6 +131,8 @@ export const getJobRequirementById = async (id, clientId) => {
   if (!jobRequirement) {
     throw new AppError("Job requirement not found", 404);
   }
+
+  jobRequirement.assignedCount = (jobRequirement._count?.applications || 0) + (jobRequirement._count?.hiringRequests || 0);
 
   return jobRequirement;
 };

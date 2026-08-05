@@ -69,24 +69,7 @@ export default function WorkerDetailsPage() {
   const getFullName = () => `${worker.firstName || ""} ${worker.lastName || ""}`.trim() || "N/A";
   
   // Extract documents or map URLs if documents array is not used
-  const allDocs = [
-    { type: "Aadhaar", url: worker.aadhaarUrl },
-    { type: "PAN Card", url: worker.panUrl },
-    { type: "Bank Passbook", url: worker.bankPassbookUrl },
-    { type: "Resume", url: worker.resumeUrl },
-  ];
-
-  if (worker.documents && worker.documents.length > 0) {
-    worker.documents.forEach(doc => {
-      const existing = allDocs.find(d => d.type.toUpperCase() === doc.documentType);
-      if (existing) {
-        existing.url = doc.documentUrl;
-        existing.status = doc.status;
-      } else {
-        allDocs.push({ type: doc.documentType, url: doc.documentUrl, status: doc.status });
-      }
-    });
-  }
+  const allDocs = worker.documents || [];
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-[#f8f9fa] py-8 px-4 sm:px-6 lg:px-8">
@@ -224,43 +207,50 @@ export default function WorkerDetailsPage() {
               </h2>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {allDocs.map((doc, idx) => (
-                  <div key={idx} className="border border-gray-100 rounded-lg p-4 flex flex-col justify-between hover:border-blue-100 transition-colors group">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-500">
-                          <FileText className="w-4 h-4" />
+                {allDocs.length > 0 ? (
+                  allDocs.map((doc, idx) => (
+                    <div key={idx} className="border border-gray-100 rounded-lg p-4 flex flex-col justify-between hover:border-blue-100 transition-colors group">
+                      <div className="flex justify-between items-start mb-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-500">
+                            <FileText className="w-4 h-4" />
+                          </div>
+                          <p className="font-semibold text-sm text-gray-900">{doc.documentType || "Document"}</p>
                         </div>
-                        <p className="font-semibold text-sm text-gray-900">{doc.type}</p>
+                        
+                        {doc.documentUrl ? (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                            Uploaded
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                            Pending
+                          </span>
+                        )}
                       </div>
                       
-                      {doc.url ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                          Uploaded
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
-                          Pending
-                        </span>
-                      )}
+                      <div className="flex items-center gap-2 mt-2">
+                        {doc.documentUrl ? (
+                          <>
+                            <a href={doc.documentUrl} target="_blank" rel="noreferrer" className="text-xs font-medium text-blue-600 hover:text-blue-800 flex items-center gap-1 bg-blue-50 px-2 py-1.5 rounded transition-colors">
+                              <Eye className="w-3 h-3" /> View
+                            </a>
+                            <a href={doc.documentUrl} download className="text-xs font-medium text-gray-600 hover:text-gray-900 flex items-center gap-1 bg-gray-50 px-2 py-1.5 rounded transition-colors">
+                              <Download className="w-3 h-3" /> Download
+                            </a>
+                          </>
+                        ) : (
+                          <p className="text-xs text-gray-400 italic">Document not provided yet.</p>
+                        )}
+                      </div>
                     </div>
-                    
-                    <div className="flex items-center gap-2 mt-2">
-                      {doc.url ? (
-                        <>
-                          <a href={doc.url} target="_blank" rel="noreferrer" className="text-xs font-medium text-blue-600 hover:text-blue-800 flex items-center gap-1 bg-blue-50 px-2 py-1.5 rounded transition-colors">
-                            <Eye className="w-3 h-3" /> View
-                          </a>
-                          <a href={doc.url} download className="text-xs font-medium text-gray-600 hover:text-gray-900 flex items-center gap-1 bg-gray-50 px-2 py-1.5 rounded transition-colors">
-                            <Download className="w-3 h-3" /> Download
-                          </a>
-                        </>
-                      ) : (
-                        <p className="text-xs text-gray-400 italic">Document not provided yet.</p>
-                      )}
-                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-full py-8 text-center bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                    <FileText className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                    <p className="text-sm text-gray-500 font-medium">No documents uploaded yet</p>
                   </div>
-                ))}
+                )}
               </div>
             </div>
 
@@ -282,8 +272,8 @@ export default function WorkerDetailsPage() {
                   <p className="text-sm font-semibold text-gray-900">{worker.experienceYears ? `${worker.experienceYears} Years` : "N/A"}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500 font-medium uppercase mb-1">Expected Salary</p>
-                  <p className="text-sm font-semibold text-gray-900">{worker.expectedSalary || "N/A"}</p>
+                  <p className="text-xs text-gray-500 font-medium uppercase mb-1">Expected Daily Wage</p>
+                  <p className="text-sm font-semibold text-gray-900">{worker.expectedDailyWage || "N/A"}</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 font-medium uppercase mb-1">Joining Date</p>

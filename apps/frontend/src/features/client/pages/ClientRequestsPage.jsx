@@ -208,9 +208,9 @@ export default function ClientRequestsPage() {
           <div className="grid gap-4">
             {filteredRequests.map((req) => {
               const targetName = req.worker 
-                ? `${req.worker.user?.firstName} ${req.worker.user?.lastName}` 
+                ? `${req.worker.user?.firstName || req.worker.firstName || ''} ${req.worker.user?.lastName || req.worker.lastName || ''}`.trim() || 'Unknown Worker'
                 : req.agency 
-                  ? `${req.agency.user?.firstName} ${req.agency.user?.lastName}`
+                  ? `${req.agency.user?.firstName || ''} ${req.agency.user?.lastName || ''}`.trim() || req.agency.agencyName || 'Unknown Agency'
                   : 'Unknown';
               
               const isAgency = !!req.agency;
@@ -246,7 +246,7 @@ export default function ClientRequestsPage() {
                           {req.proposedRate && (
                             <div className="flex items-center gap-1.5">
                               <IndianRupee className="w-4 h-4 text-gray-400" />
-                              <span className="font-semibold text-gray-700">₹{req.proposedRate}</span>/day
+                              <span className="font-semibold text-gray-700">₹{req.proposedRate}</span>
                             </div>
                           )}
                           

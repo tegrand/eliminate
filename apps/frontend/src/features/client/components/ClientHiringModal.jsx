@@ -37,13 +37,47 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
     }
   });
 
-  // Pre-fill rate whenever modal opens or targetRate changes
+  const startDateStr = watch("startDate");
+  const endDateStr = watch("endDate");
+
+  const numberOfDays = (() => {
+    let s, e;
+    if (hiringMode === "custom") {
+      s = startDateStr;
+      e = endDateStr;
+    } else if (hiringMode === "existing" && selectedJobId) {
+      const selectedJob = openJobs.find(job => job.id === selectedJobId);
+      if (selectedJob) {
+        s = selectedJob.startDate;
+        e = selectedJob.endDate;
+      }
+    }
+    
+    if (!s || !e) return 1;
+    const sDate = new Date(s);
+    const eDate = new Date(e);
+    if (isNaN(sDate.getTime()) || isNaN(eDate.getTime())) return 1;
+    sDate.setHours(0, 0, 0, 0);
+    eDate.setHours(0, 0, 0, 0);
+    const diffTime = eDate.getTime() - sDate.getTime();
+    if (diffTime < 0) return 1;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+  })();
+
+  // Update proposedRate whenever targetRate or numberOfDays changes
+  useEffect(() => {
+    if (targetRate) {
+      setValue("proposedRate", targetRate * numberOfDays);
+    }
+  }, [targetRate, numberOfDays, setValue]);
+
+  // Pre-fill rate whenever modal opens
   useEffect(() => {
     if (isOpen) {
       reset({
         title: "",
         description: "",
-        proposedRate: targetRate || "",
+        proposedRate: targetRate ? targetRate * numberOfDays : "",
         startDate: "",
         endDate: "",
         notes: ""
@@ -81,7 +115,7 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
       payload = {
         title: data.title,
         description: data.description,
-        proposedRate: targetRate ? parseFloat(targetRate) : (data.proposedRate ? parseFloat(data.proposedRate) : undefined),
+        proposedRate: data.proposedRate ? parseFloat(data.proposedRate) : (targetRate ? parseFloat(targetRate) : undefined),
         startDate: data.startDate ? new Date(data.startDate).toISOString() : undefined,
         endDate: data.endDate ? new Date(data.endDate).toISOString() : undefined,
         notes: data.notes
@@ -234,16 +268,20 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
                 {targetRate && targetBaseRate && targetPlatformFee && (
                   <div className="mt-2 text-[11px] font-medium p-2 bg-slate-50 border border-slate-100 rounded-lg text-slate-600 flex flex-col gap-1">
                     <div className="flex justify-between">
-                      <span>Base Wage:</span>
-                      <span>₹{targetBaseRate}</span>
+                      <span>Days:</span>
+                      <span>{numberOfDays} Day{numberOfDays > 1 ? 's' : ''}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Base Wage ({numberOfDays} days):</span>
+                      <span>₹{targetBaseRate * numberOfDays}</span>
                     </div>
                     <div className="flex justify-between text-indigo-600">
-                      <span>Platform Fee:</span>
-                      <span>+ ₹{targetPlatformFee}</span>
+                      <span>Platform Fee ({numberOfDays} days):</span>
+                      <span>+ ₹{targetPlatformFee * numberOfDays}</span>
                     </div>
                     <div className="flex justify-between font-bold text-slate-900 border-t border-slate-200 pt-1 mt-1">
-                      <span>You Pay:</span>
-                      <span>₹{targetRate}</span>
+                      <span>Total You Pay:</span>
+                      <span>₹{targetRate * numberOfDays}</span>
                     </div>
                   </div>
                 )}

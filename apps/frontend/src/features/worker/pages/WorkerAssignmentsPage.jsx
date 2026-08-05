@@ -190,7 +190,7 @@ export default function WorkerAssignmentsPage() {
                   <div className="px-3 py-2 bg-emerald-50/30 border-t border-emerald-100 flex items-center justify-between">
                     <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Agreed Rate</span>
                     <div className="flex items-center gap-1">
-                      <span className="text-sm font-black text-emerald-700">₹{assignment.agreedRate}/day</span>
+                      <span className="text-sm font-black text-emerald-700">₹{assignment.agreedRate}</span>
                       <ChevronRight className="w-3.5 h-3.5 text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                   </div>
