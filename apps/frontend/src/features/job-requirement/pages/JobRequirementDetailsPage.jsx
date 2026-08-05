@@ -4,11 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { 
   ArrowLeft, FileText, Users, Calendar, MapPin, IndianRupee, Clock,
-  CheckCircle2, XCircle, AlertCircle, Trash2, Edit, Loader2 
+  CheckCircle2, XCircle, AlertCircle, Trash2, Edit, Loader2, Star 
 } from "lucide-react";
 import { jobRequirementApi } from "../api/jobRequirement.api";
 import { Badge } from "../../../components/ui/badge";
 import JobRequirementStatusBadge from "../components/JobRequirementStatusBadge";
+import ReviewWorkerModal from "../components/ReviewWorkerModal";
+import { reviewsApi } from "../../../api/reviews.api";
 
 export default function JobRequirementDetailsPage() {
   const { id } = useParams();
@@ -213,7 +215,16 @@ function DetailsTab({ job }) {
 }
 
 function WorkersTab({ job, refetch }) {
-  // Filter only applications that are accepted or have a pending replacement/removal request
+  const [reviewModalWorker, setReviewModalWorker] = useState(null);
+
+  const { data: reviewsData, refetch: refetchReviews } = useQuery({
+    queryKey: ["reviews", "job", job.id],
+    queryFn: () => reviewsApi.getReviews(),
+    enabled: job.status === "COMPLETED"
+  });
+
+  const reviews = reviewsData?.data || [];
+
   const assignedApplications = job.applications?.filter(app => 
     ["ACCEPTED", "REPLACEMENT_REQUESTED", "REMOVAL_REQUESTED"].includes(app.status)
   ) || [];
@@ -282,30 +293,64 @@ function WorkersTab({ job, refetch }) {
               </td>
               <td className="px-4 py-3 text-gray-500">{app.worker?.phone || "N/A"}</td>
               <td className="px-4 py-3 text-right space-x-2">
-                {app.status === "ACCEPTED" && (
+                {job.status === "COMPLETED" ? (
                   <>
-                    <button 
-                      onClick={() => handleRequestReplacement(app.id)}
-                      className="text-xs font-medium text-orange-600 hover:text-orange-700 bg-orange-50 px-2 py-1 rounded-md"
-                    >
-                      Request Replacement
-                    </button>
-                    <button 
-                      onClick={() => handleRequestRemoval(app.id)}
-                      className="text-xs font-medium text-red-600 hover:text-red-700 bg-red-50 px-2 py-1 rounded-md"
-                    >
-                      Remove Worker
-                    </button>
+                    {(() => {
+                      const existingReview = reviews.find(r => r.targetWorkerId === app.workerId);
+                      if (existingReview) {
+                        return (
+                          <span className="text-xs font-semibold text-amber-600 bg-amber-50 px-2.5 py-1.5 rounded-md flex items-center justify-end gap-1 w-max ml-auto">
+                            <Star className="w-3.5 h-3.5 fill-amber-500" /> {existingReview.rating} Reviewed
+                          </span>
+                        );
+                      }
+                      return (
+                        <button 
+                          onClick={() => setReviewModalWorker(app.worker)}
+                          className="text-xs font-medium text-white hover:text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-md transition-colors"
+                        >
+                          Leave Review
+                        </button>
+                      );
+                    })()}
                   </>
-                )}
-                {app.status !== "ACCEPTED" && (
-                  <span className="text-xs text-gray-400 italic">Request Pending</span>
+                ) : (
+                  <>
+                    {app.status === "ACCEPTED" && (
+                      <>
+                        <button 
+                          onClick={() => handleRequestReplacement(app.id)}
+                          className="text-xs font-medium text-orange-600 hover:text-orange-700 bg-orange-50 px-2 py-1 rounded-md"
+                        >
+                          Request Replacement
+                        </button>
+                        <button 
+                          onClick={() => handleRequestRemoval(app.id)}
+                          className="text-xs font-medium text-red-600 hover:text-red-700 bg-red-50 px-2 py-1 rounded-md"
+                        >
+                          Remove Worker
+                        </button>
+                      </>
+                    )}
+                    {app.status !== "ACCEPTED" && (
+                      <span className="text-xs text-gray-400 italic">Request Pending</span>
+                    )}
+                  </>
                 )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {reviewModalWorker && (
+        <ReviewWorkerModal 
+          worker={reviewModalWorker}
+          job={job}
+          onClose={() => setReviewModalWorker(null)}
+          onSuccess={() => refetchReviews()}
+        />
+      )}
     </div>
   );
 }

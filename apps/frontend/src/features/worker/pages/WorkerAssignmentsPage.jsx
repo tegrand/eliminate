@@ -1,12 +1,15 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Briefcase, Calendar, MapPin, Building2, CheckCircle, XCircle, Clock, Users, ChevronRight } from "lucide-react";
+import { Loader2, Briefcase, Calendar, MapPin, Building2, CheckCircle, XCircle, Clock, Users, ChevronRight, Eye } from "lucide-react";
 import { workerApi } from "../api/worker.api";
 import { format, isAfter, isBefore, isSameDay } from "date-fns";
+import WorkerAssignmentAttendanceModal from "../components/WorkerAssignmentAttendanceModal";
 
 export default function WorkerAssignmentsPage() {
   const [activeTab, setActiveTab] = useState("CURRENT");
+  const [selectedAttendanceAssignmentId, setSelectedAttendanceAssignmentId] = useState(null);
+  const [selectedAttendanceTitle, setSelectedAttendanceTitle] = useState("");
 
   const { data: assignmentsData, isLoading, error } = useQuery({
     queryKey: ["workerAssignments"],
@@ -98,7 +101,7 @@ export default function WorkerAssignmentsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 xl:gap-5">
             {currentAssignments.map(assignment => (
-              <Link key={assignment.id} to={`/assignments/${assignment.id}`} className="bg-white rounded-xl border border-gray-200 hover:border-indigo-300 shadow-sm hover:shadow-lg transition-all duration-300 group flex flex-col h-full overflow-hidden no-underline">
+              <Link key={assignment.id} to={`/assignments/${assignment.id}`} className="bg-white rounded-xl border border-gray-200 hover:border-indigo-300 shadow-sm hover:shadow-lg transition-all duration-300 group flex flex-col h-full overflow-hidden no-underline relative">
                 {/* Header */}
                 <div className="px-3 py-2.5 border-b border-gray-50 flex items-center justify-between gap-2">
                   <div className="flex flex-col">
@@ -186,25 +189,49 @@ export default function WorkerAssignmentsPage() {
                 </div>
 
                 {/* Footer */}
-                {assignment.agreedRate && (
-                  <div className="px-3 py-2 bg-emerald-50/30 border-t border-emerald-100 flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Agreed Rate</span>
-                    <div className="flex items-center gap-1">
-                      <span className="text-sm font-black text-emerald-700">₹{assignment.agreedRate}</span>
-                      <ChevronRight className="w-3.5 h-3.5 text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </div>
+                <div className="px-3 py-2 bg-gray-50 border-t border-gray-100 flex items-center justify-between z-10">
+                  <div className="flex items-center gap-3">
+                    {assignment.agreedRate && (
+                      <div className="flex flex-col">
+                        <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider">Agreed Rate</span>
+                        <span className="text-sm font-black text-emerald-700">₹{assignment.agreedRate}</span>
+                      </div>
+                    )}
                   </div>
-                )}
-                {!assignment.agreedRate && (
-                  <div className="px-3 py-2 bg-gray-50 border-t border-gray-100 flex items-center justify-end">
+                  
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setSelectedAttendanceAssignmentId(assignment.id);
+                        setSelectedAttendanceTitle(assignment.title);
+                      }}
+                      className="px-3 py-1.5 bg-white border border-gray-200 text-indigo-600 text-[10px] font-bold rounded-lg hover:bg-indigo-50 hover:border-indigo-200 transition-colors shadow-sm flex items-center gap-1.5"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      VIEW PRESENT
+                    </button>
                     <ChevronRight className="w-3.5 h-3.5 text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
-                )}
+                </div>
               </Link>
             ))}
           </div>
         )}
       </div>
+
+      {selectedAttendanceAssignmentId && (
+        <WorkerAssignmentAttendanceModal 
+          isOpen={!!selectedAttendanceAssignmentId}
+          onClose={() => {
+            setSelectedAttendanceAssignmentId(null);
+            setSelectedAttendanceTitle("");
+          }}
+          assignmentId={selectedAttendanceAssignmentId}
+          title={selectedAttendanceTitle}
+        />
+      )}
     </div>
   );
 }

@@ -134,11 +134,6 @@ export const register = async (data) => {
 };
 
 export const login = async (data, meta) => {
-  console.log("\n=== LOGIN ATTEMPT ===");
-  console.log("Email received:", data.email);
-  console.log("Password received:", data.password);
-  console.log("=====================\n");
-
   const normalizedEmail = data.email.trim().toLowerCase();
 
   const user = await prisma.user.findUnique({

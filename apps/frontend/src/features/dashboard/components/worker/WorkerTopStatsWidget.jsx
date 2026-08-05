@@ -81,7 +81,7 @@ export default function WorkerTopStatsWidget({ stats }) {
     },
     {
       title: "Active Assignments",
-      value: "0",
+      value: stats.activeAssignments || "0",
       description: "Currently working on",
       gradient: "from-purple-500 to-purple-600",
     }

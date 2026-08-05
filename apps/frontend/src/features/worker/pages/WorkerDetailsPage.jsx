@@ -269,7 +269,7 @@ export default function WorkerDetailsPage() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 font-medium uppercase mb-1">Experience</p>
-                  <p className="text-sm font-semibold text-gray-900">{worker.experienceYears ? `${worker.experienceYears} Years` : "N/A"}</p>
+                  <p className="text-sm font-semibold text-gray-900">{worker.totalExperienceYears ? `${worker.totalExperienceYears} Years` : "N/A"}</p>
                 </div>
                 <div>
                   <p className="text-xs text-gray-500 font-medium uppercase mb-1">Expected Daily Wage</p>

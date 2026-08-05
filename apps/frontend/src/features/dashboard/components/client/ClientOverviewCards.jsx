@@ -18,7 +18,7 @@ import { useRef, useState, useEffect } from "react";
 const cards = (stats, t) => [
   {
     label: t('clientDashboard.activeJobs') || "Active Jobs",
-    value: stats?.activeJobs || 0,
+    value: stats?.activeRequirements || stats?.activeJobs || 0,
     sub: t('clientDashboard.activeJobsSub') || "Currently open",
     gradient: "from-blue-500 to-blue-600",
     link: ROUTES.CLIENT_JOBS,
@@ -46,13 +46,13 @@ const cards = (stats, t) => [
   },
   {
     label: "Total Spend",
-    value: "₹0",
+    value: stats?.totalSpend || "₹0",
     sub: "This month",
     gradient: "from-indigo-500 to-indigo-600",
   },
   {
     label: "Fav Agencies",
-    value: "0",
+    value: stats?.favAgencies || "0",
     sub: "Saved agencies",
     gradient: "from-purple-500 to-purple-600",
   }

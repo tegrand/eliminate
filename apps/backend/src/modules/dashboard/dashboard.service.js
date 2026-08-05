@@ -29,9 +29,18 @@ export const getWorkerDashboard = async (userId) => {
     });
   }
 
-  const fieldsToCheck = ['firstName', 'lastName', 'phone', 'gender', 'dateOfBirth', 'profilePhoto', 'joiningDate'];
-  const filledFields = fieldsToCheck.filter(field => worker[field]);
-  const profileCompletion = Math.round((filledFields.length / fieldsToCheck.length) * 100);
+  const fieldsToCheck = [
+    'firstName', 'lastName', 'phone', 'dateOfBirth', 'profilePhoto', 
+    'addressLine1', 'totalExperienceYears', 'expectedDailyWage', 'joiningDate'
+  ];
+  const filledFieldsCount = fieldsToCheck.filter(field => worker[field] !== null && worker[field] !== undefined && worker[field] !== '').length;
+  
+  // We consider documents as one "field" to be checked. If they have at least 1 document, it counts.
+  const totalRequired = fieldsToCheck.length + 1; 
+  const hasDocuments = worker.documents && worker.documents.length > 0;
+  const currentFilled = filledFieldsCount + (hasDocuments ? 1 : 0);
+  
+  const profileCompletion = Math.round((currentFilled / totalRequired) * 100);
   const currentAgency = worker.agencies[0]?.agency || null;
 
   const totalReviews = worker.reviews?.length || 0;
@@ -50,7 +59,7 @@ export const getWorkerDashboard = async (userId) => {
         status: "ACTIVE",
         assignment: {
           startDate: { lte: new Date() },
-          endDate: { gte: today }
+          status: "ACTIVE"
         }
       },
       include: {
@@ -63,7 +72,8 @@ export const getWorkerDashboard = async (userId) => {
         workerId: worker.id,
         status: "ACTIVE",
         assignment: {
-          startDate: { gt: new Date() }
+          startDate: { gt: new Date() },
+          status: "ACTIVE"
         }
       },
       include: {
@@ -154,6 +164,7 @@ export const getWorkerDashboard = async (userId) => {
       totalRevenue: totalRevenue > 0 ? `₹${totalRevenue}` : "₹0",
       pendingAmount: pendingAmount > 0 ? `₹${pendingAmount}` : "₹0",
       totalHoursLogged: `${totalHoursLogged} hrs`,
+      activeAssignments: activeJobs.length,
       attendanceSummary: {
         present: presentCount,
         absent: absentCount,

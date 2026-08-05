@@ -126,12 +126,7 @@ export const verifyPayment = async (orderId, paymentId, signature) => {
       }
     }
   } else {
-    // Second payment (Final) completed -> COMPLETED
-    await prisma.hiringRequest.update({
-      where: { id: transaction.hiringRequestId },
-      data: { status: "COMPLETED" }
-    });
-    
+    // Second payment (Final) completed -> Leave HiringRequest as ACTIVE (Assignment tracking is enough)
     // Also mark Assignment as completed
     await prisma.assignment.updateMany({
       where: { hiringRequestId: transaction.hiringRequestId },
@@ -221,11 +216,8 @@ export const processWebhook = async (rawBody, signature) => {
         }
       } else {
         // Final payment
-        await prisma.hiringRequest.update({
-          where: { id: transaction.hiringRequestId },
-          data: { status: "COMPLETED" }
-        });
-        
+        // Note: We don't update HiringRequest to COMPLETED as it's not in the enum.
+        // The Assignment being COMPLETED is enough to track completion.
         await prisma.assignment.updateMany({
           where: { hiringRequestId: transaction.hiringRequestId },
           data: { status: "COMPLETED" }

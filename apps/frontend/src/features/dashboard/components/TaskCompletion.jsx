@@ -7,7 +7,23 @@ const data = [
   { name: 'Clients', value: 0, color: '#10b981' },
 ];
 
-export default function TaskCompletion() {
+export default function TaskCompletion({ data }) {
+  const chartData = data?.donutData || [
+    { name: 'Workers', value: 0 },
+    { name: 'Agencies', value: 0 },
+    { name: 'Clients', value: 0 },
+  ];
+
+  const total = data?.donutTotal || 0;
+
+  // Add colors to data
+  const dataWithColors = chartData.map(item => {
+    if (item.name === 'Workers') return { ...item, color: '#3b82f6' };
+    if (item.name === 'Agencies') return { ...item, color: '#f59e0b' };
+    if (item.name === 'Clients') return { ...item, color: '#10b981' };
+    return { ...item, color: '#9ca3af' };
+  });
+
   return (
     <div className="bg-white rounded-xl border border-gray-100 p-6 shadow-sm col-span-1">
       <div className="mb-6">
@@ -18,7 +34,7 @@ export default function TaskCompletion() {
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
-              data={data.every(d => d.value === 0) ? [{ value: 1, color: '#f3f4f6', name: 'No data' }] : data}
+              data={total === 0 ? [{ value: 1, color: '#f3f4f6', name: 'No data' }] : dataWithColors}
               cx="50%"
               cy="50%"
               innerRadius={70}
@@ -27,7 +43,7 @@ export default function TaskCompletion() {
               dataKey="value"
               stroke="none"
             >
-              {(data.every(d => d.value === 0) ? [{ value: 1, color: '#f3f4f6' }] : data).map((entry, index) => (
+              {(total === 0 ? [{ value: 1, color: '#f3f4f6' }] : dataWithColors).map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
@@ -35,7 +51,7 @@ export default function TaskCompletion() {
           </PieChart>
         </ResponsiveContainer>
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pb-2">
-          <span className="text-2xl font-bold text-gray-900">0</span>
+          <span className="text-2xl font-bold text-gray-900">{total}</span>
           <span className="text-xs font-semibold text-gray-400">TOTAL</span>
         </div>
       </div>

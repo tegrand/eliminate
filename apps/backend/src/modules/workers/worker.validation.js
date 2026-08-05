@@ -18,6 +18,8 @@ export const updateWorkerSchema = z.object({
   phone: z.string().trim().regex(phoneRegex, "Invalid phone number format").optional(),
   gender: z.string().trim().min(1, "Gender cannot be empty").max(50).optional(),
   dateOfBirth: z.coerce.date().max(new Date(), "Birth date cannot be in the future").optional(),
+  addressLine1: z.string().trim().max(500, "Address is too long").optional(),
+  totalExperienceYears: z.coerce.number().min(0, "Experience cannot be negative").max(100, "Invalid experience years").optional(),
   joiningDate: z.coerce.date().optional(),
   notes: z.string().trim().max(2000, "Notes are too long").optional(),
   employmentStatus: z.enum(["ACTIVE", "BUSY", "INACTIVE", "ON_LEAVE", "TERMINATED"]).optional(),

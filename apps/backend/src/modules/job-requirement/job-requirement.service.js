@@ -225,6 +225,18 @@ export const closeJobRequirement = async (id, clientId) => {
     data: { status: "COMPLETED" },
   });
 
+  const hiringRequests = await prisma.hiringRequest.findMany({
+    where: { jobRequirementId: id },
+    select: { id: true }
+  });
+
+  if (hiringRequests.length > 0) {
+    await prisma.assignment.updateMany({
+      where: { hiringRequestId: { in: hiringRequests.map(r => r.id) } },
+      data: { status: "COMPLETED" }
+    });
+  }
+
   return updatedJob;
 };
 

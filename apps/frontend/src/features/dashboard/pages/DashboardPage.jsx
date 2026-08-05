@@ -1,5 +1,7 @@
 import { useAuth } from "../../../hooks/useAuth";
-import { Calendar, ChevronDown, BadgeCheck, Clock } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Calendar, ChevronDown, BadgeCheck, Clock, Loader2 } from "lucide-react";
+import { dashboardApi } from "../api/dashboard.api";
 
 import DashboardStats from "../components/DashboardStats";
 import RecentActivity from "../components/RecentActivity";
@@ -15,21 +17,51 @@ import AgencyDashboard from "../components/agency/AgencyDashboard";
 export default function DashboardPage() {
   const { user } = useAuth();
 
-  const renderAdminDashboard = () => (
-    <>
-      <DashboardStats />
+  const { data: dashboardData, isLoading, error } = useQuery({
+    queryKey: ["dashboard", user?.profileType],
+    queryFn: async () => {
+      const res = await dashboardApi.getDashboardData();
+      return res.data ?? res;
+    },
+    enabled: user?.profileType === "SUPER_ADMIN"
+  });
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-2">
-        <EarningsOverview />
-        <TaskCompletion />
-      </div>
+  const renderAdminDashboard = () => {
+    if (isLoading) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-[50vh]">
+          <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+          <p className="text-gray-500 mt-2 text-sm">Loading dashboard data...</p>
+        </div>
+      );
+    }
+    if (error) {
+      return (
+        <div className="p-4 bg-red-50 text-red-600 rounded-xl border border-red-100">
+          Failed to load dashboard data.
+        </div>
+      );
+    }
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <RecentActivity />
-        <NotificationPanel />
-      </div>
-    </>
-  );
+    const apiResponse = Array.isArray(dashboardData) ? dashboardData[0] : dashboardData;
+    const data = apiResponse?.data || apiResponse;
+
+    return (
+      <>
+        <DashboardStats data={data?.topStats} />
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-2">
+          <EarningsOverview data={data?.chartData} />
+          <TaskCompletion data={data?.chartData} />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+          <RecentActivity data={data?.recentUsers} />
+          <NotificationPanel />
+        </div>
+      </>
+    );
+  };
 
   return (
     <div className="w-full pt-2 pb-6 space-y-4 animate-fade-in">
@@ -62,7 +94,7 @@ export default function DashboardPage() {
         ) : (
           <button className="flex items-center gap-2 px-3 py-2 border border-gray-200 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors shadow-sm">
             <Calendar className="w-4 h-4 text-gray-500" />
-            <span>May 21, 2025</span>
+            <span>{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
             <ChevronDown className="w-4 h-4 text-gray-500" />
           </button>
         )}

@@ -275,6 +275,8 @@ model Worker {
   gender           String?
   dateOfBirth      DateTime?
   profilePhoto     String?
+  addressLine1     String?
+  totalExperienceYears Int?
   employmentStatus EmploymentStatus @default(ACTIVE)
   joiningDate      DateTime?
   notes            String?

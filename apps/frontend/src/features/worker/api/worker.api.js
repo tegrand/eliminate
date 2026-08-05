@@ -100,6 +100,10 @@ export const workerApi = {
     const response = await api.get("/assignments", { params: filters });
     return response.data;
   },
+  getAssignmentAttendance: async (id) => {
+    const response = await api.get(`/assignments/${id}/attendance`);
+    return response.data;
+  },
 
   // Attendance
   checkIn: async () => {

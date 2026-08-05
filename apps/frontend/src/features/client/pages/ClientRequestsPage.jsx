@@ -269,6 +269,19 @@ export default function ClientRequestsPage() {
                             Advance (30%): ₹{Math.round(parseFloat(req.proposedRate) * 0.3)}
                           </span>
                         )}
+                        
+                        {req.status === 'ACTIVE' && req.payments?.length === 1 && (
+                          <span className="text-xs font-semibold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-100 whitespace-nowrap">
+                            Pending Balance (70%): ₹{Math.round(parseFloat(req.proposedRate) * 0.7)}
+                          </span>
+                        )}
+                        
+                        {req.status === 'ACTIVE' && req.payments?.length >= 2 && (
+                          <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100 whitespace-nowrap">
+                            Fully Paid
+                          </span>
+                        )}
+
                         {getStatusBadge(req.status)}
                       </div>
                       
@@ -282,6 +295,19 @@ export default function ClientRequestsPage() {
                           className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50 w-full sm:w-auto justify-center"
                         >
                           <IndianRupee className="w-4 h-4" /> Pay Advance
+                        </button>
+                      )}
+
+                      {req.status === 'ACTIVE' && req.payments?.length === 1 && (
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handlePayment(req.id);
+                          }}
+                          disabled={loading}
+                          className="px-4 py-2 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50 w-full sm:w-auto justify-center"
+                        >
+                          <IndianRupee className="w-4 h-4" /> Pay Balance
                         </button>
                       )}
 

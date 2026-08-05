@@ -65,7 +65,9 @@ export const listHiringRequests = async (filters, user) => {
       },
       worker: {
         include: { user: { select: { firstName: true, lastName: true } } }
-      }
+      },
+      assignment: { select: { status: true } },
+      payments: { where: { status: 'SUCCESS' } }
     },
     orderBy: { createdAt: 'desc' }
   });

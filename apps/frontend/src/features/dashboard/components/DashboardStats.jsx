@@ -2,7 +2,7 @@ import { Users, Building, Building2, Ban, CheckCircle, ChevronLeft, ChevronRight
 import { useRef, useState, useEffect } from "react";
 import StatCard from "./StatCard";
 
-export default function DashboardStats() {
+export default function DashboardStats({ data }) {
   const scrollRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -55,12 +55,12 @@ export default function DashboardStats() {
   };
 
   const stats = [
-    { title: "Pending Workers", value: "0", icon: Users, bgColor: "bg-blue-50", iconColor: "text-blue-500" },
-    { title: "Pending Agencies", value: "0", icon: Building2, bgColor: "bg-purple-50", iconColor: "text-purple-500" },
-    { title: "Approved Workers", value: "0", icon: CheckCircle, bgColor: "bg-green-50", iconColor: "text-green-500" },
-    { title: "Approved Agencies", value: "0", icon: Building, bgColor: "bg-orange-50", iconColor: "text-orange-500" },
-    { title: "Total Clients", value: "0", icon: Users, bgColor: "bg-blue-50", iconColor: "text-blue-500" },
-    { title: "Suspended Accounts", value: "0", icon: Ban, bgColor: "bg-red-50", iconColor: "text-red-500" },
+    { title: "Total Users", value: data?.totalUsers || "0", icon: Users, bgColor: "bg-blue-50", iconColor: "text-blue-500" },
+    { title: "Total Workers", value: data?.totalWorkers || "0", icon: CheckCircle, bgColor: "bg-green-50", iconColor: "text-green-500" },
+    { title: "Total Agencies", value: data?.totalAgencies || "0", icon: Building, bgColor: "bg-orange-50", iconColor: "text-orange-500" },
+    { title: "Total Clients", value: data?.totalClients || "0", icon: Building2, bgColor: "bg-purple-50", iconColor: "text-purple-500" },
+    { title: "Active Jobs", value: data?.activeRequirements || "0", icon: CheckCircle, bgColor: "bg-green-50", iconColor: "text-green-500" },
+    { title: "Open Jobs", value: data?.openRequirements || "0", icon: Users, bgColor: "bg-blue-50", iconColor: "text-blue-500" },
   ];
 
   return (
