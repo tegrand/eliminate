@@ -16,11 +16,6 @@ export const jobRequirementApi = {
     return response.data;
   },
 
-  cancelJobRequirement: async (id, reason) => {
-    const response = await api.patch(`/job-requirements/${id}/cancel`, { cancellationReason: reason });
-    return response.data;
-  },
-
   closeJobRequirement: async (id) => {
     const response = await api.patch(`/job-requirements/${id}/close`);
     return response.data;

@@ -55,17 +55,6 @@ export const updateJobRequirement = asyncHandler(async (req, res) => {
   });
 });
 
-export const cancelJobRequirement = asyncHandler(async (req, res) => {
-  const clientId = await getClientId(req.user.id);
-  const { cancellationReason } = req.body;
-  const jobRequirement = await JobRequirementService.cancelJobRequirement(req.params.id, clientId, cancellationReason);
-
-  res.status(200).json({
-    status: "success",
-    data: { jobRequirement },
-  });
-});
-
 export const deleteJobRequirement = asyncHandler(async (req, res) => {
   const clientId = await getClientId(req.user.id);
   await JobRequirementService.deleteJobRequirement(req.params.id, clientId);

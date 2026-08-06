@@ -3,7 +3,6 @@ import * as JobRequirementController from "./job-requirement.controller.js";
 import {
   createJobRequirementSchema,
   updateJobRequirementSchema,
-  cancelJobRequirementSchema,
 } from "./job-requirement.validation.js";
 import validate from "../../middleware/validate.middleware.js";
 import authenticate from "../../middleware/auth.middleware.js";
@@ -23,10 +22,6 @@ router
   .get(JobRequirementController.getJobRequirementById)
   .patch(validate(updateJobRequirementSchema), JobRequirementController.updateJobRequirement)
   .delete(JobRequirementController.deleteJobRequirement);
-
-router
-  .route("/:id/cancel")
-  .patch(validate(cancelJobRequirementSchema), JobRequirementController.cancelJobRequirement);
 
 router
   .route("/:id/close")

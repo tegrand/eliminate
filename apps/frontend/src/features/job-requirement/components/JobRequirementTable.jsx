@@ -4,7 +4,7 @@ import { Pagination } from "../../../components/ui/pagination";
 import JobRequirementStatusBadge from "./JobRequirementStatusBadge";
 import { Badge } from "../../../components/ui/badge";
 
-export default function JobRequirementTable({ requirements, loading, page, totalPages, onEdit, onDuplicate, onCancel, onClose, onReopen, onArchive }) {
+export default function JobRequirementTable({ requirements, loading, page, totalPages, onEdit, onDuplicate, onClose, onReopen, onArchive }) {
   const columns = [
     { key: "id", title: "Requirement ID", render: (row) => <span className="font-medium text-gray-900">{row.id}</span> },
     { key: "client", title: "Client", render: (row) => row.client },
@@ -68,17 +68,6 @@ export default function JobRequirementTable({ requirements, loading, page, total
               title="Close"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-check-circle"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            </button>
-          )}
-
-          {(row.status === "OPEN" || row.status === "DRAFT" || row.status === "PARTIALLY_FILLED" || row.status === "FILLED") && (
-            <button 
-              onClick={() => onCancel && onCancel(row)}
-              className="p-1 text-gray-400 hover:text-red-600 focus:outline-none" 
-              aria-label="Cancel" 
-              title="Cancel"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x-circle"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
             </button>
           )}
 

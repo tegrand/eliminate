@@ -93,15 +93,6 @@ function JobCard({ job, onDelete, onUpdateStatus, onEdit }) {
           <Edit2 className="w-3.5 h-3.5" /> Edit
         </button>
         
-        {(job.status === "OPEN" || job.status === "DRAFT" || job.status === "PARTIALLY_FILLED" || job.status === "FILLED") && (
-          <button 
-            onClick={() => onUpdateStatus(job, "CANCELLED")}
-            className="px-2.5 py-1.5 text-gray-500 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors flex items-center gap-1.5 text-xs font-semibold"
-          >
-            <XCircle className="w-3.5 h-3.5" /> Cancel
-          </button>
-        )}
-        
         {(job.status === "CANCELLED" || job.status === "COMPLETED") && (
           <button 
             onClick={() => onUpdateStatus(job, "OPEN")}
@@ -158,7 +149,6 @@ export default function ClientJobsPage() {
 
   const updateStatusMutation = useMutation({
     mutationFn: ({ id, status }) => {
-      if (status === "CANCELLED") return jobRequirementApi.cancelJobRequirement(id, "Cancelled by user");
       if (status === "COMPLETED") return jobRequirementApi.closeJobRequirement(id);
       if (status === "OPEN") return jobRequirementApi.reopenJobRequirement(id);
       return jobRequirementApi.updateJobRequirement(id, { status });

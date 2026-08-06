@@ -37,18 +37,6 @@ export default function JobRequirementListPage() {
     }
   };
 
-  const handleCancel = async (row) => {
-    const reason = window.prompt("Please enter a cancellation reason:");
-    if (!reason) return;
-    try {
-      await jobRequirementApi.cancelJobRequirement(row.id, reason);
-      toast.success("Job Requirement cancelled successfully");
-      refetch();
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to cancel");
-    }
-  };
-
   const handleClose = async (row) => {
     if (!window.confirm("Are you sure you want to close this requirement?")) return;
     try {
@@ -138,7 +126,6 @@ export default function JobRequirementListPage() {
         totalPages={data?.data?.totalPages || 1}
         onEdit={handleEdit}
         onDuplicate={handleDuplicate}
-        onCancel={handleCancel}
         onClose={handleClose}
         onReopen={handleReopen}
         onArchive={handleArchive}
