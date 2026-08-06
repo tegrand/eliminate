@@ -287,7 +287,8 @@ export const getClientDashboard = async (userId) => {
     recentActivitiesList,
     notifications,
     pendingHiringRequests,
-    totalSpentResult
+    totalSpentResult,
+    completedJobsList
   ] = await Promise.all([
     // Active = OPEN + PARTIALLY_FILLED
     prisma.jobRequirement.count({
@@ -358,6 +359,21 @@ export const getClientDashboard = async (userId) => {
       _sum: {
         amount: true
       }
+    }),
+    // Completed Jobs List (last 5)
+    prisma.jobRequirement.findMany({
+      where: { clientId: client.id, deletedAt: null, status: "COMPLETED" },
+      orderBy: { updatedAt: "desc" },
+      take: 5,
+      select: {
+        id: true,
+        title: true,
+        startDate: true,
+        endDate: true,
+        assignedCount: true,
+        totalCost: true,
+        updatedAt: true
+      }
     })
   ]);
 
@@ -425,6 +441,7 @@ export const getClientDashboard = async (userId) => {
     },
     recentActivities,
     notifications,
+    completedJobsList,
     chartData
   };
 };
