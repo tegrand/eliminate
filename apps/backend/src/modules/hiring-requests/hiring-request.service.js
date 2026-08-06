@@ -5,6 +5,22 @@ export const createHiringRequest = async (clientId, data) => {
   return await prisma.$transaction(async (tx) => {
     let jobRequirementId = data.jobRequirementId;
 
+    if (data.targetWorkerId) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const todayAttendance = await tx.workerAttendance.findFirst({
+        where: {
+          workerId: data.targetWorkerId,
+          date: today
+        }
+      });
+
+      if (todayAttendance?.status !== 'PRESENT' || todayAttendance?.checkOutTime) {
+        throw new AppError(`This worker is currently not available for hire (Not marked as Present today, or has checked out).`, 400);
+      }
+    }
+
     if (!jobRequirementId) {
       const newJob = await tx.jobRequirement.create({
         data: {

@@ -114,8 +114,20 @@ export const getWorkerDashboard = async (userId) => {
   const absentCount = attendanceRecords.filter(rec => rec.status === 'ABSENT').length;
   const onLeaveCount = attendanceRecords.filter(rec => rec.status === 'ON_LEAVE').length;
 
+  const completedAssignments = await prisma.assignmentWorker.findMany({
+    where: {
+      workerId: worker.id,
+      assignment: { status: 'COMPLETED' }
+    },
+    include: { assignment: true }
+  });
+
+  const completedAssignmentsAmount = completedAssignments.reduce((sum, aw) => sum + (Number(aw.assignment.agreedRate) || 0), 0);
+
   const totalRevenue = payments.filter(p => p.status === 'COMPLETED').reduce((sum, p) => sum + (p.amount || 0), 0);
-  const pendingAmount = payments.filter(p => p.status === 'PENDING').reduce((sum, p) => sum + (p.amount || 0), 0);
+  const pendingPaymentsAmount = payments.filter(p => p.status === 'PENDING').reduce((sum, p) => sum + (p.amount || 0), 0);
+  
+  const pendingAmount = pendingPaymentsAmount + Math.max(0, completedAssignmentsAmount - (totalRevenue + pendingPaymentsAmount));
 
   const getEmptyMonthlyData = () => [
     { name: 'Jan', value: 0 }, { name: 'Feb', value: 0 }, { name: 'Mar', value: 0 },

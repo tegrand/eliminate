@@ -33,7 +33,9 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
       proposedRate: "",
       startDate: "",
       endDate: "",
-      notes: ""
+      notes: "",
+      location: "",
+      phoneNumber: ""
     }
   });
 
@@ -109,7 +111,9 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
         jobRequirementId: selectedJobId,
         title: selectedJob ? selectedJob.title : "Job Hiring Request",
         proposedRate: data.proposedRate ? parseFloat(data.proposedRate) : undefined,
-        notes: data.notes
+        notes: data.notes,
+        location: data.location,
+        phoneNumber: data.phoneNumber
       };
     } else {
       payload = {
@@ -118,7 +122,9 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
         proposedRate: data.proposedRate ? parseFloat(data.proposedRate) : (targetRate ? parseFloat(targetRate) : undefined),
         startDate: data.startDate ? new Date(data.startDate).toISOString() : undefined,
         endDate: data.endDate ? new Date(data.endDate).toISOString() : undefined,
-        notes: data.notes
+        notes: data.notes,
+        location: data.location,
+        phoneNumber: data.phoneNumber
       };
     }
 
@@ -251,7 +257,30 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
               </div>
             )}
 
-            {/* Common fields (Rate & Notes) */}
+            {/* Common fields (Rate, Notes, Location, Phone) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-gray-100">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Work Location (Address/Maps Link)</label>
+                <input 
+                  type="text" 
+                  {...register("location", { required: "Location is required" })}
+                  className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none"
+                  placeholder="Enter full address or Google Maps link"
+                />
+                {errors.location && <span className="text-red-500 text-xs mt-1 block">{errors.location.message}</span>}
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Contact Phone Number</label>
+                <input 
+                  type="text" 
+                  {...register("phoneNumber", { required: "Phone number is required" })}
+                  className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none"
+                  placeholder="Contact number for this job"
+                />
+                {errors.phoneNumber && <span className="text-red-500 text-xs mt-1 block">{errors.phoneNumber.message}</span>}
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-gray-100">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1.5">

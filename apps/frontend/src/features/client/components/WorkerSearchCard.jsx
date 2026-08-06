@@ -113,10 +113,16 @@ export default function WorkerSearchCard({ worker }) {
         </Link>
         <button
           onClick={() => setIsHireModalOpen(true)}
-          className="flex-1 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 shadow-sm shadow-blue-200 transition-colors flex items-center justify-center gap-2"
+          disabled={!worker.presentToday}
+          title={!worker.presentToday ? "Worker is currently not available (Not present today)" : ""}
+          className={`flex-1 py-2.5 text-white text-sm font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
+            !worker.presentToday 
+              ? "bg-gray-400 cursor-not-allowed" 
+              : "bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-200"
+          }`}
         >
           <User className="w-4 h-4" />
-          Hire Worker
+          {worker.presentToday ? "Hire Worker" : "Not Available"}
         </button>
       </div>
 

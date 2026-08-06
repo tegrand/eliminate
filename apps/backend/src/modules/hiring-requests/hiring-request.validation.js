@@ -10,6 +10,8 @@ export const createHiringRequestSchema = z.object({
   startDate: z.string().datetime().optional().nullable(),
   endDate: z.string().datetime().optional().nullable(),
   notes: z.string().trim().max(1000).optional(),
+  location: z.string().trim().max(500).optional(),
+  phoneNumber: z.string().trim().max(20).optional(),
 }).refine(data => data.targetAgencyId || data.targetWorkerId, {
   message: "Either targetAgencyId or targetWorkerId must be provided",
   path: ["targetAgencyId"]

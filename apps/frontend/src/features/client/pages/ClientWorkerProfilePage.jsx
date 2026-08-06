@@ -95,9 +95,9 @@ export default function ClientWorkerProfilePage() {
           <div className="w-full lg:w-[320px] shrink-0">
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 relative">
               {/* Status Badge */}
-              <div className="absolute top-5 right-5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold tracking-wide">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
-                Available
+              <div className={`absolute top-5 right-5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full ${worker.presentToday ? 'bg-emerald-50 text-emerald-700' : 'bg-orange-50 text-orange-700'} text-[10px] font-bold tracking-wide`}>
+                <div className={`w-1.5 h-1.5 rounded-full ${worker.presentToday ? 'bg-emerald-500' : 'bg-orange-500'}`}></div>
+                {worker.presentToday ? 'Available' : 'Not Available'}
               </div>
 
               {/* Avatar */}
@@ -131,9 +131,9 @@ export default function ClientWorkerProfilePage() {
                   <MapPin className="w-4 h-4 text-gray-400" />
                   <span className="text-[13px]">{location}</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-sm font-medium text-emerald-600">
-                  <Calendar className="w-4 h-4 text-emerald-600" />
-                  <span className="text-[13px]">Available for work</span>
+                <div className={`flex items-center gap-2.5 text-sm font-medium ${worker.presentToday ? 'text-emerald-600' : 'text-orange-600'}`}>
+                  <Calendar className={`w-4 h-4 ${worker.presentToday ? 'text-emerald-600' : 'text-orange-600'}`} />
+                  <span className="text-[13px]">{worker.presentToday ? 'Available for work' : 'Currently Unavailable'}</span>
                 </div>
               </div>
 
@@ -141,10 +141,16 @@ export default function ClientWorkerProfilePage() {
               <div className="flex flex-col gap-2 pt-4 border-t border-gray-100 mt-2">
                 <button
                   onClick={() => setIsHireModalOpen(true)}
-                  className="w-full px-4 py-2.5 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-sm shadow-blue-200"
+                  disabled={!worker.presentToday}
+                  title={!worker.presentToday ? "Worker is currently not available (Not present today)" : ""}
+                  className={`w-full px-4 py-2.5 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 ${
+                    !worker.presentToday 
+                      ? 'bg-gray-400 cursor-not-allowed' 
+                      : 'bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-200'
+                  }`}
                 >
-                  Hire Now
-                  <ChevronRight className="w-4 h-4" />
+                  {worker.presentToday ? 'Hire Now' : 'Not Available'}
+                  {worker.presentToday && <ChevronRight className="w-4 h-4" />}
                 </button>
                 <button
                   onClick={() => setIsAvailabilityModalOpen(true)}

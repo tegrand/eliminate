@@ -19,6 +19,12 @@ export const checkIn = async (userId) => {
   });
 
   if (existing && existing.checkInTime) {
+    if (existing.checkOutTime) {
+      return prisma.workerAttendance.update({
+        where: { id: existing.id },
+        data: { checkOutTime: null, status: "PRESENT" }
+      });
+    }
     throw new AppError("You have already checked in today", 400);
   }
 

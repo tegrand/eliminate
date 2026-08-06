@@ -857,6 +857,8 @@ model HiringRequest {
   startDate    DateTime?
   endDate      DateTime?
   notes        String?
+  location     String?
+  phoneNumber  String?
 
   status             HiringRequestStatus @default(PENDING)
   advancePercentage  Int                 @default(30)

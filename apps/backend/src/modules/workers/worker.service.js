@@ -167,8 +167,29 @@ export const getWorkers = async ({
     return worker;
   });
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const workerIds = adjustedItems.map(w => w.id);
+  const todayAttendances = await prisma.workerAttendance.findMany({
+    where: {
+      workerId: { in: workerIds },
+      date: today
+    }
+  });
+
+  const attendanceMap = todayAttendances.reduce((acc, curr) => {
+    acc[curr.workerId] = { status: curr.status, checkOutTime: curr.checkOutTime };
+    return acc;
+  }, {});
+
+  const finalItems = adjustedItems.map(worker => {
+    const att = attendanceMap[worker.id];
+    worker.presentToday = att?.status === "PRESENT" && !att?.checkOutTime;
+    return worker;
+  });
+
   return {
-    items: adjustedItems,
+    items: finalItems,
     pagination: {
       page: Number(page),
       limit: Number(limit),
@@ -187,6 +208,17 @@ export const getWorkerById = async (id, user) => {
   if (!worker) {
     throw new AppError("Worker not found", 404);
   }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayAttendance = await prisma.workerAttendance.findFirst({
+    where: {
+      workerId: worker.id,
+      date: today
+    }
+  });
+
+  worker.presentToday = todayAttendance?.status === "PRESENT" && !todayAttendance?.checkOutTime;
 
   // RBAC Ownership Check
   if (user?.profileType === "WORKER" && worker.userId !== user.id) {
