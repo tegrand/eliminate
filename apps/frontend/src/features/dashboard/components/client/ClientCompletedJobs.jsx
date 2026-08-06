@@ -35,7 +35,6 @@ export default function ClientCompletedJobs({ jobs = [] }) {
               </div>
               <div className="text-right">
                 <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">Completed</span>
-                {job.totalCost > 0 && <p className="text-sm font-bold text-slate-900 mt-1">₹{job.totalCost}</p>}
               </div>
             </div>
           </div>

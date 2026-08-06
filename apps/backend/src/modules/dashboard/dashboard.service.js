@@ -371,7 +371,6 @@ export const getClientDashboard = async (userId) => {
         startDate: true,
         endDate: true,
         assignedCount: true,
-        totalCost: true,
         updatedAt: true
       }
     })
