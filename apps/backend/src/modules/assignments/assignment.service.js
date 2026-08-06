@@ -197,7 +197,10 @@ export const checkoutAssignmentAttendance = async (assignmentId, { workerId, dat
 export const updateAssignmentStatus = async (id, status, user) => {
   const assignment = await prisma.assignment.findUnique({ 
     where: { id },
-    include: { client: true }
+    include: { 
+      client: true,
+      hiringRequest: true
+    }
   });
   if (!assignment) throw new AppError("Assignment not found", 404);
 
@@ -207,6 +210,14 @@ export const updateAssignmentStatus = async (id, status, user) => {
   });
 
   if (status === "COMPLETED") {
+    // Update JobRequirement to COMPLETED
+    if (assignment.hiringRequest?.jobRequirementId) {
+      await prisma.jobRequirement.update({
+        where: { id: assignment.hiringRequest.jobRequirementId },
+        data: { status: "COMPLETED" }
+      });
+    }
+
     await prisma.notification.create({
       data: {
         userId: assignment.client.userId,

@@ -11,7 +11,7 @@ export const getWorkerDashboard = async (userId) => {
         take: 1
       },
       reviews: true,
-      assignments: { where: { status: "COMPLETED" } }
+      assignments: { where: { assignment: { status: "COMPLETED" } } }
     }
   });
 
@@ -24,7 +24,7 @@ export const getWorkerDashboard = async (userId) => {
       include: {
         agencies: { include: { agency: true } },
         reviews: true,
-        assignments: { where: { status: "COMPLETED" } }
+        assignments: { where: { assignment: { status: "COMPLETED" } } }
       }
     });
   }
