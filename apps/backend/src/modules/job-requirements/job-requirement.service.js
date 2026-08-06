@@ -186,11 +186,35 @@ export const updateJobRequirement = async (id, data) => {
     };
   }
 
-  return await prisma.jobRequirement.update({
+  const updated = await prisma.jobRequirement.update({
     where: { id },
     data: updateData,
     select: jobRequirementSelect,
   });
+
+  if (updateData.status === "CANCELLED") {
+    // Cascade cancel to HiringRequests
+    await prisma.hiringRequest.updateMany({
+      where: { jobRequirementId: id },
+      data: { status: "CANCELLED" }
+    });
+
+    const hiringRequests = await prisma.hiringRequest.findMany({
+      where: { jobRequirementId: id },
+      select: { id: true }
+    });
+    const hiringRequestIds = hiringRequests.map(hr => hr.id);
+
+    if (hiringRequestIds.length > 0) {
+      // Cascade cancel to Assignments
+      await prisma.assignment.updateMany({
+        where: { hiringRequestId: { in: hiringRequestIds } },
+        data: { status: "CANCELLED" }
+      });
+    }
+  }
+
+  return updated;
 };
 
 export const deleteJobRequirement = async (id) => {
