@@ -11,9 +11,11 @@ export default function WorkerInvitationsPage() {
   const [activeTab, setActiveTab] = useState("jobs"); // 'jobs' or 'agencies'
   const [selectedInvite, setSelectedInvite] = useState(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [detailsTab, setDetailsTab] = useState("overview");
 
   const openDetails = (invite) => {
     setSelectedInvite(invite);
+    setDetailsTab("overview");
     setIsDetailsModalOpen(true);
   };
 
@@ -281,9 +283,9 @@ export default function WorkerInvitationsPage() {
       {/* Details Modal */}
       <Modal isOpen={isDetailsModalOpen} onClose={() => setIsDetailsModalOpen(false)} title="Invitation Details" className="sm:max-w-3xl max-h-[85vh] overflow-hidden flex flex-col">
         {selectedInvite && (
-          <div className="p-4 sm:p-6 overflow-y-auto max-h-full scrollbar-hide">
+          <div className="p-4 overflow-y-auto max-h-full scrollbar-hide">
             {!selectedInvite.isAgencyInvite ? (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div>
                   <h3 className="text-lg font-bold text-slate-900">{selectedInvite.title}</h3>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2">
@@ -299,82 +301,99 @@ export default function WorkerInvitationsPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="flex border-b border-slate-200">
+                  <button 
+                    onClick={() => setDetailsTab("overview")}
+                    className={`px-4 py-2 text-xs font-semibold ${detailsTab === "overview" ? "text-blue-600 border-b-2 border-blue-600" : "text-slate-500 hover:text-slate-700"}`}
+                  >
+                    Overview
+                  </button>
+                  <button 
+                    onClick={() => setDetailsTab("details")}
+                    className={`px-4 py-2 text-xs font-semibold ${detailsTab === "details" ? "text-blue-600 border-b-2 border-blue-600" : "text-slate-500 hover:text-slate-700"}`}
+                  >
+                    Description & Notes
+                  </button>
+                </div>
+
+                {detailsTab === "overview" && (
+                  <>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {(selectedInvite.proposedRate || selectedInvite.jobRequirement?.salaryAmount) && (
-                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Proposed Rate</p>
+                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Proposed Rate</p>
                       <p className="font-bold text-slate-900 flex items-center gap-1.5"><DollarSign className="w-4 h-4 text-emerald-500" /> ₹{selectedInvite.proposedRate || selectedInvite.jobRequirement?.salaryAmount}</p>
                     </div>
                   )}
                   {(selectedInvite.startDate || selectedInvite.jobRequirement?.startDate) && (
-                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Start Date</p>
+                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Start Date</p>
                       <p className="font-bold text-slate-900 flex items-center gap-1.5"><Calendar className="w-4 h-4 text-indigo-400" /> {new Date(selectedInvite.startDate || selectedInvite.jobRequirement.startDate).toLocaleDateString()}</p>
                     </div>
                   )}
                   {(selectedInvite.endDate || selectedInvite.jobRequirement?.endDate) && (
-                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">End Date</p>
+                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">End Date</p>
                       <p className="font-bold text-slate-900 flex items-center gap-1.5"><Calendar className="w-4 h-4 text-red-400" /> {new Date(selectedInvite.endDate || selectedInvite.jobRequirement.endDate).toLocaleDateString()}</p>
                     </div>
                   )}
                   {(selectedInvite.phoneNumber || selectedInvite.client?.phone) && (
-                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Contact Phone</p>
+                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Contact Phone</p>
                       <p className="font-bold text-slate-900">{selectedInvite.phoneNumber || selectedInvite.client?.phone}</p>
                     </div>
                   )}
                   {selectedInvite.client?.contactPerson && (
-                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Contact Person</p>
+                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Contact Person</p>
                       <p className="font-bold text-slate-900">{selectedInvite.client.contactPerson}</p>
                     </div>
                   )}
                   {(selectedInvite.location || selectedInvite.jobRequirement?.locationId || selectedInvite.jobRequirement?.location) && (
-                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100 sm:col-span-2">
-                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Work Location</p>
+                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100 sm:col-span-2">
+                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Work Location</p>
                       <p className="font-bold text-slate-900 flex items-center gap-1.5"><MapPin className="w-4 h-4 text-rose-500" /> {selectedInvite.location || selectedInvite.jobRequirement?.locationId || selectedInvite.jobRequirement?.location}</p>
                     </div>
                   )}
                   {selectedInvite.jobRequirement?.requiredWorkers && (
                     <>
-                      <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                        <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Required Workers</p>
+                      <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                        <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Required Workers</p>
                         <p className="font-bold text-slate-900">{selectedInvite.jobRequirement.requiredWorkers}</p>
                       </div>
-                      <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                        <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Assigned Workers</p>
+                      <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                        <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Assigned Workers</p>
                         <p className="font-bold text-slate-900">{selectedInvite.jobRequirement.assignedCount || 0}</p>
                       </div>
                     </>
                   )}
                   {selectedInvite.jobRequirement?.shift && (
-                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Shift</p>
+                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Shift</p>
                       <p className="font-bold text-slate-900">{selectedInvite.jobRequirement.shift}</p>
                     </div>
                   )}
                   {(selectedInvite.jobRequirement?.startTime || selectedInvite.jobRequirement?.endTime) && (
-                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Timings</p>
+                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Timings</p>
                       <p className="font-bold text-slate-900">{selectedInvite.jobRequirement?.startTime || '-'} to {selectedInvite.jobRequirement?.endTime || '-'}</p>
                     </div>
                   )}
                   {selectedInvite.jobRequirement?.experienceRequired && (
-                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Experience Reqd</p>
+                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Experience Reqd</p>
                       <p className="font-bold text-slate-900">{selectedInvite.jobRequirement.experienceRequired}</p>
                     </div>
                   )}
                   {selectedInvite.jobRequirement?.duration && (
-                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Duration</p>
+                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Duration</p>
                       <p className="font-bold text-slate-900">{selectedInvite.jobRequirement.duration}</p>
                     </div>
                   )}
                   {selectedInvite.jobRequirement?.genderPreference && (
-                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Gender Pref.</p>
+                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Gender Pref.</p>
                       <p className="font-bold text-slate-900">{selectedInvite.jobRequirement.genderPreference}</p>
                     </div>
                   )}
@@ -382,7 +401,7 @@ export default function WorkerInvitationsPage() {
 
                 {selectedInvite.jobRequirement && (selectedInvite.jobRequirement.accommodation || selectedInvite.jobRequirement.food || selectedInvite.jobRequirement.transport) && (
                   <div>
-                    <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Facilities Provided</p>
+                    <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Facilities Provided</p>
                     <div className="flex flex-wrap gap-2">
                       {selectedInvite.jobRequirement.accommodation && <span className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-medium border border-blue-100">Accommodation</span>}
                       {selectedInvite.jobRequirement.food && <span className="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-md text-xs font-medium border border-amber-100">Food</span>}
@@ -390,20 +409,26 @@ export default function WorkerInvitationsPage() {
                     </div>
                   </div>
                 )}
-
-                {(selectedInvite.description || selectedInvite.jobRequirement?.description) && (
-                  <div>
-                    <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Description</p>
-                    <div className="text-sm text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-100 whitespace-pre-wrap">
-                      {selectedInvite.description || selectedInvite.jobRequirement?.description}
-                    </div>
-                  </div>
+                  </>
                 )}
-                
-                {selectedInvite.notes && (
-                  <div>
-                    <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-2">Additional Notes</p>
-                    <p className="text-sm text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-lg border border-slate-100 whitespace-pre-wrap">{selectedInvite.notes}</p>
+
+                {detailsTab === "details" && (
+                  <div className="space-y-4">
+                    {(selectedInvite.description || selectedInvite.jobRequirement?.description) && (
+                      <div>
+                        <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Description</p>
+                        <div className="text-xs text-slate-700 leading-relaxed bg-slate-50 p-2 rounded-lg border border-slate-100 whitespace-pre-wrap">
+                          {selectedInvite.description || selectedInvite.jobRequirement?.description}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {selectedInvite.notes && (
+                      <div>
+                        <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Additional Notes</p>
+                        <p className="text-xs text-slate-700 leading-relaxed bg-slate-50 p-2 rounded-lg border border-slate-100 whitespace-pre-wrap">{selectedInvite.notes}</p>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -418,23 +443,23 @@ export default function WorkerInvitationsPage() {
                 </div>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                    <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Contact Person</p>
+                  <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                    <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Contact Person</p>
                     <p className="font-bold text-slate-900">{selectedInvite.agency?.contactPerson || selectedInvite.contactPerson || "Not provided"}</p>
                   </div>
-                  <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                    <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Phone Number</p>
+                  <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                    <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Phone Number</p>
                     <p className="font-bold text-slate-900">{selectedInvite.agency?.phone || selectedInvite.phone || "Not provided"}</p>
                   </div>
                   {(selectedInvite.agency?.email || selectedInvite.email) && (
-                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Email</p>
+                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Email</p>
                       <p className="font-bold text-slate-900">{selectedInvite.agency?.email || selectedInvite.email}</p>
                     </div>
                   )}
                   {(selectedInvite.invitedAt || selectedInvite.createdAt) && (
-                    <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
-                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">Invited On</p>
+                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Invited On</p>
                       <p className="font-bold text-slate-900 flex items-center gap-1.5">
                         <Calendar className="w-4 h-4 text-slate-400" />
                         {new Date(selectedInvite.invitedAt || selectedInvite.createdAt).toLocaleDateString()}
