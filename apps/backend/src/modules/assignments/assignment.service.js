@@ -1,6 +1,7 @@
 import prisma from "../../config/prisma.js";
 import AppError from "../../shared/errors/app-error.js";
 import { startOfDay, endOfDay, differenceInMinutes } from "date-fns";
+import crypto from "crypto";
 
 export const listAssignments = async (filters, user) => {
   const where = {};
@@ -216,6 +217,69 @@ export const updateAssignmentStatus = async (id, status, user) => {
         where: { id: assignment.hiringRequest.jobRequirementId },
         data: { status: "COMPLETED" }
       });
+    }
+
+    // Generate Invoice
+    const existingInvoice = await prisma.invoice.findFirst({
+      where: { assignmentId: assignment.id }
+    });
+
+    if (!existingInvoice) {
+      const assignedWorkers = await prisma.assignmentWorker.findMany({
+        where: { assignmentId: assignment.id, status: "ACTIVE" },
+        include: { worker: { include: { user: true } } }
+      });
+
+      const agreedRate = Number(assignment.agreedRate) || 0;
+      let subtotal = 0;
+      const invoiceItemsData = [];
+
+      for (const aw of assignedWorkers) {
+        // Calculate amount based on agreedRate (for now, simply assigning the full agreedRate)
+        const workerAmount = agreedRate;
+        subtotal += workerAmount;
+        invoiceItemsData.push({
+          workerId: aw.workerId,
+          description: `Work completed by ${aw.worker.user.firstName} ${aw.worker.user.lastName}`,
+          amount: workerAmount
+        });
+      }
+
+      const taxes = subtotal * 0.18; // Example 18% tax
+      const grandTotal = subtotal + taxes;
+
+      const invoice = await prisma.invoice.create({
+        data: {
+          invoiceNumber: `INV-${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
+          clientId: assignment.clientId,
+          assignmentId: assignment.id,
+          subtotal,
+          taxes,
+          grandTotal,
+          status: "PENDING",
+          items: {
+            create: invoiceItemsData
+          }
+        },
+        include: { items: true }
+      });
+
+      // Notify Super Admins
+      const superAdmins = await prisma.user.findMany({
+        where: { profileType: "SUPER_ADMIN" }
+      });
+
+      if (superAdmins.length > 0) {
+        await prisma.notification.createMany({
+          data: superAdmins.map(admin => ({
+            userId: admin.id,
+            type: "SYSTEM",
+            title: "New Invoice Generated",
+            message: `Invoice ${invoice.invoiceNumber} has been generated for assignment "${assignment.title}". Subtotal: ${subtotal}, Taxes: ${taxes}, Grand Total: ${grandTotal}. Workers paid: ${invoiceItemsData.length}.`,
+            link: `/admin/invoices`
+          }))
+        });
+      }
     }
 
     await prisma.notification.create({

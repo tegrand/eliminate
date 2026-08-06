@@ -298,6 +298,7 @@ model Worker {
   // bookings         Booking[]
   hiringRequests  HiringRequest[]
   assignments     AssignmentWorker[]
+  invoiceItems    InvoiceItem[]
 
 
 
@@ -336,7 +337,7 @@ model Client {
   // Future module relation placeholders (awaiting model implementation)
   jobRequirements JobRequirement[]
   // bookings         Booking[]
-  // invoices         Invoice[]
+  invoices         Invoice[]
   // payments         Payment[]
   hiringRequests  HiringRequest[]
   assignments     Assignment[]
@@ -909,6 +910,7 @@ model Assignment {
   agency        Agency?        @relation(fields: [agencyId], references: [id])
 
   assignedWorkers AssignmentWorker[]
+  invoices        Invoice[]
 
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
@@ -1057,4 +1059,35 @@ model PaymentTransaction {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+
+model Invoice {
+  id            String        @id @default(uuid())
+  invoiceNumber String        @unique
+  clientId      String
+  assignmentId  String?
+  subtotal      Decimal
+  taxes         Decimal
+  grandTotal    Decimal
+  status        String        @default("PENDING")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  client        Client        @relation(fields: [clientId], references: [id])
+  assignment    Assignment?   @relation(fields: [assignmentId], references: [id])
+  items         InvoiceItem[]
+}
+
+model InvoiceItem {
+  id            String   @id @default(uuid())
+  invoiceId     String
+  workerId      String
+  description   String
+  amount        Decimal
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  invoice       Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  worker        Worker   @relation(fields: [workerId], references: [id])
 }
