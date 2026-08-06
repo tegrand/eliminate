@@ -286,7 +286,8 @@ export const getClientDashboard = async (userId) => {
     upcomingJobsCount,
     recentActivitiesList,
     notifications,
-    pendingHiringRequests
+    pendingHiringRequests,
+    totalSpentResult
   ] = await Promise.all([
     // Active = OPEN + PARTIALLY_FILLED
     prisma.jobRequirement.count({
@@ -345,9 +346,22 @@ export const getClientDashboard = async (userId) => {
     // Pending Hiring Requests
     prisma.hiringRequest.count({
       where: { clientId: client.id, status: "PENDING" }
+    }),
+    // Total spent
+    prisma.paymentTransaction.aggregate({
+      where: {
+        status: "SUCCESS",
+        hiringRequest: {
+          clientId: client.id
+        }
+      },
+      _sum: {
+        amount: true
+      }
     })
   ]);
 
+  const totalSpentAmt = totalSpentResult?._sum?.amount ? parseFloat(totalSpentResult._sum.amount.toString()) : 0;
   const assignedWorkers = allRequirementsForWorkers.reduce((sum, r) => sum + (r.assignedCount || 0), 0);
 
   // Map activities with richer info
@@ -399,6 +413,7 @@ export const getClientDashboard = async (userId) => {
 
   return {
     topStats: {
+      totalSpent: totalSpentAmt > 0 ? `₹${totalSpentAmt}` : "₹0",
       activeRequirements,
       openRequirements,
       assignedWorkers,

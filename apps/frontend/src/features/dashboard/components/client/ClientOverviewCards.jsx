@@ -46,8 +46,8 @@ const cards = (stats, t) => [
   },
   {
     label: "Total Spend",
-    value: stats?.totalSpend || "₹0",
-    sub: "This month",
+    value: stats?.totalSpent || "₹0",
+    sub: "All time",
     gradient: "from-indigo-500 to-indigo-600",
   },
   {
