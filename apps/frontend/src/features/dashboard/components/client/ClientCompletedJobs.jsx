@@ -29,12 +29,13 @@ export default function ClientCompletedJobs({ jobs = [] }) {
                     <span>{new Date(job.endDate || job.updatedAt).toLocaleDateString()}</span>
                   </div>
                   <div className="flex items-center gap-1.5 bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-md">
-                    <span>{job.assignedCount || 0} Workers</span>
+                    <span>{job._count?.assignedWorkers || 0} Workers</span>
                   </div>
                 </div>
               </div>
               <div className="text-right">
                 <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">Completed</span>
+                {job.agreedRate > 0 && <p className="text-sm font-bold text-slate-900 mt-1">₹{job.agreedRate}</p>}
               </div>
             </div>
           </div>

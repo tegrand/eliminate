@@ -361,8 +361,8 @@ export const getClientDashboard = async (userId) => {
       }
     }),
     // Completed Jobs List (last 5)
-    prisma.jobRequirement.findMany({
-      where: { clientId: client.id, deletedAt: null, status: "COMPLETED" },
+    prisma.assignment.findMany({
+      where: { clientId: client.id, status: "COMPLETED" },
       orderBy: { updatedAt: "desc" },
       take: 5,
       select: {
@@ -370,8 +370,11 @@ export const getClientDashboard = async (userId) => {
         title: true,
         startDate: true,
         endDate: true,
-        assignedCount: true,
-        updatedAt: true
+        agreedRate: true,
+        updatedAt: true,
+        _count: {
+          select: { assignedWorkers: true }
+        }
       }
     })
   ]);
