@@ -47,6 +47,13 @@ export const NAVIGATION_CONFIG = [
     roles: ["WORKER"],
     items: [
       {
+        title: "Invitations",
+        path: ROUTES.MY_INVITATIONS,
+        icon: Bell,
+        roles: ["WORKER"],
+      },
+
+      {
         title: "My Jobs",
         path: ROUTES.MY_JOBS,
         icon: Briefcase,

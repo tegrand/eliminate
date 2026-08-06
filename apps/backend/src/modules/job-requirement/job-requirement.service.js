@@ -175,7 +175,29 @@ export const updateJobRequirement = async (id, clientId, data) => {
   return updatedJob;
 };
 
+export const cancelJobRequirement = async (id, clientId, reason) => {
+  const existingJob = await getJobRequirementById(id, clientId);
 
+  if (existingJob.status === "CANCELLED" || existingJob.status === "CLOSED" || existingJob.status === "COMPLETED") {
+    throw new AppError("Job requirement cannot be cancelled in its current status", 400);
+  }
+
+  const requiresReason = ["PARTIALLY_FILLED", "FILLED", "IN_PROGRESS"].includes(existingJob.status);
+  
+  if (requiresReason && !reason) {
+    throw new AppError("A cancellation reason is required for jobs with assigned workers", 400);
+  }
+
+  const updatedJob = await prisma.jobRequirement.update({
+    where: { id },
+    data: {
+      status: "CANCELLED",
+      cancellationReason: reason,
+    },
+  });
+
+  return updatedJob;
+};
 
 export const deleteJobRequirement = async (id, clientId) => {
   const existingJob = await getJobRequirementById(id, clientId);

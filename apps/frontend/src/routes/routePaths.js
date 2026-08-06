@@ -84,4 +84,7 @@ export const ROUTES = {
 
   // Settings
   SETTINGS: "/settings",
+
+  // Admin
+  ADMIN: "/admin/*",
 };

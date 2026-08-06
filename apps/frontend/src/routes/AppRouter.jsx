@@ -82,6 +82,7 @@ import PaymentListPage from "../features/payment/pages/PaymentListPage";
 import PaymentReceiptPage from "../features/payment/pages/PaymentReceiptPage";
 
 import SettingsPage from "../features/settings/pages/SettingsPage";
+import AdminRoutes from "../features/admin/routes/AdminRoutes";
 
 const NotFoundPage = () => (
   <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
@@ -114,6 +115,9 @@ const AppRouter = () => {
 
         {/* Protected Dashboard Routes */}
         <Route element={<ProtectedRoute />}>
+          {/* Admin Foundation */}
+          <Route path={ROUTES.ADMIN} element={<AdminRoutes />} />
+
           <Route element={<DashboardLayout />}>
             <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
 
