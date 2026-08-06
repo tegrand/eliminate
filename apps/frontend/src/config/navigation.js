@@ -212,10 +212,10 @@ export const NAVIGATION_CONFIG = [
         roles: ADMIN_ONLY,
       },
       {
-        title: "Assignments",
-        path: ROUTES.ASSIGNMENTS,
-        icon: UserCheck,
-        roles: ["SUPER_ADMIN", "AGENCY", "WORKER", "CLIENT"],
+        title: "Invoices",
+        path: ROUTES.INVOICES,
+        icon: FileText,
+        roles: ["SUPER_ADMIN"],
       },
       {
         title: "Hiring Requests",

@@ -26,6 +26,7 @@ import reportsRoutes from "../modules/reports/reports.routes.js";
 import complaintsRoutes from "../modules/complaints/complaints.routes.js";
 import settingsRoutes from "../modules/settings/settings.routes.js";
 import paymentRoutes from "../modules/payments/payment.routes.js";
+import invoiceRoutes from "../modules/invoices/invoice.route.js";
 
 const router = Router();
 
@@ -52,6 +53,7 @@ router.use("/reviews", reviewRoutes);
 router.use("/reports", reportsRoutes);
 router.use("/complaints", complaintsRoutes);
 router.use("/payments", paymentRoutes);
+router.use("/invoices", invoiceRoutes);
 
 // Master Data Routes
 router.use("/skills", skillRoutes);
