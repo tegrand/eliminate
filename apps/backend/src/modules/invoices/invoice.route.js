@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { authenticate, authorize } from "../../middleware/auth.middleware.js";
+import authenticate from "../../middleware/auth.middleware.js";
+import { authorize } from "../../middleware/authorize.middleware.js";
 import { listInvoices, getInvoiceById } from "./invoice.controller.js";
 
 const router = Router();
