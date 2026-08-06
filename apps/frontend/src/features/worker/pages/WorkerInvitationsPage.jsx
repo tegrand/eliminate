@@ -349,12 +349,23 @@ export default function WorkerInvitationsPage() {
                       <p className="font-bold text-slate-900">{selectedInvite.client.contactPerson}</p>
                     </div>
                   )}
-                  {(selectedInvite.location || selectedInvite.jobRequirement?.locationId || selectedInvite.jobRequirement?.location) && (
-                    <div className="bg-slate-50 p-2 rounded-lg border border-slate-100 sm:col-span-2">
-                      <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-0.5">Work Location</p>
-                      <p className="font-bold text-slate-900 flex items-center gap-1.5"><MapPin className="w-4 h-4 text-rose-500" /> {selectedInvite.location || selectedInvite.jobRequirement?.locationId || selectedInvite.jobRequirement?.location}</p>
-                    </div>
-                  )}
+                  {(selectedInvite.location || selectedInvite.jobRequirement?.locationId || selectedInvite.jobRequirement?.location) && (() => {
+                    const loc = selectedInvite.location || selectedInvite.jobRequirement?.locationId || selectedInvite.jobRequirement?.location;
+                    const isLink = loc.startsWith('http://') || loc.startsWith('https://');
+                    return (
+                      <div className="bg-slate-50 p-2 rounded-lg border border-slate-100 sm:col-span-2">
+                        <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Work Location</p>
+                        {isLink ? (
+                          <a href={loc} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-100 rounded-md text-xs font-semibold transition-colors w-fit">
+                            <MapPin className="w-3.5 h-3.5" />
+                            Open in Google Maps
+                          </a>
+                        ) : (
+                          <p className="font-bold text-slate-900 flex items-center gap-1.5"><MapPin className="w-4 h-4 text-rose-500" /> {loc}</p>
+                        )}
+                      </div>
+                    );
+                  })()}
                   {selectedInvite.jobRequirement?.requiredWorkers && (
                     <>
                       <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
