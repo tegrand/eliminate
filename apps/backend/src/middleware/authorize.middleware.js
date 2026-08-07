@@ -8,7 +8,9 @@ export const authorize = (...roles) => {
       return next(new AppError("Forbidden", 403));
     }
 
-    if (!roles.includes(req.user.role.name)) {
+    const roleName = req.user.role.name.toUpperCase();
+
+    if (!roles.includes(roleName)) {
       return next(new AppError("Forbidden", 403));
     }
 
@@ -23,7 +25,7 @@ export const requirePermission = (...permissions) => {
     }
 
     // SUPER_ADMIN has implicit access to all routes — skip permission check
-    if (req.user.role?.name === "SUPER_ADMIN") {
+    if (req.user.role?.name?.toUpperCase() === "SUPER_ADMIN") {
       return next();
     }
 

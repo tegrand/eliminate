@@ -85,12 +85,21 @@ export const register = async (data) => {
     throw new AppError("Email already exists", 409);
   }
 
-  const role = await prisma.role.findUnique({
+  let role = await prisma.role.findUnique({
     where: { name: data.accountType },
   });
 
   if (!role) {
-    throw new AppError("Invalid account type", 400);
+    const displayName = data.accountType.charAt(0).toUpperCase() + data.accountType.slice(1).toLowerCase();
+    role = await prisma.role.create({
+      data: {
+        name: data.accountType,
+        displayName: displayName,
+        description: `System role for ${displayName}`,
+        isSystem: true,
+        isActive: true,
+      }
+    });
   }
 
   const passwordHash = await bcrypt.hash(data.password, authConfig.bcryptRounds);
