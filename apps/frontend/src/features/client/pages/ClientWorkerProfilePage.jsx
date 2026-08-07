@@ -52,10 +52,12 @@ export default function ClientWorkerProfilePage() {
   const name = `${firstName} ${lastName}`.trim() || worker.user?.name || worker.name || "Unknown Worker";
 
   const skillName = worker.primarySkill?.name || (typeof worker.primarySkill === 'string' ? worker.primarySkill : null) || worker.skills?.[0]?.skill?.name || "General Worker";
-  const experience = worker.experienceYears != null ? `${worker.experienceYears} Years` : "N/A";
+  const experience = worker.totalExperienceYears != null ? `${worker.totalExperienceYears} Years` : "N/A";
 
   let location = "Location not specified";
-  if (worker.city && worker.state) location = `${worker.city}, ${worker.state}`;
+  if (worker.district && worker.state) location = `${worker.district}, ${worker.state}`;
+  else if (worker.district) location = worker.district;
+  else if (worker.city && worker.state) location = `${worker.city}, ${worker.state}`;
   else if (worker.city) location = worker.city;
   else if (worker.state) location = worker.state;
 
@@ -128,8 +130,8 @@ export default function ClientWorkerProfilePage() {
               {/* Quick Info */}
               <div className="space-y-3 mb-5">
                 <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                  <MapPin className="w-4 h-4 text-gray-400" />
-                  <span className="text-[13px]">{location}</span>
+                  <MapPin className="w-4 h-4 text-gray-400 shrink-0" />
+                  <span className="text-[13px]">{location} {worker.travelDistance ? `(Willing to travel ${worker.travelDistance} km)` : ''}</span>
                 </div>
                 <div className={`flex items-center gap-2.5 text-sm font-medium ${worker.presentToday ? 'text-emerald-600' : 'text-orange-600'}`}>
                   <Calendar className={`w-4 h-4 ${worker.presentToday ? 'text-emerald-600' : 'text-orange-600'}`} />
@@ -202,13 +204,13 @@ export default function ClientWorkerProfilePage() {
                     <p className="text-[11px] text-gray-500 font-medium mb-0.5">Experience</p>
                     <p className="text-sm font-bold text-gray-900 mb-0.5">{experience}</p>
                     <p className="text-[11px] text-gray-500">
-                      {worker.experienceYears ? "Overall experience" : "Experience not specified"}
+                      {worker.totalExperienceYears ? "Overall experience" : "Experience not specified"}
                     </p>
                   </div>
                   <div>
                     <p className="text-[11px] text-gray-500 font-medium mb-0.5">Work Type</p>
-                    <p className="text-sm font-bold text-gray-900 mb-0.5">{skillName}</p>
-                    <p className="text-[11px] text-gray-500">Category</p>
+                    <p className="text-sm font-bold text-gray-900 mb-0.5">{worker.jobType || skillName}</p>
+                    <p className="text-[11px] text-gray-500">{worker.jobType ? "Job Type" : "Category"}</p>
                   </div>
                 </div>
               </div>

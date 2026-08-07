@@ -12,10 +12,12 @@ export default function WorkerSearchCard({ worker }) {
   const name = `${firstName} ${lastName}`.trim() || worker.user?.name || worker.name || "Unknown";
 
   const skill = worker.primarySkill?.name || (typeof worker.primarySkill === 'string' ? worker.primarySkill : null) || worker.skills?.[0]?.name || "General Worker";
-  const experience = worker.experienceYears ? `${worker.experienceYears} yrs exp.` : "Experience N/A";
+  const experience = worker.totalExperienceYears != null ? `${worker.totalExperienceYears} yrs exp.` : "Experience N/A";
 
   let location = "Location not specified";
-  if (worker.city && worker.state) location = `${worker.city}, ${worker.state}`;
+  if (worker.district && worker.state) location = `${worker.district}, ${worker.state}`;
+  else if (worker.district) location = worker.district;
+  else if (worker.city && worker.state) location = `${worker.city}, ${worker.state}`;
   else if (worker.city) location = worker.city;
   else if (worker.state) location = worker.state;
 

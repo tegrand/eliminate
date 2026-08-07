@@ -104,21 +104,48 @@ export const register = async (data) => {
 
   const passwordHash = await bcrypt.hash(data.password, authConfig.bcryptRounds);
 
+  const firstName = data.fullName ? data.fullName.split(' ')[0] : data.ownerName ? data.ownerName.split(' ')[0] : data.contactPerson ? data.contactPerson.split(' ')[0] : null;
+  const lastName = data.fullName ? data.fullName.split(' ').slice(1).join(' ') || null : data.ownerName ? data.ownerName.split(' ').slice(1).join(' ') || null : data.contactPerson ? data.contactPerson.split(' ').slice(1).join(' ') || null : null;
+
   const user = await prisma.user.create({
     data: {
       email: data.email,
       passwordHash,
+      firstName,
+      lastName,
+      phone: data.phone || null,
       profileType: data.accountType,
       status: data.accountType === "CLIENT" ? "ACTIVE" : "PENDING",
       roleId: role.id,
       worker: data.accountType === "WORKER" ? {
         create: {
-          workerCode: `WRK-${crypto.randomBytes(4).toString("hex").toUpperCase()}`
+          workerCode: `WRK-${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
+          firstName,
+          lastName,
+          phone: data.phone || null,
+          gender: data.gender || null,
+          dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
+          expectedDailyWage: data.expectedDailyWage || null,
+          jobType: data.jobType || null,
+          totalExperienceYears: data.experience ? Number(data.experience) : null,
+          addressLine1: data.addressLine1 || null,
+          district: data.district || null,
+          state: data.state || null,
+          city: data.city || null,
+          travelDistance: data.travelDistance ? Number(data.travelDistance) : null,
+          notes: data.primarySkill ? `Primary Skill: ${data.primarySkill}` : null,
         }
       } : undefined,
       agency: data.accountType === "AGENCY" ? {
         create: {
-          agencyCode: `AGC-${crypto.randomBytes(4).toString("hex").toUpperCase()}`
+          agencyCode: `AGC-${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
+          agencyName: data.agencyName || null,
+          contactPerson: data.ownerName || null,
+          phone: data.phone || null,
+          email: data.email || null,
+          addressLine1: data.addressLine1 || null,
+          state: data.state || null,
+          postalCode: data.pincode || null,
         }
       } : undefined,
       client: data.accountType === "CLIENT" ? {
@@ -136,8 +163,46 @@ export const register = async (data) => {
       profileType: true,
       status: true,
       createdAt: true,
+      worker: { select: { id: true } }
     },
   });
+
+  if (data.accountType === "WORKER" && user.worker) {
+    if (data.skill) {
+      const slug = data.skill.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const skillRecord = await prisma.skill.upsert({
+        where: { slug },
+        update: {},
+        create: { name: data.skill, slug },
+      });
+      await prisma.workerSkill.create({
+        data: {
+          workerId: user.worker.id,
+          skillId: skillRecord.id,
+          proficiencyLevel: "INTERMEDIATE",
+          isPrimary: true,
+          experienceYears: data.experience ? Number(data.experience) : null,
+        }
+      });
+    }
+    if (data.language) {
+      const code = data.language.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const langRecord = await prisma.language.upsert({
+        where: { code },
+        update: {},
+        create: { name: data.language, code },
+      });
+      await prisma.workerLanguage.create({
+        data: {
+          workerId: user.worker.id,
+          languageId: langRecord.id,
+          proficiencyLevel: "CONVERSATIONAL",
+          isPrimary: true,
+          canSpeak: true,
+        }
+      });
+    }
+  }
 
   return user;
 };

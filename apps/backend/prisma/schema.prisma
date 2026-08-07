@@ -275,7 +275,12 @@ model Worker {
   gender           String?
   dateOfBirth      DateTime?
   profilePhoto     String?
+  jobType          String?
   addressLine1     String?
+  city             String?
+  district         String?
+  state            String?
+  travelDistance   Int?
   totalExperienceYears Int?
   employmentStatus EmploymentStatus @default(ACTIVE)
   joiningDate      DateTime?
