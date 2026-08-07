@@ -77,6 +77,7 @@ export default function WorkerDashboard() {
           <WorkerJobsWidget 
             activeJob={data.activeJob}
             upcomingJobs={data.upcomingJobs} 
+            completedJobs={data.completedJobs}
           />
           <WorkerActivityWidget notifications={data.notifications} />
         </div>

@@ -1,7 +1,7 @@
-import { Briefcase, MapPin, Clock, CalendarDays, ArrowRight, MoreVertical } from "lucide-react";
+import { Briefcase, MapPin, Clock, CalendarDays, ArrowRight, MoreVertical, CheckCircle2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-export default function WorkerJobsWidget({ activeJob, upcomingJobs }) {
+export default function WorkerJobsWidget({ activeJob, upcomingJobs, completedJobs }) {
   const { t } = useTranslation();
   return (
     <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col h-full">
@@ -75,6 +75,35 @@ export default function WorkerJobsWidget({ activeJob, upcomingJobs }) {
           </div>
         ) : (
           <p className="text-sm text-gray-500 italic">{t('workerDashboard.noUpcomingShifts')}</p>
+        )}
+      </div>
+
+      {/* Completed Jobs */}
+      <div className="mt-5">
+        <div className="flex items-center justify-between mb-2.5">
+          <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{t('workerDashboard.completedWork') || "Completed Jobs"}</h4>
+        </div>
+        
+        {completedJobs && completedJobs.length > 0 ? (
+          <div className="space-y-2">
+            {completedJobs.map((job) => (
+              <div key={job.id} className="flex items-center gap-3 p-2 bg-white border border-slate-100 rounded-xl shadow-[0_2px_8px_-4px_rgba(0,0,0,0.02)] hover:border-green-100 transition-colors group cursor-pointer">
+                <div className="bg-green-50/50 text-green-600 rounded-lg p-2 flex items-center justify-center shrink-0">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <h6 className="font-bold text-slate-900 text-[11px] mb-0.5">{job.title}</h6>
+                  <div className="flex items-center gap-1.5 text-[9px] font-medium text-slate-500">
+                    <span className="text-slate-700">{new Date(job.date).toLocaleDateString()}</span>
+                    <span className="w-1 h-1 rounded-full bg-slate-300" />
+                    <span>{job.location}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-500 italic">No completed jobs yet</p>
         )}
       </div>
     </div>

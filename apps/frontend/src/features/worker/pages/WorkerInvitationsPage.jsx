@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, CheckCircle2, XCircle, Building2, Briefcase, Eye, Calendar, DollarSign, MapPin, Clock } from "lucide-react";
 import { toast } from "sonner";
@@ -148,9 +148,9 @@ export default function WorkerInvitationsPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2">
                   <p className="text-sm font-medium text-indigo-600 flex items-center gap-1.5">
                     <Building2 className="w-4 h-4" />
-                    {selectedInvite.client?.companyName || selectedInvite.client?.clientCode ? Client:  : "Direct Invite"}
+                    {selectedInvite.client?.companyName || selectedInvite.client?.clientCode ? `Client: ${selectedInvite.client?.companyName || selectedInvite.client?.clientCode}` : "Direct Invite"}
                   </p>
-                  <span className="hidden sm:inline text-slate-300">�</span>
+                  <span className="hidden sm:inline text-slate-300">•</span>
                   <p className="text-sm text-slate-500 flex items-center gap-1.5">
                     <Clock className="w-4 h-4" />
                     Invited: {new Date(selectedInvite.createdAt).toLocaleDateString()}
@@ -161,13 +161,13 @@ export default function WorkerInvitationsPage() {
               <div className="flex border-b border-slate-200">
                 <button 
                   onClick={() => setDetailsTab("overview")}
-                  className={px-4 py-2 text-xs font-semibold }
+                  className="px-4 py-2 text-xs font-semibold"
                 >
                   Overview
                 </button>
                 <button 
                   onClick={() => setDetailsTab("details")}
-                  className={px-4 py-2 text-xs font-semibold }
+                  className="px-4 py-2 text-xs font-semibold"
                 >
                   Description & Notes
                 </button>

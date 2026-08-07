@@ -154,6 +154,14 @@ export const getWorkerDashboard = async (userId) => {
     donutTotal: (worker.assignments?.length || 0) + (activeJobs.length > 0 ? 1 : 0)
   };
 
+  const completedJobsMapped = completedAssignments.map(job => ({
+    id: job.id,
+    title: job.assignment.title,
+    date: job.assignment.endDate || job.assignment.startDate,
+    location: "Multiple / On-site",
+    amount: job.assignment.agreedRate || 0
+  })).slice(0, 5);
+
   return {
     profile: {
       completion: profileCompletion,
@@ -167,6 +175,7 @@ export const getWorkerDashboard = async (userId) => {
     },
     activeJob,
     upcomingJobs: upcomingJobsMapped,
+    completedJobs: completedJobsMapped,
     todayAttendance: null,
     pendingPayments: pendingAmount > 0 ? `₹${pendingAmount}` : null,
     notifications: notificationsList,
