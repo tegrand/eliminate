@@ -312,8 +312,8 @@ export const getClientDashboard = async (userId) => {
       where: { clientId: client.id, deletedAt: null, status: "PARTIALLY_FILLED" }
     }),
     // Completed jobs
-    prisma.jobRequirement.count({
-      where: { clientId: client.id, deletedAt: null, status: "COMPLETED" }
+    prisma.assignment.count({
+      where: { clientId: client.id, status: "COMPLETED" }
     }),
     // For counting assigned workers
     prisma.jobRequirement.findMany({
