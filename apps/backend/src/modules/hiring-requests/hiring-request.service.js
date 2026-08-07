@@ -6,6 +6,8 @@ export const createHiringRequest = async (clientId, data) => {
     let jobRequirementId = data.jobRequirementId;
 
     if (data.targetWorkerId) {
+      // Temporarily removed attendance validation based on user request
+      /*
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
@@ -19,6 +21,7 @@ export const createHiringRequest = async (clientId, data) => {
       if (todayAttendance?.status !== 'PRESENT' || todayAttendance?.checkOutTime) {
         throw new AppError(`This worker is currently not available for hire (Not marked as Present today, or has checked out).`, 400);
       }
+      */
     }
 
     if (!jobRequirementId) {
@@ -115,6 +118,8 @@ export const updateHiringRequestStatus = async (id, status, user) => {
 
     const updatedRequest = await prisma.$transaction(async (tx) => {
       // Slot Checking: Prevent accepting if worker already has an active assignment on these dates
+      // Temporarily removed based on user request - workers can be hired multiple times
+      /*
       if (request.targetWorkerId && request.startDate && request.endDate) {
         const overlappingAssignment = await tx.assignmentWorker.findFirst({
           where: {
@@ -132,6 +137,7 @@ export const updateHiringRequestStatus = async (id, status, user) => {
           throw new AppError("You are already assigned to another job during these dates", 400);
         }
       }
+      */
 
       const req = await tx.hiringRequest.update({
         where: { id },

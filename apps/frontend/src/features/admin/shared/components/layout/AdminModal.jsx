@@ -1,5 +1,5 @@
-import React from 'react';
-import { useAdminUI } from '../contexts/AdminUIContext';
+﻿import React from 'react';
+import { useAdminUI } from '../../contexts/AdminUIContext';
 import { X } from 'lucide-react';
 
 export default function AdminModal() {

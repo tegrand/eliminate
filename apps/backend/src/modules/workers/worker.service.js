@@ -507,6 +507,9 @@ export const getWorkerAvailability = async (workerId) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
+  // Based on user request, having active assignments should not make the worker "Not Available"
+  // So we return an empty array here instead of the actual booked dates.
+  /*
   const activeAssignments = await prisma.assignmentWorker.findMany({
     where: {
       workerId,
@@ -534,6 +537,7 @@ export const getWorkerAvailability = async (workerId) => {
       endDate: a.assignment.endDate,
       title: a.assignment.title
     }));
+  */
 
-  return bookedDates;
+  return [];
 };

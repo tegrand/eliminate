@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Menu, Search, Bell, User, Settings, LogOut, Sun } from 'lucide-react';
-import { useAdminUI } from '../contexts/AdminUIContext';
+import { useAdminUI } from '../../contexts/AdminUIContext';
 
 export default function AdminHeader() {
   const { openDrawer } = useAdminUI();
@@ -29,7 +29,7 @@ export default function AdminHeader() {
             readOnly
           />
           <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <span className="text-xs text-gray-400 font-medium font-mono border border-gray-200 rounded px-1.5 py-0.5">⌘K</span>
+            <span className="text-xs text-gray-400 font-medium font-mono border border-gray-200 rounded px-1.5 py-0.5">âŒ˜K</span>
           </div>
         </div>
       </div>

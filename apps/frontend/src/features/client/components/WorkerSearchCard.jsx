@@ -34,7 +34,7 @@ export default function WorkerSearchCard({ worker }) {
   ];
 
   return (
-    <div className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all group relative">
+    <div className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all group relative max-w-[550px]">
       <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center">
 
         {/* Avatar */}
