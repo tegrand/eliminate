@@ -14,7 +14,7 @@ export const createWorkerSchema = z.object({
 
 export const updateWorkerSchema = z.object({
   firstName: z.string().trim().min(1, "First name cannot be empty").max(100, "First name is too long").optional(),
-  lastName: z.string().trim().min(1, "Last name cannot be empty").max(100, "Last name is too long").optional(),
+  lastName: z.string().trim().max(100, "Last name is too long").optional().nullable(),
   phone: z.string().trim().regex(phoneRegex, "Invalid phone number format").optional(),
   gender: z.string().trim().min(1, "Gender cannot be empty").max(50).optional(),
   dateOfBirth: z.coerce.date().max(new Date(), "Birth date cannot be in the future").optional(),
@@ -24,6 +24,12 @@ export const updateWorkerSchema = z.object({
   notes: z.string().trim().max(2000, "Notes are too long").optional(),
   employmentStatus: z.enum(["ACTIVE", "BUSY", "INACTIVE", "ON_LEAVE", "TERMINATED"]).optional(),
   
+  city: z.string().trim().max(100).optional().nullable(),
+  district: z.string().trim().max(100).optional().nullable(),
+  state: z.string().trim().max(100).optional().nullable(),
+  travelDistance: z.coerce.number().min(1).max(500).optional().nullable(),
+  jobType: z.string().trim().max(50).optional().nullable(),
+
   expectedDailyWage: z.string().trim().optional(),
 }).strict("Unknown fields are not allowed").refine(
   (data) => Object.keys(data).length > 0,

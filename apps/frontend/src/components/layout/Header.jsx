@@ -7,12 +7,20 @@ import { LogOut, Search, User, ChevronDown } from "lucide-react";
 import NotificationBell from "../ui/notifications/NotificationBell";
 import LanguageSwitcher from "../ui/LanguageSwitcher";
 import { calculateWorkerProfileCompletion } from "../../utils/profileCompletion";
+import { useQuery } from "@tanstack/react-query";
+import { workerApi } from "../../features/worker/api/worker.api";
 
 export default function Header() {
   const { logout, user } = useAuth();
   const { toggleSidebar } = useSidebar();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  const { data: workerProfileRes } = useQuery({
+    queryKey: ["myWorkerProfile"],
+    queryFn: () => workerApi.getMyWorkerProfile(),
+    enabled: user?.profileType === "WORKER"
+  });
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -103,7 +111,8 @@ export default function Header() {
 
               {/* Profile Progress (Worker Only) */}
               {user?.profileType === "WORKER" && (() => {
-                const percent = calculateWorkerProfileCompletion(user);
+                const latestWorkerProfile = workerProfileRes?.data?.data || workerProfileRes?.data || workerProfileRes || user?.workerProfile;
+                const percent = calculateWorkerProfileCompletion({ ...user, workerProfile: latestWorkerProfile });
                 return (
                 <div className="w-full px-4 py-3 flex items-center justify-between gap-3 border-b border-gray-50 mb-1 bg-slate-50/50">
                   <div>

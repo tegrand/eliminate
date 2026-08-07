@@ -18,16 +18,15 @@ export default function WorkerSettingsPage() {
   const [docFile, setDocFile] = useState(null);
   const [expectedWage, setExpectedWage] = useState("");
   const [addressLine1, setAddressLine1] = useState("");
-  const [experienceYears, setExperienceYears] = useState(() => localStorage.getItem("workerExperienceYears") || "");
-  const [workTypes, setWorkTypes] = useState(() => JSON.parse(localStorage.getItem("workerWorkTypes") || "[]"));
+  const [experienceYears, setExperienceYears] = useState("");
+  const [jobType, setJobType] = useState("");
   const [languageId, setLanguageId] = useState("");
-  const [skillsText, setSkillsText] = useState(() => localStorage.getItem("workerSkillsText") || "");
-  const [locationPreferences, setLocationPreferences] = useState(() => JSON.parse(localStorage.getItem("workerLocationPreferences") || "{}"));
+  const [skillsText, setSkillsText] = useState("");
+  const [locationPreferences, setLocationPreferences] = useState({});
   
   const { register: regSettings, handleSubmit: handleSettingsSubmit, formState: { isDirty: isSettingsDirty }, reset: resetSettings } = useForm({
     defaultValues: {
-      firstName: user?.firstName || "",
-      lastName: user?.lastName || "",
+      fullName: `${user?.firstName || ""} ${user?.lastName || ""}`.trim(),
       phone: user?.phone || ""
     }
   });
@@ -68,10 +67,18 @@ export default function WorkerSettingsPage() {
     .filter((language) => !workerLanguages.some((item) => item.language?.name?.toLowerCase() === language.name.toLowerCase()));
 
   useEffect(() => {
-    const wage = workerProfileRes?.data?.expectedDailyWage || workerProfileRes?.expectedDailyWage || "";
-    if (wage) setExpectedWage(String(wage));
-    const addr = workerProfileRes?.data?.addressLine1 || workerProfileRes?.addressLine1 || "";
-    if (addr) setAddressLine1(addr);
+    if (!workerProfileRes) return;
+    const profile = workerProfileRes?.data?.data || workerProfileRes?.data || workerProfileRes;
+    if (profile?.expectedDailyWage) setExpectedWage(String(profile.expectedDailyWage));
+    if (profile?.addressLine1) setAddressLine1(profile.addressLine1);
+    if (profile?.totalExperienceYears != null) setExperienceYears(String(profile.totalExperienceYears));
+    if (profile?.jobType) setJobType(profile.jobType);
+    
+    setLocationPreferences({
+      district: profile?.district || "",
+      state: profile?.state || "",
+      distance: profile?.travelDistance || ""
+    });
   }, [workerProfileRes]);
 
   const { mutate: saveWage, isPending: isSavingWage } = useMutation({
@@ -90,13 +97,24 @@ export default function WorkerSettingsPage() {
     saveWage(expectedWage);
   };
 
+  const { mutate: updateWorkerProfile, isPending: isUpdatingWorkerProfile } = useMutation({
+    mutationFn: (data) => workerApi.updateMyWorkerProfile(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["myWorkerProfile"] });
+    },
+    onError: (e) => toast.error(e.response?.data?.message || "Failed to update profile")
+  });
+
   const saveWorkPreferences = () => {
-    localStorage.setItem("workerExperienceYears", experienceYears);
-    localStorage.setItem("workerWorkTypes", JSON.stringify(workTypes));
-    localStorage.setItem("workerSkillsText", skillsText);
-    setWorkPrefsSaved(true);
-    setHasUnsavedChanges(false);
-    toast.success("Work preferences saved successfully!");
+    updateWorkerProfile({
+      totalExperienceYears: experienceYears ? Number(experienceYears) : undefined,
+      jobType: jobType || undefined
+    }, {
+      onSuccess: () => {
+        toast.success("Work preferences saved successfully!");
+        setHasUnsavedChanges(false);
+      }
+    });
   };
 
   const updateLocationPreference = (field, value) => {
@@ -105,18 +123,16 @@ export default function WorkerSettingsPage() {
   };
 
   const saveLocationPreferences = () => {
-    localStorage.setItem("workerLocationPreferences", JSON.stringify(locationPreferences));
-    localStorage.setItem("locPrefsSaved", "true");
-    setLocPrefsSaved(true);
-    setHasUnsavedChanges(false);
-    toast.success("Location preferences saved successfully!");
-  };
-
-  const toggleWorkType = (type) => {
-    setWorkTypes((current) => current.includes(type)
-      ? current.filter((item) => item !== type)
-      : [...current, type]);
-    setHasUnsavedChanges(true);
+    updateWorkerProfile({
+      district: locationPreferences.district || undefined,
+      state: locationPreferences.state || undefined,
+      travelDistance: locationPreferences.distance ? Number(locationPreferences.distance) : undefined
+    }, {
+      onSuccess: () => {
+        toast.success("Location preferences saved successfully!");
+        setHasUnsavedChanges(false);
+      }
+    });
   };
 
   const addLanguage = async () => {
@@ -152,21 +168,29 @@ export default function WorkerSettingsPage() {
     }
   };
 
-  const [locPrefsSaved, setLocPrefsSaved] = useState(() => localStorage.getItem("locPrefsSaved") === "true");
-  const [docsUploaded, setDocsUploaded] = useState(() => localStorage.getItem("docsUploaded") === "true");
+  const isWorkPrefsComplete = !!(workerProfile?.jobType && workerProfile?.totalExperienceYears != null);
+  const isLocPrefsComplete = !!(workerProfile?.district && workerProfile?.state);
+  const isDocsComplete = existingDocs.length > 0;
 
   useEffect(() => {
     if (documentsRes) {
-      const uploaded = existingDocs.length > 0;
-      setDocsUploaded(uploaded);
-      localStorage.setItem("docsUploaded", uploaded.toString());
+      localStorage.setItem("docsUploaded", isDocsComplete.toString());
     }
-  }, [existingDocs.length, documentsRes]);
+  }, [existingDocs.length, documentsRes, isDocsComplete]);
+
+  useEffect(() => {
+    if (user) {
+      resetSettings({
+        fullName: `${user?.firstName || ""} ${user?.lastName || ""}`.trim(),
+        phone: user?.phone || ""
+      });
+    }
+  }, [user, resetSettings]);
 
   const checklist = [
-    { label: "Work Preferences", complete: workPrefsSaved },
-    { label: "Location Preferences", complete: locPrefsSaved },
-    { label: "Documents", complete: docsUploaded }
+    { label: "Work Preferences", complete: isWorkPrefsComplete },
+    { label: "Location Preferences", complete: isLocPrefsComplete },
+    { label: "Documents", complete: isDocsComplete }
   ];
   const percent = Math.round((checklist.filter(i => i.complete).length / 3) * 100);
 
@@ -214,14 +238,9 @@ export default function WorkerSettingsPage() {
   const { mutate: updateProfile, isPending: isUpdatingProfile } = useMutation({
     mutationFn: (data) => usersApi.updateProfile(data),
     onSuccess: (res) => {
-      localStorage.setItem("workPrefsSaved", "true");
-      localStorage.setItem("locPrefsSaved", "true");
-      setWorkPrefsSaved(true);
-      setLocPrefsSaved(true);
       setHasUnsavedChanges(false);
       resetSettings({
-        firstName: res?.data?.data?.firstName || user?.firstName || "",
-        lastName: res?.data?.data?.lastName || user?.lastName || "",
+        fullName: `${res?.data?.data?.firstName || user?.firstName || ""} ${res?.data?.data?.lastName || user?.lastName || ""}`.trim(),
         phone: res?.data?.data?.phone || user?.phone || ""
       });
       toast.success("Settings saved successfully!");
@@ -230,8 +249,14 @@ export default function WorkerSettingsPage() {
   });
 
   const onSaveAllSettings = (data) => {
-    const { email, ...rest } = data;
-    updateProfile(rest);
+    const { email, fullName, ...rest } = data;
+    
+    // Split full name into first and last name
+    const nameParts = (fullName || "").trim().split(" ");
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.slice(1).join(" ") || "";
+    
+    updateProfile({ ...rest, firstName, lastName });
     if (addressLine1 !== (workerProfile?.addressLine1 || "")) {
       workerApi.updateMyWorkerProfile({ addressLine1 }).catch(e => {
         toast.error("Failed to save address");
@@ -389,15 +414,9 @@ export default function WorkerSettingsPage() {
               </div>
             </div>
             <div className="p-4 space-y-3 flex-1">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-semibold text-gray-700">First Name</label>
-                  <input {...regSettings("firstName")} type="text" placeholder="First Name" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-sm font-semibold text-gray-700">Last Name</label>
-                  <input {...regSettings("lastName")} type="text" placeholder="Last Name" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
-                </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-semibold text-gray-700">Full Name</label>
+                <input {...regSettings("fullName")} type="text" placeholder="Full Name" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-gray-700">Phone</label>
@@ -425,22 +444,31 @@ export default function WorkerSettingsPage() {
             <div className="p-4 space-y-3 flex-1">
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-gray-700">Work Type</label>
-                <div className="flex flex-wrap gap-2">
-                  {["Daily Wage", "Contract", "Monthly Salary", "Part-Time"].map(type => (
-                    <label key={type} className="cursor-pointer relative">
-                      <input type="checkbox" className="peer sr-only" checked={workTypes.includes(type)} onChange={() => toggleWorkType(type)} />
-                      <div className="px-3 py-1.5 border-2 border-gray-100 rounded-lg text-xs font-semibold text-gray-600 transition-all peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 peer-checked:shadow-sm hover:border-blue-200 hover:bg-blue-50/50">
-                        {type}
-                      </div>
-                    </label>
-                  ))}
-                </div>
+                <select value={jobType} onChange={(e) => { setJobType(e.target.value); setHasUnsavedChanges(true); }} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all">
+                  <option value="">Select Job Type</option>
+                  <option value="Full-Time">Full-Time</option>
+                  <option value="Part-Time">Part-Time</option>
+                  <option value="Contract">Contract</option>
+                  <option value="Daily-Wage">Daily-Wage</option>
+                </select>
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-gray-700">Experience (Years)</label>
                 <select value={experienceYears} onChange={(e) => { setExperienceYears(e.target.value); setHasUnsavedChanges(true); }} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all">
-                  <option value="">Select experience</option>
-                  {Array.from({ length: 31 }, (_, year) => <option key={year} value={year}>{year} {year === 1 ? "Year" : "Years"}</option>)}
+                  <option value="">Select Experience</option>
+                  <option value="0">0 Years (Fresher)</option>
+                  <option value="1">1 Year</option>
+                  <option value="2">2 Years</option>
+                  <option value="3">3 Years</option>
+                  <option value="4">4 Years</option>
+                  <option value="5">5 Years</option>
+                  <option value="6">6 Years</option>
+                  <option value="7">7 Years</option>
+                  <option value="8">8 Years</option>
+                  <option value="9">9 Years</option>
+                  <option value="10">10+ Years</option>
+                  <option value="15">15+ Years</option>
+                  <option value="20">20+ Years</option>
                 </select>
               </div>
               <div className="flex flex-col gap-1.5">

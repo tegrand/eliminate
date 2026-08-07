@@ -376,6 +376,9 @@ export const getCurrentUser = async (userId) => {
     select: {
       id: true,
       email: true,
+      firstName: true,
+      lastName: true,
+      phone: true,
       status: true,
       profileType: true,
       emailVerified: true,
