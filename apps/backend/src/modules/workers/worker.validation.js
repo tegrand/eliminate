@@ -53,7 +53,9 @@ export const listWorkersQuerySchema = z.object({
   status: z.enum(["PENDING", "APPROVED", "REJECTED", "SUSPENDED", "ALL"]).optional(),
   sortBy: z.enum(["createdAt", "updatedAt", "firstName", "lastName", "joiningDate"]).default("createdAt"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
+  view: z.string().optional(),
 }).strict("Unknown query parameters are not allowed");
+
 
 
 export const createAgencyWorkerSchema = z.object({

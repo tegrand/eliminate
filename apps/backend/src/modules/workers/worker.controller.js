@@ -8,7 +8,7 @@ export const createWorker = asyncHandler(async (req, res) => {
 });
 
 export const getWorkers = asyncHandler(async (req, res) => {
-  const result = await workerService.getWorkers(req.query);
+  const result = await workerService.getWorkers({ ...req.query, user: req.user });
   return ApiResponse.success(res, "Workers retrieved successfully", result, 200);
 });
 

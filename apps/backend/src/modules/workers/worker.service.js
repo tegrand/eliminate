@@ -125,12 +125,26 @@ export const getWorkers = async ({
   status,
   sortBy = "createdAt",
   sortOrder = "desc",
+  view,
+  user,
 }) => {
   const skip = (page - 1) * limit;
 
   const where = {
     deletedAt: null,
   };
+
+  if (view === "my" && user?.profileType === "AGENCY") {
+    const agencyUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      include: { agency: true }
+    });
+    if (agencyUser?.agency) {
+      where.agencies = {
+        some: { agencyId: agencyUser.agency.id }
+      };
+    }
+  }
 
   if (status) {
     where.profileStatus = status;
@@ -623,3 +637,4 @@ export const createAgencyWorkerBulk = async (userId, workersData) => {
 
   return { count: createdWorkers.length };
 };
+
