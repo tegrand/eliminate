@@ -103,12 +103,12 @@ export default function WorkerListPage() {
         availableSkills={availableSkills}
       />
       
-      {!(user?.profileType === "AGENCY" && viewMode !== "my") && (
+      {user?.profileType !== "AGENCY" && (
         <WorkerStats workers={statsWorkers} />
       )}
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col flex-1 overflow-hidden">
-        {!(user?.profileType === "AGENCY" && viewMode !== "my") && (
+        {user?.profileType !== "AGENCY" && (
           <div className="border-b border-gray-100 px-6 pt-1 flex-shrink-0">
             <nav className="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto scrollbar-hide" aria-label="Tabs">
               {tabs.map((tab) => (
