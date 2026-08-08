@@ -743,8 +743,10 @@ model WorkerPayment {
   paymentMethod PaymentMethod?
   referenceNo   String?
   notes         String?
+  assignmentId  String?
 
-  worker Worker @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  worker     Worker      @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  assignment Assignment? @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -916,6 +918,7 @@ model Assignment {
 
   assignedWorkers AssignmentWorker[]
   invoices        Invoice[]
+  workerPayments  WorkerPayment[]
 
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt

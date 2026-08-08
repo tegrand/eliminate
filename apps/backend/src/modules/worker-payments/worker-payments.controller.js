@@ -16,3 +16,14 @@ export const getPaymentById = asyncHandler(async (req, res) => {
   const result = await paymentsService.getPaymentById(req.user.id, req.params.id);
   return ApiResponse.success(res, "Payment details retrieved", result, 200);
 });
+
+// Admin Controllers
+export const getAllWorkerPayouts = asyncHandler(async (req, res) => {
+  const result = await paymentsService.getAllWorkerPayouts(req.query);
+  return ApiResponse.success(res, "Worker payouts retrieved", result, 200);
+});
+
+export const markPayoutAsPaid = asyncHandler(async (req, res) => {
+  const result = await paymentsService.markPayoutAsPaid(req.params.id, req.body);
+  return ApiResponse.success(res, "Payout marked as paid successfully", result, 200);
+});

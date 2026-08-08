@@ -35,6 +35,7 @@ import WorkerAttendancePage from "../features/worker/pages/WorkerAttendancePage"
 import WorkerNotificationsPage from "../features/worker/pages/WorkerNotificationsPage";
 import WorkerComplaintsPage from "../features/worker/pages/WorkerComplaintsPage";
 import WorkerHistoryPage from "../features/worker/pages/WorkerHistoryPage";
+import WorkerEarningsPage from "../features/worker/pages/WorkerEarningsPage";
 import MyDocumentsPage from "../features/documents/pages/MyDocumentsPage";
 import ClientListPage from "../features/client/pages/ClientListPage";
 import ClientDetailsPage from "../features/client/pages/ClientDetailsPage";
@@ -80,6 +81,7 @@ import InvoiceDetailsPage from "../features/invoice/pages/InvoiceDetailsPage";
 
 import PaymentListPage from "../features/payment/pages/PaymentListPage";
 import PaymentReceiptPage from "../features/payment/pages/PaymentReceiptPage";
+import WorkerPayoutsPage from "../features/payment/pages/WorkerPayoutsPage";
 
 import SettingsPage from "../features/settings/pages/SettingsPage";
 import AdminRoutes from "../features/admin/routes/AdminRoutes";
@@ -134,6 +136,7 @@ const AppRouter = () => {
             <Route path="/worker/notifications" element={<WorkerNotificationsPage />} />
             <Route path="/worker/complaints" element={<WorkerComplaintsPage />} />
             <Route path="/worker/history" element={<WorkerHistoryPage />} />
+            <Route path="/worker/earnings" element={<WorkerEarningsPage />} />
             <Route path={ROUTES.WORKFORCE_SEARCH} element={<ClientWorkerSearchPage />} />
             <Route path={ROUTES.WORKFORCE_PROFILE} element={<ClientWorkerProfilePage />} />
             <Route path={ROUTES.AGENCY_SEARCH} element={<ClientAgencySearchPage />} />
@@ -189,6 +192,7 @@ const AppRouter = () => {
             {/* Payments */}
             <Route path={ROUTES.PAYMENTS} element={<PaymentListPage />} />
             <Route path={ROUTES.PAYMENT_RECEIPT} element={<PaymentReceiptPage />} />
+            <Route path="/admin/worker-payouts" element={<WorkerPayoutsPage />} />
 
             {/* System Settings */}
             <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />

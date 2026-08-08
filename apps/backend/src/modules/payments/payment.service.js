@@ -126,12 +126,35 @@ export const verifyPayment = async (orderId, paymentId, signature) => {
       }
     }
   } else {
-    // Second payment (Final) completed -> Leave HiringRequest as ACTIVE (Assignment tracking is enough)
-    // Also mark Assignment as completed
-    await prisma.assignment.updateMany({
+    const assignments = await prisma.assignment.findMany({
       where: { hiringRequestId: transaction.hiringRequestId },
-      data: { status: "COMPLETED" }
+      include: { assignedWorkers: true }
     });
+
+    for (const assignment of assignments) {
+      await prisma.assignment.update({
+        where: { id: assignment.id },
+        data: { status: "COMPLETED" }
+      });
+
+      const workerCount = assignment.assignedWorkers.length;
+      if (workerCount > 0) {
+        const amountPerWorker = parseFloat(assignment.agreedRate || 0) / workerCount;
+        const workerPayments = assignment.assignedWorkers.map(aw => ({
+          workerId: aw.workerId,
+          amount: amountPerWorker,
+          periodStart: assignment.startDate || new Date(),
+          periodEnd: assignment.endDate || new Date(),
+          status: "PENDING",
+          assignmentId: assignment.id,
+          notes: `Payout for assignment ${assignment.assignmentCode}`
+        }));
+
+        await prisma.workerPayment.createMany({
+          data: workerPayments
+        });
+      }
+    }
   }
 
   return { success: true };
@@ -216,12 +239,35 @@ export const processWebhook = async (rawBody, signature) => {
         }
       } else {
         // Final payment
-        // Note: We don't update HiringRequest to COMPLETED as it's not in the enum.
-        // The Assignment being COMPLETED is enough to track completion.
-        await prisma.assignment.updateMany({
+        const assignments = await prisma.assignment.findMany({
           where: { hiringRequestId: transaction.hiringRequestId },
-          data: { status: "COMPLETED" }
+          include: { assignedWorkers: true }
         });
+
+        for (const assignment of assignments) {
+          await prisma.assignment.update({
+            where: { id: assignment.id },
+            data: { status: "COMPLETED" }
+          });
+
+          const workerCount = assignment.assignedWorkers.length;
+          if (workerCount > 0) {
+            const amountPerWorker = parseFloat(assignment.agreedRate || 0) / workerCount;
+            const workerPayments = assignment.assignedWorkers.map(aw => ({
+              workerId: aw.workerId,
+              amount: amountPerWorker,
+              periodStart: assignment.startDate || new Date(),
+              periodEnd: assignment.endDate || new Date(),
+              status: "PENDING",
+              assignmentId: assignment.id,
+              notes: `Payout for assignment ${assignment.assignmentCode}`
+            }));
+
+            await prisma.workerPayment.createMany({
+              data: workerPayments
+            });
+          }
+        }
       }
     }
   }

@@ -59,6 +59,12 @@ export const NAVIGATION_CONFIG = [
         icon: Briefcase,
         roles: ["WORKER"],
       },
+      {
+        title: "My Earnings",
+        path: "/worker/earnings",
+        icon: DollarSign,
+        roles: ["WORKER"],
+      },
 
       {
         title: "Work History",
@@ -225,18 +231,18 @@ export const NAVIGATION_CONFIG = [
       },
     ],
   },
-  // {
-  //   group: "Financial Management",
-  //   roles: ADMIN_ONLY,
-  //   items: [
-  //     {
-  //       title: "Payrolls",
-  //       path: ROUTES.PAYROLLS,
-  //       icon: DollarSign,
-  //       roles: ADMIN_ONLY,
-  //     },
-  //   ],
-  // },
+  {
+    group: "Financial Management",
+    roles: ADMIN_ONLY,
+    items: [
+      {
+        title: "Worker Payouts",
+        path: "/admin/worker-payouts",
+        icon: DollarSign,
+        roles: ADMIN_ONLY,
+      },
+    ],
+  },
   {
     group: "System Configuration",
     roles: ADMIN_ONLY,
