@@ -13,7 +13,10 @@ export default function AgencySettingsPage() {
 
   useEffect(() => {
     const fetchSettings = async () => {
-      if (!user?.agencyProfile?.id) return;
+      if (!user?.agencyProfile?.id) {
+        setIsLoading(false);
+        return;
+      }
       try {
         const { agencyApi } = await import('../api/agency.api.js');
         const response = await agencyApi.getAgencyById(user.agencyProfile.id);
