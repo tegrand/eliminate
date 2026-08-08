@@ -134,7 +134,7 @@ export const getWorkers = async ({
     deletedAt: null,
   };
 
-  if (view === "my" && user?.profileType === "AGENCY") {
+  if (user?.profileType === "AGENCY") {
     const agencyUser = await prisma.user.findUnique({
       where: { id: user.id },
       include: { agency: true }

@@ -52,12 +52,6 @@ export default function WorkerListPage() {
 
   let displayedWorkers = normalizedWorkers;
   
-  if (viewMode === "my" && user?.profileType === "AGENCY") {
-    // Basic match: assumes worker.agency field matches logged-in user's agency name
-    const agencyName = user?.agencyProfile?.name || user?.name || "";
-    displayedWorkers = displayedWorkers.filter(w => w.agency === agencyName || w.agencyId === user?.id);
-  }
-
   if (agencyFilter) {
     displayedWorkers = displayedWorkers.filter(w => w.agency === agencyFilter);
   }
