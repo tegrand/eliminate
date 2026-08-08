@@ -272,6 +272,24 @@ export default function AgencyDetailsPage() {
                 </div>
               </div>
             </div>
+
+            {/* Financial Details */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-5 flex items-center gap-2">
+                <CreditCard className="w-4 h-4 text-emerald-500" /> Financial Settings
+              </h2>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <p className="text-xs text-gray-500 font-medium uppercase mb-1">Agency Fee Percentage</p>
+                  <p className="text-sm font-semibold text-gray-900">{agency.feePercentage ? `${agency.feePercentage}%` : "Not Configured"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 font-medium uppercase mb-1">Fixed Worker Amount</p>
+                  <p className="text-sm font-semibold text-gray-900">{agency.workerFixedAmount ? `₹${agency.workerFixedAmount}` : "Not Configured"}</p>
+                </div>
+              </div>
+            </div>
             
           </div>
         </div>

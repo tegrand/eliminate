@@ -21,21 +21,20 @@ export default function AgencyBulkWorkerModal({ isOpen, onClose, onSuccess }) {
       // Parse CSV-like text
       const rows = bulkText.split('\n').filter(row => row.trim());
       const workers = rows.map(row => {
-        // Format: FirstName, LastName, Phone, Wage, Skill, District, City, Gender, DateOfBirth, Address, ExperienceYears, JoiningDate
+        // Format: FirstName, LastName, Phone, Skill, District, City, Gender, DateOfBirth, Address, ExperienceYears, JoiningDate
         const parts = row.split(',').map(p => p.trim());
         return {
           firstName: parts[0] || "",
           lastName: parts[1] || "",
           phone: parts[2] || "",
-          expectedDailyWage: parts[3] || "",
-          skill: parts[4] || "",
-          district: parts[5] || "",
-          city: parts[6] || "",
-          gender: parts[7] || "",
-          dateOfBirth: parts[8] || "",
-          addressLine1: parts[9] || "",
-          totalExperienceYears: parts[10] ? Number(parts[10]) : undefined,
-          joiningDate: parts[11] || "",
+          skill: parts[3] || "",
+          district: parts[4] || "",
+          city: parts[5] || "",
+          gender: parts[6] || "",
+          dateOfBirth: parts[7] || "",
+          addressLine1: parts[8] || "",
+          totalExperienceYears: parts[9] ? Number(parts[9]) : undefined,
+          joiningDate: parts[10] || "",
           state: "Kerala"
         };
       });
@@ -93,12 +92,12 @@ export default function AgencyBulkWorkerModal({ isOpen, onClose, onSuccess }) {
                 </p>
                 <div className="bg-white/80 border border-indigo-100/80 rounded-xl p-3 mb-4 shadow-sm">
                   <code className="font-mono text-[11px] font-semibold text-indigo-700 leading-relaxed">
-                    FirstName, LastName, Phone, DailyWage, JobType, District, City, Gender, DoB, Address, ExpYears, JoiningDate
+                    FirstName, LastName, Phone, JobType, District, City, Gender, DoB, Address, ExpYears, JoiningDate
                   </code>
                 </div>
                 <div className="text-xs text-indigo-700/70 border-t border-indigo-100/60 pt-3">
                   <span className="font-semibold block mb-1 text-indigo-900">Example Row:</span>
-                  <span className="font-mono">John, Doe, 9876543210, 850, Plumber, Ernakulam, Kochi, Male, 1990-05-15, 123 Main St, 5, 2023-01-01</span>
+                  <span className="font-mono">John, Doe, 9876543210, Plumber, Ernakulam, Kochi, Male, 1990-05-15, 123 Main St, 5, 2023-01-01</span>
                 </div>
               </div>
             </div>

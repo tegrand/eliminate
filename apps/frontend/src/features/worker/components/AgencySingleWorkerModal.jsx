@@ -9,7 +9,6 @@ export default function AgencySingleWorkerModal({ isOpen, onClose, onSuccess }) 
     firstName: "",
     lastName: "",
     phone: "",
-    expectedDailyWage: "",
     skill: "",
     city: "",
     district: "",
@@ -83,19 +82,12 @@ export default function AgencySingleWorkerModal({ isOpen, onClose, onSuccess }) 
               </label>
               <input type="tel" name="phone" required value={formData.phone} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" placeholder="+91..." />
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 col-span-2">
               <label className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
-                <DollarSign className="w-4 h-4 text-gray-400" /> Daily Wage
+                <Briefcase className="w-4 h-4 text-gray-400" /> Primary Skill / Job Type
               </label>
-              <input type="number" name="expectedDailyWage" required value={formData.expectedDailyWage} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" placeholder="850" />
+              <input type="text" name="skill" required value={formData.skill} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" placeholder="e.g. Electrician, Plumber" />
             </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <label className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
-              <Briefcase className="w-4 h-4 text-gray-400" /> Primary Skill / Job Type
-            </label>
-            <input type="text" name="skill" required value={formData.skill} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" placeholder="e.g. Electrician, Plumber" />
           </div>
 
 
