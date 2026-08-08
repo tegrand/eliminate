@@ -66,10 +66,18 @@ const issueTokensAndUpdateUser = async (user, meta, action = "LOGIN") => {
   } else if (updatedUser.profileType === "WORKER") {
     const workerProfile = await prisma.worker.findUnique({
       where: { userId: updatedUser.id },
-      select: { profileStatus: true },
+      select: { id: true, profileStatus: true },
     });
     if (workerProfile) {
       userWithProfile.workerProfile = workerProfile;
+    }
+  } else if (updatedUser.profileType === "AGENCY") {
+    const agencyProfile = await prisma.agency.findUnique({
+      where: { userId: updatedUser.id },
+      select: { id: true, profileStatus: true, agencyName: true },
+    });
+    if (agencyProfile) {
+      userWithProfile.agencyProfile = agencyProfile;
     }
   }
 
@@ -420,10 +428,18 @@ export const getCurrentUser = async (userId) => {
   } else if (user.profileType === "WORKER") {
     const workerProfile = await prisma.worker.findUnique({
       where: { userId: user.id },
-      select: { profileStatus: true },
+      select: { id: true, profileStatus: true },
     });
     if (workerProfile) {
       userWithProfile.workerProfile = workerProfile;
+    }
+  } else if (user.profileType === "AGENCY") {
+    const agencyProfile = await prisma.agency.findUnique({
+      where: { userId: user.id },
+      select: { id: true, profileStatus: true, agencyName: true },
+    });
+    if (agencyProfile) {
+      userWithProfile.agencyProfile = agencyProfile;
     }
   }
 

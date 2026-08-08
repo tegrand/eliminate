@@ -17,8 +17,25 @@ export default function AuthProvider({ children }) {
         const storedToken = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
         
         if (storedUser && storedToken) {
+          // Set initial state from storage for instant UI render
           setUser(JSON.parse(storedUser));
           setIsAuthenticated(true);
+          
+          // Fetch fresh user data in background
+          try {
+            const { data } = await api.get('/auth/me');
+            if (data?.data) {
+              setUser(data.data);
+              // Update storage with fresh data
+              if (localStorage.getItem('user')) {
+                localStorage.setItem('user', JSON.stringify(data.data));
+              } else if (sessionStorage.getItem('user')) {
+                sessionStorage.setItem('user', JSON.stringify(data.data));
+              }
+            }
+          } catch (meError) {
+            console.error("Failed to fetch fresh user data", meError);
+          }
         }
       } catch (err) {
         console.error("Failed to restore session", err);
