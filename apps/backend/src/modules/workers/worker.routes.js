@@ -12,6 +12,7 @@ import {
   getMyAgencies,
   acceptAgencyInvitation,
   rejectAgencyInvitation,
+  leaveAgency,
   getMyJobInvitations,
   acceptJobInvitation,
   rejectJobInvitation,
