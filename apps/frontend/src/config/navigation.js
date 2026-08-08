@@ -147,21 +147,9 @@ export const NAVIGATION_CONFIG = [
         roles: ["AGENCY"],
       },
       {
-        title: "Find / Add Workers",
-        path: ROUTES.WORKERS + "?view=all",
-        icon: UserPlus,
-        roles: ["AGENCY"],
-      },
-      {
         title: "Job Requirements",
         path: ROUTES.AGENCY_JOB_REQUIREMENTS,
         icon: Briefcase,
-        roles: ["AGENCY"],
-      },
-      {
-        title: "Team Assignments",
-        path: ROUTES.AGENCY_TEAM_ASSIGNMENTS,
-        icon: Users,
         roles: ["AGENCY"],
       },
     ],
