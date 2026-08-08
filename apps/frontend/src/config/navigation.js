@@ -154,7 +154,19 @@ export const NAVIGATION_CONFIG = [
       }
     ],
   },
-
+  // ─── AGENCY ACCOUNT ──────────────────────────────────────────────────────
+  {
+    group: "Account",
+    roles: ["AGENCY"],
+    items: [
+      {
+        title: "Settings",
+        path: ROUTES.AGENCY_SETTINGS,
+        icon: Settings,
+        roles: ["AGENCY"],
+      },
+    ],
+  },
 
   // ─── CLIENT ACCOUNT ──────────────────────────────────────────────────────
   {

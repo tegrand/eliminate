@@ -42,6 +42,7 @@ export const ROUTES = {
   AGENCIES: "/agencies",
   AGENCY_DETAILS: "/agencies/:id",
   AGENCY_PROFILE: "/agency/profile",
+  AGENCY_SETTINGS: "/agency/settings",
   AGENCY_CLIENTS: "/agency/clients",
   AGENCY_JOB_REQUIREMENTS: "/agency/job-requirements",
   AGENCY_TEAM_ASSIGNMENTS: "/agency/team-assignments",
