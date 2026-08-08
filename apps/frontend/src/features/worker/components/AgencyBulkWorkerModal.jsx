@@ -110,7 +110,7 @@ export default function AgencyBulkWorkerModal({ isOpen, onClose, onSuccess }) {
               </label>
               <textarea 
                 required
-                rows={9}
+                rows={14}
                 value={bulkText}
                 onChange={(e) => setBulkText(e.target.value)}
                 className="w-full flex-1 p-4 border border-gray-200 rounded-2xl text-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all font-mono whitespace-pre shadow-sm bg-gray-50/30 hover:bg-white"
