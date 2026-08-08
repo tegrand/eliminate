@@ -22,7 +22,7 @@ export default function AgencySignupPage() {
     password: "",
     addressLine1: "",
     district: "",
-    state: "",
+    state: "Kerala",
     pincode: "",
     gstNumber: "",
     licenseNumber: ""
@@ -157,20 +157,39 @@ export default function AgencySignupPage() {
                 required
               />
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <Input
-                  label="District"
-                  name="district"
-                  value={formData.district}
-                  onChange={handleChange}
-                  placeholder="Central District"
-                  required
-                />
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-700">District</label>
+                  <select
+                    name="district"
+                    value={formData.district}
+                    onChange={handleChange}
+                    required
+                    className="flex h-10 w-full rounded-md border border-slate-300 bg-transparent px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <option value="">Select District</option>
+                    <option value="Thiruvananthapuram">Thiruvananthapuram</option>
+                    <option value="Kollam">Kollam</option>
+                    <option value="Pathanamthitta">Pathanamthitta</option>
+                    <option value="Alappuzha">Alappuzha</option>
+                    <option value="Kottayam">Kottayam</option>
+                    <option value="Idukki">Idukki</option>
+                    <option value="Ernakulam">Ernakulam</option>
+                    <option value="Thrissur">Thrissur</option>
+                    <option value="Palakkad">Palakkad</option>
+                    <option value="Malappuram">Malappuram</option>
+                    <option value="Kozhikode">Kozhikode</option>
+                    <option value="Wayanad">Wayanad</option>
+                    <option value="Kannur">Kannur</option>
+                    <option value="Kasaragod">Kasaragod</option>
+                  </select>
+                </div>
                 <Input
                   label="State"
                   name="state"
                   value={formData.state}
                   onChange={handleChange}
-                  placeholder="California"
+                  placeholder="Kerala"
+                  readOnly
                   required
                 />
                 <Input
