@@ -549,85 +549,77 @@ export const getWorkerAvailability = async (workerId) => {
   return [];
 };
 
- e x p o r t   c o n s t   c r e a t e A g e n c y W o r k e r S i n g l e   =   a s y n c   ( u s e r I d ,   d a t a )   = >   { 
-     c o n s t   a g e n c y U s e r   =   a w a i t   p r i s m a . u s e r . f i n d U n i q u e ( { 
-         w h e r e :   {   i d :   u s e r I d   } , 
-         i n c l u d e :   {   a g e n c y :   t r u e   } 
-     } ) ; 
- 
-     i f   ( ! a g e n c y U s e r ? . a g e n c y )   { 
-         t h r o w   n e w   A p p E r r o r ( \  
- A g e n c y  
- p r o f i l e  
- n o t  
- f o u n d \ ,   4 0 4 ) ; 
-     } 
- 
-     c o n s t   w o r k e r   =   a w a i t   p r i s m a . w o r k e r . c r e a t e ( { 
-         d a t a :   { 
-             w o r k e r C o d e :   g e n e r a t e W o r k e r C o d e ( ) , 
-             f i r s t N a m e :   d a t a . f i r s t N a m e , 
-             l a s t N a m e :   d a t a . l a s t N a m e , 
-             p h o n e :   d a t a . p h o n e , 
-             e x p e c t e d D a i l y W a g e :   d a t a . e x p e c t e d D a i l y W a g e , 
-             j o b T y p e :   d a t a . s k i l l , 
-             c i t y :   d a t a . c i t y , 
-             d i s t r i c t :   d a t a . d i s t r i c t , 
-             s t a t e :   d a t a . s t a t e , 
-             p r o f i l e S t a t u s :   \ A P P R O V E D \ , 
-             a g e n c i e s :   { 
-                 c r e a t e :   { 
-                     a g e n c y I d :   a g e n c y U s e r . a g e n c y . i d , 
-                     s t a t u s :   \ A C T I V E \ 
-                 } 
-             } 
-         } , 
-         s e l e c t :   w o r k e r S e l e c t , 
-     } ) ; 
- 
-     r e t u r n   w o r k e r ; 
- } ; 
- 
- e x p o r t   c o n s t   c r e a t e A g e n c y W o r k e r B u l k   =   a s y n c   ( u s e r I d ,   w o r k e r s D a t a )   = >   { 
-     c o n s t   a g e n c y U s e r   =   a w a i t   p r i s m a . u s e r . f i n d U n i q u e ( { 
-         w h e r e :   {   i d :   u s e r I d   } , 
-         i n c l u d e :   {   a g e n c y :   t r u e   } 
-     } ) ; 
- 
-     i f   ( ! a g e n c y U s e r ? . a g e n c y )   { 
-         t h r o w   n e w   A p p E r r o r ( \ A g e n c y  
- p r o f i l e  
- n o t  
- f o u n d \ ,   4 0 4 ) ; 
-     } 
- 
-     c o n s t   c r e a t e d W o r k e r s   =   [ ] ; 
-     
-     / /   N e e d   t o   p r o c e s s   s e q u e n t i a l l y   o r   i n   t r a n s a c t i o n   t o   h a n d l e   r e l a t i o n s 
-     f o r   ( c o n s t   d a t a   o f   w o r k e r s D a t a )   { 
-         c o n s t   w o r k e r   =   a w a i t   p r i s m a . w o r k e r . c r e a t e ( { 
-             d a t a :   { 
-                 w o r k e r C o d e :   g e n e r a t e W o r k e r C o d e ( ) , 
-                 f i r s t N a m e :   d a t a . f i r s t N a m e , 
-                 l a s t N a m e :   d a t a . l a s t N a m e , 
-                 p h o n e :   d a t a . p h o n e , 
-                 e x p e c t e d D a i l y W a g e :   d a t a . e x p e c t e d D a i l y W a g e , 
-                 j o b T y p e :   d a t a . s k i l l , 
-                 c i t y :   d a t a . c i t y , 
-                 d i s t r i c t :   d a t a . d i s t r i c t , 
-                 s t a t e :   d a t a . s t a t e , 
-                 p r o f i l e S t a t u s :   \ A P P R O V E D \ , 
-                 a g e n c i e s :   { 
-                     c r e a t e :   { 
-                         a g e n c y I d :   a g e n c y U s e r . a g e n c y . i d , 
-                         s t a t u s :   \ A C T I V E \ 
-                     } 
-                 } 
-             } , 
-         } ) ; 
-         c r e a t e d W o r k e r s . p u s h ( w o r k e r ) ; 
-     } 
- 
-     r e t u r n   {   c o u n t :   c r e a t e d W o r k e r s . l e n g t h   } ; 
- } ;  
- 
+
+export const createAgencyWorkerSingle = async (userId, data) => {
+  const agencyUser = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { agency: true }
+  });
+
+  if (!agencyUser?.agency) {
+    throw new AppError("Agency profile not found", 404);
+  }
+
+  const worker = await prisma.worker.create({
+    data: {
+      workerCode: generateWorkerCode(),
+      firstName: data.firstName,
+      lastName: data.lastName,
+      phone: data.phone,
+      expectedDailyWage: data.expectedDailyWage,
+      jobType: data.skill,
+      city: data.city,
+      district: data.district,
+      state: data.state,
+      profileStatus: "APPROVED",
+      agencies: {
+        create: {
+          agencyId: agencyUser.agency.id,
+          status: "ACTIVE"
+        }
+      }
+    },
+    select: workerSelect,
+  });
+
+  return worker;
+};
+
+export const createAgencyWorkerBulk = async (userId, workersData) => {
+  const agencyUser = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { agency: true }
+  });
+
+  if (!agencyUser?.agency) {
+    throw new AppError("Agency profile not found", 404);
+  }
+
+  const createdWorkers = [];
+  
+  for (const data of workersData) {
+    const worker = await prisma.worker.create({
+      data: {
+        workerCode: generateWorkerCode(),
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone,
+        expectedDailyWage: data.expectedDailyWage,
+        jobType: data.skill,
+        city: data.city,
+        district: data.district,
+        state: data.state,
+        profileStatus: "APPROVED",
+        agencies: {
+          create: {
+            agencyId: agencyUser.agency.id,
+            status: "ACTIVE"
+          }
+        }
+      },
+    });
+    createdWorkers.push(worker);
+  }
+
+  return { count: createdWorkers.length };
+};
