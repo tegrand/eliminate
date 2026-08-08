@@ -5,12 +5,19 @@ import { useState, useRef, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import WorkerFilters from "./WorkerFilters";
+import AgencySingleWorkerModal from "./AgencySingleWorkerModal";
+import AgencyBulkWorkerModal from "./AgencyBulkWorkerModal";
 
 export default function WorkerToolbar({ totalWorkers, availableStatuses, availableAgencies, availableSkills }) {
   const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const viewMode = searchParams.get("view") || "all";
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
+  // Modals state
+  const [isSingleModalOpen, setIsSingleModalOpen] = useState(false);
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
+  
   const dropdownRef = useRef(null);
 
   useEffect(() => {
@@ -38,7 +45,7 @@ export default function WorkerToolbar({ totalWorkers, availableStatuses, availab
             availableSkills={availableSkills} 
           />
         </div>
-        {user?.profileType === "AGENCY" && viewMode !== "my" && (
+        {user?.profileType === "AGENCY" && (
           <div className="relative" ref={dropdownRef}>
             <button 
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -52,24 +59,36 @@ export default function WorkerToolbar({ totalWorkers, availableStatuses, availab
             {isDropdownOpen && (
               <div className="absolute right-0 mt-2 w-56 bg-white border border-gray-100 rounded-xl shadow-lg py-2 z-50 animate-fade-in-up">
                 <button 
-                  onClick={() => { setIsDropdownOpen(false); toast.success("Opening add existing worker modal..."); }}
+                  onClick={() => { setIsDropdownOpen(false); setIsSingleModalOpen(true); }}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                 >
-                  <LinkIcon className="w-4 h-4 text-indigo-500" />
-                  <span>Add Existing Worker</span>
+                  <UserPlus className="w-4 h-4 text-indigo-500" />
+                  <span>Add Single Worker</span>
                 </button>
                 <button 
-                  onClick={() => { setIsDropdownOpen(false); toast.success("Opening invite worker modal..."); }}
+                  onClick={() => { setIsDropdownOpen(false); setIsBulkModalOpen(true); }}
                   className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                 >
-                  <UserPlus className="w-4 h-4 text-emerald-500" />
-                  <span>Invite Independent Worker</span>
+                  <Users className="w-4 h-4 text-emerald-500" />
+                  <span>Bulk Add Workers</span>
                 </button>
               </div>
             )}
           </div>
         )}
       </div>
+      
+      {/* Modals */}
+      <AgencySingleWorkerModal 
+        isOpen={isSingleModalOpen} 
+        onClose={() => setIsSingleModalOpen(false)} 
+        onSuccess={() => window.location.reload()} 
+      />
+      <AgencyBulkWorkerModal 
+        isOpen={isBulkModalOpen} 
+        onClose={() => setIsBulkModalOpen(false)} 
+        onSuccess={() => window.location.reload()} 
+      />
     </div>
   );
 }

@@ -13,6 +13,14 @@ export const workerApi = {
     const response = await api.get(`/workers/${id}/availability`);
     return response.data;
   },
+  addAgencyWorkerSingle: async (data) => {
+    const response = await api.post("/workers/agency/single", data);
+    return response.data;
+  },
+  addAgencyWorkerBulk: async (data) => {
+    const response = await api.post("/workers/agency/bulk", data);
+    return response.data;
+  },
   getMyWorkerProfile: async () => {
     const response = await api.get("/workers/my-profile");
     return response.data;

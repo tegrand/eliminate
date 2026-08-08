@@ -12,11 +12,12 @@ import {
   getMyAgencies,
   acceptAgencyInvitation,
   rejectAgencyInvitation,
-  leaveAgency,
   getMyJobInvitations,
   acceptJobInvitation,
   rejectJobInvitation,
-  getWorkerAvailability
+  getWorkerAvailability,
+  addAgencyWorkerSingle,
+  addAgencyWorkerBulk
 } from "./worker.controller.js";
 
 import {
@@ -25,6 +26,8 @@ import {
   workerIdParamSchema,
   listWorkersQuerySchema,
   updateWorkerStatusSchema,
+  createAgencyWorkerSchema,
+  createAgencyWorkerBulkSchema
 } from "./worker.validation.js";
 
 import validate from "../../middleware/validate.middleware.js";
@@ -55,6 +58,21 @@ router.get(
 router.get(
   "/my-profile",
   getMyWorkerProfile
+);
+
+// Agency adding offline workers
+router.post(
+  "/agency/single",
+  authorize("AGENCY"),
+  validate(createAgencyWorkerSchema),
+  addAgencyWorkerSingle
+);
+
+router.post(
+  "/agency/bulk",
+  authorize("AGENCY"),
+  validate(createAgencyWorkerBulkSchema),
+  addAgencyWorkerBulk
 );
 
 // Worker updating their own profile
