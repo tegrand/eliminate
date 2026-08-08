@@ -1,4 +1,4 @@
-import { Search, Filter, Plus, ChevronDown, UserPlus, Link as LinkIcon } from "lucide-react";
+import { Search, Filter, Plus, ChevronDown, UserPlus, Link as LinkIcon, Users } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../hooks/useAuth";
 import { useState, useRef, useEffect } from "react";

@@ -43,7 +43,6 @@ import ClientProfilePage from "../features/client/pages/ClientProfilePage";
 import ClientWorkerSearchPage from "../features/client/pages/ClientWorkerSearchPage";
 import ClientWorkerProfilePage from "../features/client/pages/ClientWorkerProfilePage";
 import ClientAgencySearchPage from "../features/client/pages/ClientAgencySearchPage";
-import ClientJobsPage from "../features/job-requirement/pages/ClientJobsPage";
 import ClientRequestsPage from "../features/client/pages/ClientRequestsPage";
 
 
@@ -51,16 +50,11 @@ import AgencyListPage from "../features/agency/pages/AgencyListPage";
 import AgencyDetailsPage from "../features/agency/pages/AgencyDetailsPage";
 import AgencyProfilePage from "../features/agency/pages/AgencyProfilePage";
 import AgencyClientListPage from "../features/agency/pages/AgencyClientListPage";
-import AgencyJobRequirementsPage from "../features/agency/pages/AgencyJobRequirementsPage";
 
 import SkillListPage from "../features/master-data/skill/pages/SkillListPage";
 import CategoryListPage from "../features/master-data/category/pages/CategoryListPage";
 import LanguageListPage from "../features/master-data/language/pages/LanguageListPage";
 import LocationListPage from "../features/master-data/location/pages/LocationListPage";
-
-import JobRequirementListPage from "../features/job-requirement/pages/JobRequirementListPage";
-import JobRequirementDetailsPage from "../features/job-requirement/pages/JobRequirementDetailsPage";
-import AssignWorkersPage from "../features/job-requirement/pages/AssignWorkersPage";
 
 import HiringRequestsPage from "../features/hiring-requests/pages/HiringRequestsPage";
 
@@ -144,7 +138,6 @@ const AppRouter = () => {
             <Route path={ROUTES.CLIENTS} element={<ClientListPage />} />
             <Route path={ROUTES.CLIENT_DETAILS} element={<ClientDetailsPage />} />
             <Route path={ROUTES.CLIENT_PROFILE} element={<ClientProfilePage />} />
-            <Route path={ROUTES.CLIENT_JOBS} element={<ClientJobsPage />} />
             <Route path={ROUTES.CLIENT_REQUESTS} element={<ClientRequestsPage />} />
             
 
@@ -153,7 +146,6 @@ const AppRouter = () => {
             <Route path={ROUTES.AGENCY_DETAILS} element={<AgencyDetailsPage />} />
             <Route path={ROUTES.AGENCY_PROFILE} element={<AgencyProfilePage />} />
             <Route path={ROUTES.AGENCY_CLIENTS} element={<AgencyClientListPage />} />
-            <Route path={ROUTES.AGENCY_JOB_REQUIREMENTS} element={<AgencyJobRequirementsPage />} />
 
             {/* Master Data */}
             <Route path={ROUTES.SKILLS} element={<SkillListPage />} />
@@ -161,11 +153,6 @@ const AppRouter = () => {
             <Route path={ROUTES.LANGUAGES} element={<LanguageListPage />} />
             <Route path={ROUTES.LOCATIONS} element={<LocationListPage />} />
 
-            {/* Job Requirements */}
-            <Route path={ROUTES.JOB_REQUIREMENTS} element={<JobRequirementListPage />} />
-            <Route path={ROUTES.JOB_REQUIREMENT_DETAILS} element={<JobRequirementDetailsPage />} />
-            <Route path={ROUTES.ASSIGN_WORKERS} element={<AssignWorkersPage />} />
-            
             {/* Hiring Requests */}
             <Route path={ROUTES.HIRING_REQUESTS} element={<HiringRequestsPage />} />
 

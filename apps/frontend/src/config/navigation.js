@@ -113,12 +113,6 @@ export const NAVIGATION_CONFIG = [
         roles: ["CLIENT"],
       },
       {
-        title: "My Jobs",
-        path: ROUTES.CLIENT_JOBS,
-        icon: FileText,
-        roles: ["CLIENT"],
-      },
-      {
         title: "Assignments",
         path: ROUTES.ASSIGNMENTS,
         icon: UserCheck,
@@ -144,12 +138,6 @@ export const NAVIGATION_CONFIG = [
         title: "Our Workers",
         path: ROUTES.WORKERS + "?view=my",
         icon: Users,
-        roles: ["AGENCY"],
-      },
-      {
-        title: "Job Requirements",
-        path: ROUTES.AGENCY_JOB_REQUIREMENTS,
-        icon: Briefcase,
         roles: ["AGENCY"],
       },
     ],
