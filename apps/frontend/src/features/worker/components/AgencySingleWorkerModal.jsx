@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, UserPlus, DollarSign, MapPin, Briefcase, Phone, User } from "lucide-react";
+import { X, UserPlus, DollarSign, MapPin, Briefcase, Phone, User, Calendar, Home, Star } from "lucide-react";
 import toast from "react-hot-toast";
 import { workerApi } from "../api/worker.api";
 
@@ -13,7 +13,12 @@ export default function AgencySingleWorkerModal({ isOpen, onClose, onSuccess }) 
     skill: "",
     city: "",
     district: "",
-    state: "Kerala"
+    state: "Kerala",
+    gender: "",
+    dateOfBirth: "",
+    addressLine1: "",
+    totalExperienceYears: "",
+    joiningDate: ""
   });
 
   if (!isOpen) return null;
@@ -55,7 +60,7 @@ export default function AgencySingleWorkerModal({ isOpen, onClose, onSuccess }) 
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
@@ -91,6 +96,49 @@ export default function AgencySingleWorkerModal({ isOpen, onClose, onSuccess }) 
               <Briefcase className="w-4 h-4 text-gray-400" /> Primary Skill / Job Type
             </label>
             <input type="text" name="skill" required value={formData.skill} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" placeholder="e.g. Electrician, Plumber" />
+          </div>
+
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+                <User className="w-4 h-4 text-gray-400" /> Gender
+              </label>
+              <select name="gender" value={formData.gender} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white">
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+                <Calendar className="w-4 h-4 text-gray-400" /> Date of Birth
+              </label>
+              <input type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+                <Star className="w-4 h-4 text-gray-400" /> Experience (Years)
+              </label>
+              <input type="number" name="totalExperienceYears" value={formData.totalExperienceYears} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" placeholder="e.g. 5" />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+                <Calendar className="w-4 h-4 text-gray-400" /> Joining Date
+              </label>
+              <input type="date" name="joiningDate" value={formData.joiningDate} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+              <Home className="w-4 h-4 text-gray-400" /> Address Line 1
+            </label>
+            <input type="text" name="addressLine1" value={formData.addressLine1} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" placeholder="House name, street..." />
           </div>
 
           <div className="grid grid-cols-2 gap-4">

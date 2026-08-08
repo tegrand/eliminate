@@ -585,6 +585,11 @@ export const createAgencyWorkerSingle = async (userId, data) => {
       city: data.city,
       district: data.district,
       state: data.state,
+      gender: data.gender,
+      dateOfBirth: data.dateOfBirth,
+      addressLine1: data.addressLine1,
+      totalExperienceYears: data.totalExperienceYears,
+      joiningDate: data.joiningDate,
       profileStatus: "APPROVED",
       agencies: {
         create: {
@@ -623,6 +628,11 @@ export const createAgencyWorkerBulk = async (userId, workersData) => {
         city: data.city,
         district: data.district,
         state: data.state,
+        gender: data.gender,
+        dateOfBirth: data.dateOfBirth,
+        addressLine1: data.addressLine1,
+        totalExperienceYears: data.totalExperienceYears,
+        joiningDate: data.joiningDate,
         profileStatus: "APPROVED",
         agencies: {
           create: {

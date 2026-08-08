@@ -67,6 +67,11 @@ export const createAgencyWorkerSchema = z.object({
   city: z.string().trim().max(100).optional().nullable(),
   district: z.string().trim().max(100).optional().nullable(),
   state: z.string().trim().max(100).optional().nullable(),
+  gender: z.string().trim().max(50).optional().nullable(),
+  dateOfBirth: z.coerce.date().max(new Date(), "Birth date cannot be in the future").optional().nullable(),
+  addressLine1: z.string().trim().max(500).optional().nullable(),
+  totalExperienceYears: z.coerce.number().min(0).max(100).optional().nullable(),
+  joiningDate: z.coerce.date().optional().nullable(),
 }).strict();
 
 export const createAgencyWorkerBulkSchema = z.object({

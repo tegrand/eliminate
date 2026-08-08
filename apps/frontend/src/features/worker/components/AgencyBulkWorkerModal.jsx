@@ -21,7 +21,7 @@ export default function AgencyBulkWorkerModal({ isOpen, onClose, onSuccess }) {
       // Parse CSV-like text
       const rows = bulkText.split('\n').filter(row => row.trim());
       const workers = rows.map(row => {
-        // Format: FirstName, LastName, Phone, Wage, Skill, District, City
+        // Format: FirstName, LastName, Phone, Wage, Skill, District, City, Gender, DateOfBirth, Address, ExperienceYears, JoiningDate
         const parts = row.split(',').map(p => p.trim());
         return {
           firstName: parts[0] || "",
@@ -31,6 +31,11 @@ export default function AgencyBulkWorkerModal({ isOpen, onClose, onSuccess }) {
           skill: parts[4] || "",
           district: parts[5] || "",
           city: parts[6] || "",
+          gender: parts[7] || "",
+          dateOfBirth: parts[8] || "",
+          addressLine1: parts[9] || "",
+          totalExperienceYears: parts[10] ? Number(parts[10]) : undefined,
+          joiningDate: parts[11] || "",
           state: "Kerala"
         };
       });
@@ -81,9 +86,9 @@ export default function AgencyBulkWorkerModal({ isOpen, onClose, onSuccess }) {
               <p className="font-semibold mb-1">How to use:</p>
               <p>Paste your worker details below. Each row must be a new worker. Separate details with commas in this exact order:</p>
               <code className="block mt-2 bg-blue-100/50 px-3 py-2 rounded-lg font-mono text-xs text-blue-700">
-                FirstName, LastName, Phone, DailyWage, JobType/Skill, District, City
+                FirstName, LastName, Phone, DailyWage, JobType/Skill, District, City, Gender, DateOfBirth, Address, Experience, JoiningDate
               </code>
-              <p className="mt-2 text-xs opacity-80">Example: John, Doe, 9876543210, 850, Plumber, Ernakulam, Kochi</p>
+              <p className="mt-2 text-xs opacity-80">Example: John, Doe, 9876543210, 850, Plumber, Ernakulam, Kochi, Male, 1990-05-15, 123 Main St, 5, 2023-01-01</p>
             </div>
           </div>
 
@@ -97,7 +102,7 @@ export default function AgencyBulkWorkerModal({ isOpen, onClose, onSuccess }) {
               value={bulkText}
               onChange={(e) => setBulkText(e.target.value)}
               className="w-full px-3 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-mono whitespace-pre"
-              placeholder="John, Doe, 9876543210, 850, Plumber, Ernakulam, Kochi&#10;Jane, Smith, 9123456780, 900, Electrician, Thrissur, Chalakudy"
+              placeholder="John, Doe, 9876543210, 850, Plumber, Ernakulam, Kochi, Male, 1990-05-15, 123 Main St, 5, 2023-01-01&#10;Jane, Smith, 9123456780, 900, Electrician, Thrissur, Chalakudy, Female, 1992-08-20, 456 Elm St, 3, 2023-02-15"
             />
           </div>
 
