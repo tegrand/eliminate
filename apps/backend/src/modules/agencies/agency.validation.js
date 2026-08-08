@@ -36,6 +36,8 @@ export const updateAgencySchema = z.object({
   country: z.string().trim().max(100).optional(),
   postalCode: z.string().trim().regex(postalCodeRegex, "Invalid postal code").optional(),
   notes: z.string().trim().max(2000, "Notes are too long").optional(),
+  feePercentage: z.coerce.number().min(0).max(100).optional(),
+  workerFixedAmount: z.coerce.number().min(0).optional(),
 }).strict("Unknown fields are not allowed").refine(
   (data) => Object.keys(data).length > 0,
   "Update payload cannot be empty"

@@ -44,7 +44,7 @@ export default function AgencyProfilePage() {
   const handleSave = async () => {
     if (user?.agencyProfile?.id) {
       try {
-        const { agencyApi } = await import('../../api/agency.api.js');
+        const { agencyApi } = await import('../api/agency.api.js');
         await agencyApi.updateAgency(user.agencyProfile.id, {
           feePercentage: Number(profile.feePercentage),
           workerFixedAmount: Number(profile.workerFixedAmount)

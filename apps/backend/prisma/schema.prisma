@@ -380,6 +380,8 @@ model Agency {
   country        String?
   postalCode     String?
   notes          String?
+  feePercentage  Float?
+  workerFixedAmount Float?
   profileStatus  AgencyProfileStatus @default(PENDING)
 
   // Document URLs (Optional if using AgencyDocument model)

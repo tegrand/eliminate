@@ -25,6 +25,8 @@ const agencySelect = {
   country: true,
   postalCode: true,
   notes: true,
+  feePercentage: true,
+  workerFixedAmount: true,
   createdAt: true,
   updatedAt: true,
   profileStatus: true,
