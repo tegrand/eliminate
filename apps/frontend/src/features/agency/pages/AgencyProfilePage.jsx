@@ -36,11 +36,25 @@ export default function AgencyProfilePage() {
       open: '09:00 AM',
       close: '06:00 PM',
       workingDays: 'Monday - Saturday'
-    }
+    },
+    feePercentage: 10,
+    workerFixedAmount: 1580
   });
 
-  const handleSave = () => {
-    // API call to save would go here
+  const handleSave = async () => {
+    if (user?.agencyProfile?.id) {
+      try {
+        const { agencyApi } = await import('../../api/agency.api.js');
+        await agencyApi.updateAgency(user.agencyProfile.id, {
+          feePercentage: Number(profile.feePercentage),
+          workerFixedAmount: Number(profile.workerFixedAmount)
+        });
+        alert("Settings saved successfully!");
+      } catch (err) {
+        console.error(err);
+        alert("Failed to save settings");
+      }
+    }
     setIsEditing(false);
   };
 
@@ -311,6 +325,34 @@ export default function AgencyProfilePage() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Financial Settings */}
+          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-500"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+              Financial Settings
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Agency Fee Percentage (%)</label>
+                {isEditing ? (
+                  <input type="number" min="0" max="100" value={profile.feePercentage} onChange={(e) => setProfile({...profile, feePercentage: e.target.value})} className="w-full text-sm border-gray-200 rounded-md p-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                ) : (
+                  <div className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100 font-mono">{profile.feePercentage}%</div>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Fixed Worker Amount (₹)</label>
+                {isEditing ? (
+                  <input type="number" min="0" value={profile.workerFixedAmount} onChange={(e) => setProfile({...profile, workerFixedAmount: e.target.value})} className="w-full text-sm border-gray-200 rounded-md p-2 focus:ring-emerald-500 focus:border-emerald-500" />
+                ) : (
+                  <div className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100 font-mono">₹{profile.workerFixedAmount}</div>
+                )}
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 mt-3">These values are used to calculate the total amount when a client hires your agency.</p>
           </div>
           
         </div>

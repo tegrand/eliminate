@@ -26,6 +26,28 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
 
   const openJobs = jobsData || [];
 
+  const { data: agencyData } = useQuery({
+    queryKey: ["agencyDetails", targetId],
+    queryFn: async () => {
+      const { agencyApi } = await import('../../agency/api/agency.api.js');
+      const res = await agencyApi.getAgencyById(targetId);
+      return res.data || res;
+    },
+    enabled: isOpen && targetType === "AGENCY"
+  });
+
+  const { data: settingsData } = useQuery({
+    queryKey: ["platformSettings"],
+    queryFn: async () => {
+      const res = await api.get("/settings");
+      return res.data?.data || {};
+    },
+    enabled: isOpen
+  });
+
+  const platformFeePercentage = settingsData?.platform_fee_percentage ? parseFloat(settingsData.platform_fee_percentage) : 10;
+
+
   const { register, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm({
     defaultValues: {
       title: "",
@@ -35,7 +57,8 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
       endDate: "",
       notes: "",
       location: "",
-      phoneNumber: ""
+      phoneNumber: "",
+      numberOfWorkers: 1
     }
   });
 
@@ -66,12 +89,34 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
   })();
 
-  // Update proposedRate whenever targetRate or numberOfDays changes
-  useEffect(() => {
-    if (targetRate) {
-      setValue("proposedRate", targetRate * numberOfDays);
+  
+  // Update proposedRate whenever inputs change
+
+  const numberOfWorkers = (() => {
+    if (hiringMode === "existing" && selectedJobId) {
+      const selectedJob = openJobs.find(job => job.id === selectedJobId);
+      return selectedJob ? (selectedJob.requiredWorkers || 1) : 1;
     }
-  }, [targetRate, numberOfDays, setValue]);
+    return watch("numberOfWorkers") || 1;
+  })();
+
+  
+  useEffect(() => {
+    if (targetType === "WORKER" && targetRate) {
+      setValue("proposedRate", targetRate * numberOfDays);
+    } else if (targetType === "AGENCY" && agencyData) {
+      const fixedAmount = agencyData.workerFixedAmount || 0;
+      const feePercent = agencyData.feePercentage || 0;
+      
+      const workersCost = fixedAmount * numberOfWorkers;
+      const agencyFee = (workersCost * feePercent) / 100;
+      const platformFee = (workersCost * platformFeePercentage) / 100;
+      
+      const totalAmount = workersCost + agencyFee + platformFee;
+      setValue("proposedRate", totalAmount * numberOfDays);
+    }
+  }, [targetRate, numberOfDays, targetType, agencyData, numberOfWorkers, platformFeePercentage, setValue]);
+
 
   // Pre-fill rate whenever modal opens
   useEffect(() => {
@@ -191,6 +236,19 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
         <div className="flex-1 overflow-y-auto p-5 scrollbar-hide">
           <form id="hiring-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             
+            
+            {targetType === "AGENCY" && hiringMode === "custom" && (
+              <div className="mb-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Number of Workers Required</label>
+                <input 
+                  type="number" 
+                  min="1"
+                  {...register("numberOfWorkers", { valueAsNumber: true, required: "Number of workers is required" })}
+                  className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all outline-none"
+                />
+              </div>
+            )}
+
             {hiringMode === "existing" ? (
               <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
                 <label className="block text-sm font-semibold text-gray-700 mb-1.5">Select an Active Job Requirement</label>
@@ -284,16 +342,41 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-3 border-t border-gray-100">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1.5">
-                  <DollarSign className="w-3.5 h-3.5 text-emerald-500" /> Proposed Rate (₹)
+                  <DollarSign className="w-3.5 h-3.5 text-emerald-500" /> Proposed Total Amount (₹)
                 </label>
                 <input 
                   type="number" 
                   min="0"
-                  readOnly={!!targetRate}
+                  readOnly={!!targetRate || targetType === "AGENCY"}
                   {...register("proposedRate")}
-                  className={`w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 outline-none ${!!targetRate ? 'bg-gray-100 text-gray-600 font-bold cursor-not-allowed' : 'bg-white'}`}
+                  className={`w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 outline-none ${(!!targetRate || targetType === "AGENCY") ? 'bg-gray-100 text-gray-600 font-bold cursor-not-allowed' : 'bg-white'}`}
                   placeholder="e.g. 5000"
                 />
+                
+                {targetType === "AGENCY" && agencyData && (
+                  <div className="mt-2 text-[11px] font-medium p-2 bg-indigo-50 border border-indigo-100 rounded-lg text-indigo-800 flex flex-col gap-1">
+                    <div className="flex justify-between">
+                      <span>Days:</span>
+                      <span>{numberOfDays} Day{numberOfDays > 1 ? 's' : ''}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Workers Cost ({numberOfWorkers} @ ₹{agencyData.workerFixedAmount || 0}/day):</span>
+                      <span>₹{(agencyData.workerFixedAmount || 0) * numberOfWorkers * numberOfDays}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Agency Fee ({agencyData.feePercentage || 0}%):</span>
+                      <span>+ ₹{(((agencyData.workerFixedAmount || 0) * numberOfWorkers * (agencyData.feePercentage || 0)) / 100) * numberOfDays}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Platform Fee ({platformFeePercentage}%):</span>
+                      <span>+ ₹{(((agencyData.workerFixedAmount || 0) * numberOfWorkers * platformFeePercentage) / 100) * numberOfDays}</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-slate-900 border-t border-indigo-200 pt-1 mt-1">
+                      <span>Total You Pay:</span>
+                      <span>₹{watch("proposedRate")}</span>
+                    </div>
+                  </div>
+                )}
                 {targetRate && targetBaseRate && targetPlatformFee && (
                   <div className="mt-2 text-[11px] font-medium p-2 bg-slate-50 border border-slate-100 rounded-lg text-slate-600 flex flex-col gap-1">
                     <div className="flex justify-between">
