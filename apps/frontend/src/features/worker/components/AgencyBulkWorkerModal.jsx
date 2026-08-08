@@ -62,7 +62,7 @@ export default function AgencyBulkWorkerModal({ isOpen, onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden animate-slide-up-sm border border-gray-100">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl overflow-hidden animate-slide-up-sm border border-gray-100">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/80 backdrop-blur-sm">
           <div className="flex items-center gap-4">
             <div className="p-2.5 bg-indigo-100/80 text-indigo-700 rounded-xl shadow-sm border border-indigo-200/50">
