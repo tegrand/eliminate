@@ -62,55 +62,71 @@ export default function AgencyBulkWorkerModal({ isOpen, onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden animate-slide-up-sm">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-indigo-100 text-indigo-700 rounded-lg">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden animate-slide-up-sm border border-gray-100">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/80 backdrop-blur-sm">
+          <div className="flex items-center gap-4">
+            <div className="p-2.5 bg-indigo-100/80 text-indigo-700 rounded-xl shadow-sm border border-indigo-200/50">
               <Users className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900 leading-tight">Bulk Add Workers</h2>
-              <p className="text-xs text-gray-500">Quickly add multiple managed workers at once.</p>
+              <h2 className="text-lg font-bold text-gray-900 tracking-tight">Bulk Add Workers</h2>
+              <p className="text-sm text-gray-500">Quickly add multiple managed workers via CSV format.</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">
+          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-700 hover:bg-white rounded-xl shadow-sm border border-transparent hover:border-gray-200 transition-all">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          
-          <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4 flex gap-3 text-sm text-blue-800">
-            <AlertCircle className="w-5 h-5 flex-shrink-0 text-blue-500 mt-0.5" />
-            <div>
-              <p className="font-semibold mb-1">How to use:</p>
-              <p>Paste your worker details below. Each row must be a new worker. Separate details with commas in this exact order:</p>
-              <code className="block mt-2 bg-blue-100/50 px-3 py-2 rounded-lg font-mono text-xs text-blue-700">
-                FirstName, LastName, Phone, DailyWage, JobType/Skill, District, City, Gender, DateOfBirth, Address, Experience, JoiningDate
-              </code>
-              <p className="mt-2 text-xs opacity-80">Example: John, Doe, 9876543210, 850, Plumber, Ernakulam, Kochi, Male, 1990-05-15, 123 Main St, 5, 2023-01-01</p>
+        <form onSubmit={handleSubmit} className="p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            {/* Left side: Instructions */}
+            <div className="lg:col-span-5 flex flex-col gap-4">
+              <div className="bg-gradient-to-br from-indigo-50/50 to-blue-50/50 border border-indigo-100 rounded-2xl p-5 text-sm text-indigo-900 h-full">
+                <div className="flex items-center gap-2.5 mb-3">
+                  <AlertCircle className="w-5 h-5 text-indigo-600" />
+                  <span className="font-bold text-indigo-950 text-base">Formatting Guide</span>
+                </div>
+                <p className="text-indigo-800/80 leading-relaxed mb-4">
+                  Each row must be a new worker. Separate details with commas in this exact order:
+                </p>
+                <div className="bg-white/80 border border-indigo-100/80 rounded-xl p-3 mb-4 shadow-sm">
+                  <code className="font-mono text-[11px] font-semibold text-indigo-700 leading-relaxed">
+                    FirstName, LastName, Phone, DailyWage, JobType, District, City, Gender, DoB, Address, ExpYears, JoiningDate
+                  </code>
+                </div>
+                <div className="text-xs text-indigo-700/70 border-t border-indigo-100/60 pt-3">
+                  <span className="font-semibold block mb-1 text-indigo-900">Example Row:</span>
+                  <span className="font-mono">John, Doe, 9876543210, 850, Plumber, Ernakulam, Kochi, Male, 1990-05-15, 123 Main St, 5, 2023-01-01</span>
+                </div>
+              </div>
             </div>
+
+            {/* Right side: Input */}
+            <div className="lg:col-span-7 flex flex-col">
+              <label className="text-sm font-semibold text-gray-800 flex items-center gap-2 mb-2">
+                <FileText className="w-4 h-4 text-gray-400" /> Worker Data CSV
+              </label>
+              <textarea 
+                required
+                rows={9}
+                value={bulkText}
+                onChange={(e) => setBulkText(e.target.value)}
+                className="w-full flex-1 p-4 border border-gray-200 rounded-2xl text-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all font-mono whitespace-pre shadow-sm bg-gray-50/30 hover:bg-white"
+                placeholder="Paste your CSV data here..."
+              />
+            </div>
+            
           </div>
 
-          <div className="space-y-1.5">
-            <label className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
-              <FileText className="w-4 h-4 text-gray-400" /> Worker Data (Comma Separated)
-            </label>
-            <textarea 
-              required
-              rows={8}
-              value={bulkText}
-              onChange={(e) => setBulkText(e.target.value)}
-              className="w-full px-3 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all font-mono whitespace-pre"
-              placeholder="John, Doe, 9876543210, 850, Plumber, Ernakulam, Kochi, Male, 1990-05-15, 123 Main St, 5, 2023-01-01&#10;Jane, Smith, 9123456780, 900, Electrician, Thrissur, Chalakudy, Female, 1992-08-20, 456 Elm St, 3, 2023-02-15"
-            />
-          </div>
-
-          <div className="pt-4 flex justify-end gap-3 border-t border-gray-100">
-            <button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">Cancel</button>
-            <button type="submit" disabled={loading} className="px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl shadow-sm transition-all flex items-center gap-2">
+          <div className="pt-6 mt-6 flex justify-end gap-3 border-t border-gray-100">
+            <button type="button" onClick={onClose} className="px-6 py-2.5 text-sm font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 hover:text-gray-900 rounded-xl shadow-sm transition-all">
+              Cancel
+            </button>
+            <button type="submit" disabled={loading} className="px-6 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl shadow-sm hover:shadow transition-all flex items-center gap-2">
               <Upload className="w-4 h-4" />
-              {loading ? "Processing..." : "Upload & Add Workers"}
+              {loading ? "Processing Data..." : "Upload & Save Workers"}
             </button>
           </div>
         </form>
