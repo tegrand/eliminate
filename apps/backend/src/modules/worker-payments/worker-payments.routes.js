@@ -19,7 +19,7 @@ router.get("/summary", getPaymentSummary);
 router.get("/:id", getPaymentById);
 
 // Admin routes
-router.get("/admin/all", authorize(["SUPER_ADMIN"]), getAllWorkerPayouts);
-router.patch("/admin/:id/pay", authorize(["SUPER_ADMIN"]), markPayoutAsPaid);
+router.get("/admin/all", authorize("SUPER_ADMIN"), getAllWorkerPayouts);
+router.patch("/admin/:id/pay", authorize("SUPER_ADMIN"), markPayoutAsPaid);
 
 export default router;
