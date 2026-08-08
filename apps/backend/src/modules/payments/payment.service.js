@@ -131,6 +131,9 @@ export const verifyPayment = async (orderId, paymentId, signature) => {
       include: { assignedWorkers: true }
     });
 
+    const feeSetting = await prisma.systemSetting.findUnique({ where: { key: "platform_fee_percentage" } });
+    const platformFeePercentage = feeSetting && !isNaN(parseFloat(feeSetting.value)) ? parseFloat(feeSetting.value) : 0;
+
     for (const assignment of assignments) {
       await prisma.assignment.update({
         where: { id: assignment.id },
@@ -139,7 +142,9 @@ export const verifyPayment = async (orderId, paymentId, signature) => {
 
       const workerCount = assignment.assignedWorkers.length;
       if (workerCount > 0) {
-        const amountPerWorker = parseFloat(assignment.agreedRate || 0) / workerCount;
+        const agreedRate = parseFloat(assignment.agreedRate || 0);
+        const totalWorkerShare = agreedRate / (1 + (platformFeePercentage / 100));
+        const amountPerWorker = totalWorkerShare / workerCount;
         const workerPayments = assignment.assignedWorkers.map(aw => ({
           workerId: aw.workerId,
           amount: amountPerWorker,
@@ -244,6 +249,9 @@ export const processWebhook = async (rawBody, signature) => {
           include: { assignedWorkers: true }
         });
 
+        const feeSetting = await prisma.systemSetting.findUnique({ where: { key: "platform_fee_percentage" } });
+        const platformFeePercentage = feeSetting && !isNaN(parseFloat(feeSetting.value)) ? parseFloat(feeSetting.value) : 0;
+
         for (const assignment of assignments) {
           await prisma.assignment.update({
             where: { id: assignment.id },
@@ -252,7 +260,9 @@ export const processWebhook = async (rawBody, signature) => {
 
           const workerCount = assignment.assignedWorkers.length;
           if (workerCount > 0) {
-            const amountPerWorker = parseFloat(assignment.agreedRate || 0) / workerCount;
+            const agreedRate = parseFloat(assignment.agreedRate || 0);
+            const totalWorkerShare = agreedRate / (1 + (platformFeePercentage / 100));
+            const amountPerWorker = totalWorkerShare / workerCount;
             const workerPayments = assignment.assignedWorkers.map(aw => ({
               workerId: aw.workerId,
               amount: amountPerWorker,
