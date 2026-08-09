@@ -151,6 +151,12 @@ export const NAVIGATION_CONFIG = [
         path: ROUTES.AGENCY_CLIENTS,
         icon: UserCheck,
         roles: ["AGENCY"],
+      },
+      {
+        title: "Hiring Requests",
+        path: ROUTES.HIRING_REQUESTS,
+        icon: Briefcase,
+        roles: ["AGENCY"],
       }
     ],
   },
