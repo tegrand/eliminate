@@ -4,9 +4,11 @@ import { Briefcase, CheckCircle, XCircle, Clock, Calendar, DollarSign, Loader2, 
 import api from "../../../api/axios";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 export default function HiringRequestsPage() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const isClient = user?.profileType === "CLIENT";
   
@@ -143,7 +145,7 @@ export default function HiringRequestsPage() {
                         disabled={updateStatusMutation.isPending}
                         className="flex-1 py-2.5 bg-white border border-gray-200 text-gray-700 font-semibold text-sm rounded-xl hover:bg-gray-50 hover:text-red-600 transition-colors flex items-center justify-center gap-2"
                       >
-                        <XCircle className="w-4 h-4" /> Cancel Request
+                        <XCircle className="w-4 h-4" /> Cancel
                       </button>
                     ) : (
                       <>
@@ -166,10 +168,24 @@ export default function HiringRequestsPage() {
                   </div>
                 )}
 
-                {req.status === 'ACCEPTED' && (
+                {req.status !== 'PENDING' && (
                   <div className="flex items-center justify-end pt-4 border-t border-gray-100 mt-auto">
-                    <button className="text-indigo-600 hover:text-indigo-800 text-sm font-semibold flex items-center gap-1.5 transition-colors">
-                      View Assignment <ArrowRight className="w-4 h-4" />
+                    <button 
+                      onClick={() => navigate(`/hiring-requests/${req.id}`)}
+                      className="text-indigo-600 hover:text-indigo-800 text-sm font-semibold flex items-center gap-1.5 transition-colors"
+                    >
+                      View Details <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+
+                {req.status === 'PENDING' && (
+                  <div className="flex items-center justify-center pt-3 mt-2">
+                    <button 
+                      onClick={() => navigate(`/hiring-requests/${req.id}`)}
+                      className="text-gray-500 hover:text-indigo-600 text-sm font-semibold flex items-center gap-1.5 transition-colors"
+                    >
+                      View Full Request <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
                 )}

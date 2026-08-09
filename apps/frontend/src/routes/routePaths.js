@@ -60,6 +60,7 @@ export const ROUTES = {
 
   // Hiring Requests
   HIRING_REQUESTS: "/hiring-requests",
+  HIRING_REQUEST_DETAILS: "/hiring-requests/:id",
 
   // Assignments
   ASSIGNMENTS: "/assignments",
