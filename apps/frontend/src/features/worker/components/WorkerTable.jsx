@@ -70,7 +70,9 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
 
   if (user?.profileType !== "AGENCY") {
     columns.push({ key: "gender", title: <div className="flex items-center gap-1.5">GENDER</div>, render: (row) => <span className="text-sm text-gray-600 capitalize">{row.gender && row.gender !== "—" ? row.gender : "-"}</span> });
-    columns.push({ key: "agency", title: <div className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" />AGENCY</div>, render: (row) => <span className="text-sm text-gray-600">{row.agency}</span> });
+    if (user?.profileType !== "SUPER_ADMIN") {
+      columns.push({ key: "agency", title: <div className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" />AGENCY</div>, render: (row) => <span className="text-sm text-gray-600">{row.agency}</span> });
+    }
   } else {
     // Agency specific columns
     columns.push({

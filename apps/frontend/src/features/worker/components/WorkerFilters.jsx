@@ -59,7 +59,7 @@ export default function WorkerFilters({ availableStatuses = [], availableAgencie
           ))}
         </select>
       </div>
-      {user?.profileType !== "AGENCY" && (
+      {user?.profileType !== "AGENCY" && user?.profileType !== "SUPER_ADMIN" && (
         <div className="w-full sm:w-[130px]">
           <select {...register("agency")} className="block w-full pl-3 pr-8 py-1.5 text-sm border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-lg text-gray-600 border bg-white h-9">
             <option value="">Agency (All)</option>
