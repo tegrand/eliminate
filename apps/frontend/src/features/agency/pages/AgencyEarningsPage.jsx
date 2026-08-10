@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { IndianRupee, Clock, CheckCircle2, AlertCircle } from "lucide-react";
-import { agencyPaymentsApi } from "../../../api/worker-payments.api";
+import { agencyPaymentsApi } from "../../../api/agency-payments.api";
 import { format } from "date-fns";
 import clsx from "clsx";
 

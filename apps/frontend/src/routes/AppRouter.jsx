@@ -179,7 +179,7 @@ const AppRouter = () => {
             <Route path={ROUTES.PAYMENTS} element={<PaymentListPage />} />
             <Route path={ROUTES.PAYMENT_RECEIPT} element={<PaymentReceiptPage />} />
             <Route path="/admin/worker-payouts" element={<WorkerPayoutsPage />} />
-            <Route path="/admin/agency-payouts" element={<AdminAgencyPayoutsPage />} />
+            <Route path="/agency-payouts" element={<AdminAgencyPayoutsPage />} />
             <Route path="/agency/earnings" element={<AgencyEarningsPage />} />
 
             {/* System Settings */}

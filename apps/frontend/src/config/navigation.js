@@ -227,7 +227,7 @@ export const NAVIGATION_CONFIG = [
       },
       {
         title: "Agency Payouts",
-        path: "/admin/agency-payouts",
+        path: "/agency-payouts",
         icon: DollarSign,
         roles: ADMIN_ONLY,
       },
