@@ -2,10 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { dashboardApi } from "../../api/dashboard.api";
 import ClientOverviewCards from "./ClientOverviewCards";
 import DashboardChartsRow from "../charts/DashboardChartsRow";
-import ClientRecentActivity from "./ClientRecentActivity";
-import ClientCompletedJobs from "./ClientCompletedJobs";
-import ClientNotifications from "./ClientNotifications";
-import ClientQuickActions from "./ClientQuickActions";
 import { Loader2, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -36,7 +32,7 @@ export default function ClientDashboard() {
     );
   }
 
-  const { topStats, recentActivities, notifications, chartData, completedJobsList } = dashboardData || {};
+  const { topStats, chartData } = dashboardData || {};
 
   return (
     <div className="space-y-6">
@@ -54,17 +50,6 @@ export default function ClientDashboard() {
         donutData={chartData?.donutData || []}
       />
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <ClientRecentActivity activities={recentActivities} />
-          <ClientCompletedJobs jobs={completedJobsList} />
-        </div>
-        <div className="space-y-6">
-          <ClientQuickActions />
-          <ClientNotifications notifications={notifications} />
-        </div>
-      </div>
     </div>
   );
 }
