@@ -34,7 +34,7 @@ export default function Header() {
   }, []);
   
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 lg:px-8 sticky top-0 z-10 flex-shrink-0">
+    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 lg:px-8 sticky top-0 z-50 flex-shrink-0">
       {/* Mobile/Tablet Menu Button */}
       <div className="flex items-center lg:hidden">
         <button 
