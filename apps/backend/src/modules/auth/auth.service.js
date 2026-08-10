@@ -26,6 +26,10 @@ const issueTokensAndUpdateUser = async (user, meta, action = "LOGIN") => {
       select: {
         id: true,
         email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        avatar: true,
         status: true,
         profileType: true,
         emailVerified: true,
@@ -387,6 +391,7 @@ export const getCurrentUser = async (userId) => {
       firstName: true,
       lastName: true,
       phone: true,
+      avatar: true,
       status: true,
       profileType: true,
       emailVerified: true,
