@@ -18,6 +18,7 @@ import hiringRequestRoutes from "../modules/hiring-requests/hiring-request.route
 import assignmentRoutes from "../modules/assignments/assignment.routes.js";
 import workerAttendanceRoutes from "../modules/worker-attendance/worker-attendance.routes.js";
 import workerPaymentsRoutes from "../modules/worker-payments/worker-payments.routes.js";
+import agencyPaymentsRoutes from "../modules/agency-payments/agency-payments.routes.js";
 import workerDocumentsRoutes from "../modules/worker-documents/worker-documents.routes.js";
 import notificationsRoutes from "../modules/notifications/notifications.routes.js";
 import reviewRoutes from "../modules/reviews/review.routes.js";
@@ -46,6 +47,7 @@ router.use("/assignments", assignmentRoutes);
 router.use("/my-attendance", workerAttendanceRoutes);
 router.use("/notifications", notificationsRoutes);
 router.use("/my-payments", workerPaymentsRoutes);
+router.use("/agency-payments", agencyPaymentsRoutes);
 router.use("/my-documents", workerDocumentsRoutes);
 router.use("/reviews", reviewRoutes);
 router.use("/reports", reportsRoutes);

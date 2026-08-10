@@ -146,6 +146,12 @@ export const NAVIGATION_CONFIG = [
         path: ROUTES.HIRING_REQUESTS,
         icon: Briefcase,
         roles: ["AGENCY"],
+      },
+      {
+        title: "Earnings",
+        path: "/agency/earnings",
+        icon: DollarSign,
+        roles: ["AGENCY"],
       }
     ],
   },
@@ -216,6 +222,12 @@ export const NAVIGATION_CONFIG = [
       {
         title: "Worker Payouts",
         path: "/admin/worker-payouts",
+        icon: DollarSign,
+        roles: ADMIN_ONLY,
+      },
+      {
+        title: "Agency Payouts",
+        path: "/admin/agency-payouts",
         icon: DollarSign,
         roles: ADMIN_ONLY,
       },

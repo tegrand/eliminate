@@ -395,6 +395,7 @@ model Agency {
   // jobRequirements  JobRequirement[]
   hiringRequests HiringRequest[]
   assignments    Assignment[]
+  payments       AgencyPayment[]
 
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
@@ -757,6 +758,29 @@ model WorkerPayment {
   @@index([status])
 }
 
+model AgencyPayment {
+  id            String         @id @default(uuid())
+  agencyId      String
+  amount        Float
+  paymentDate   DateTime?      @db.Date
+  periodStart   DateTime       @db.Date
+  periodEnd     DateTime       @db.Date
+  status        PaymentStatus  @default(PENDING)
+  paymentMethod PaymentMethod?
+  referenceNo   String?
+  notes         String?
+  assignmentId  String?
+
+  agency     Agency      @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  assignment Assignment? @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([agencyId])
+  @@index([status])
+}
+
 model WorkerDocument {
   id           String         @id @default(uuid())
   workerId     String
@@ -921,6 +945,7 @@ model Assignment {
   assignedWorkers AssignmentWorker[]
   invoices        Invoice[]
   workerPayments  WorkerPayment[]
+  agencyPayments  AgencyPayment[]
 
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt

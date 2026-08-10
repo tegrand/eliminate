@@ -75,6 +75,8 @@ import InvoiceDetailsPage from "../features/invoice/pages/InvoiceDetailsPage";
 import PaymentListPage from "../features/payment/pages/PaymentListPage";
 import PaymentReceiptPage from "../features/payment/pages/PaymentReceiptPage";
 import WorkerPayoutsPage from "../features/payment/pages/WorkerPayoutsPage";
+import AdminAgencyPayoutsPage from "../features/payment/pages/AdminAgencyPayoutsPage";
+import AgencyEarningsPage from "../features/agency/pages/AgencyEarningsPage";
 
 import SettingsPage from "../features/settings/pages/SettingsPage";
 import AdminRoutes from "../features/admin/routes/AdminRoutes";
@@ -177,6 +179,8 @@ const AppRouter = () => {
             <Route path={ROUTES.PAYMENTS} element={<PaymentListPage />} />
             <Route path={ROUTES.PAYMENT_RECEIPT} element={<PaymentReceiptPage />} />
             <Route path="/admin/worker-payouts" element={<WorkerPayoutsPage />} />
+            <Route path="/admin/agency-payouts" element={<AdminAgencyPayoutsPage />} />
+            <Route path="/agency/earnings" element={<AgencyEarningsPage />} />
 
             {/* System Settings */}
             <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
