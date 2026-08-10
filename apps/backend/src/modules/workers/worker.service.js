@@ -68,6 +68,7 @@ const workerSelect = {
       profileType: true,
       firstName: true,
       lastName: true,
+      avatar: true,
     },
   },
   reviews: {

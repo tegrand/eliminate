@@ -124,11 +124,14 @@ export default function WorkerDetailsPage() {
               
               <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-50">
                 <div className="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-2xl overflow-hidden shadow-sm">
-                  {worker.profilePhoto ? (
-                    <img src={worker.profilePhoto.startsWith('http') || worker.profilePhoto.startsWith('data:') ? worker.profilePhoto : `http://localhost:5000${worker.profilePhoto.startsWith('/') ? '' : '/'}${worker.profilePhoto}`} alt={getFullName()} className="w-full h-full object-cover" />
-                  ) : (
-                    worker.firstName ? worker.firstName[0] : "W"
-                  )}
+                  {(() => {
+                    const avatarImg = worker.profilePhoto || worker.user?.avatar;
+                    return avatarImg ? (
+                      <img src={avatarImg.startsWith('http') || avatarImg.startsWith('data:') ? avatarImg : `http://localhost:5000${avatarImg.startsWith('/') ? '' : '/'}${avatarImg}`} alt={getFullName()} className="w-full h-full object-cover" />
+                    ) : (
+                      worker.firstName ? worker.firstName[0] : "W"
+                    );
+                  })()}
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">{getFullName()}</h3>
