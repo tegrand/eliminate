@@ -49,7 +49,6 @@ import AgencyListPage from "../features/agency/pages/AgencyListPage";
 import AgencyDetailsPage from "../features/agency/pages/AgencyDetailsPage";
 import AgencyProfilePage from "../features/agency/pages/AgencyProfilePage";
 import AgencySettingsPage from "../features/agency/pages/AgencySettingsPage";
-import AgencyClientListPage from "../features/agency/pages/AgencyClientListPage";
 
 import SkillListPage from "../features/master-data/skill/pages/SkillListPage";
 import CategoryListPage from "../features/master-data/category/pages/CategoryListPage";
@@ -145,7 +144,6 @@ const AppRouter = () => {
             <Route path={ROUTES.AGENCIES} element={<AgencyListPage />} />
             <Route path={ROUTES.AGENCY_DETAILS} element={<AgencyDetailsPage />} />
             <Route path={ROUTES.AGENCY_PROFILE} element={<AgencyProfilePage />} />\n              <Route path={ROUTES.AGENCY_SETTINGS} element={<AgencySettingsPage />} />
-            <Route path={ROUTES.AGENCY_CLIENTS} element={<AgencyClientListPage />} />
 
             {/* Master Data */}
             <Route path={ROUTES.SKILLS} element={<SkillListPage />} />

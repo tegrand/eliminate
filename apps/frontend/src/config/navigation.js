@@ -140,12 +140,7 @@ export const NAVIGATION_CONFIG = [
     group: "Client Management",
     roles: ["AGENCY"],
     items: [
-      {
-        title: "Clients",
-        path: ROUTES.AGENCY_CLIENTS,
-        icon: UserCheck,
-        roles: ["AGENCY"],
-      },
+
       {
         title: "Hiring Requests",
         path: ROUTES.HIRING_REQUESTS,
