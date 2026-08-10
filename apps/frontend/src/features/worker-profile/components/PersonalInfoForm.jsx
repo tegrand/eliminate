@@ -37,7 +37,7 @@ export default function PersonalInfoForm({ data, onSave, saving }) {
         <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
           <div className="w-24 h-24 rounded-2xl bg-white border-2 border-indigo-200 shadow-sm flex items-center justify-center overflow-hidden">
             {data?.profilePhoto ? (
-              <img src={data.profilePhoto} alt="Profile" className="w-full h-full object-cover" />
+              <img src={data.profilePhoto.startsWith('http') || data.profilePhoto.startsWith('data:') ? data.profilePhoto : `http://localhost:5000${data.profilePhoto.startsWith('/') ? '' : '/'}${data.profilePhoto}`} alt="Profile" className="w-full h-full object-cover" />
             ) : (
               <UserCircle2 className="w-14 h-14 text-slate-300" />
             )}

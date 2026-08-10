@@ -105,11 +105,11 @@ export default function ClientWorkerProfilePage() {
               {/* Avatar */}
               <div className="flex flex-col items-center pt-2 mb-4">
                 <div className="relative mb-3">
-                  <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
+                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-white border-4 border-white shadow-lg flex items-center justify-center shrink-0 text-gray-400 font-bold text-3xl overflow-hidden relative z-10 -mt-12 sm:mt-0">
                     {avatar ? (
-                      <img src={avatar} alt={name} className="w-full h-full object-cover" />
+                      <img src={avatar.startsWith('http') || avatar.startsWith('data:') ? avatar : `http://localhost:5000${avatar.startsWith('/') ? '' : '/'}${avatar}`} alt={name} className="w-full h-full object-cover" />
                     ) : (
-                      <User className="w-10 h-10 text-gray-400" />
+                      initials
                     )}
                   </div>
                   {isVerified && (

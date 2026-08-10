@@ -29,7 +29,7 @@ export default function ClientFavouriteWorkers({ workers = [] }) {
       <div className="p-5 flex-1 flex flex-col gap-4">
         {displayWorkers.map((worker) => (
           <div key={worker.id} className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100 group">
-            <img src={worker.image} alt={worker.name} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" />
+            <img src={worker.image.startsWith('http') || worker.image.startsWith('data:') ? worker.image : `http://localhost:5000${worker.image.startsWith('/') ? '' : '/'}${worker.image}`} alt={worker.name} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" />
             
             <div className="flex-1 min-w-0">
               <h3 className="text-sm font-bold text-gray-900 truncate">{worker.name}</h3>

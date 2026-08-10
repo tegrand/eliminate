@@ -42,7 +42,7 @@ export default function WorkerSearchCard({ worker }) {
         {/* Avatar */}
         <div className="w-16 h-16 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0 text-indigo-600 font-bold text-lg">
           {avatar ? (
-            <img src={avatar} alt={name} className="w-full h-full object-cover rounded-xl" />
+            <img src={avatar.startsWith('http') || avatar.startsWith('data:') ? avatar : `http://localhost:5000${avatar.startsWith('/') ? '' : '/'}${avatar}`} alt={name} className="w-full h-full object-cover rounded-xl" />
           ) : initials}
         </div>
 
