@@ -26,3 +26,10 @@ export const revokeAllSessions = asyncHandler(async (req, res) => {
   await usersService.revokeAllSessions(req.user.id);
   return ApiResponse.success(res, "All sessions revoked successfully", null);
 });
+
+export const uploadAvatar = asyncHandler(async (req, res) => {
+  if (!req.file) throw new Error("No file provided");
+  const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+  const profile = await usersService.updateProfile(req.user.id, { avatar: avatarUrl });
+  return ApiResponse.success(res, "Avatar uploaded successfully", profile);
+});

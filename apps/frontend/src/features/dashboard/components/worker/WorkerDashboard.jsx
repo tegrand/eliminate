@@ -3,10 +3,6 @@ import { toast } from "sonner";
 import { dashboardApi } from "../../api/dashboard.api";
 import WorkerTopStatsWidget from "./WorkerTopStatsWidget";
 import DashboardChartsRow from "../charts/DashboardChartsRow";
-import WorkerJobsWidget from "./WorkerJobsWidget";
-import WorkerActivityWidget from "./WorkerActivityWidget";
-import WorkerProfileWidget from "./WorkerProfileWidget";
-import api from "../../../../api/axios";
 
 export default function WorkerDashboard() {
   const [data, setData] = useState(null);
@@ -26,23 +22,6 @@ export default function WorkerDashboard() {
 
     fetchDashboard();
   }, []);
-
-  const handleStatusChange = async (newStatus) => {
-    try {
-      await api.patch('/workers/my-profile', { employmentStatus: newStatus });
-      setData(prev => ({
-        ...prev,
-        profile: {
-          ...prev.profile,
-          status: newStatus
-        }
-      }));
-      toast.success("Status updated successfully");
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to update status");
-      throw error;
-    }
-  };
 
   if (loading) {
     return (
@@ -71,23 +50,6 @@ export default function WorkerDashboard() {
         donutTotal={data.chartData?.donutTotal || 0}
         donutData={data.chartData?.donutData || []}
       />
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 space-y-6">
-          <WorkerJobsWidget 
-            activeJob={data.activeJob}
-            upcomingJobs={data.upcomingJobs} 
-            completedJobs={data.completedJobs}
-          />
-          <WorkerActivityWidget notifications={data.notifications} />
-        </div>
-        <div className="space-y-6">
-          <WorkerProfileWidget 
-            profile={data.profile}
-            onStatusChange={handleStatusChange}
-          />
-        </div>
-      </div>
     </div>
   );
 }

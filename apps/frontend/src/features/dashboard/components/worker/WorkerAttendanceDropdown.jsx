@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, Calendar, Loader2, CheckCircle2, LogOut, Coffee, XCircle } from "lucide-react";
+import { ChevronDown, Calendar, Loader2, CheckCircle2, LogOut, Coffee, XCircle, Clock } from "lucide-react";
 import { toast } from "sonner";
 import api from "../../../../api/axios";
 import { Modal } from "../../../../components/ui/modal/Modal";
@@ -36,11 +36,15 @@ export default function WorkerAttendanceDropdown() {
       const res = await api.get("/my-attendance/history");
       const records = res.data.data;
       if (records && records.length > 0) {
-        const today = new Date().toISOString().split('T')[0];
-        const latestRecordDate = new Date(records[0].date).toISOString().split('T')[0];
+        const today = new Date().toLocaleDateString();
+        const latestRecordDate = new Date(records[0].createdAt || records[0].date).toLocaleDateString();
         if (today === latestRecordDate) {
-          const matchedOption = ATTENDANCE_OPTIONS.find(opt => opt.id === records[0].status) 
-                             || (records[0].status === "PRESENT" && records[0].checkOutTime ? ATTENDANCE_OPTIONS.find(opt => opt.id === "CHECK_OUT") : null);
+          let matchedOption;
+          if (records[0].status === "PRESENT" && records[0].checkOutTime) {
+            matchedOption = ATTENDANCE_OPTIONS.find(opt => opt.id === "CHECK_OUT");
+          } else {
+            matchedOption = ATTENDANCE_OPTIONS.find(opt => opt.id === records[0].status);
+          }
           if (matchedOption) setCurrentStatus(matchedOption);
         }
       }
@@ -83,15 +87,29 @@ export default function WorkerAttendanceDropdown() {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-4 py-2 border border-transparent rounded-lg text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-      >
-        {currentStatus ? <currentStatus.icon className="w-4 h-4 text-indigo-100" /> : <Calendar className="w-4 h-4 text-indigo-100" />}
-        <span>{currentStatus ? `Today: ${currentStatus.label}` : "Today's Attendance"}</span>
-        <ChevronDown className={`w-4 h-4 text-indigo-100 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-      </button>
+    <div className="flex items-center gap-3">
+      <div className={`px-3 py-1.5 rounded-full border text-sm font-medium flex items-center gap-1.5 shadow-sm ${
+        currentStatus 
+          ? `${currentStatus.color.replace('text', 'bg').replace('600', '50')} ${currentStatus.color} border-${currentStatus.color.split('-')[1]}-200`
+          : 'bg-gray-50 text-gray-500 border-gray-200'
+      }`}>
+        {currentStatus ? <currentStatus.icon className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
+        {currentStatus ? (
+          currentStatus.id === "PRESENT" ? "Checked In" : 
+          currentStatus.id === "CHECK_OUT" ? "Checked Out" : 
+          currentStatus.label
+        ) : "Not Marked"}
+      </div>
+
+      <div className="relative" ref={dropdownRef}>
+        <button 
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center gap-2 px-4 py-2 border border-transparent rounded-lg text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+        >
+          <Calendar className="w-4 h-4 text-indigo-100" />
+          <span>Today's Attendance</span>
+          <ChevronDown className={`w-4 h-4 text-indigo-100 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        </button>
 
       {isOpen && (
         <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-100 rounded-xl shadow-lg py-2 z-50 animate-fade-in-up origin-top-right">
@@ -161,6 +179,7 @@ export default function WorkerAttendanceDropdown() {
           </div>
         </div>
       </Modal>
+    </div>
     </div>
   );
 }

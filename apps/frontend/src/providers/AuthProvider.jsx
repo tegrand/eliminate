@@ -97,6 +97,16 @@ export default function AuthProvider({ children }) {
     }
   };
 
+  const updateUser = (newUserData) => {
+    const updatedUser = { ...user, ...newUserData };
+    setUser(updatedUser);
+    if (localStorage.getItem('user')) {
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    } else if (sessionStorage.getItem('user')) {
+      sessionStorage.setItem('user', JSON.stringify(updatedUser));
+    }
+  };
+
   // Memoize the context value to prevent unnecessary re-renders of consuming components
   const value = useMemo(
     () => ({
@@ -106,6 +116,7 @@ export default function AuthProvider({ children }) {
       login,
       logout,
       refreshSession,
+      updateUser,
     }),
     [user, isAuthenticated, isLoading]
   );

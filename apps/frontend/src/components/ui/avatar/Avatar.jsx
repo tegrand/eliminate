@@ -66,7 +66,7 @@ const Avatar = forwardRef(
       <div ref={ref} className={containerClasses} {...props}>
         {shouldShowImage && (
           <img
-            src={src}
+            src={src?.startsWith('http') || src?.startsWith('data:') ? src : `http://localhost:5000${src?.startsWith('/') ? '' : '/'}${src}`}
             alt={alt || name || "Avatar"}
             className="h-full w-full object-cover"
             onError={() => setHasError(true)}

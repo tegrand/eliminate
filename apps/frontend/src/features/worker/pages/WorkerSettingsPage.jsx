@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { usersApi } from "../../../api/users.api";
 import { workerApi } from "../api/worker.api";
-import { Lock, Eye, EyeOff, Loader2, BarChart2, CheckCircle2, FileText, Upload, MapPin, Briefcase, Palette, IndianRupee, Languages, X } from "lucide-react";
+import { Lock, Eye, EyeOff, Loader2, BarChart2, CheckCircle2, FileText, Upload, MapPin, Briefcase, Palette, IndianRupee, Languages, X, Camera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../hooks/useAuth";
 import { calculateWorkerProfileCompletion } from "../../../utils/profileCompletion";
@@ -12,7 +12,7 @@ import { documentsApi } from "../../../api/documents.api";
 import api from "../../../api/axios";
 
 export default function WorkerSettingsPage() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [show, setShow] = useState({ current: false, new: false, confirm: false });
   const [docType, setDocType] = useState("AADHAAR");
   const [docFile, setDocFile] = useState(null);
@@ -235,6 +235,33 @@ export default function WorkerSettingsPage() {
     uploadDoc(formData);
   };
   
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setIsUploadingAvatar(true);
+    try {
+      const formData = new FormData();
+      formData.append("documentType", "PHOTO");
+      formData.append("file", file);
+      
+      const res = await documentsApi.uploadDocument(formData);
+      const documentUrl = res.data?.data?.documentUrl || res.data?.documentUrl;
+      
+      if (documentUrl) {
+        await updateProfile({ avatar: documentUrl });
+        updateUser({ avatar: documentUrl });
+        toast.success("Profile picture updated successfully");
+      }
+    } catch (error) {
+      toast.error("Failed to upload profile picture");
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
+  
   const { mutate: updateProfile, isPending: isUpdatingProfile } = useMutation({
     mutationFn: (data) => usersApi.updateProfile(data),
     onSuccess: (res) => {
@@ -414,6 +441,27 @@ export default function WorkerSettingsPage() {
               </div>
             </div>
             <div className="p-4 space-y-3 flex-1">
+              <div className="flex flex-col items-center justify-center gap-3 mb-4 pt-2">
+                <div className="relative group">
+                  <div className="w-24 h-24 rounded-full bg-gray-100 border-2 border-gray-200 overflow-hidden flex items-center justify-center relative shadow-sm">
+                    {user?.avatar ? (
+                      <img src={user.avatar.startsWith('http') ? user.avatar : `http://localhost:5000${user.avatar.startsWith('/') ? '' : '/'}${user.avatar}`} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-3xl font-bold text-gray-300">{user?.firstName?.charAt(0) || "U"}</span>
+                    )}
+                    {isUploadingAvatar && (
+                      <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+                        <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+                      </div>
+                    )}
+                  </div>
+                  <label className="absolute bottom-0 right-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-700 shadow-md transition-all duration-200 border-2 border-white hover:scale-110">
+                    <Camera className="w-4 h-4" />
+                    <input type="file" className="hidden" accept="image/*" onChange={handleAvatarUpload} disabled={isUploadingAvatar} />
+                  </label>
+                </div>
+                <p className="text-[11px] text-gray-500 font-medium">Upload a profile picture</p>
+              </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-semibold text-gray-700">Full Name</label>
                 <input {...regSettings("fullName")} type="text" placeholder="Full Name" className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all" />

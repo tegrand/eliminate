@@ -8,6 +8,9 @@ import {
 } from "lucide-react";
 import { clientApi } from "../api/client.api";
 
+import { usersApi } from "../../../api/users.api";
+import { useAuth } from "../../../hooks/useAuth";
+
 // Helper for form fields
 function Field({ label, icon: Icon, error, className = "", children }) {
   return (
@@ -23,6 +26,32 @@ function Field({ label, icon: Icon, error, className = "", children }) {
 
 export default function ClientProfileForm({ clientData, refetchClient }) {
   const [activeTab, setActiveTab] = useState("basic");
+  const { updateUser } = useAuth();
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingAvatar(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      const res = await usersApi.uploadAvatar(formData);
+      const profile = res.data?.data;
+      
+      if (profile?.avatar) {
+        updateUser({ avatar: profile.avatar });
+        refetchClient();
+        toast.success("Profile picture updated successfully");
+      }
+    } catch (error) {
+      toast.error("Failed to upload profile picture");
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
 
   const { register, handleSubmit, formState: { errors, isDirty } } = useForm({
     defaultValues: {
@@ -73,11 +102,12 @@ export default function ClientProfileForm({ clientData, refetchClient }) {
             <div className="relative shrink-0">
               <div className="w-14 h-14 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-600 text-lg font-bold">
                 {clientData?.user?.avatar
-                  ? <img src={clientData.user.avatar} alt="" className="w-full h-full object-cover rounded-full" />
+                  ? <img src={clientData.user.avatar.startsWith('http') ? clientData.user.avatar : `http://localhost:5000${clientData.user.avatar.startsWith('/') ? '' : '/'}${clientData.user.avatar}`} alt="" className="w-full h-full object-cover rounded-full" />
                   : initials}
               </div>
-              <button type="button" title="Upload Photo" className="absolute bottom-0 right-0 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm hover:bg-gray-50 text-gray-500 transition-colors">
-                <Camera className="w-3 h-3 text-gray-500 hover:text-blue-600" />
+              <button type="button" title="Upload Photo" className="absolute bottom-0 right-0 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm hover:bg-gray-50 text-gray-500 transition-colors relative cursor-pointer">
+                {isUploadingAvatar ? <Loader2 className="w-3 h-3 animate-spin text-blue-600" /> : <Camera className="w-3 h-3 text-gray-500 hover:text-blue-600" />}
+                <input type="file" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept="image/*" onChange={handleAvatarUpload} disabled={isUploadingAvatar} />
               </button>
             </div>
             <div>

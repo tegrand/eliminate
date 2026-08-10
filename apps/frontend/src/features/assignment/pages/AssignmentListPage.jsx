@@ -96,12 +96,6 @@ export default function AssignmentListPage() {
                   <span className="font-bold text-gray-900 text-base">
                     {assignment.agreedRate ? `₹${assignment.agreedRate}` : "Rate TBD"}
                   </span>
-                  <Link 
-                    to={ROUTES.ASSIGNMENT_DETAILS.replace(":id", assignment.id)}
-                    className="px-4 py-1.5 bg-white border border-gray-200 text-gray-700 font-semibold text-sm rounded-xl hover:bg-gray-50 hover:text-indigo-600 transition-colors shadow-sm"
-                  >
-                    View Details
-                  </Link>
                 </div>
               </div>
             ))}

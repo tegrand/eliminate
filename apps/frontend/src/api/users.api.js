@@ -8,4 +8,5 @@ export const usersApi = {
   revokeAllSessions: () => api.delete("/users/sessions"),
   changePassword: (data) => api.patch("/auth/change-password", data),
   verifyPassword: (data) => api.post("/auth/verify-password", data),
+  uploadAvatar: (data) => api.post("/users/avatar", data, { headers: { 'Content-Type': 'multipart/form-data' } }),
 };
