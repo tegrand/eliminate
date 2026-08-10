@@ -33,7 +33,6 @@ import WorkerInvitationsPage from "../features/worker/pages/WorkerInvitationsPag
 import WorkerAssignmentsPage from "../features/worker/pages/WorkerAssignmentsPage";
 import WorkerAttendancePage from "../features/worker/pages/WorkerAttendancePage";
 import WorkerNotificationsPage from "../features/worker/pages/WorkerNotificationsPage";
-import WorkerComplaintsPage from "../features/worker/pages/WorkerComplaintsPage";
 import WorkerHistoryPage from "../features/worker/pages/WorkerHistoryPage";
 import WorkerEarningsPage from "../features/worker/pages/WorkerEarningsPage";
 import MyDocumentsPage from "../features/documents/pages/MyDocumentsPage";
@@ -129,7 +128,6 @@ const AppRouter = () => {
             <Route path={ROUTES.MY_JOBS} element={<WorkerAssignmentsPage />} />
             <Route path={ROUTES.MY_ATTENDANCE} element={<WorkerAttendancePage />} />
             <Route path="/worker/notifications" element={<WorkerNotificationsPage />} />
-            <Route path="/worker/complaints" element={<WorkerComplaintsPage />} />
             <Route path="/worker/history" element={<WorkerHistoryPage />} />
             <Route path="/worker/earnings" element={<WorkerEarningsPage />} />
             <Route path={ROUTES.WORKFORCE_SEARCH} element={<ClientWorkerSearchPage />} />

@@ -72,12 +72,6 @@ export const NAVIGATION_CONFIG = [
         icon: FileText,
         roles: ["WORKER"],
       },
-      {
-        title: "Complaints",
-        path: "/worker/complaints",
-        icon: Bookmark,
-        roles: ["WORKER"],
-      },
     ],
   },
 
