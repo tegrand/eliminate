@@ -23,8 +23,8 @@ export default function AgencyProfilePage() {
     },
     address: {
       street: '123 Business Park, Tech Boulevard',
-      city: 'Kochi',
-      state: 'Kerala',
+      city: user?.agencyProfile?.city || 'Kochi',
+      state: user?.agencyProfile?.state || 'Kerala',
       pincode: '682030'
     },
     compliance: {
