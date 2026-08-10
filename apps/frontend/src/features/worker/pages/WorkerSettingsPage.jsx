@@ -252,7 +252,9 @@ export default function WorkerSettingsPage() {
       
       if (documentUrl) {
         await updateProfile({ avatar: documentUrl });
+        await workerApi.updateMyWorkerProfile({ profilePhoto: documentUrl });
         updateUser({ avatar: documentUrl });
+        queryClient.invalidateQueries({ queryKey: ["myWorkerProfile"] });
         toast.success("Profile picture updated successfully");
       }
     } catch (error) {
