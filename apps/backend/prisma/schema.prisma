@@ -385,6 +385,8 @@ model Agency {
   profileStatus  AgencyProfileStatus @default(PENDING)
 
   // Document URLs (Optional if using AgencyDocument model)
+  logoUrl           String?
+  aadhaarUrl        String?
   licenseUrl        String?
   gstCertificateUrl String?
   panUrl            String?

@@ -29,5 +29,12 @@ export const agencyApi = {
   deleteAgency: async (id) => {
     const response = await api.delete(`/agencies/${id}`);
     return response.data;
+  },
+
+  uploadDocument: async (data) => {
+    const response = await api.post('/agencies/upload-document', data, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    return response.data;
   }
 };

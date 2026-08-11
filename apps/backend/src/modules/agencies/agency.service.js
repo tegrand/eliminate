@@ -30,6 +30,8 @@ const agencySelect = {
   createdAt: true,
   updatedAt: true,
   profileStatus: true,
+  logoUrl: true,
+  aadhaarUrl: true,
   licenseUrl: true,
   gstCertificateUrl: true,
   panUrl: true,

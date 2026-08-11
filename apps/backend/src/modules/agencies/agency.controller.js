@@ -31,3 +31,11 @@ export const deleteAgency = asyncHandler(async (req, res) => {
   await agencyService.deleteAgency(req.params.id);
   return ApiResponse.success(res, "Agency deleted successfully", null, 200);
 });
+
+export const uploadAgencyDocument = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    return ApiResponse.error(res, "No file uploaded", 400);
+  }
+  const documentUrl = `/uploads/documents/${req.file.filename}`;
+  return ApiResponse.success(res, "File uploaded successfully", { documentUrl }, 200);
+});
