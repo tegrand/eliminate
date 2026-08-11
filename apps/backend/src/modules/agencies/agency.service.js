@@ -52,6 +52,11 @@ const agencySelect = {
       profileType: true,
     },
   },
+  _count: {
+    select: {
+      workers: true,
+    }
+  }
 };
 
 export const createAgency = async (userId, data) => {
