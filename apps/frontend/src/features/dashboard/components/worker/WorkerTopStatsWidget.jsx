@@ -70,7 +70,7 @@ export default function WorkerTopStatsWidget({ stats }) {
     {
       title: t('workerDashboard.pendingAmount') || "Pending Amount",
       value: stats.pendingAmount || "₹0",
-      description: "Due by end of month",
+      description: t('workerDashboard.dueByEndOfMonth') || "Due by end of month",
       gradient: "from-orange-500 to-orange-600",
     },
     {
@@ -80,9 +80,9 @@ export default function WorkerTopStatsWidget({ stats }) {
       gradient: "from-blue-500 to-blue-600",
     },
     {
-      title: "Active Assignments",
+      title: t('workerDashboard.activeAssignments') || "Active Assignments",
       value: stats.activeAssignments || "0",
-      description: "Currently working on",
+      description: t('workerDashboard.currentlyWorkingOn') || "Currently working on",
       gradient: "from-purple-500 to-purple-600",
     }
   ];

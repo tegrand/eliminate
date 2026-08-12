@@ -22,6 +22,10 @@ export default function AgencySingleWorkerModal({ isOpen, onClose, onSuccess }) 
 
   if (!isOpen) return null;
 
+  const maxDate = new Date();
+  maxDate.setFullYear(maxDate.getFullYear() - 18);
+  const maxDateString = maxDate.toISOString().split('T')[0];
+
   const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -107,7 +111,7 @@ export default function AgencySingleWorkerModal({ isOpen, onClose, onSuccess }) 
               <label className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
                 <Calendar className="w-4 h-4 text-gray-400" /> Date of Birth
               </label>
-              <input type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
+              <input type="date" name="dateOfBirth" value={formData.dateOfBirth} onChange={handleChange} max={maxDateString} className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all" />
             </div>
           </div>
 

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function DashboardCard({ title, count, colorClass, link, description }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-md transition-all group relative overflow-hidden flex flex-col justify-end min-h-[140px]">
+    <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] hover:shadow-md transition-all group relative overflow-hidden flex flex-col justify-end h-[110px]">
       <div className={`absolute top-0 right-0 w-20 h-20 bg-gradient-to-br ${colorClass} opacity-10 rounded-bl-[100%] transition-transform group-hover:scale-110`} />
       
       <div className="absolute top-4 right-4 z-10">
@@ -19,7 +19,6 @@ export default function DashboardCard({ title, count, colorClass, link, descript
       <div className="relative z-10 mt-6">
         <h3 className="text-3xl font-bold text-slate-900 mb-1">{count}</h3>
         <p className="text-sm font-medium text-slate-700">{title}</p>
-        {description && <p className="text-[11px] text-slate-500 mt-1">{description}</p>}
       </div>
     </div>
   );

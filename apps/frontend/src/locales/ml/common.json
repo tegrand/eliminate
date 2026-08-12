@@ -9,14 +9,25 @@
     "settings": "ക്രമീകരണങ്ങൾ",
     "logout": "ലോഗ് ഔട്ട്"
   },
+  "adminDashboard": {
+    "totalUsers": "മൊത്തം ഉപയോക്താക്കൾ",
+    "totalWorkers": "മൊത്തം തൊഴിലാളികൾ",
+    "totalAgencies": "മൊത്തം ഏജൻസികൾ",
+    "totalClients": "മൊത്തം ക്ലയന്റുകൾ",
+    "activeJobs": "സജീവ ജോലികൾ",
+    "openJobs": "പുതിയ ജോലികൾ"
+  },
   "workerDashboard": {
     "completedWork": "പൂർത്തിയാക്കിയ ജോലികൾ",
     "tasksCompleted": "ജോലികൾ പൂർത്തിയായി",
     "totalRevenue": "മൊത്തം വരുമാനം",
     "thisMonth": "ഈ മാസം",
     "pendingAmount": "ലഭിക്കാനുള്ള തുക",
+    "dueByEndOfMonth": "ഈ മാസാന്ത്യത്തിൽ ലഭിക്കേണ്ടത്",
     "attendance": "ഹാജർ",
     "jobAssignments": "ജോലികൾ",
+    "activeAssignments": "സജീവ ജോലികൾ",
+    "currentlyWorkingOn": "നിലവിൽ ചെയ്യുന്നത്",
     "currentActiveJob": "നിലവിലുള്ള ജോലി",
     "noActiveJob": "നിലവിൽ ജോലികളൊന്നുമില്ല. നിങ്ങളെ Available ആയി അടയാളപ്പെടുത്തിയിരിക്കുന്നു.",
     "upcomingShifts": "വരാനിരിക്കുന്ന ജോലികൾ",
@@ -85,6 +96,7 @@
   "clientDashboard": {
     "overview": "അവലോകനം",
     "activeJobs": "സജീവ ജോലികൾ",
+    "activeRequirements": "സജീവ ആവശ്യങ്ങൾ",
     "activeJobsSub": "നിലവിൽ നടന്നുകൊണ്ടിരിക്കുന്നു",
     "pendingRequests": "തീരുമാനമാകാത്ത അപേക്ഷകൾ",
     "pendingRequestsSub": "തൊഴിലാളികൾക്കായി കാത്തിരിക്കുന്നു",
@@ -92,6 +104,8 @@
     "completedJobsSub": "വിജയകരമായി പൂർത്തിയാക്കി",
     "assignedWorkers": "നിയോഗിക്കപ്പെട്ട തൊഴിലാളികൾ",
     "assignedWorkersSub": "ഇപ്പോൾ ജോലി ചെയ്യുന്നു",
+    "upcomingJobs": "വരാനിരിക്കുന്ന ജോലികൾ",
+    "pendingPayments": "പെൻഡിംഗ് പേയ്മെന്റുകൾ",
     "quickActions": "പെട്ടെന്നുള്ള പ്രവർത്തനങ്ങൾ",
     "newRequirement": "പുതിയ ആവശ്യം",
     "postNewJob": "പുതിയ ജോലി ആവശ്യകത പോസ്റ്റ് ചെയ്യുക",
@@ -131,5 +145,23 @@
     "present": "ഹാജർ",
     "absent": "ഹാജരല്ല",
     "failedToLoadData": "ഡാഷ്ബോർഡ് ഡാറ്റ ലോഡ് ചെയ്യാൻ കഴിഞ്ഞില്ല. ദയവായി വീണ്ടും ശ്രമിക്കുക."
+  },
+  "table": {
+    "employeeId": "തൊഴിലാളി ഐഡി",
+    "name": "പേര്",
+    "gender": "ലിംഗം",
+    "agency": "ഏജൻസി",
+    "availability": "ലഭ്യത",
+    "performance": "പ്രകടനം",
+    "phone": "ഫോൺ നമ്പർ",
+    "primarySkill": "പ്രധാന നൈപുണ്യം",
+    "status": "സ്റ്റാറ്റസ്",
+    "actions": "പ്രവർത്തനങ്ങൾ",
+    "clientName": "ക്ലയൻ്റ് പേര്",
+    "contactPerson": "ബന്ധപ്പെടേണ്ട വ്യക്തി",
+    "location": "സ്ഥലം",
+    "agencyName": "ഏജൻസിയുടെ പേര്",
+    "email": "ഇമെയിൽ",
+    "workers": "തൊഴിലാളികൾ"
   }
 }

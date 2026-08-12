@@ -1,4 +1,5 @@
 import prisma from "../../config/prisma.js";
+import { getIO } from "../../config/socket.js";
 
 export const getNotifications = async (userId) => {
   return prisma.notification.findMany({
@@ -24,7 +25,7 @@ export const markAllAsRead = async (userId) => {
 
 // Internal utility to create notifications
 export const createNotification = async (userId, type, title, message, link = null) => {
-  return prisma.notification.create({
+  const notification = await prisma.notification.create({
     data: {
       userId,
       type,
@@ -33,4 +34,13 @@ export const createNotification = async (userId, type, title, message, link = nu
       link
     }
   });
+
+  try {
+    const io = getIO();
+    io.to(userId).emit("new_notification", notification);
+  } catch (err) {
+    console.error("Socket.io not initialized, failed to emit notification", err);
+  }
+
+  return notification;
 };

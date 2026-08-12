@@ -9,14 +9,25 @@
     "settings": "Settings",
     "logout": "Log out"
   },
+  "adminDashboard": {
+    "totalUsers": "Total Users",
+    "totalWorkers": "Total Workers",
+    "totalAgencies": "Total Agencies",
+    "totalClients": "Total Clients",
+    "activeJobs": "Active Jobs",
+    "openJobs": "Open Jobs"
+  },
   "workerDashboard": {
     "completedWork": "Completed Work",
     "tasksCompleted": "Tasks completed",
     "totalRevenue": "Total Revenue",
     "thisMonth": "This month",
     "pendingAmount": "Pending Amount",
+    "dueByEndOfMonth": "Due by end of month",
     "attendance": "Attendance",
     "jobAssignments": "Job Assignments",
+    "activeAssignments": "Active Assignments",
+    "currentlyWorkingOn": "Currently working on",
     "currentActiveJob": "Current Active Job",
     "noActiveJob": "No active job right now. You are marked as available.",
     "upcomingShifts": "Upcoming Shifts",
@@ -85,6 +96,7 @@
   "clientDashboard": {
     "overview": "Overview",
     "activeJobs": "Active Jobs",
+    "activeRequirements": "Active Requirements",
     "activeJobsSub": "Currently ongoing",
     "pendingRequests": "Pending Requests",
     "pendingRequestsSub": "Awaiting workers",
@@ -92,6 +104,8 @@
     "completedJobsSub": "Successfully finished",
     "assignedWorkers": "Assigned Workers",
     "assignedWorkersSub": "Working right now",
+    "upcomingJobs": "Upcoming Jobs",
+    "pendingPayments": "Pending Payments",
     "quickActions": "Quick Actions",
     "newRequirement": "New Requirement",
     "postNewJob": "Post a new job requirement",
@@ -131,5 +145,23 @@
     "present": "Present",
     "absent": "Absent",
     "failedToLoadData": "Failed to load dashboard data. Please try again."
+  },
+  "table": {
+    "employeeId": "EMPLOYEE ID",
+    "name": "NAME",
+    "gender": "GENDER",
+    "agency": "AGENCY",
+    "availability": "AVAILABILITY",
+    "performance": "PERFORMANCE",
+    "phone": "PHONE",
+    "primarySkill": "PRIMARY SKILL",
+    "status": "STATUS",
+    "actions": "ACTIONS",
+    "clientName": "CLIENT NAME",
+    "contactPerson": "CONTACT PERSON",
+    "location": "LOCATION",
+    "agencyName": "AGENCY NAME",
+    "email": "EMAIL",
+    "workers": "WORKERS"
   }
 }

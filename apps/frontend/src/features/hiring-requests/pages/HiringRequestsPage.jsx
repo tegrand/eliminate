@@ -96,24 +96,24 @@ export default function HiringRequestsPage() {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {requests.map(req => {
             const targetName = req.targetAgencyId 
               ? (req.agency?.agencyName || req.agency?.user?.firstName + " " + req.agency?.user?.lastName) 
               : (req.worker?.user?.firstName + " " + req.worker?.user?.lastName);
 
             return (
-              <div key={req.id} className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm relative group overflow-hidden flex flex-col">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-bold text-gray-900">{req.title}</h3>
+              <div key={req.id} className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm relative group overflow-hidden flex flex-col gap-3">
+                <div className="flex items-start justify-between">
+                  <div className="min-w-0 flex-1 pr-2">
+                    <h3 className="text-sm font-bold text-gray-900 truncate">{req.title}</h3>
                     {isClient ? (
-                      <p className="text-sm text-gray-500 mt-1">To: <span className="font-semibold text-indigo-700">{targetName}</span></p>
+                      <p className="text-xs text-gray-500 mt-0.5">To: <span className="font-semibold text-indigo-700">{targetName}</span></p>
                     ) : (
-                      <p className="text-sm text-gray-500 mt-1">From: <span className="font-semibold text-gray-700">{req.client?.companyName || req.client?.user?.firstName + " " + req.client?.user?.lastName}</span></p>
+                      <p className="text-xs text-gray-500 mt-0.5">From: <span className="font-semibold text-gray-700">{req.client?.companyName || req.client?.user?.firstName + " " + req.client?.user?.lastName}</span></p>
                     )}
                   </div>
-                  <div className={`px-2.5 py-1 rounded-full text-xs font-bold border whitespace-nowrap ${
+                  <div className={`px-2 py-0.5 rounded-full text-[10px] font-bold border whitespace-nowrap shrink-0 ${
                     req.status === 'PENDING' ? 'bg-orange-50 text-orange-600 border-orange-200' :
                     req.status === 'ACCEPTED' || req.status === 'COMPLETED' ? 'bg-green-50 text-green-600 border-green-200' :
                     'bg-red-50 text-red-600 border-red-200'
@@ -123,45 +123,45 @@ export default function HiringRequestsPage() {
                 </div>
 
                 {req.description && (
-                  <p className="text-sm text-gray-600 mb-5 line-clamp-2">{req.description}</p>
+                  <p className="text-xs text-gray-500 line-clamp-1">{req.description}</p>
                 )}
 
-                <div className="grid grid-cols-2 gap-4 mb-6 bg-gray-50 p-4 rounded-xl border border-gray-100 flex-1">
+                <div className="grid grid-cols-2 gap-3 bg-gray-50 p-3 rounded-lg border border-gray-100">
                   <div className="flex flex-col">
-                    <span className="text-xs font-semibold text-gray-500 uppercase flex items-center gap-1.5"><DollarSign className="w-3.5 h-3.5" /> Proposed Rate</span>
-                    <span className="text-sm font-bold text-gray-900 mt-1">{req.proposedRate ? `₹${req.proposedRate}` : 'Not specified'}</span>
+                    <span className="text-[10px] font-semibold text-gray-400 uppercase flex items-center gap-1"><DollarSign className="w-3 h-3" /> Rate</span>
+                    <span className="text-xs font-bold text-gray-800 mt-0.5">{req.proposedRate ? `₹${req.proposedRate}` : 'Not specified'}</span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-xs font-semibold text-gray-500 uppercase flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> Start Date</span>
-                    <span className="text-sm font-bold text-gray-900 mt-1">{req.startDate ? new Date(req.startDate).toLocaleDateString() : 'Flexible'}</span>
+                    <span className="text-[10px] font-semibold text-gray-400 uppercase flex items-center gap-1"><Calendar className="w-3 h-3" /> Start Date</span>
+                    <span className="text-xs font-bold text-gray-800 mt-0.5">{req.startDate ? new Date(req.startDate).toLocaleDateString() : 'Flexible'}</span>
                   </div>
                 </div>
 
                 {req.status === 'PENDING' && (
-                  <div className="flex items-center gap-3 pt-4 border-t border-gray-100 mt-auto">
+                  <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
                     {isClient ? (
                       <button 
                         onClick={() => handleUpdateStatus(req.id, 'CANCELLED')}
                         disabled={updateStatusMutation.isPending}
-                        className="flex-1 py-2.5 bg-white border border-gray-200 text-gray-700 font-semibold text-sm rounded-xl hover:bg-gray-50 hover:text-red-600 transition-colors flex items-center justify-center gap-2"
+                        className="flex-1 py-1.5 bg-white border border-gray-200 text-gray-600 font-semibold text-xs rounded-lg hover:bg-gray-50 hover:text-red-600 transition-colors flex items-center justify-center gap-1.5"
                       >
-                        <XCircle className="w-4 h-4" /> Cancel
+                        <XCircle className="w-3.5 h-3.5" /> Cancel
                       </button>
                     ) : (
                       <>
                         <button 
                           onClick={() => handleUpdateStatus(req.id, 'REJECTED')}
                           disabled={updateStatusMutation.isPending}
-                          className="flex-1 py-2.5 bg-white border border-gray-200 text-gray-700 font-semibold text-sm rounded-xl hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors flex items-center justify-center gap-2"
+                          className="flex-1 py-1.5 bg-white border border-gray-200 text-gray-600 font-semibold text-xs rounded-lg hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-colors flex items-center justify-center gap-1.5"
                         >
-                          <XCircle className="w-4 h-4" /> Reject
+                          <XCircle className="w-3.5 h-3.5" /> Reject
                         </button>
                         <button 
                           onClick={() => handleUpdateStatus(req.id, 'ACCEPTED')}
                           disabled={updateStatusMutation.isPending}
-                          className="flex-1 py-2.5 bg-indigo-600 text-white font-semibold text-sm rounded-xl hover:bg-indigo-700 shadow-sm shadow-indigo-200 transition-colors flex items-center justify-center gap-2"
+                          className="flex-1 py-1.5 bg-indigo-600 text-white font-semibold text-xs rounded-lg hover:bg-indigo-700 shadow-sm shadow-indigo-200 transition-colors flex items-center justify-center gap-1.5"
                         >
-                          <CheckCircle className="w-4 h-4" /> Accept
+                          <CheckCircle className="w-3.5 h-3.5" /> Accept
                         </button>
                       </>
                     )}
@@ -169,23 +169,23 @@ export default function HiringRequestsPage() {
                 )}
 
                 {req.status !== 'PENDING' && (
-                  <div className="flex items-center justify-end pt-4 border-t border-gray-100 mt-auto">
+                  <div className="flex items-center justify-end pt-2 border-t border-gray-100">
                     <button 
                       onClick={() => navigate(`/hiring-requests/${req.id}`)}
-                      className="text-indigo-600 hover:text-indigo-800 text-sm font-semibold flex items-center gap-1.5 transition-colors"
+                      className="text-indigo-600 hover:text-indigo-800 text-xs font-semibold flex items-center gap-1 transition-colors"
                     >
-                      View Details <ArrowRight className="w-4 h-4" />
+                      View Details <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 )}
 
                 {req.status === 'PENDING' && (
-                  <div className="flex items-center justify-center pt-3 mt-2">
+                  <div className="flex items-center justify-center">
                     <button 
                       onClick={() => navigate(`/hiring-requests/${req.id}`)}
-                      className="text-gray-500 hover:text-indigo-600 text-sm font-semibold flex items-center gap-1.5 transition-colors"
+                      className="text-gray-400 hover:text-indigo-600 text-xs font-semibold flex items-center gap-1 transition-colors"
                     >
-                      View Full Request <ArrowRight className="w-4 h-4" />
+                      View Full Request <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 )}

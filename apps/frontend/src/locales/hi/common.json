@@ -9,14 +9,25 @@
     "settings": "सेटिंग्स",
     "logout": "लॉग आउट"
   },
+  "adminDashboard": {
+    "totalUsers": "कुल उपयोगकर्ता",
+    "totalWorkers": "कुल श्रमिक",
+    "totalAgencies": "कुल एजेंसियां",
+    "totalClients": "कुल ग्राहक",
+    "activeJobs": "सक्रिय नौकरियां",
+    "openJobs": "खुली नौकरियां"
+  },
   "workerDashboard": {
     "completedWork": "पूरा किया गया काम",
     "tasksCompleted": "कार्य पूरे हुए",
     "totalRevenue": "कुल आय",
     "thisMonth": "इस महीने",
     "pendingAmount": "बकाया राशि",
+    "dueByEndOfMonth": "महीने के अंत तक देय",
     "attendance": "उपस्थिति",
     "jobAssignments": "काम",
+    "activeAssignments": "सक्रिय कार्य",
+    "currentlyWorkingOn": "वर्तमान में काम कर रहे हैं",
     "currentActiveJob": "वर्तमान काम",
     "noActiveJob": "अभी कोई काम नहीं है। आपको Available के रूप में चिह्नित किया गया है।",
     "upcomingShifts": "आने वाले काम",
@@ -85,6 +96,7 @@
   "clientDashboard": {
     "overview": "अवलोकन",
     "activeJobs": "सक्रिय नौकरियां",
+    "activeRequirements": "सक्रिय आवश्यकताएं",
     "activeJobsSub": "वर्तमान में चल रहा है",
     "pendingRequests": "लंबित अनुरोध",
     "pendingRequestsSub": "श्रमिकों की प्रतीक्षा है",
@@ -92,6 +104,8 @@
     "completedJobsSub": "सफलतापूर्वक समाप्त",
     "assignedWorkers": "नियुक्त श्रमिक",
     "assignedWorkersSub": "अभी काम कर रहे हैं",
+    "upcomingJobs": "आगामी नौकरियां",
+    "pendingPayments": "लंबित भुगतान",
     "quickActions": "त्वरित कार्रवाइयाँ",
     "newRequirement": "नई आवश्यकता",
     "postNewJob": "एक नई नौकरी की आवश्यकता पोस्ट करें",
@@ -131,5 +145,23 @@
     "present": "उपस्थित",
     "absent": "अनुपस्थित",
     "failedToLoadData": "डैशबोर्ड डेटा लोड करने में विफल। कृपया पुन: प्रयास करें।"
+  },
+  "table": {
+    "employeeId": "कर्मचारी आईडी",
+    "name": "नाम",
+    "gender": "लिंग",
+    "agency": "एजेंसी",
+    "availability": "उपलब्धता",
+    "performance": "प्रदर्शन",
+    "phone": "फ़ोन",
+    "primarySkill": "प्राथमिक कौशल",
+    "status": "स्थिति",
+    "actions": "कार्रवाइयाँ",
+    "clientName": "ग्राहक का नाम",
+    "contactPerson": "संपर्क व्यक्ति",
+    "location": "स्थान",
+    "agencyName": "एजेंसी का नाम",
+    "email": "ईमेल",
+    "workers": "श्रमिक"
   }
 }

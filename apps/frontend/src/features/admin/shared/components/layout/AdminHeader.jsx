@@ -1,6 +1,7 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Menu, Search, Bell, User, Settings, LogOut, Sun } from 'lucide-react';
 import { useAdminUI } from '../../contexts/AdminUIContext';
+import NotificationBell from '../../../../../components/ui/notifications/NotificationBell';
 
 export default function AdminHeader() {
   const { openDrawer } = useAdminUI();
@@ -40,11 +41,8 @@ export default function AdminHeader() {
           <Sun size={20} />
         </button>
 
-        {/* Notifications Placeholder */}
-        <button className="relative p-2 text-gray-400 rounded-full hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
-          <Bell size={20} />
-          <span className="absolute top-1.5 right-1.5 block w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full"></span>
-        </button>
+        {/* Notifications */}
+        <NotificationBell />
 
         {/* Profile Dropdown */}
         <div className="relative">

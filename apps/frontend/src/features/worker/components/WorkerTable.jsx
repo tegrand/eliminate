@@ -12,9 +12,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { workerApi } from "../api/worker.api";
 import toast from "react-hot-toast";
 import { useAuth } from "../../../hooks/useAuth";
+import { useTranslation } from "react-i18next";
 
 export default function WorkerTable({ workers, loading, page, totalPages }) {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [selectedWorker, setSelectedWorker] = useState(null);
   const [actionType, setActionType] = useState(null);
 
@@ -57,8 +59,8 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
 
   const columns = [
     { key: "checkbox", title: <input type="checkbox" className="rounded border-gray-300" />, render: () => <input type="checkbox" className="rounded border-gray-300" /> },
-    { key: "employeeId", title: <div className="flex items-center gap-1.5"><Briefcase className="w-3.5 h-3.5" />EMPLOYEE ID</div>, render: (row) => <span className="font-bold text-gray-900 text-sm">{row.employeeId}</span> },
-    { key: "name", title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />NAME</div>, render: (row) => (
+    { key: "employeeId", title: <div className="flex items-center gap-1.5"><Briefcase className="w-3.5 h-3.5" />{t('table.employeeId') || 'EMPLOYEE ID'}</div>, render: (row) => <span className="font-bold text-gray-900 text-sm">{row.employeeId}</span> },
+    { key: "name", title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />{t('table.name') || 'NAME'}</div>, render: (row) => (
       <div className="flex items-center gap-3">
         <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs">
           {row.name.split(' ').map(n => n[0]).join('')}
@@ -69,15 +71,15 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
   ];
 
   if (user?.profileType !== "AGENCY") {
-    columns.push({ key: "gender", title: <div className="flex items-center gap-1.5">GENDER</div>, render: (row) => <span className="text-sm text-gray-600 capitalize">{row.gender && row.gender !== "—" ? row.gender : "-"}</span> });
+    columns.push({ key: "gender", title: <div className="flex items-center gap-1.5">{t('table.gender') || 'GENDER'}</div>, render: (row) => <span className="text-sm text-gray-600 capitalize">{row.gender && row.gender !== "—" ? row.gender : "-"}</span> });
     if (user?.profileType !== "SUPER_ADMIN") {
-      columns.push({ key: "agency", title: <div className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" />AGENCY</div>, render: (row) => <span className="text-sm text-gray-600">{row.agency}</span> });
+      columns.push({ key: "agency", title: <div className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" />{t('table.agency') || 'AGENCY'}</div>, render: (row) => <span className="text-sm text-gray-600">{row.agency}</span> });
     }
   } else {
     // Agency specific columns
     columns.push({
       key: "availability",
-      title: <div className="flex items-center gap-1.5">AVAILABILITY</div>,
+      title: <div className="flex items-center gap-1.5">{t('table.availability') || 'AVAILABILITY'}</div>,
       render: (row) => {
         const getAvailabilityBadge = (status) => {
           switch(status) {
@@ -94,7 +96,7 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
 
     columns.push({
       key: "performance",
-      title: <div className="flex items-center gap-1.5">PERFORMANCE</div>,
+      title: <div className="flex items-center gap-1.5">{t('table.performance') || 'PERFORMANCE'}</div>,
       render: (row) => (
         <div className="flex flex-col gap-1 w-44">
           <div className="flex items-center justify-between text-[11px] text-gray-600">
@@ -111,16 +113,16 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
     });
   }
 
-  columns.push({ key: "phone", title: <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />PHONE</div>, render: (row) => <span className="text-sm text-gray-600">{row.phone}</span> });
-  columns.push({ key: "primarySkill", title: <div className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5" />PRIMARY SKILL</div>, render: (row) => <span className="text-sm text-gray-600">{row.primarySkill}</span> });
+  columns.push({ key: "phone", title: <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />{t('table.phone') || 'PHONE'}</div>, render: (row) => <span className="text-sm text-gray-600">{row.phone}</span> });
+  columns.push({ key: "primarySkill", title: <div className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5" />{t('table.primarySkill') || 'PRIMARY SKILL'}</div>, render: (row) => <span className="text-sm text-gray-600">{row.primarySkill}</span> });
   columns.push({ 
     key: "status", 
-    title: "STATUS", 
+    title: t('table.status') || "STATUS", 
     render: (row) => <WorkerStatusBadge status={row.status} /> 
   });
   columns.push({
       key: "actions",
-      title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />ACTIONS</div>,
+      title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />{t('table.actions') || 'ACTIONS'}</div>,
       render: (row) => (
         <div className="flex items-center gap-3 text-sm font-semibold relative">
           <Link to={`/workers/${row.id}`} className="text-blue-600 hover:text-blue-800 transition-colors whitespace-nowrap">

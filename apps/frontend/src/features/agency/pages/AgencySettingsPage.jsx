@@ -89,19 +89,39 @@ export default function AgencySettingsPage() {
       formData.append("documentType", "PHOTO");
       formData.append("file", file);
       
-      const res = await documentsApi.uploadDocument(formData);
-      const documentUrl = res.data?.data?.documentUrl || res.data?.documentUrl;
+      const { agencyApi } = await import('../api/agency.api.js');
+      const res = await agencyApi.uploadDocument(formData);
+      console.log('[Avatar Upload] upload response:', res);
+      const documentUrl = res?.data?.documentUrl || res?.documentUrl;
+      console.log('[Avatar Upload] extracted URL:', documentUrl);
       
-      if (documentUrl) {
-        await usersApi.updateProfile({ avatar: documentUrl });
-        const { agencyApi } = await import('../api/agency.api.js');
-        await agencyApi.updateAgency(user.agencyProfile.id, { logoUrl: documentUrl });
-        updateUser({ avatar: documentUrl });
-        setLogoUrl(documentUrl);
-        toast.success("Profile picture updated successfully");
+      if (!documentUrl) {
+        throw new Error("Upload failed: no URL returned from server");
       }
+
+      // Save logoUrl to agency profile
+      try {
+        await agencyApi.updateAgency(user.agencyProfile.id, { logoUrl: documentUrl });
+        console.log('[Avatar Upload] agency logoUrl saved');
+      } catch (updateErr) {
+        console.error('[Avatar Upload] failed to update agency logoUrl:', updateErr?.response?.data || updateErr);
+        throw updateErr;
+      }
+
+      // Also update user avatar (non-critical)
+      try {
+        await usersApi.updateProfile({ avatar: documentUrl });
+        updateUser({ avatar: documentUrl });
+      } catch (userErr) {
+        console.warn('[Avatar Upload] failed to update user avatar (non-critical):', userErr?.response?.data || userErr);
+      }
+
+      setLogoUrl(documentUrl);
+      toast.success("Profile picture updated successfully");
     } catch (error) {
-      toast.error("Failed to upload profile picture");
+      console.error('[Avatar Upload] error:', error?.response?.data || error);
+      const errorMessage = error?.response?.data?.message || error?.message || "Failed to upload profile picture";
+      toast.error(errorMessage);
     } finally {
       setIsUploadingAvatar(false);
     }
@@ -182,8 +202,9 @@ export default function AgencySettingsPage() {
       setBasicInfoMessage({ type: "success", text: "Basic info saved successfully!" });
       toast.success("Basic info saved successfully!");
     } catch (error) {
-      setBasicInfoMessage({ type: "error", text: "Failed to save basic info." });
-      toast.error("Failed to save basic info");
+      const errorMessage = error?.response?.data?.message || "Failed to save basic info.";
+      setBasicInfoMessage({ type: "error", text: errorMessage });
+      toast.error(errorMessage);
     } finally {
       setIsSaving(false);
     }

@@ -31,7 +31,7 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
     queryFn: async () => {
       const { agencyApi } = await import('../../agency/api/agency.api.js');
       const res = await agencyApi.getAgencyById(targetId);
-      return res.data || res;
+      return res.data || res; // res.data is the actual object from ApiResponse
     },
     enabled: isOpen && targetType === "AGENCY"
   });
@@ -103,20 +103,19 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
   
   useEffect(() => {
     if (targetType === "WORKER" && targetRate) {
-      setValue("proposedRate", targetRate * numberOfDays);
+      setValue("proposedRate", targetRate * numberOfDays, { shouldValidate: true, shouldDirty: true });
     } else if (targetType === "AGENCY" && agencyData) {
-      const fixedAmount = agencyData.workerFixedAmount || 0;
-      const feePercent = agencyData.feePercentage || 0;
+      const fixedAmount = agencyData.workerFixedAmount ? parseFloat(agencyData.workerFixedAmount) : 0;
+      const feePercent = agencyData.feePercentage ? parseFloat(agencyData.feePercentage) : 0;
       
       const workersCost = fixedAmount * numberOfWorkers;
       const agencyFee = (workersCost * feePercent) / 100;
       const platformFee = (workersCost * platformFeePercentage) / 100;
       
       const totalAmount = workersCost + agencyFee + platformFee;
-      setValue("proposedRate", totalAmount * numberOfDays);
+      setValue("proposedRate", totalAmount * numberOfDays, { shouldValidate: true, shouldDirty: true });
     }
   }, [targetRate, numberOfDays, targetType, agencyData, numberOfWorkers, platformFeePercentage, setValue]);
-
 
   // Pre-fill rate whenever modal opens
   useEffect(() => {
@@ -124,15 +123,17 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
       reset({
         title: "",
         description: "",
-        proposedRate: targetRate ? targetRate * numberOfDays : "",
         startDate: "",
         endDate: "",
-        notes: ""
+        notes: "",
+        location: "",
+        phoneNumber: "",
+        numberOfWorkers: 1
       });
       setHiringMode("custom");
       setSelectedJobId("");
     }
-  }, [isOpen, targetRate, reset]);
+  }, [isOpen, reset]);
 
   const createRequestMutation = useMutation({
     mutationFn: (data) => api.post("/hiring-requests", data),
@@ -158,7 +159,8 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
         proposedRate: data.proposedRate ? parseFloat(data.proposedRate) : undefined,
         notes: data.notes,
         location: data.location,
-        phoneNumber: data.phoneNumber
+        phoneNumber: data.phoneNumber,
+        numberOfWorkers: data.numberOfWorkers
       };
     } else {
       payload = {
@@ -169,7 +171,8 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
         endDate: data.endDate ? new Date(data.endDate).toISOString() : undefined,
         notes: data.notes,
         location: data.location,
-        phoneNumber: data.phoneNumber
+        phoneNumber: data.phoneNumber,
+        numberOfWorkers: data.numberOfWorkers
       };
     }
 
@@ -346,15 +349,16 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
                 </label>
                 <input 
                   type="number" 
-                  min="0"
+                  min="1"
                   readOnly={!!targetRate || targetType === "AGENCY"}
-                  {...register("proposedRate")}
-                  className={`w-full px-3 py-2 text-sm rounded-xl border border-gray-200 focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 outline-none ${(!!targetRate || targetType === "AGENCY") ? 'bg-gray-100 text-gray-600 font-bold cursor-not-allowed' : 'bg-white'}`}
+                  {...register("proposedRate", { required: "Total amount is required for payment processing" })}
+                  className={`w-full px-3 py-2 text-sm rounded-xl border ${errors.proposedRate ? 'border-red-500' : 'border-gray-200'} focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 outline-none ${(!!targetRate || targetType === "AGENCY") ? 'bg-gray-100 text-gray-600 font-bold cursor-not-allowed' : 'bg-white'}`}
                   placeholder="e.g. 5000"
                 />
+                {errors.proposedRate && <span className="text-red-500 text-xs mt-1 block">{errors.proposedRate.message}</span>}
                 
                 {targetType === "AGENCY" && agencyData && (
-                  <div className="mt-2 text-[11px] font-medium p-2 bg-indigo-50 border border-indigo-100 rounded-lg text-indigo-800 flex flex-col gap-1">
+                  <div className="mt-2 text-[11px] font-medium p-2 bg-slate-50 border border-slate-100 rounded-lg text-slate-600 flex flex-col gap-1">
                     <div className="flex justify-between">
                       <span>Days:</span>
                       <span>{numberOfDays} Day{numberOfDays > 1 ? 's' : ''}</span>
@@ -363,15 +367,15 @@ export default function ClientHiringModal({ isOpen, onClose, targetId, targetTyp
                       <span>Workers Cost ({numberOfWorkers} @ ₹{agencyData.workerFixedAmount || 0}/day):</span>
                       <span>₹{(agencyData.workerFixedAmount || 0) * numberOfWorkers * numberOfDays}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between text-indigo-600">
                       <span>Agency Fee ({agencyData.feePercentage || 0}%):</span>
                       <span>+ ₹{(((agencyData.workerFixedAmount || 0) * numberOfWorkers * (agencyData.feePercentage || 0)) / 100) * numberOfDays}</span>
                     </div>
-                    <div className="flex justify-between">
+                    <div className="flex justify-between text-indigo-600">
                       <span>Platform Fee ({platformFeePercentage}%):</span>
                       <span>+ ₹{(((agencyData.workerFixedAmount || 0) * numberOfWorkers * platformFeePercentage) / 100) * numberOfDays}</span>
                     </div>
-                    <div className="flex justify-between font-bold text-slate-900 border-t border-indigo-200 pt-1 mt-1">
+                    <div className="flex justify-between font-bold text-slate-900 border-t border-slate-200 pt-1 mt-1">
                       <span>Total You Pay:</span>
                       <span>₹{watch("proposedRate")}</span>
                     </div>

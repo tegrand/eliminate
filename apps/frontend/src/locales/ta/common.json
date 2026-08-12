@@ -9,14 +9,25 @@
     "settings": "அமைப்புகள்",
     "logout": "வெளியேறு"
   },
+  "adminDashboard": {
+    "totalUsers": "மொத்த பயனர்கள்",
+    "totalWorkers": "மொத்த பணியாளர்கள்",
+    "totalAgencies": "மொத்த ஏஜென்சிகள்",
+    "totalClients": "மொத்த வாடிக்கையாளர்கள்",
+    "activeJobs": "செயலில் உள்ள வேலைகள்",
+    "openJobs": "திறந்த வேலைகள்"
+  },
   "workerDashboard": {
     "completedWork": "முடிக்கப்பட்ட வேலை",
     "tasksCompleted": "பணிகள் முடிவடைந்தன",
     "totalRevenue": "மொத்த வருமானம்",
     "thisMonth": "இந்த மாதம்",
     "pendingAmount": "நிலுவை தொகை",
+    "dueByEndOfMonth": "மாத இறுதிக்குள் செலுத்த வேண்டும்",
     "attendance": "வருகை",
     "jobAssignments": "வேலை ஒதுக்கீடுகள்",
+    "activeAssignments": "செயலில் உள்ள வேலைகள்",
+    "currentlyWorkingOn": "தற்போது வேலை செய்கிறார்",
     "currentActiveJob": "தற்போதைய வேலை",
     "noActiveJob": "தற்போது வேலை எதுவும் இல்லை. நீங்கள் Available ஆக குறிக்கப்பட்டுள்ளீர்கள்.",
     "upcomingShifts": "வரவிருக்கும் வேலைகள்",
@@ -85,6 +96,7 @@
   "clientDashboard": {
     "overview": "மேலோட்டம்",
     "activeJobs": "செயலில் உள்ள வேலைகள்",
+    "activeRequirements": "செயலில் உள்ள தேவைகள்",
     "activeJobsSub": "தற்போது நடைபெறுகிறது",
     "pendingRequests": "நிலுவையிலுள்ள கோரிக்கைகள்",
     "pendingRequestsSub": "பணியாளர்களுக்காக காத்திருக்கிறது",
@@ -92,6 +104,8 @@
     "completedJobsSub": "வெற்றிகரமாக முடிக்கப்பட்டது",
     "assignedWorkers": "ஒதுக்கப்பட்ட பணியாளர்கள்",
     "assignedWorkersSub": "தற்போது வேலை செய்கிறார்கள்",
+    "upcomingJobs": "வரவிருக்கும் வேலைகள்",
+    "pendingPayments": "நிலுவையிலுள்ள கொடுப்பனவுகள்",
     "quickActions": "விரைவான செயல்கள்",
     "newRequirement": "புதிய தேவை",
     "postNewJob": "புதிய வேலைத் தேவையைப் பதிவு செய்யவும்",
@@ -131,5 +145,23 @@
     "present": "உள்ளார்",
     "absent": "இல்லை",
     "failedToLoadData": "டேஷ்போர்டு தரவை ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்."
+  },
+  "table": {
+    "employeeId": "பணியாளர் ஐடி",
+    "name": "பெயர்",
+    "gender": "பாலினம்",
+    "agency": "ஏஜென்சி",
+    "availability": "கிடைக்கும் நிலை",
+    "performance": "செயல்திறன்",
+    "phone": "தொலைபேசி",
+    "primarySkill": "முதன்மை திறன்",
+    "status": "நிலை",
+    "actions": "செயல்கள்",
+    "clientName": "வாடிக்கையாளர் பெயர்",
+    "contactPerson": "தொடர்பு நபர்",
+    "location": "இடம்",
+    "agencyName": "ஏஜென்சியின் பெயர்",
+    "email": "மின்னஞ்சல்",
+    "workers": "பணியாளர்கள்"
   }
 }

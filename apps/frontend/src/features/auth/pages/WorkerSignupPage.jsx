@@ -42,6 +42,10 @@ export default function WorkerSignupPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const maxDate = new Date();
+  maxDate.setFullYear(maxDate.getFullYear() - 18);
+  const maxDateString = maxDate.toISOString().split('T')[0];
+
   const handleNext = async (e) => {
     e.preventDefault();
     if (currentStep < 4) {
@@ -160,6 +164,7 @@ export default function WorkerSignupPage() {
                   name="dateOfBirth"
                   value={formData.dateOfBirth}
                   onChange={handleChange}
+                  max={maxDateString}
                   required
                 />
                 <Select

@@ -4,13 +4,15 @@ import { DataTable } from "../../../components/ui/data-table";
 import { Pagination } from "../../../components/ui/pagination";
 import { Link } from "react-router-dom";
 import ClientStatusBadge from "./ClientStatusBadge";
+import { useTranslation } from "react-i18next";
 import SuspendDialog from "../../../components/ui/action-dialogs/SuspendDialog";
 import ReactivateDialog from "../../../components/ui/action-dialogs/ReactivateDialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { clientApi } from "../api/client.api";
 import toast from "react-hot-toast";
 
-export default function ClientTable({ clients, loading, page, totalPages }) {
+export default function ClientTable({ clients, loading, page, totalPages, onPageChange }) {
+  const { t } = useTranslation();
   const [selectedClient, setSelectedClient] = useState(null);
   const [actionType, setActionType] = useState(null);
 
@@ -40,22 +42,20 @@ export default function ClientTable({ clients, loading, page, totalPages }) {
     }
   };
 
-
-
   const columns = [
     { key: "checkbox", title: <input type="checkbox" className="rounded border-gray-300" />, render: () => <input type="checkbox" className="rounded border-gray-300" /> },
-    { key: "companyName", title: <div className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" />CLIENT NAME</div>, render: (row) => <span className="text-gray-900 text-sm font-bold">{row.companyName || row.name || "—"}</span> },
-    { key: "contactPerson", title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />CONTACT PERSON</div>, render: (row) => <span className="text-sm text-gray-600">{row.contactPerson}</span> },
-    { key: "phone", title: <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />PHONE</div>, render: (row) => <span className="text-sm text-gray-600">{row.phone}</span> },
-    { key: "location", title: <div className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />LOCATION</div>, render: (row) => <span className="text-sm text-gray-600">{row.location}</span> },
+    { key: "companyName", title: <div className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" />{t('table.clientName') || 'CLIENT NAME'}</div>, render: (row) => <span className="text-gray-900 text-sm font-bold">{row.user?.firstName ? `${row.user.firstName} ${row.user.lastName || ''}`.trim() : (row.companyName || row.name || "—")}</span> },
+    { key: "contactPerson", title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />{t('table.contactPerson') || 'CONTACT PERSON'}</div>, render: (row) => <span className="text-sm text-gray-600">{row.contactPerson}</span> },
+    { key: "phone", title: <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />{t('table.phone') || 'PHONE'}</div>, render: (row) => <span className="text-sm text-gray-600">{row.phone}</span> },
+    { key: "location", title: <div className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />{t('table.location') || 'LOCATION'}</div>, render: (row) => <span className="text-sm text-gray-600">{row.location}</span> },
     { 
       key: "status", 
-      title: <div className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5" />STATUS</div>, 
+      title: <div className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5" />{t('table.status') || 'STATUS'}</div>, 
       render: (row) => <ClientStatusBadge status={row.status} />
     },
     {
       key: "actions",
-      title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />ACTIONS</div>,
+      title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />{t('table.actions') || 'ACTIONS'}</div>,
       render: (row) => (
         <div className="flex items-center gap-3 text-sm font-semibold relative">
           <Link to={`/clients/${row.id}`} className="text-blue-600 hover:text-blue-800 transition-colors whitespace-nowrap">

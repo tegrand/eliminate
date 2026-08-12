@@ -60,7 +60,7 @@ router.get(
 
 router.get(
   "/:id",
-  requirePermission("agency:read"),
+  authorize("SUPER_ADMIN", "CLIENT", "AGENCY", "WORKER"),
   validate(agencyIdParamSchema, "params"),
   getAgencyById
 );

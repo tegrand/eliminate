@@ -44,3 +44,8 @@ export const removeWorker = asyncHandler(async (req, res) => {
   const assignmentWorker = await assignmentService.removeWorker(req.params.id, workerId, req.user);
   return ApiResponse.success(res, "Worker removed successfully", assignmentWorker, 200);
 });
+
+export const getAgencyWorkers = asyncHandler(async (req, res) => {
+  const workers = await assignmentService.getAgencyWorkersForAssignment(req.params.id, req.user);
+  return ApiResponse.success(res, "Agency workers retrieved successfully", workers, 200);
+});

@@ -8,13 +8,22 @@ export default function AgencySearchCard({ agency }) {
   const rating = 5.0; 
   const isVerified = agency.verificationStatus === "VERIFIED";
 
+  const getFullUrl = (url) => {
+    if (!url) return null;
+    return url.startsWith('http') ? url : `http://localhost:5000${url.startsWith('/') ? '' : '/'}${url}`;
+  };
+
   return (
     <div className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all group relative">
       <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center">
         
         {/* Avatar / Logo */}
-        <div className="w-16 h-16 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
-          <Building2 className="w-8 h-8 text-blue-600" />
+        <div className="w-16 h-16 rounded-xl bg-blue-50 border border-blue-100 overflow-hidden flex items-center justify-center shrink-0">
+          {agency.logoUrl ? (
+            <img src={getFullUrl(agency.logoUrl)} alt="Agency Logo" className="w-full h-full object-cover" />
+          ) : (
+            <Building2 className="w-8 h-8 text-blue-600" />
+          )}
         </div>
 
         <div className="flex-1 min-w-0">

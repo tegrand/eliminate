@@ -375,3 +375,77 @@ export const removeWorker = async (assignmentId, workerId, user) => {
     data: { status: "REMOVED" }
   });
 };
+
+// Get all workers under the agency for this assignment, with date-conflict status
+export const getAgencyWorkersForAssignment = async (assignmentId, user) => {
+  const assignment = await prisma.assignment.findUnique({
+    where: { id: assignmentId },
+    include: {
+      assignedWorkers: { where: { status: "ACTIVE" }, select: { workerId: true } }
+    }
+  });
+  if (!assignment) throw new AppError("Assignment not found", 404);
+
+  // Verify caller is the agency that owns this assignment
+  if (user.profileType === "AGENCY") {
+    const agency = await prisma.agency.findUnique({ where: { userId: user.id } });
+    if (!agency || assignment.agencyId !== agency.id) {
+      throw new AppError("Unauthorized", 403);
+    }
+  }
+
+  // Get all workers under the assignment's agency
+  const agencyWorkers = await prisma.agencyWorker.findMany({
+    where: { agencyId: assignment.agencyId, status: "ACTIVE" },
+    include: {
+      worker: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          phone: true,
+          jobType: true,
+          profilePhoto: true,
+          workerCode: true,
+          user: { select: { firstName: true, lastName: true, avatar: true, email: true } }
+        }
+      }
+    }
+  });
+
+  const alreadyAssignedIds = new Set(assignment.assignedWorkers.map(aw => aw.workerId));
+
+  // For each worker, check if they have a conflicting active assignment on same dates
+  const workerIds = agencyWorkers.map(aw => aw.workerId);
+
+  let conflictingWorkerIds = new Set();
+  if (assignment.startDate && assignment.endDate && workerIds.length > 0) {
+    const conflicts = await prisma.assignmentWorker.findMany({
+      where: {
+        workerId: { in: workerIds },
+        status: "ACTIVE",
+        assignment: {
+          status: "ACTIVE",
+          id: { not: assignmentId },
+          startDate: { lte: assignment.endDate },
+          endDate: { gte: assignment.startDate }
+        }
+      },
+      select: { workerId: true }
+    });
+    conflictingWorkerIds = new Set(conflicts.map(c => c.workerId));
+  }
+
+  return agencyWorkers.map(aw => ({
+    workerId: aw.worker.id,
+    workerCode: aw.worker.workerCode,
+    firstName: aw.worker.firstName || aw.worker.user?.firstName || '',
+    lastName: aw.worker.lastName || aw.worker.user?.lastName || '',
+    phone: aw.worker.phone,
+    jobType: aw.worker.jobType,
+    avatar: aw.worker.profilePhoto || aw.worker.user?.avatar || null,
+    email: aw.worker.user?.email || null,
+    isAlreadyAssigned: alreadyAssignedIds.has(aw.worker.id),
+    hasDateConflict: conflictingWorkerIds.has(aw.worker.id)
+  }));
+};

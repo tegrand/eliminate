@@ -8,7 +8,8 @@ import {
   checkoutAssignmentAttendance,
   updateAssignmentStatus,
   assignWorker,
-  removeWorker
+  removeWorker,
+  getAgencyWorkers
 } from "./assignment.controller.js";
 
 import {
@@ -72,6 +73,12 @@ router.delete(
   "/:id/workers/:workerId",
   validate(assignmentIdParamSchema, "params"),
   removeWorker
+);
+
+router.get(
+  "/:id/agency-workers",
+  validate(assignmentIdParamSchema, "params"),
+  getAgencyWorkers
 );
 
 export default router;

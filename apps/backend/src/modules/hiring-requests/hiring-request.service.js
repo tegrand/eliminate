@@ -5,25 +5,6 @@ export const createHiringRequest = async (clientId, data) => {
   return await prisma.$transaction(async (tx) => {
     let jobRequirementId = data.jobRequirementId;
 
-    if (data.targetWorkerId) {
-      // Temporarily removed attendance validation based on user request
-      /*
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      const todayAttendance = await tx.workerAttendance.findFirst({
-        where: {
-          workerId: data.targetWorkerId,
-          date: today
-        }
-      });
-
-      if (todayAttendance?.status !== 'PRESENT' || todayAttendance?.checkOutTime) {
-        throw new AppError(`This worker is currently not available for hire (Not marked as Present today, or has checked out).`, 400);
-      }
-      */
-    }
-
     if (!jobRequirementId) {
       const newJob = await tx.jobRequirement.create({
         data: {
@@ -31,7 +12,7 @@ export const createHiringRequest = async (clientId, data) => {
           clientId,
           title: data.title || "Custom Hiring Request",
           description: data.description || data.notes || "",
-          requiredWorkers: 1,
+          requiredWorkers: data.numberOfWorkers || 1,
           startDate: data.startDate,
           endDate: data.endDate,
           salaryAmount: data.proposedRate,
@@ -42,9 +23,11 @@ export const createHiringRequest = async (clientId, data) => {
       jobRequirementId = newJob.id;
     }
 
+    const { numberOfWorkers, ...hiringRequestData } = data;
+
     return await tx.hiringRequest.create({
       data: {
-        ...data,
+        ...hiringRequestData,
         jobRequirementId,
         clientId,
       },
@@ -97,7 +80,20 @@ export const listHiringRequests = async (filters, user) => {
 export const getHiringRequest = async (id, user) => {
   const request = await prisma.hiringRequest.findUnique({
     where: { id },
-    include: { client: true, agency: true, worker: true }
+    include: {
+      client: {
+        include: { user: { select: { firstName: true, lastName: true, email: true, phone: true } } }
+      },
+      agency: {
+        include: { user: { select: { firstName: true, lastName: true, email: true, phone: true } } }
+      },
+      worker: {
+        include: { user: { select: { firstName: true, lastName: true, email: true, phone: true } } }
+      },
+      jobRequirement: { select: { requirementCode: true, requiredWorkers: true, status: true } },
+      assignment: { select: { id: true, status: true } },
+      payments: { where: { status: 'SUCCESS' }, select: { id: true, amount: true, status: true, createdAt: true } }
+    }
   });
 
   if (!request) throw new AppError("Hiring Request not found", 404);
@@ -114,12 +110,13 @@ export const updateHiringRequestStatus = async (id, status, user) => {
 
   if (status === "ACCEPTED") {
     // Prevent double acceptance
-    if (request.status === "PAYMENT_PENDING" || request.status === "ACTIVE") throw new AppError("Request is already processed", 400);
+    if (request.status === "PAYMENT_PENDING" || request.status === "ACTIVE") {
+      throw new AppError("Request is already processed", 400);
+    }
 
     const updatedRequest = await prisma.$transaction(async (tx) => {
-      // Slot Checking: Prevent accepting if worker already has an active assignment on these dates
-      // Temporarily removed based on user request - workers can be hired multiple times
-      /*
+      // Slot checking: only applies to individual worker hires, NOT agency hires.
+      // Agencies have multiple workers and decide their own availability.
       if (request.targetWorkerId && request.startDate && request.endDate) {
         const overlappingAssignment = await tx.assignmentWorker.findFirst({
           where: {
@@ -134,17 +131,41 @@ export const updateHiringRequestStatus = async (id, status, user) => {
         });
 
         if (overlappingAssignment) {
-          throw new AppError("You are already assigned to another job during these dates", 400);
+          throw new AppError(
+            "This worker is already assigned to another job during the requested dates. Please choose different dates or a different worker.",
+            400
+          );
         }
       }
-      */
 
       const req = await tx.hiringRequest.update({
         where: { id },
         data: { status: "PAYMENT_PENDING" }
       });
 
-      // Create Notification
+      // Auto-create an Assignment linked to this hiring request
+      const existingAssignment = await tx.assignment.findUnique({
+        where: { hiringRequestId: id }
+      });
+
+      if (!existingAssignment) {
+        await tx.assignment.create({
+          data: {
+            assignmentCode: `ASN-${Date.now().toString().slice(-8)}`,
+            hiringRequestId: id,
+            clientId: request.clientId,
+            agencyId: request.targetAgencyId || null,
+            title: request.title,
+            description: request.description || null,
+            agreedRate: request.proposedRate || null,
+            startDate: request.startDate || null,
+            endDate: request.endDate || null,
+            status: "ACTIVE"
+          }
+        });
+      }
+
+      // Notify client that their request was accepted
       await tx.notification.create({
         data: {
           userId: request.client.userId,
@@ -157,8 +178,6 @@ export const updateHiringRequestStatus = async (id, status, user) => {
 
       return req;
     });
-
-    return updatedRequest;
 
     return updatedRequest;
   } else {

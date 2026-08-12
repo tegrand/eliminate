@@ -32,6 +32,8 @@ const clientSelect = {
       email: true,
       status: true,
       profileType: true,
+      firstName: true,
+      lastName: true,
     },
   },
 };
@@ -222,6 +224,8 @@ export const getClientByUserId = async (userId) => {
           status: true,
           profileType: true,
           avatar: true,
+          firstName: true,
+          lastName: true,
         },
       },
     }
@@ -268,6 +272,8 @@ export const updateClientByUserId = async (userId, data) => {
             status: true,
             profileType: true,
             avatar: true,
+            firstName: true,
+            lastName: true,
           },
         },
       },

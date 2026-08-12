@@ -291,10 +291,11 @@ export default function ClientRequestsPage() {
                             e.stopPropagation();
                             handlePayment(req.id);
                           }}
-                          disabled={loading}
+                          disabled={loading || !req.proposedRate}
+                          title={!req.proposedRate ? "Rate must be set before payment" : ""}
                           className="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50 w-full sm:w-auto justify-center"
                         >
-                          <IndianRupee className="w-4 h-4" /> Pay Advance
+                          <IndianRupee className="w-4 h-4" /> {req.proposedRate ? "Pay Advance" : "No Rate Set"}
                         </button>
                       )}
 

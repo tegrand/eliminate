@@ -1,5 +1,6 @@
 import { Users, Building, Building2, Ban, CheckCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import StatCard from "./StatCard";
 
 export default function DashboardStats({ data }) {
@@ -54,13 +55,15 @@ export default function DashboardStats({ data }) {
     }
   };
 
+  const { t } = useTranslation();
+
   const stats = [
-    { title: "Total Users", value: data?.totalUsers || "0", icon: Users, bgColor: "bg-blue-50", iconColor: "text-blue-500" },
-    { title: "Total Workers", value: data?.totalWorkers || "0", icon: CheckCircle, bgColor: "bg-green-50", iconColor: "text-green-500" },
-    { title: "Total Agencies", value: data?.totalAgencies || "0", icon: Building, bgColor: "bg-orange-50", iconColor: "text-orange-500" },
-    { title: "Total Clients", value: data?.totalClients || "0", icon: Building2, bgColor: "bg-purple-50", iconColor: "text-purple-500" },
-    { title: "Active Jobs", value: data?.activeRequirements || "0", icon: CheckCircle, bgColor: "bg-green-50", iconColor: "text-green-500" },
-    { title: "Open Jobs", value: data?.openRequirements || "0", icon: Users, bgColor: "bg-blue-50", iconColor: "text-blue-500" },
+    { title: t("adminDashboard.totalUsers") || "Total Users", value: data?.totalUsers || "0", icon: Users, bgColor: "bg-blue-50", iconColor: "text-blue-500" },
+    { title: t("adminDashboard.totalWorkers") || "Total Workers", value: data?.totalWorkers || "0", icon: CheckCircle, bgColor: "bg-green-50", iconColor: "text-green-500" },
+    { title: t("adminDashboard.totalAgencies") || "Total Agencies", value: data?.totalAgencies || "0", icon: Building, bgColor: "bg-orange-50", iconColor: "text-orange-500" },
+    { title: t("adminDashboard.totalClients") || "Total Clients", value: data?.totalClients || "0", icon: Building2, bgColor: "bg-purple-50", iconColor: "text-purple-500" },
+    { title: t("adminDashboard.activeJobs") || "Active Jobs", value: data?.activeRequirements || "0", icon: CheckCircle, bgColor: "bg-green-50", iconColor: "text-green-500" },
+    { title: t("adminDashboard.openJobs") || "Open Jobs", value: data?.openRequirements || "0", icon: Users, bgColor: "bg-blue-50", iconColor: "text-blue-500" },
   ];
 
   return (

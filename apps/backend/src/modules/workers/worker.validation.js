@@ -7,17 +7,22 @@ export const createWorkerSchema = z.object({
   lastName: z.string().trim().min(1, "Last name is required").max(100, "Last name is too long"),
   phone: z.string().trim().regex(phoneRegex, "Invalid phone number format").optional(),
   gender: z.string().trim().min(1, "Gender is required").max(50).optional(),
-  dateOfBirth: z.coerce.date().max(new Date(), "Birth date cannot be in the future").optional(),
+  dateOfBirth: z.coerce.date().optional(),
   joiningDate: z.coerce.date().optional(),
   notes: z.string().trim().max(2000, "Notes are too long").optional(),
-}).strict("Unknown fields are not allowed");
+}).strict("Unknown fields are not allowed").refine(data => {
+  if (!data.dateOfBirth) return true;
+  const today = new Date();
+  const minDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+  return new Date(data.dateOfBirth) <= minDate;
+}, { message: "Worker must be at least 18 years old", path: ["dateOfBirth"] });
 
 export const updateWorkerSchema = z.object({
   firstName: z.string().trim().min(1, "First name cannot be empty").max(100, "First name is too long").optional(),
   lastName: z.string().trim().max(100, "Last name is too long").optional().nullable(),
   phone: z.string().trim().regex(phoneRegex, "Invalid phone number format").optional(),
   gender: z.string().trim().min(1, "Gender cannot be empty").max(50).optional(),
-  dateOfBirth: z.coerce.date().max(new Date(), "Birth date cannot be in the future").optional(),
+  dateOfBirth: z.coerce.date().optional(),
   addressLine1: z.string().trim().max(500, "Address is too long").optional(),
   totalExperienceYears: z.coerce.number().min(0, "Experience cannot be negative").max(100, "Invalid experience years").optional(),
   joiningDate: z.coerce.date().optional(),
@@ -35,7 +40,12 @@ export const updateWorkerSchema = z.object({
 }).strict("Unknown fields are not allowed").refine(
   (data) => Object.keys(data).length > 0,
   "Update payload cannot be empty"
-);
+).refine(data => {
+  if (!data.dateOfBirth) return true;
+  const today = new Date();
+  const minDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+  return new Date(data.dateOfBirth) <= minDate;
+}, { message: "Worker must be at least 18 years old", path: ["dateOfBirth"] });
 
 export const workerIdParamSchema = z.object({
   id: z.string().uuid("Invalid worker ID format"),
@@ -69,11 +79,16 @@ export const createAgencyWorkerSchema = z.object({
   district: z.string().trim().max(100).optional().nullable(),
   state: z.string().trim().max(100).optional().nullable(),
   gender: z.string().trim().max(50).optional().nullable(),
-  dateOfBirth: z.coerce.date().max(new Date(), "Birth date cannot be in the future").optional().nullable(),
+  dateOfBirth: z.coerce.date().optional().nullable(),
   addressLine1: z.string().trim().max(500).optional().nullable(),
   totalExperienceYears: z.coerce.number().min(0).max(100).optional().nullable(),
   joiningDate: z.coerce.date().optional().nullable(),
-}).strict();
+}).strict().refine(data => {
+  if (!data.dateOfBirth) return true;
+  const today = new Date();
+  const minDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+  return new Date(data.dateOfBirth) <= minDate;
+}, { message: "Worker must be at least 18 years old", path: ["dateOfBirth"] });
 
 export const createAgencyWorkerBulkSchema = z.object({
   workers: z.array(createAgencyWorkerSchema).min(1, "At least one worker is required"),

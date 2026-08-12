@@ -3,6 +3,8 @@ import { Bell, Check, Loader2, UserPlus, RefreshCcw, CheckCircle2, Clock3, Walle
 import api from "../../../api/axios";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { Link } from "react-router-dom";
+import { useSocket } from "../../../context/SocketContext";
+import { toast } from "sonner";
 
 const TYPE_META = {
   CLIENT_REQUIREMENT: { label: "Client Requirement", icon: Briefcase, tone: "text-blue-600 bg-blue-50" },
@@ -23,6 +25,7 @@ export default function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { socket } = useSocket();
   
   const dropdownRef = useRef(null);
 
@@ -39,24 +42,30 @@ export default function NotificationBell() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleNewNotification = (notification) => {
+      setNotifications((prev) => [notification, ...prev]);
+      setUnreadCount((prev) => prev + 1);
+      
+      toast(notification.title, {
+        description: notification.message,
+      });
+    };
+
+    socket.on("new_notification", handleNewNotification);
+
+    return () => {
+      socket.off("new_notification", handleNewNotification);
+    };
+  }, [socket]);
+
   const fetchNotifications = async () => {
     try {
       const res = await api.get("/notifications");
-      let data = res.data.data;
-      
-      // Inject mock notifications if API returns empty, so the UI can be showcased perfectly
-      if (!data || data.length === 0) {
-        data = [
-          { id: "mock-1", type: "CLIENT_REQUIREMENT", title: "New Requirement", message: "BuildRight Construction requested 5 Masons.", isRead: false, createdAt: new Date().toISOString() },
-          { id: "mock-2", type: "WORKER_ACCEPTED", title: "Assignment Accepted", message: "Rahul M has accepted the Painter assignment.", isRead: false, createdAt: new Date(Date.now() - 3600000).toISOString() },
-          { id: "mock-3", type: "WORKER_REJECTED", title: "Assignment Rejected", message: "Suresh K has rejected the assignment due to schedule conflict.", isRead: false, createdAt: new Date(Date.now() - 7200000).toISOString() },
-          { id: "mock-4", type: "ASSIGNMENT_COMPLETED", title: "Project Completed", message: "Project Alpha assignment has been marked as completed.", isRead: true, createdAt: new Date(Date.now() - 86400000).toISOString() },
-          { id: "mock-5", type: "ATTENDANCE_ISSUES", title: "Low Attendance", message: "Worker John Doe has missed 3 days consecutively.", isRead: true, createdAt: new Date(Date.now() - 172800000).toISOString() }
-        ];
-      }
-
-      setNotifications(data);
-      setUnreadCount(data.filter(n => !n.isRead).length);
+      setNotifications(res.data.data || []);
+      setUnreadCount((res.data.data || []).filter(n => !n.isRead).length);
     } catch (error) {
       console.error("Failed to fetch notifications");
     }
@@ -110,7 +119,7 @@ export default function NotificationBell() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2">
+        <div className="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden z-[100] animate-in fade-in slide-in-from-top-2">
           <div className="p-3 border-b border-slate-100 flex items-center justify-between bg-slate-50">
             <h3 className="font-semibold text-slate-800">Notifications</h3>
             {unreadCount > 0 && (

@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Save, UserCircle2, Camera, Loader2 } from "lucide-react";
 
 export default function PersonalInfoForm({ data, onSave, saving }) {
@@ -10,6 +10,10 @@ export default function PersonalInfoForm({ data, onSave, saving }) {
     addressLine1: data?.addressLine1 || "",
     notes: data?.notes || "",
   });
+
+  const maxDate = new Date();
+  maxDate.setFullYear(maxDate.getFullYear() - 18);
+  const maxDateString = maxDate.toISOString().split('T')[0];
 
   const fileInputRef = useRef(null);
 
@@ -101,6 +105,7 @@ export default function PersonalInfoForm({ data, onSave, saving }) {
               name="dateOfBirth"
               value={formData.dateOfBirth}
               onChange={handleChange}
+              max={maxDateString}
               className={inputClass}
             />
           </div>

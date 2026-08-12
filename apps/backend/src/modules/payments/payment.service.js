@@ -1,6 +1,7 @@
 import Razorpay from "razorpay";
 import crypto from "crypto";
 import prisma from "../../config/prisma.js";
+import AppError from "../../shared/errors/app-error.js";
 
 const getRazorpay = () => new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID?.trim(),
@@ -13,9 +14,9 @@ export const createOrder = async (hiringRequestId, userId) => {
     include: { client: true }
   });
 
-  if (!hiringRequest) throw new Error("Hiring request not found");
-  if (hiringRequest.client.userId !== userId) throw new Error("Unauthorized");
-  if (!hiringRequest.proposedRate) throw new Error("Proposed rate is not set");
+  if (!hiringRequest) throw new AppError("Hiring request not found", 404);
+  if (hiringRequest.client.userId !== userId) throw new AppError("Unauthorized", 403);
+  if (!hiringRequest.proposedRate) throw new AppError("Proposed rate is not set for this request. Please set a rate before paying.", 400);
 
   // Check existing transactions to determine if this is advance or final payment
   const existingTransactions = await prisma.paymentTransaction.findMany({

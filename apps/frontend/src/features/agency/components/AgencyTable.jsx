@@ -11,8 +11,10 @@ import ReactivateDialog from "../../../components/ui/action-dialogs/ReactivateDi
 import { useQueryClient } from "@tanstack/react-query";
 import { agencyApi } from "../api/agency.api";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 export default function AgencyTable({ agencies, loading, page, totalPages }) {
+  const { t } = useTranslation();
   const [selectedAgency, setSelectedAgency] = useState(null);
   const [actionType, setActionType] = useState(null);
 
@@ -53,22 +55,42 @@ export default function AgencyTable({ agencies, loading, page, totalPages }) {
 
 
 
+  const getFullUrl = (url) => {
+    if (!url) return null;
+    return url.startsWith('http') ? url : `http://localhost:5000${url.startsWith('/') ? '' : '/'}${url}`;
+  };
+
   const columns = [
     { key: "checkbox", title: <input type="checkbox" className="rounded border-gray-300" />, render: () => <input type="checkbox" className="rounded border-gray-300" /> },
-    { key: "agencyName", title: <div className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" />AGENCY NAME</div>, render: (row) => <span className="text-gray-900 text-sm font-bold">{row.agencyName || row.name || "—"}</span> },
-    { key: "contactPerson", title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />CONTACT PERSON</div>, render: (row) => <span className="text-sm text-gray-600">{row.contactPerson}</span> },
-    { key: "phone", title: <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />PHONE</div>, render: (row) => <span className="text-sm text-gray-600">{row.phone || "—"}</span> },
-    { key: "email", title: <div className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" />EMAIL</div>, render: (row) => <span className="text-sm text-gray-600">{row.email || "—"}</span> },
-    { key: "location", title: <div className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />LOCATION</div>, render: (row) => <span className="text-sm text-gray-600">{row.location}</span> },
-    { key: "totalWorkers", title: <div className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5" />WORKERS</div>, render: (row) => <span className="text-sm text-gray-600 font-medium">{row.totalWorkers || row._count?.workers || 0}</span> },
+    { 
+      key: "agencyName", 
+      title: <div className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" />{t('table.agencyName') || 'AGENCY NAME'}</div>, 
+      render: (row) => (
+        <div className="flex items-center gap-3">
+          {row.logoUrl ? (
+            <img src={getFullUrl(row.logoUrl)} alt="Logo" className="w-8 h-8 rounded bg-gray-100 object-cover border border-gray-200 shrink-0" />
+          ) : (
+            <div className="w-8 h-8 rounded bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
+              <span className="text-indigo-600 font-bold text-xs">{(row.agencyName || row.name || "A").charAt(0).toUpperCase()}</span>
+            </div>
+          )}
+          <span className="text-gray-900 text-sm font-bold">{row.agencyName || row.name || "—"}</span>
+        </div>
+      ) 
+    },
+    { key: "contactPerson", title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />{t('table.contactPerson') || 'CONTACT PERSON'}</div>, render: (row) => <span className="text-sm text-gray-600">{row.contactPerson}</span> },
+    { key: "phone", title: <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />{t('table.phone') || 'PHONE'}</div>, render: (row) => <span className="text-sm text-gray-600">{row.phone || "—"}</span> },
+    { key: "email", title: <div className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5" />{t('table.email') || 'EMAIL'}</div>, render: (row) => <span className="text-sm text-gray-600">{row.email || "—"}</span> },
+    { key: "location", title: <div className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />{t('table.location') || 'LOCATION'}</div>, render: (row) => <span className="text-sm text-gray-600">{row.location}</span> },
+    { key: "totalWorkers", title: <div className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5" />{t('table.workers') || 'WORKERS'}</div>, render: (row) => <span className="text-sm text-gray-600 font-medium">{row.totalWorkers || row._count?.workers || 0}</span> },
     { 
       key: "status", 
-      title: <div className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5" />STATUS</div>, 
+      title: <div className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5" />{t('table.status') || 'STATUS'}</div>, 
       render: (row) => <AgencyStatusBadge status={row.status} />
     },
     {
       key: "actions",
-      title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />ACTIONS</div>,
+      title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />{t('table.actions') || 'ACTIONS'}</div>,
       render: (row) => (
         <div className="flex items-center gap-3 text-sm font-semibold relative">
           <Link to={`/agencies/${row.id}`} className="text-blue-600 hover:text-blue-800 transition-colors whitespace-nowrap">

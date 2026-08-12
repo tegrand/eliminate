@@ -38,11 +38,11 @@ export const updateAgencySchema = z.object({
   notes: z.string().trim().max(2000, "Notes are too long").optional(),
   feePercentage: z.coerce.number().min(0).max(100).optional(),
   workerFixedAmount: z.coerce.number().min(0).optional(),
-  logoUrl: z.string().trim().url("Invalid URL").optional().or(z.string().startsWith("/").optional()),
-  aadhaarUrl: z.string().trim().url("Invalid URL").optional().or(z.string().startsWith("/").optional()),
-  licenseUrl: z.string().trim().url("Invalid URL").optional().or(z.string().startsWith("/").optional()),
-  gstCertificateUrl: z.string().trim().url("Invalid URL").optional().or(z.string().startsWith("/").optional()),
-  panUrl: z.string().trim().url("Invalid URL").optional().or(z.string().startsWith("/").optional()),
+  logoUrl: z.union([z.string().url(), z.string().startsWith("/")]).optional().nullable(),
+  aadhaarUrl: z.union([z.string().url(), z.string().startsWith("/")]).optional().nullable(),
+  licenseUrl: z.union([z.string().url(), z.string().startsWith("/")]).optional().nullable(),
+  gstCertificateUrl: z.union([z.string().url(), z.string().startsWith("/")]).optional().nullable(),
+  panUrl: z.union([z.string().url(), z.string().startsWith("/")]).optional().nullable(),
 }).strict("Unknown fields are not allowed").refine(
   (data) => Object.keys(data).length > 0,
   "Update payload cannot be empty"

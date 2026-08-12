@@ -76,11 +76,17 @@ export default function AgencyDetailsPage() {
 
   const getAgencyName = () => agency.agencyName || "N/A";
   
+  const getFullUrl = (url) => {
+    if (!url) return null;
+    return url.startsWith('http') ? url : `http://localhost:5000${url.startsWith('/') ? '' : '/'}${url}`;
+  };
+
   // Extract documents or map URLs if documents array is not used
   const allDocs = [
-    { type: "Trade License", url: agency.licenseUrl },
-    { type: "GST Certificate", url: agency.gstCertificateUrl },
-    { type: "PAN Card", url: agency.panUrl },
+    { type: "Trade License", url: getFullUrl(agency.licenseUrl) },
+    { type: "GST Certificate", url: getFullUrl(agency.gstCertificateUrl) },
+    { type: "PAN Card", url: getFullUrl(agency.panUrl) },
+    { type: "Aadhaar Card", url: getFullUrl(agency.aadhaarUrl) },
   ];
 
   if (agency.documents && agency.documents.length > 0) {
@@ -148,7 +154,11 @@ export default function AgencyDetailsPage() {
               
               <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-50">
                 <div className="w-16 h-16 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-2xl overflow-hidden shadow-sm">
-                  {getAgencyName()[0]?.toUpperCase()}
+                  {agency.logoUrl ? (
+                    <img src={getFullUrl(agency.logoUrl)} alt="Logo" className="w-full h-full object-cover" />
+                  ) : (
+                    getAgencyName()[0]?.toUpperCase()
+                  )}
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">{getAgencyName()}</h3>
@@ -215,9 +225,14 @@ export default function AgencyDetailsPage() {
               </h2>
               
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {allDocs.map((doc, idx) => (
-                  <div key={idx} className="border border-gray-100 rounded-lg p-4 flex flex-col justify-between hover:border-blue-100 transition-colors group">
-                    <div className="flex justify-between items-start mb-3">
+                {allDocs.filter(doc => doc.url).length === 0 ? (
+                  <div className="col-span-1 sm:col-span-2 p-6 text-center text-gray-500 bg-gray-50 rounded-lg border border-dashed border-gray-200">
+                    No verification documents provided by the agency yet.
+                  </div>
+                ) : (
+                  allDocs.filter(doc => doc.url).map((doc, idx) => (
+                    <div key={idx} className="border border-gray-100 rounded-lg p-4 flex flex-col justify-between hover:border-blue-100 transition-colors group">
+                      <div className="flex justify-between items-start mb-3">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded bg-gray-50 flex items-center justify-center text-gray-500">
                           <FileText className="w-4 h-4" />
@@ -251,7 +266,7 @@ export default function AgencyDetailsPage() {
                       )}
                     </div>
                   </div>
-                ))}
+                )))}
               </div>
             </div>
 
