@@ -51,25 +51,3 @@ export const getAttendanceReport = async (clientId) => {
   });
 };
 
-export const getPaymentReport = async (clientId) => {
-  // Needs actual payments model linked to client, assuming WorkerPayment
-  const assignments = await prisma.assignment.findMany({
-    where: { clientId },
-    select: { id: true }
-  });
-  const assignmentIds = assignments.map(a => a.id);
-
-  const workers = await prisma.assignmentWorker.findMany({
-    where: { assignmentId: { in: assignmentIds } },
-    select: { workerId: true }
-  });
-  const workerIds = workers.map(w => w.workerId);
-
-  return await prisma.workerPayment.findMany({
-    where: { workerId: { in: workerIds } },
-    include: {
-      worker: { include: { user: { select: { firstName: true, lastName: true } } } }
-    },
-    orderBy: { createdAt: 'desc' }
-  });
-};

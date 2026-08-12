@@ -41,39 +41,6 @@ export const NAVIGATION_CONFIG = [
     ],
   },
 
-  // ─── WORKER PORTAL ───────────────────────────────────────────────────────
-  {
-    group: "My Workspace",
-    roles: ["WORKER"],
-    items: [
-      {
-        title: "Invitations",
-        path: ROUTES.MY_INVITATIONS,
-        icon: Bell,
-        roles: ["WORKER"],
-      },
-
-      {
-        title: "My Jobs",
-        path: ROUTES.MY_JOBS,
-        icon: Briefcase,
-        roles: ["WORKER"],
-      },
-      {
-        title: "My Earnings",
-        path: "/worker/earnings",
-        icon: DollarSign,
-        roles: ["WORKER"],
-      },
-
-      {
-        title: "Work History",
-        path: "/worker/history",
-        icon: FileText,
-        roles: ["WORKER"],
-      },
-    ],
-  },
 
   // ─── WORKER ACCOUNT ──────────────────────────────────────────────────────
   {
@@ -106,18 +73,7 @@ export const NAVIGATION_CONFIG = [
         icon: Building2,
         roles: ["CLIENT"],
       },
-      {
-        title: "Assignments",
-        path: ROUTES.ASSIGNMENTS,
-        icon: UserCheck,
-        roles: ["CLIENT"],
-      },
-      {
-        title: "My Requests",
-        path: ROUTES.CLIENT_REQUESTS,
-        icon: Briefcase,
-        roles: ["CLIENT"],
-      },
+
     ],
   },
 
@@ -136,25 +92,7 @@ export const NAVIGATION_CONFIG = [
       },
     ],
   },
-  {
-    group: "Client Management",
-    roles: ["AGENCY"],
-    items: [
 
-      {
-        title: "Hiring Requests",
-        path: ROUTES.HIRING_REQUESTS,
-        icon: Briefcase,
-        roles: ["AGENCY"],
-      },
-      {
-        title: "Earnings",
-        path: "/agency/earnings",
-        icon: DollarSign,
-        roles: ["AGENCY"],
-      }
-    ],
-  },
   // ─── AGENCY ACCOUNT ──────────────────────────────────────────────────────
   {
     group: "Account",
@@ -215,24 +153,7 @@ export const NAVIGATION_CONFIG = [
       },
     ],
   },
-  {
-    group: "Financial Management",
-    roles: ADMIN_ONLY,
-    items: [
-      {
-        title: "Worker Payouts",
-        path: "/admin/worker-payouts",
-        icon: DollarSign,
-        roles: ADMIN_ONLY,
-      },
-      {
-        title: "Agency Payouts",
-        path: "/agency-payouts",
-        icon: DollarSign,
-        roles: ADMIN_ONLY,
-      },
-    ],
-  },
+
   {
     group: "System Configuration",
     roles: ADMIN_ONLY,

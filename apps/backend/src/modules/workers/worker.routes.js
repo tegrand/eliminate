@@ -13,10 +13,7 @@ import {
   acceptAgencyInvitation,
   rejectAgencyInvitation,
   leaveAgency,
-  getMyJobInvitations,
-  acceptJobInvitation,
-  rejectJobInvitation,
-  getWorkerAvailability,
+
   addAgencyWorkerSingle,
   addAgencyWorkerBulk
 } from "./worker.controller.js";
@@ -89,17 +86,7 @@ router.post("/my-profile/agencies/:agencyId/accept", acceptAgencyInvitation);
 router.post("/my-profile/agencies/:agencyId/reject", rejectAgencyInvitation);
 router.post("/my-profile/agencies/:agencyId/leave", leaveAgency);
 
-// Worker Job Invitations Endpoints
-router.get("/my-profile/invitations", getMyJobInvitations);
-router.post("/my-profile/invitations/:id/accept", acceptJobInvitation);
-router.post("/my-profile/invitations/:id/reject", rejectJobInvitation);
 
-router.get(
-  "/:id/availability",
-  authorize("SUPER_ADMIN", "CLIENT", "AGENCY", "WORKER"),
-  validate(workerIdParamSchema, "params"),
-  getWorkerAvailability
-);
 
 router.get(
   "/:id",

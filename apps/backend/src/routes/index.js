@@ -13,19 +13,16 @@ import skillRoutes from "../modules/skills/skill.routes.js";
 import categoryRoutes from "../modules/categories/category.routes.js";
 import languageRoutes from "../modules/languages/language.routes.js";
 import locationRoutes from "../modules/locations/location.routes.js";
-import jobRoutes from "../modules/jobs/job.routes.js";
-import hiringRequestRoutes from "../modules/hiring-requests/hiring-request.routes.js";
-import assignmentRoutes from "../modules/assignments/assignment.routes.js";
+
 import workerAttendanceRoutes from "../modules/worker-attendance/worker-attendance.routes.js";
-import workerPaymentsRoutes from "../modules/worker-payments/worker-payments.routes.js";
-import agencyPaymentsRoutes from "../modules/agency-payments/agency-payments.routes.js";
+
 import workerDocumentsRoutes from "../modules/worker-documents/worker-documents.routes.js";
 import notificationsRoutes from "../modules/notifications/notifications.routes.js";
 import reviewRoutes from "../modules/reviews/review.routes.js";
 import reportsRoutes from "../modules/reports/reports.routes.js";
 import complaintsRoutes from "../modules/complaints/complaints.routes.js";
 import settingsRoutes from "../modules/settings/settings.routes.js";
-import paymentRoutes from "../modules/payments/payment.routes.js";
+
 import invoiceRoutes from "../modules/invoices/invoice.route.js";
 
 const router = Router();
@@ -41,18 +38,15 @@ router.use("/workers/marketplace", workerMarketplaceRoutes);
 router.use("/workers", workerRoutes);
 router.use("/clients", clientRoutes);
 router.use("/agencies", agencyRoutes);
-router.use("/jobs", jobRoutes);
-router.use("/hiring-requests", hiringRequestRoutes);
-router.use("/assignments", assignmentRoutes);
+
 router.use("/my-attendance", workerAttendanceRoutes);
 router.use("/notifications", notificationsRoutes);
-router.use("/my-payments", workerPaymentsRoutes);
-router.use("/agency-payments", agencyPaymentsRoutes);
+
 router.use("/my-documents", workerDocumentsRoutes);
 router.use("/reviews", reviewRoutes);
 router.use("/reports", reportsRoutes);
 router.use("/complaints", complaintsRoutes);
-router.use("/payments", paymentRoutes);
+
 router.use("/invoices", invoiceRoutes);
 
 // Master Data Routes

@@ -34,8 +34,3 @@ export const getAttendanceReport = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, "Attendance Report retrieved", data, 200);
 });
 
-export const getPaymentReport = asyncHandler(async (req, res) => {
-  const clientId = await getClientId(req.user.id);
-  const data = await reportsService.getPaymentReport(clientId);
-  return ApiResponse.success(res, "Payment Report retrieved", data, 200);
-});

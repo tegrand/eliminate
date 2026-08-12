@@ -29,12 +29,8 @@ import WorkerDetailsPage from "../features/worker/pages/WorkerDetailsPage";
 
 
 import WorkerSettingsPage from "../features/worker/pages/WorkerSettingsPage";
-import WorkerInvitationsPage from "../features/worker/pages/WorkerInvitationsPage";
-import WorkerAssignmentsPage from "../features/worker/pages/WorkerAssignmentsPage";
 import WorkerAttendancePage from "../features/worker/pages/WorkerAttendancePage";
 import WorkerNotificationsPage from "../features/worker/pages/WorkerNotificationsPage";
-import WorkerHistoryPage from "../features/worker/pages/WorkerHistoryPage";
-import WorkerEarningsPage from "../features/worker/pages/WorkerEarningsPage";
 import MyDocumentsPage from "../features/documents/pages/MyDocumentsPage";
 import ClientListPage from "../features/client/pages/ClientListPage";
 import ClientDetailsPage from "../features/client/pages/ClientDetailsPage";
@@ -42,8 +38,6 @@ import ClientProfilePage from "../features/client/pages/ClientProfilePage";
 import ClientWorkerSearchPage from "../features/client/pages/ClientWorkerSearchPage";
 import ClientWorkerProfilePage from "../features/client/pages/ClientWorkerProfilePage";
 import ClientAgencySearchPage from "../features/client/pages/ClientAgencySearchPage";
-import ClientRequestsPage from "../features/client/pages/ClientRequestsPage";
-
 
 import AgencyListPage from "../features/agency/pages/AgencyListPage";
 import AgencyDetailsPage from "../features/agency/pages/AgencyDetailsPage";
@@ -55,11 +49,6 @@ import CategoryListPage from "../features/master-data/category/pages/CategoryLis
 import LanguageListPage from "../features/master-data/language/pages/LanguageListPage";
 import LocationListPage from "../features/master-data/location/pages/LocationListPage";
 
-import HiringRequestsPage from "../features/hiring-requests/pages/HiringRequestsPage";
-import HiringRequestDetailsPage from "../features/hiring-requests/pages/HiringRequestDetailsPage";
-
-import AssignmentListPage from "../features/assignment/pages/AssignmentListPage";
-import AssignmentDetailsPage from "../features/assignment/pages/AssignmentDetailsPage";
 
 import AttendanceListPage from "../features/attendance/pages/AttendanceListPage";
 import BulkAttendancePage from "../features/attendance/pages/BulkAttendancePage";
@@ -72,11 +61,6 @@ import PayrollDetailsPage from "../features/payroll/pages/PayrollDetailsPage";
 import InvoiceListPage from "../features/invoice/pages/InvoiceListPage";
 import InvoiceDetailsPage from "../features/invoice/pages/InvoiceDetailsPage";
 
-import PaymentListPage from "../features/payment/pages/PaymentListPage";
-import PaymentReceiptPage from "../features/payment/pages/PaymentReceiptPage";
-import WorkerPayoutsPage from "../features/payment/pages/WorkerPayoutsPage";
-import AdminAgencyPayoutsPage from "../features/payment/pages/AdminAgencyPayoutsPage";
-import AgencyEarningsPage from "../features/agency/pages/AgencyEarningsPage";
 
 import SettingsPage from "../features/settings/pages/SettingsPage";
 import AdminRoutes from "../features/admin/routes/AdminRoutes";
@@ -125,12 +109,8 @@ const AppRouter = () => {
 
             <Route path={ROUTES.WORKER_SETTINGS} element={<WorkerSettingsPage />} />
 
-            <Route path={ROUTES.MY_INVITATIONS} element={<WorkerInvitationsPage />} />
-            <Route path={ROUTES.MY_JOBS} element={<WorkerAssignmentsPage />} />
             <Route path={ROUTES.MY_ATTENDANCE} element={<WorkerAttendancePage />} />
             <Route path="/worker/notifications" element={<WorkerNotificationsPage />} />
-            <Route path="/worker/history" element={<WorkerHistoryPage />} />
-            <Route path="/worker/earnings" element={<WorkerEarningsPage />} />
             <Route path={ROUTES.WORKFORCE_SEARCH} element={<ClientWorkerSearchPage />} />
             <Route path={ROUTES.WORKFORCE_PROFILE} element={<ClientWorkerProfilePage />} />
             <Route path={ROUTES.AGENCY_SEARCH} element={<ClientAgencySearchPage />} />
@@ -139,8 +119,6 @@ const AppRouter = () => {
             <Route path={ROUTES.CLIENTS} element={<ClientListPage />} />
             <Route path={ROUTES.CLIENT_DETAILS} element={<ClientDetailsPage />} />
             <Route path={ROUTES.CLIENT_PROFILE} element={<ClientProfilePage />} />
-            <Route path={ROUTES.CLIENT_REQUESTS} element={<ClientRequestsPage />} />
-            
 
             {/* Agencies */}
             <Route path={ROUTES.AGENCIES} element={<AgencyListPage />} />
@@ -153,13 +131,6 @@ const AppRouter = () => {
             <Route path={ROUTES.LANGUAGES} element={<LanguageListPage />} />
             <Route path={ROUTES.LOCATIONS} element={<LocationListPage />} />
 
-            {/* Hiring Requests */}
-            <Route path={ROUTES.HIRING_REQUESTS} element={<HiringRequestsPage />} />
-            <Route path={ROUTES.HIRING_REQUEST_DETAILS} element={<HiringRequestDetailsPage />} />
-
-            {/* Assignments */}
-            <Route path={ROUTES.ASSIGNMENTS} element={<AssignmentListPage />} />
-            <Route path={ROUTES.ASSIGNMENT_DETAILS} element={<AssignmentDetailsPage />} />
 
             {/* Attendance */}
             <Route path={ROUTES.ATTENDANCE} element={<AttendanceListPage />} />
@@ -175,12 +146,6 @@ const AppRouter = () => {
             <Route path={ROUTES.INVOICES} element={<InvoiceListPage />} />
             <Route path={ROUTES.INVOICE_DETAILS} element={<InvoiceDetailsPage />} />
 
-            {/* Payments */}
-            <Route path={ROUTES.PAYMENTS} element={<PaymentListPage />} />
-            <Route path={ROUTES.PAYMENT_RECEIPT} element={<PaymentReceiptPage />} />
-            <Route path="/admin/worker-payouts" element={<WorkerPayoutsPage />} />
-            <Route path="/agency-payouts" element={<AdminAgencyPayoutsPage />} />
-            <Route path="/agency/earnings" element={<AgencyEarningsPage />} />
 
             {/* System Settings */}
             <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />

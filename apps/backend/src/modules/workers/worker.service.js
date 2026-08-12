@@ -450,7 +450,6 @@ export const acceptAgencyInvitation = async (userId, agencyId) => {
   
   return getMyAgencies(userId);
 };
-
 export const rejectAgencyInvitation = async (userId, agencyId) => {
   const worker = await getMyWorkerProfile(userId);
   
@@ -490,80 +489,6 @@ export const leaveAgency = async (userId, agencyId) => {
   
   return getMyAgencies(userId);
 };
-
-import * as hiringRequestService from "../hiring-requests/hiring-request.service.js";
-
-export const getMyJobInvitations = async (userId) => {
-  const worker = await getMyWorkerProfile(userId);
-  return prisma.hiringRequest.findMany({
-    where: { targetWorkerId: worker.id, status: 'PENDING' },
-    include: {
-      client: true,
-      agency: true,
-      jobRequirement: true
-    }
-  });
-};
-
-export const acceptJobInvitation = async (userId, id, user) => {
-  const worker = await getMyWorkerProfile(userId);
-  const req = await prisma.hiringRequest.findFirst({ where: { id, targetWorkerId: worker.id, status: 'PENDING' } });
-  if (!req) throw new AppError('Invitation not found', 404);
-
-  // Call the actual service that handles all the assignment creation logic
-  return hiringRequestService.updateHiringRequestStatus(id, 'ACCEPTED', user);
-};
-
-export const rejectJobInvitation = async (userId, id, user) => {
-  const worker = await getMyWorkerProfile(userId);
-  const req = await prisma.hiringRequest.findFirst({ where: { id, targetWorkerId: worker.id, status: 'PENDING' } });
-  if (!req) throw new AppError('Invitation not found', 404);
-  
-  return hiringRequestService.updateHiringRequestStatus(id, 'REJECTED', user);
-};
-
-export const getWorkerAvailability = async (workerId) => {
-  const worker = await prisma.worker.findUnique({ where: { id: workerId } });
-  if (!worker) throw new AppError("Worker not found", 404);
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  // Based on user request, having active assignments should not make the worker "Not Available"
-  // So we return an empty array here instead of the actual booked dates.
-  /*
-  const activeAssignments = await prisma.assignmentWorker.findMany({
-    where: {
-      workerId,
-      status: "ACTIVE",
-      assignment: {
-        status: "ACTIVE",
-        endDate: { gte: today }
-      }
-    },
-    include: {
-      assignment: {
-        select: {
-          startDate: true,
-          endDate: true,
-          title: true
-        }
-      }
-    }
-  });
-
-  const bookedDates = activeAssignments
-    .filter(a => a.assignment.startDate && a.assignment.endDate)
-    .map(a => ({
-      startDate: a.assignment.startDate,
-      endDate: a.assignment.endDate,
-      title: a.assignment.title
-    }));
-  */
-
-  return [];
-};
-
 
 export const createAgencyWorkerSingle = async (userId, data) => {
   const agencyUser = await prisma.user.findUnique({
@@ -648,4 +573,3 @@ export const createAgencyWorkerBulk = async (userId, workersData) => {
 
   return { count: createdWorkers.length };
 };
-

@@ -61,25 +61,6 @@ export const leaveAgency = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, "Left agency successfully", result, 200);
 });
 
-export const getMyJobInvitations = asyncHandler(async (req, res) => {
-  const result = await workerService.getMyJobInvitations(req.user.id);
-  return ApiResponse.success(res, "Job invitations retrieved", result, 200);
-});
-
-export const acceptJobInvitation = asyncHandler(async (req, res) => {
-  const result = await workerService.acceptJobInvitation(req.user.id, req.params.id, req.user);
-  return ApiResponse.success(res, "Job invitation accepted", result, 200);
-});
-
-export const rejectJobInvitation = asyncHandler(async (req, res) => {
-  const result = await workerService.rejectJobInvitation(req.user.id, req.params.id, req.user);
-  return ApiResponse.success(res, "Job invitation rejected", result, 200);
-});
-
-export const getWorkerAvailability = asyncHandler(async (req, res) => {
-  const result = await workerService.getWorkerAvailability(req.params.id);
-  return ApiResponse.success(res, "Worker availability retrieved successfully", result, 200);
-});
 
 
 export const addAgencyWorkerSingle = asyncHandler(async (req, res) => {

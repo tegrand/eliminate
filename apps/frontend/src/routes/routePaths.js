@@ -19,11 +19,9 @@ export const ROUTES = {
   WORKERS: "/workers",
   WORKER_DETAILS: "/workers/:id",
   WORKER_PROFILE: "/worker/profile",
-  MY_INVITATIONS: "/worker/invitations",
   WORKER_SETTINGS: "/worker/settings",
-  MY_JOBS: "/my-jobs",
   MY_ATTENDANCE: "/my-attendance",
-  MY_PAYMENTS: "/my-payments",
+
   MY_DOCUMENTS: "/my-documents",
   MY_SKILLS: "/my-skills",
 
@@ -35,8 +33,6 @@ export const ROUTES = {
   WORKFORCE_PROFILE: "/search-workers/:id",
   AGENCY_SEARCH: "/search-agencies",
   CLIENT_JOBS: "/jobs",
-  CLIENT_REQUESTS: "/client/requests",
-  
 
   // Agency
   AGENCIES: "/agencies",
@@ -58,13 +54,6 @@ export const ROUTES = {
   JOB_REQUIREMENT_DETAILS: "/job-requirements/:id",
   ASSIGN_WORKERS: "/job-requirements/:id/assign",
 
-  // Hiring Requests
-  HIRING_REQUESTS: "/hiring-requests",
-  HIRING_REQUEST_DETAILS: "/hiring-requests/:id",
-
-  // Assignments
-  ASSIGNMENTS: "/assignments",
-  ASSIGNMENT_DETAILS: "/assignments/:id",
 
   // Attendance
   ATTENDANCE: "/attendance",
@@ -80,9 +69,6 @@ export const ROUTES = {
   INVOICES: "/invoices",
   INVOICE_DETAILS: "/invoices/:id",
 
-  // Payments
-  PAYMENTS: "/payments",
-  PAYMENT_RECEIPT: "/payments/:id",
 
   // Settings
   SETTINGS: "/settings",

@@ -14,6 +14,6 @@ router.get("/worker-history", reportsController.getWorkerHistory);
 router.get("/agency-history", reportsController.getAgencyHistory);
 router.get("/job-history", reportsController.getJobHistory);
 router.get("/attendance", reportsController.getAttendanceReport);
-router.get("/payments", reportsController.getPaymentReport);
+
 
 export default router;

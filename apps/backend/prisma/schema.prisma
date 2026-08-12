@@ -203,18 +203,7 @@ enum LeaveType {
   UNPAID
 }
 
-enum PaymentStatus {
-  PENDING
-  PROCESSING
-  COMPLETED
-  FAILED
-}
 
-enum PaymentMethod {
-  BANK_TRANSFER
-  CASH
-  CHEQUE
-}
 
 enum DocumentType {
   AADHAAR
@@ -292,17 +281,15 @@ model Worker {
   skills          WorkerSkill[]
   languages       WorkerLanguage[]
   agencies        AgencyWorker[]
-  jobApplications JobApplication[]
-  savedJobs       SavedJob[]
+
   attendances     WorkerAttendance[]
   leaveRequests   LeaveRequest[]
-  payments        WorkerPayment[]
+
   documents       WorkerDocument[]
-  ignoredJobs     IgnoredJob[]
+
   // categories       WorkerCategory[]
   // bookings         Booking[]
-  hiringRequests  HiringRequest[]
-  assignments     AssignmentWorker[]
+
   invoiceItems    InvoiceItem[]
 
 
@@ -340,12 +327,10 @@ model Client {
   profileStatus  ClientProfileStatus @default(ACTIVE)
 
   // Future module relation placeholders (awaiting model implementation)
-  jobRequirements JobRequirement[]
+
   // bookings         Booking[]
   invoices         Invoice[]
   // payments         Payment[]
-  hiringRequests  HiringRequest[]
-  assignments     Assignment[]
 
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
@@ -395,9 +380,6 @@ model Agency {
   workers        AgencyWorker[]
   documents      AgencyDocument[]
   // jobRequirements  JobRequirement[]
-  hiringRequests HiringRequest[]
-  assignments    Assignment[]
-  payments       AgencyPayment[]
 
   createdAt         DateTime    @default(now())
   updatedAt         DateTime    @updatedAt
@@ -420,7 +402,6 @@ model Skill {
 
   // Future module relation placeholders
   workers         WorkerSkill[]
-  jobRequirements JobRequirementSkill[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -440,7 +421,6 @@ model Category {
 
   // Future module relation placeholders
   // workers          WorkerCategory[]
-  jobRequirements JobRequirement[]
 
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
@@ -461,7 +441,6 @@ model Language {
 
   // Future module relation placeholders
   workers         WorkerLanguage[]
-  jobRequirements JobRequirementLanguage[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -487,7 +466,6 @@ model Location {
   // workers          WorkerLocation[]
   // clients          ClientLocation[]
   // agencies         AgencyLocation[]
-  jobRequirements JobRequirement[]
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -557,145 +535,17 @@ model AgencyWorker {
   @@index([workerId])
 }
 
-model JobRequirement {
-  id                 String            @id @default(uuid())
-  requirementCode    String            @unique
-  clientId           String
-  title              String
-  description        String?
-  categoryId         String?
-  locationId         String?
-  requiredWorkers    Int               @default(1)
-  startDate          DateTime?
-  endDate            DateTime?
-  startTime          String?
-  endTime            String?
-  salaryType         SalaryType?
-  salaryAmount       Decimal?
-  priority           Priority          @default(MEDIUM)
-  status             RequirementStatus @default(DRAFT)
-  shift              ShiftType?
-  assignedCount      Int               @default(0)
-  cancellationReason String?
-  notes              String?
-  genderPreference   String?
-  experienceRequired String?
-  duration           String?
 
-  accommodation Boolean @default(false)
-  food          Boolean @default(false)
-  transport     Boolean @default(false)
 
-  client   Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
-  category Category? @relation(fields: [categoryId], references: [id])
-  location Location? @relation(fields: [locationId], references: [id])
 
-  // Future module relation placeholders
-  // bookings         Booking[]
-  hiringRequests    HiringRequest[]
-  requiredSkills    JobRequirementSkill[]
-  requiredLanguages JobRequirementLanguage[]
-  applications      JobApplication[]
-  savedBy           SavedJob[]
-  ignoredBy         IgnoredJob[]
 
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
 
-  @@index([clientId])
-  @@index([categoryId])
-  @@index([locationId])
-  @@index([status])
-  @@index([priority])
-  @@index([deletedAt])
-}
 
-model JobRequirementSkill {
-  id               String           @id @default(uuid())
-  jobRequirementId String
-  skillId          String
-  experienceYears  Int?
-  proficiencyLevel SkillProficiency
-  isMandatory      Boolean          @default(true)
 
-  jobRequirement JobRequirement @relation(fields: [jobRequirementId], references: [id], onDelete: Cascade)
-  skill          Skill          @relation(fields: [skillId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  @@unique([jobRequirementId, skillId])
-  @@index([jobRequirementId])
-  @@index([skillId])
-}
 
-model JobRequirementLanguage {
-  id               String              @id @default(uuid())
-  jobRequirementId String
-  languageId       String
-  proficiencyLevel LanguageProficiency
-  isMandatory      Boolean             @default(true)
 
-  jobRequirement JobRequirement @relation(fields: [jobRequirementId], references: [id], onDelete: Cascade)
-  language       Language       @relation(fields: [languageId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([jobRequirementId, languageId])
-  @@index([jobRequirementId])
-  @@index([languageId])
-}
-
-model JobApplication {
-  id               String            @id @default(uuid())
-  jobRequirementId String
-  workerId         String
-  status           ApplicationStatus @default(APPLIED)
-  notes            String?
-  appliedAt        DateTime          @default(now())
-
-  jobRequirement JobRequirement @relation(fields: [jobRequirementId], references: [id], onDelete: Cascade)
-  worker         Worker         @relation(fields: [workerId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([jobRequirementId, workerId])
-  @@index([jobRequirementId])
-  @@index([workerId])
-}
-
-model SavedJob {
-  id               String @id @default(uuid())
-  jobRequirementId String
-  workerId         String
-
-  jobRequirement JobRequirement @relation(fields: [jobRequirementId], references: [id], onDelete: Cascade)
-  worker         Worker         @relation(fields: [workerId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-
-  @@unique([jobRequirementId, workerId])
-  @@index([jobRequirementId])
-  @@index([workerId])
-}
-
-model IgnoredJob {
-  id               String @id @default(uuid())
-  jobRequirementId String
-  workerId         String
-
-  jobRequirement JobRequirement @relation(fields: [jobRequirementId], references: [id], onDelete: Cascade)
-  worker         Worker         @relation(fields: [workerId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-
-  @@unique([jobRequirementId, workerId])
-  @@index([jobRequirementId])
-  @@index([workerId])
-}
 
 model WorkerAttendance {
   id            String           @id @default(uuid())
@@ -737,51 +587,7 @@ model LeaveRequest {
   @@index([status])
 }
 
-model WorkerPayment {
-  id            String         @id @default(uuid())
-  workerId      String
-  amount        Float
-  paymentDate   DateTime?      @db.Date
-  periodStart   DateTime       @db.Date
-  periodEnd     DateTime       @db.Date
-  status        PaymentStatus  @default(PENDING)
-  paymentMethod PaymentMethod?
-  referenceNo   String?
-  notes         String?
-  assignmentId  String?
 
-  worker     Worker      @relation(fields: [workerId], references: [id], onDelete: Cascade)
-  assignment Assignment? @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([workerId])
-  @@index([status])
-}
-
-model AgencyPayment {
-  id            String         @id @default(uuid())
-  agencyId      String
-  amount        Float
-  paymentDate   DateTime?      @db.Date
-  periodStart   DateTime       @db.Date
-  periodEnd     DateTime       @db.Date
-  status        PaymentStatus  @default(PENDING)
-  paymentMethod PaymentMethod?
-  referenceNo   String?
-  notes         String?
-  assignmentId  String?
-
-  agency     Agency      @relation(fields: [agencyId], references: [id], onDelete: Cascade)
-  assignment Assignment? @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([agencyId])
-  @@index([status])
-}
 
 model WorkerDocument {
   id           String         @id @default(uuid())
@@ -824,7 +630,7 @@ enum NotificationType {
   AGENCY_INVITE
   JOB_ASSIGNMENT
   ATTENDANCE_REMINDER
-  PAYMENT_PROCESSED
+
   DOCUMENT_EXPIRY
   PROFILE_ALERT
   SYSTEM
@@ -874,49 +680,13 @@ model Notification {
 enum HiringRequestStatus {
   PENDING
   ACCEPTED
-  PAYMENT_PENDING
+
   ACTIVE
   REJECTED
   CANCELLED
 }
 
-model HiringRequest {
-  id               String  @id @default(uuid())
-  clientId         String
-  targetAgencyId   String?
-  targetWorkerId   String?
-  jobRequirementId String?
 
-  title        String
-  description  String?
-  proposedRate Decimal?
-  startDate    DateTime?
-  endDate      DateTime?
-  notes        String?
-  location     String?
-  phoneNumber  String?
-
-  status             HiringRequestStatus @default(PENDING)
-  advancePercentage  Int                 @default(30)
-  advancePaid        Boolean             @default(false)
-
-  client         Client          @relation(fields: [clientId], references: [id])
-  agency         Agency?         @relation(fields: [targetAgencyId], references: [id])
-  worker         Worker?         @relation(fields: [targetWorkerId], references: [id])
-  jobRequirement JobRequirement? @relation(fields: [jobRequirementId], references: [id])
-
-  payments PaymentTransaction[]
-
-  assignment Assignment?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([clientId])
-  @@index([targetAgencyId])
-  @@index([targetWorkerId])
-  @@index([status])
-}
 
 enum AssignmentStatus {
   ACTIVE
@@ -925,61 +695,15 @@ enum AssignmentStatus {
   CANCELLED
 }
 
-model Assignment {
-  id              String  @id @default(uuid())
-  assignmentCode  String  @unique
-  hiringRequestId String? @unique
-  clientId        String
-  agencyId        String?
 
-  title       String
-  description String?
-  agreedRate  Decimal?
-  startDate   DateTime?
-  endDate     DateTime?
 
-  status AssignmentStatus @default(ACTIVE)
 
-  hiringRequest HiringRequest? @relation(fields: [hiringRequestId], references: [id])
-  client        Client         @relation(fields: [clientId], references: [id])
-  agency        Agency?        @relation(fields: [agencyId], references: [id])
-
-  assignedWorkers AssignmentWorker[]
-  invoices        Invoice[]
-  workerPayments  WorkerPayment[]
-  agencyPayments  AgencyPayment[]
-
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  reviews    Review[]
-  complaints Complaint[]
-
-  @@index([clientId])
-  @@index([agencyId])
-  @@index([status])
-}
-
-model AssignmentWorker {
-  id           String   @id @default(uuid())
-  assignmentId String
-  workerId     String
-  assignedAt   DateTime @default(now())
-  status       String   @default("ACTIVE") // ACTIVE, REMOVED
-
-  assignment Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-  worker     Worker     @relation(fields: [workerId], references: [id], onDelete: Cascade)
-
-  @@unique([assignmentId, workerId])
-  @@index([assignmentId])
-  @@index([workerId])
-}
 
 model Review {
   id             String  @id @default(uuid())
   reviewerId     String
   targetWorkerId String?
   targetAgencyId String?
-  assignmentId   String?
 
   rating  Int
   comment String?
@@ -987,7 +711,7 @@ model Review {
   reviewer     Client      @relation(fields: [reviewerId], references: [id])
   targetWorker Worker?     @relation(fields: [targetWorkerId], references: [id])
   targetAgency Agency?     @relation(fields: [targetAgencyId], references: [id])
-  assignment   Assignment? @relation(fields: [assignmentId], references: [id])
+
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -995,7 +719,7 @@ model Review {
   @@index([reviewerId])
   @@index([targetWorkerId])
   @@index([targetAgencyId])
-  @@index([assignmentId])
+
 }
 
 enum ComplaintStatus {
@@ -1014,7 +738,6 @@ model Complaint {
   targetWorkerId String?
   targetAgencyId String?
   targetClientId String?
-  assignmentId   String?
 
   title       String
   description String
@@ -1027,7 +750,7 @@ model Complaint {
   targetWorker Worker?     @relation("WorkerTargetComplaints", fields: [targetWorkerId], references: [id])
   targetAgency Agency?     @relation("AgencyTargetComplaints", fields: [targetAgencyId], references: [id])
   targetClient Client?     @relation("ClientTargetComplaints", fields: [targetClientId], references: [id])
-  assignment   Assignment? @relation(fields: [assignmentId], references: [id])
+
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1082,28 +805,14 @@ model SystemSetting {
   @@index([key])
 }
 
-model PaymentTransaction {
-  id              String  @id @default(uuid())
-  orderId         String // Razorpay Order ID
-  paymentId       String? // Razorpay Payment ID
-  amount          Decimal
-  currency        String  @default("INR")
-  status          String  @default("PENDING") // PENDING, SUCCESS, FAILED
-  paymentType     String  @default("FULL")    // ADVANCE, FINAL, FULL
-  hiringRequestId String
 
-  hiringRequest HiringRequest @relation(fields: [hiringRequestId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
 
 
 model Invoice {
   id            String        @id @default(uuid())
   invoiceNumber String        @unique
   clientId      String
-  assignmentId  String?
+
   subtotal      Decimal
   taxes         Decimal
   grandTotal    Decimal
@@ -1112,7 +821,7 @@ model Invoice {
   updatedAt     DateTime      @updatedAt
 
   client        Client        @relation(fields: [clientId], references: [id])
-  assignment    Assignment?   @relation(fields: [assignmentId], references: [id])
+
   items         InvoiceItem[]
 }
 
