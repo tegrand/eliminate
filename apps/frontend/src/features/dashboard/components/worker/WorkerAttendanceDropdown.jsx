@@ -88,12 +88,12 @@ export default function WorkerAttendanceDropdown() {
 
   return (
     <div className="flex items-center gap-2 w-full">
-      <div className={`flex-1 flex justify-center px-3 py-2.5 rounded-lg border text-[13px] font-bold items-center gap-1.5 shadow-sm transition-colors ${
+      <div className={`flex-1 flex justify-center px-2 sm:px-3 py-2.5 rounded-lg border text-[11px] sm:text-[13px] font-bold items-center gap-1 sm:gap-1.5 shadow-sm transition-colors ${
         currentStatus 
           ? `${currentStatus.color.replace('text', 'bg').replace('600', '50')} ${currentStatus.color} border-${currentStatus.color.split('-')[1]}-200`
           : 'bg-white text-slate-700 border-gray-200'
       }`}>
-        {currentStatus ? <currentStatus.icon className="w-4 h-4" /> : <Clock className="w-4 h-4 text-slate-500" />}
+        {currentStatus ? <currentStatus.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" /> : <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500 flex-shrink-0" />}
         <span className="truncate">
         {currentStatus ? (
           currentStatus.id === "PRESENT" ? "Checked In" : 
@@ -101,15 +101,15 @@ export default function WorkerAttendanceDropdown() {
           currentStatus.label
         ) : "Not Marked"}
         </span>
-        <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-1 flex-shrink-0" />
+        <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-0.5 sm:ml-1 flex-shrink-0" />
       </div>
 
-      <div className="relative flex-1" ref={dropdownRef}>
+      <div className="relative flex-1 min-w-0" ref={dropdownRef}>
         <button 
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 border border-transparent rounded-lg text-[13px] font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-all shadow-sm"
+          className="w-full flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-2.5 border border-transparent rounded-lg text-[11px] sm:text-[13px] font-bold text-white bg-indigo-600 hover:bg-indigo-700 transition-all shadow-sm"
         >
-          <Calendar className="w-4 h-4 text-indigo-100 flex-shrink-0" />
+          <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-100 flex-shrink-0" />
           <span className="truncate">Today's Attendance</span>
           <ChevronDown className={`w-3.5 h-3.5 text-indigo-100 transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
         </button>

@@ -109,7 +109,6 @@ model User {
   deletedAt     DateTime?
   agency        Agency?
   authAuditLogs AuthAuditLog[]
-  notifications Notification[]
 
   @@index([email])
   @@index([roleId])
@@ -625,20 +624,7 @@ model AgencyDocument {
   @@index([documentType])
 }
 
-enum NotificationType {
-  APPROVAL
-  AGENCY_INVITE
-  JOB_ASSIGNMENT
-  ATTENDANCE_REMINDER
 
-  DOCUMENT_EXPIRY
-  PROFILE_ALERT
-  SYSTEM
-  HIRING_ACCEPTED
-  HIRING_REJECTED
-  ASSIGNMENT_STARTED
-  ASSIGNMENT_COMPLETED
-}
 
 enum WorkerProfileStatus {
   PENDING
@@ -659,28 +645,11 @@ enum ClientProfileStatus {
   SUSPENDED
 }
 
-model Notification {
-  id      String           @id @default(uuid())
-  userId  String
-  type    NotificationType @default(SYSTEM)
-  title   String
-  message String
-  isRead  Boolean          @default(false)
-  link    String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId])
-  @@index([isRead])
-}
 
 enum HiringRequestStatus {
   PENDING
   ACCEPTED
-
+  PAYMENT_PENDING
   ACTIVE
   REJECTED
   CANCELLED

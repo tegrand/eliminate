@@ -48,14 +48,9 @@ export const getWorkerDashboard = async (userId) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const [attendanceRecords, notificationsList] = await Promise.all([
+  const [attendanceRecords] = await Promise.all([
     prisma.workerAttendance.findMany({
       where: { workerId: worker.id }
-    }),
-    prisma.notification.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-      take: 5
     })
   ]);
 
@@ -96,7 +91,6 @@ export const getWorkerDashboard = async (userId) => {
     completedJobs: [],
     todayAttendance: null,
     pendingPayments: null,
-    notifications: notificationsList,
     recentActivities: [],
     topStats: {
       totalCompletedWork: 0,
@@ -192,13 +186,7 @@ export const getClientDashboard = async (userId) => {
     });
   }
 
-  const [notifications] = await Promise.all([
-    prisma.notification.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
-      take: 6
-    })
-  ]);
+
 
   const getEmptyMonthlyData = () => [
     { name: 'Jan', value: 0 }, { name: 'Feb', value: 0 }, { name: 'Mar', value: 0 },
@@ -229,7 +217,6 @@ export const getClientDashboard = async (userId) => {
       pendingPayments: "₹0"
     },
     recentActivities: [],
-    notifications,
     completedJobsList: [],
     chartData
   };

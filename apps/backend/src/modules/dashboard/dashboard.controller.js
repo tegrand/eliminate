@@ -34,7 +34,6 @@ export const getDashboardData = asyncHandler(async (req, res) => {
         completedAssignments: 0,
       },
       recentActivities: [],
-      notifications: [],
       attendance: [],
       chartData: {
         lineData: [

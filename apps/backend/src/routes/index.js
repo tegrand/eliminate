@@ -17,7 +17,6 @@ import locationRoutes from "../modules/locations/location.routes.js";
 import workerAttendanceRoutes from "../modules/worker-attendance/worker-attendance.routes.js";
 
 import workerDocumentsRoutes from "../modules/worker-documents/worker-documents.routes.js";
-import notificationsRoutes from "../modules/notifications/notifications.routes.js";
 import reviewRoutes from "../modules/reviews/review.routes.js";
 import reportsRoutes from "../modules/reports/reports.routes.js";
 import complaintsRoutes from "../modules/complaints/complaints.routes.js";
@@ -40,7 +39,6 @@ router.use("/clients", clientRoutes);
 router.use("/agencies", agencyRoutes);
 
 router.use("/my-attendance", workerAttendanceRoutes);
-router.use("/notifications", notificationsRoutes);
 
 router.use("/my-documents", workerDocumentsRoutes);
 router.use("/reviews", reviewRoutes);

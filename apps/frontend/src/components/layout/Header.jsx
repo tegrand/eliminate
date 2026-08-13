@@ -4,7 +4,6 @@ import { useSidebar } from "../../contexts/SidebarContext";
 import { Link } from "react-router-dom";
 import { ROUTES } from "../../routes/routePaths";
 import { LogOut, Search, User, ChevronDown } from "lucide-react";
-import NotificationBell from "../ui/notifications/NotificationBell";
 import LanguageSwitcher from "../ui/LanguageSwitcher";
 import { calculateWorkerProfileCompletion } from "../../utils/profileCompletion";
 import { useQuery } from "@tanstack/react-query";
@@ -69,8 +68,6 @@ export default function Header() {
       {/* Right Actions */}
       <div className="flex items-center space-x-3 sm:space-x-5 ml-auto">
         <LanguageSwitcher />
-        <NotificationBell />
-        
         {/* Profile Section with Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button 

@@ -33,7 +33,7 @@ export const setupSocket = (server, app) => {
   io.on("connection", (socket) => {
     console.log(`🔌 User connected to socket: ${socket.user.userId}`);
     
-    // Join a room specific to this user to allow targeted notifications
+    // Join a room specific to this user to allow targeted events
     socket.join(socket.user.userId);
 
     socket.on("disconnect", () => {

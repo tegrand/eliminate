@@ -30,7 +30,6 @@ import WorkerDetailsPage from "../features/worker/pages/WorkerDetailsPage";
 
 import WorkerSettingsPage from "../features/worker/pages/WorkerSettingsPage";
 import WorkerAttendancePage from "../features/worker/pages/WorkerAttendancePage";
-import WorkerNotificationsPage from "../features/worker/pages/WorkerNotificationsPage";
 import MyDocumentsPage from "../features/documents/pages/MyDocumentsPage";
 import ClientListPage from "../features/client/pages/ClientListPage";
 import ClientDetailsPage from "../features/client/pages/ClientDetailsPage";
@@ -110,7 +109,6 @@ const AppRouter = () => {
             <Route path={ROUTES.WORKER_SETTINGS} element={<WorkerSettingsPage />} />
 
             <Route path={ROUTES.MY_ATTENDANCE} element={<WorkerAttendancePage />} />
-            <Route path="/worker/notifications" element={<WorkerNotificationsPage />} />
             <Route path={ROUTES.WORKFORCE_SEARCH} element={<ClientWorkerSearchPage />} />
             <Route path={ROUTES.WORKFORCE_PROFILE} element={<ClientWorkerProfilePage />} />
             <Route path={ROUTES.AGENCY_SEARCH} element={<ClientAgencySearchPage />} />

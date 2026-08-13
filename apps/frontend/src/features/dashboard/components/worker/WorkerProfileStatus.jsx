@@ -7,21 +7,42 @@ import WorkerAttendanceDropdown from "./WorkerAttendanceDropdown";
 export default function WorkerProfileStatus() {
   const { user } = useAuth();
   
+  const getImageUrl = (path) => {
+    if (!path) return null;
+    if (path.startsWith('http')) return path;
+    const baseUrl = import.meta.env.VITE_API_BASE_URL 
+      ? import.meta.env.VITE_API_BASE_URL.replace('/api/v1', '') 
+      : 'http://localhost:7000';
+    return `${baseUrl}/${path.replace(/\\/g, '/').replace(/^\//, '')}`;
+  };
+
+  const profileImageUrl = getImageUrl(user?.avatar || user?.workerProfile?.profilePhoto);
+  
   return (
     <div className="w-full px-4 sm:px-6 md:px-0 md:w-[90%] max-w-6xl mx-auto space-y-5 sm:space-y-6 animate-fade-in mt-2 mb-8">
       {/* Premium Banner */}
-      <div className="relative overflow-hidden rounded-[1.5rem] bg-white p-6 sm:p-8 border border-gray-100 shadow-[0_4px_30px_rgb(0,0,0,0.04)]">
+      <div className="relative rounded-[1.5rem] bg-white p-4 sm:p-6 md:p-8 border border-gray-100 shadow-[0_4px_30px_rgb(0,0,0,0.04)]">
         {/* Subtle background waves */}
-        <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_right,_var(--tw-gradient-stops))] from-indigo-50/50 via-transparent to-transparent pointer-events-none opacity-80"></div>
+        <div className="absolute inset-0 overflow-hidden rounded-[1.5rem] pointer-events-none z-0">
+          <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(ellipse_at_right,_var(--tw-gradient-stops))] from-indigo-50/50 via-transparent to-transparent opacity-80"></div>
+        </div>
         
         <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 lg:gap-10">
           <div className="flex flex-row items-center gap-4 sm:gap-6 w-full lg:w-auto">
             
             {/* Avatar */}
             <div className="relative flex-shrink-0">
-              <div className="w-[4.5rem] h-[4.5rem] sm:w-28 sm:h-28 rounded-full bg-gradient-to-br from-indigo-50 to-purple-100 flex items-center justify-center text-indigo-600 text-3xl sm:text-5xl font-medium shadow-inner">
-                {user?.email ? user.email.charAt(0).toUpperCase() : "W"}
-              </div>
+              {profileImageUrl ? (
+                <img 
+                  src={profileImageUrl} 
+                  alt="Profile" 
+                  className="w-[4rem] h-[4rem] sm:w-[4.5rem] sm:h-[4.5rem] lg:w-28 lg:h-28 rounded-full object-cover shadow-inner border border-gray-100" 
+                />
+              ) : (
+                <div className="w-[4rem] h-[4rem] sm:w-[4.5rem] sm:h-[4.5rem] lg:w-28 lg:h-28 rounded-full bg-gradient-to-br from-indigo-50 to-purple-100 flex items-center justify-center text-indigo-600 text-3xl sm:text-4xl lg:text-5xl font-medium shadow-inner">
+                  {user?.email ? user.email.charAt(0).toUpperCase() : "W"}
+                </div>
+              )}
               <div className="absolute bottom-0 right-0 sm:bottom-1 sm:right-1 w-5 h-5 sm:w-7 sm:h-7 bg-emerald-500 rounded-full border-2 sm:border-[3px] border-white flex items-center justify-center shadow-sm">
                 <svg className="w-3 h-3 sm:w-4 sm:h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />

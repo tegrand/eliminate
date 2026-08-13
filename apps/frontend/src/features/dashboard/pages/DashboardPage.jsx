@@ -5,7 +5,6 @@ import { dashboardApi } from "../api/dashboard.api";
 
 import DashboardStats from "../components/DashboardStats";
 import RecentActivity from "../components/RecentActivity";
-import NotificationPanel from "../components/NotificationPanel";
 import EarningsOverview from "../components/EarningsOverview";
 import TaskCompletion from "../components/TaskCompletion";
 import WorkerProfileStatus from "../components/worker/WorkerProfileStatus";
@@ -56,7 +55,6 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
           <RecentActivity data={data?.recentUsers} />
-          <NotificationPanel />
         </div>
       </>
     );
