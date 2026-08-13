@@ -10,7 +10,6 @@ import { useAuth } from "../../../hooks/useAuth";
 export default function AgencySignupPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
 
   // Form State across steps
@@ -32,32 +31,24 @@ export default function AgencySignupPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleNext = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (currentStep < 4) {
-      setCurrentStep(prev => prev + 1);
-    } else {
-      setLoading(true);
-      try {
-        const { authApi } = await import("../api/auth.api");
-        await authApi.registerAgency(formData);
-        
-        // Auto-login the user
-        const response = await authApi.login({ email: formData.email, password: formData.password });
-        login(response.data.data.user, response.data.data.accessToken);
-        
-        toast.success("Agency registration successful! Welcome to your dashboard.");
-        navigate(ROUTES.DASHBOARD);
-      } catch (error) {
-        toast.error(error?.response?.data?.message || "Registration failed. Please try again.");
-      } finally {
-        setLoading(false);
-      }
+    setLoading(true);
+    try {
+      const { authApi } = await import("../api/auth.api");
+      await authApi.registerAgency(formData);
+      
+      // Auto-login the user
+      const response = await authApi.login({ email: formData.email, password: formData.password });
+      login(response.data.data.user, response.data.data.accessToken);
+      
+      toast.success("Agency registration successful! Welcome to your dashboard.");
+      navigate(ROUTES.DASHBOARD);
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const handlePrev = () => {
-    if (currentStep > 1) setCurrentStep(prev => prev - 1);
   };
 
   return (
@@ -75,28 +66,15 @@ export default function AgencySignupPage() {
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900">Agency Onboarding</h2>
-              <p className="text-xs text-gray-500">Step {currentStep} of 4</p>
+              <p className="text-xs text-gray-500">Agency Registration</p>
             </div>
-          </div>
-
-          {/* Step Pills */}
-          <div className="flex gap-1.5">
-            {[1, 2, 3, 4].map(step => (
-              <div 
-                key={step} 
-                className={`h-2 rounded-full transition-all ${
-                  step === currentStep ? "w-6 bg-amber-500" : step < currentStep ? "w-2 bg-gray-900" : "w-2 bg-gray-200"
-                }`} 
-              />
-            ))}
           </div>
         </div>
 
-        <form onSubmit={handleNext} className="space-y-6">
-          {/* STEP 1: Agency Info */}
-          {currentStep === 1 && (
-            <div className="space-y-4 animate-fade-in">
-              <h3 className="text-sm font-semibold text-gray-900">Step 1: Agency & Owner Credentials</h3>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Agency Info */}
+          <div className="space-y-4 animate-fade-in">
+            <h3 className="text-sm font-semibold text-gray-900">Agency & Owner Credentials</h3>
               <Input
                 label="Agency Name"
                 name="agencyName"
@@ -141,149 +119,12 @@ export default function AgencySignupPage() {
                 placeholder="••••••••"
                 required
               />
-            </div>
-          )}
-
-          {/* STEP 2: Business Info */}
-          {currentStep === 2 && (
-            <div className="space-y-4 animate-fade-in">
-              <h3 className="text-sm font-semibold text-gray-900">Step 2: Business Address & Licenses</h3>
-              <Input
-                label="Registered Business Address"
-                name="addressLine1"
-                value={formData.addressLine1}
-                onChange={handleChange}
-                placeholder="Suite 400, Industrial Hub"
-                required
-              />
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-gray-700">District</label>
-                  <select
-                    name="district"
-                    value={formData.district}
-                    onChange={handleChange}
-                    required
-                    className="flex h-10 w-full rounded-md border border-slate-300 bg-transparent px-3 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    <option value="">Select District</option>
-                    <option value="Thiruvananthapuram">Thiruvananthapuram</option>
-                    <option value="Kollam">Kollam</option>
-                    <option value="Pathanamthitta">Pathanamthitta</option>
-                    <option value="Alappuzha">Alappuzha</option>
-                    <option value="Kottayam">Kottayam</option>
-                    <option value="Idukki">Idukki</option>
-                    <option value="Ernakulam">Ernakulam</option>
-                    <option value="Thrissur">Thrissur</option>
-                    <option value="Palakkad">Palakkad</option>
-                    <option value="Malappuram">Malappuram</option>
-                    <option value="Kozhikode">Kozhikode</option>
-                    <option value="Wayanad">Wayanad</option>
-                    <option value="Kannur">Kannur</option>
-                    <option value="Kasaragod">Kasaragod</option>
-                  </select>
-                </div>
-                <Input
-                  label="State"
-                  name="state"
-                  value={formData.state}
-                  onChange={handleChange}
-                  placeholder="Kerala"
-                  readOnly
-                  required
-                />
-                <Input
-                  label="Pincode / Postal Code"
-                  name="pincode"
-                  value={formData.pincode}
-                  onChange={handleChange}
-                  placeholder="90210"
-                  required
-                />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                <Input
-                  label="GST Number (Optional)"
-                  name="gstNumber"
-                  value={formData.gstNumber}
-                  onChange={handleChange}
-                  placeholder="22AAAAA0000A1Z5"
-                />
-                <Input
-                  label="Labor Supply License # (Optional)"
-                  name="licenseNumber"
-                  value={formData.licenseNumber}
-                  onChange={handleChange}
-                  placeholder="LIC-99201-B"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* STEP 3: Documents */}
-          {currentStep === 3 && (
-            <div className="space-y-4 animate-fade-in">
-              <h3 className="text-sm font-semibold text-gray-900">Step 3: Verification Documents (Optional)</h3>
-              <p className="text-xs text-gray-500">You can skip this step and upload documents later from your dashboard.</p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-amber-500 transition-colors cursor-pointer bg-gray-50/50">
-                  <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">Business Registration (Optional)</p>
-                  <p className="text-[10px] text-gray-400 mt-1">PDF, PNG, JPG (Max 5MB)</p>
-                </div>
-
-                <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-amber-500 transition-colors cursor-pointer bg-gray-50/50">
-                  <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">GST Registration (Optional)</p>
-                  <p className="text-[10px] text-gray-400 mt-1">PDF, PNG, JPG (Max 5MB)</p>
-                </div>
-
-                <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-amber-500 transition-colors cursor-pointer bg-gray-50/50">
-                  <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">Owner Identity Proof (Optional)</p>
-                  <p className="text-[10px] text-gray-400 mt-1">Passport, Govt ID</p>
-                </div>
-
-                <div className="border-2 border-dashed border-gray-200 rounded-xl p-4 text-center hover:border-amber-500 transition-colors cursor-pointer bg-gray-50/50">
-                  <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                  <p className="text-xs font-semibold text-gray-700">Office Address Proof (Optional)</p>
-                  <p className="text-[10px] text-gray-400 mt-1">Utility Bill, Lease Agreement</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* STEP 4: Review */}
-          {currentStep === 4 && (
-            <div className="space-y-4 animate-fade-in">
-              <h3 className="text-sm font-semibold text-gray-900">Step 4: Final Review & Submission</h3>
-              <div className="bg-amber-50/50 border border-amber-100 p-4 rounded-xl text-xs space-y-2 text-gray-700">
-                <p><strong>Agency:</strong> {formData.agencyName || "N/A"}</p>
-                <p><strong>Owner:</strong> {formData.ownerName || "N/A"}</p>
-                <p><strong>Email:</strong> {formData.email || "N/A"}</p>
-                <p><strong>Phone:</strong> {formData.phone || "N/A"}</p>
-                <p><strong>Location:</strong> {formData.district}, {formData.state}</p>
-              </div>
-
-              <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 text-xs text-gray-500 leading-relaxed">
-                By submitting this form, you confirm that all attached agency documents and license credentials are authentic. Upon submission, your agency account status will be set to <strong>Pending Verification</strong> until reviewed by Super Admin.
-              </div>
-            </div>
-          )}
+          </div>
 
           {/* Navigation Controls */}
-          <div className="flex items-center justify-between pt-6 border-t border-gray-100">
-            {currentStep > 1 ? (
-              <Button type="button" variant="outline" onClick={handlePrev}>
-                Previous
-              </Button>
-            ) : <div />}
-
+          <div className="flex items-center justify-end pt-6 border-t border-gray-100">
             <Button type="submit" loading={loading} className="bg-gray-900 hover:bg-gray-800">
-              {currentStep === 4 ? (
-                <>Submit Agency Registration <CheckCircle className="ml-2 h-4 w-4" /></>
-              ) : "Continue"}
+              Submit
             </Button>
           </div>
         </form>
