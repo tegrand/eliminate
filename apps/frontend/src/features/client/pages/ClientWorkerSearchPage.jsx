@@ -13,8 +13,6 @@ const DEFAULT_FILTERS = {
   maxExperience: "",
   verifiedOnly: false,
   availableOnly: false,
-  independentWorkers: true,
-  agencyWorkers: true,
 };
 
 export default function ClientWorkerSearchPage() {
@@ -72,9 +70,8 @@ export default function ClientWorkerSearchPage() {
       // 6. Availability
       if (filters.availableOnly && !isAvailable) return false;
 
-      // 7. Independent vs Agency
-      if (!filters.independentWorkers && !isAgency) return false;
-      if (!filters.agencyWorkers && isAgency) return false;
+      // 7. Only show independent workers
+      if (isAgency) return false;
 
       // Note: Category filter is omitted from logic since we are relying on primarySkill string in this basic implementation, but it can be expanded if category ID is available on worker.
       

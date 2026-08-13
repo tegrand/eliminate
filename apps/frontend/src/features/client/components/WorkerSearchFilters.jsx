@@ -127,14 +127,7 @@ export default function WorkerSearchFilters({ filters, setFilters, onClear, work
           </div>
         </div>
 
-        {/* Worker Type */}
-        <div className="space-y-1 pt-1 border-t border-gray-100">
-          <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-2">Worker Type</label>
-          <div className="-mx-2">
-            <CheckboxField label="Independent Workers" field="independentWorkers" />
-            <CheckboxField label="Agency Workers" field="agencyWorkers" />
-          </div>
-        </div>
+
 
       </div>
 
