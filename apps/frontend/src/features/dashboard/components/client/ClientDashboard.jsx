@@ -37,11 +37,11 @@ export default function ClientDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Featured Ads from Super Admin */}
-      <ClientAdvertisements />
-
       {/* Overview Stat Cards */}
       <ClientOverviewCards stats={topStats} />
+
+      {/* Featured Ads from Super Admin */}
+      <ClientAdvertisements />
 
       {/* Analytics Charts */}
       <DashboardChartsRow
