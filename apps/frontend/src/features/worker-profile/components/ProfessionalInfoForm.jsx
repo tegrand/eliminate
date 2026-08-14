@@ -1,17 +1,17 @@
-import { useState, useEffect, useCallback } from "react";
-import { Save, X, Plus, Loader2, ChevronDown } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Save, X, Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import api from "../../../api/axios";
 
-// Tag badge component
-function Tag({ label, onRemove }) {
+// Tag badge component (inside input)
+function Pill({ label, onRemove }) {
   return (
-    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-semibold">
+    <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-100 text-indigo-700 rounded-md text-[11px] font-bold tracking-wide mt-1 mb-1 ml-1.5">
       {label}
       <button
         type="button"
-        onClick={onRemove}
-        className="text-indigo-400 hover:text-indigo-700 transition-colors"
+        onClick={(e) => { e.preventDefault(); onRemove(); }}
+        className="text-indigo-400 hover:text-indigo-800 transition-colors focus:outline-none ml-1"
       >
         <X className="w-3 h-3" />
       </button>
@@ -19,37 +19,72 @@ function Tag({ label, onRemove }) {
   );
 }
 
-// Searchable dropdown for selecting skills/languages
-function SearchableSelect({ placeholder, options, onSelect, loading }) {
+// Modern Tag Input component
+function TagInput({ placeholder, selectedItems, onAdd, onRemove, options, loading }) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const inputRef = useRef(null);
 
   const filtered = options.filter(o =>
-    o.name.toLowerCase().includes(query.toLowerCase())
+    o.name.toLowerCase().includes(query.toLowerCase()) && 
+    !selectedItems.find(s => (s.skill?.id || s.language?.id) === o.id)
   ).slice(0, 10);
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Backspace' && query === "" && selectedItems.length > 0) {
+      // Remove last item on backspace if input is empty
+      const lastItem = selectedItems[selectedItems.length - 1];
+      onRemove(lastItem.skill?.id || lastItem.language?.id || lastItem);
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (filtered.length > 0) {
+        onAdd(filtered[0]);
+        setQuery("");
+      }
+    }
+  };
+
   return (
-    <div className="relative">
-      <div className="flex gap-2">
+    <div className="relative w-full">
+      <div 
+        className="flex flex-wrap items-center w-full min-h-[46px] bg-white border border-slate-200 rounded-xl focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500 transition-all cursor-text overflow-hidden pl-1 pr-2 py-0.5"
+        onClick={() => inputRef.current?.focus()}
+      >
+        {selectedItems.map((item, idx) => (
+          <Pill 
+            key={idx} 
+            label={item.skill?.name || item.language?.name || item} 
+            onRemove={() => onRemove(item.skill?.id || item.language?.id || item)} 
+          />
+        ))}
+        
         <input
+          ref={inputRef}
           type="text"
           value={query}
           onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
+          onKeyDown={handleKeyDown}
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 200)}
-          placeholder={placeholder}
-          className="flex-1 px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-800 placeholder:text-slate-400 text-sm"
+          placeholder={selectedItems.length === 0 ? placeholder : ""}
+          className="flex-1 min-w-[120px] outline-none bg-transparent text-sm text-slate-800 placeholder:text-slate-400 py-2.5 px-2"
         />
-        {loading && <Loader2 className="w-4 h-4 animate-spin text-slate-400 mt-3 mr-2" />}
+        {loading && <Loader2 className="w-4 h-4 animate-spin text-indigo-500 ml-2 shrink-0" />}
       </div>
+
       {open && filtered.length > 0 && (
-        <div className="absolute z-20 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg overflow-hidden">
+        <div className="absolute z-30 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden max-h-60 overflow-y-auto">
           {filtered.map(opt => (
             <button
               key={opt.id}
               type="button"
-              className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors"
-              onMouseDown={() => { onSelect(opt); setQuery(""); setOpen(false); }}
+              className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors focus:bg-indigo-50 focus:outline-none"
+              onMouseDown={(e) => { 
+                e.preventDefault(); 
+                onAdd(opt); 
+                setQuery(""); 
+                inputRef.current?.focus(); 
+              }}
             >
               {opt.name}
             </button>
@@ -60,7 +95,7 @@ function SearchableSelect({ placeholder, options, onSelect, loading }) {
   );
 }
 
-export default function ProfessionalInfoForm({ data, onSave, saving }) {
+export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader }) {
   const workerId = data?.id;
 
   const [formData, setFormData] = useState({
@@ -112,10 +147,7 @@ export default function ProfessionalInfoForm({ data, onSave, saving }) {
   // --- Skills ---
   const handleAddSkill = async (skill) => {
     if (!workerId) return;
-    if (workerSkills.find(s => s.skill.id === skill.id)) {
-      toast.error("Skill already added");
-      return;
-    }
+    if (workerSkills.find(s => s.skill.id === skill.id)) return;
     try {
       setAddingSkill(true);
       await api.post(`/workers/${workerId}/skills`, {
@@ -125,7 +157,6 @@ export default function ProfessionalInfoForm({ data, onSave, saving }) {
         isPrimary: workerSkills.length === 0,
       });
       setWorkerSkills(prev => [...prev, { id: skill.id, skill, proficiencyLevel: "INTERMEDIATE", isPrimary: prev.length === 0 }]);
-      toast.success(`${skill.name} added`);
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to add skill");
     } finally {
@@ -138,7 +169,6 @@ export default function ProfessionalInfoForm({ data, onSave, saving }) {
     try {
       await api.delete(`/workers/${workerId}/skills/${skillId}`);
       setWorkerSkills(prev => prev.filter(s => s.skill.id !== skillId));
-      toast.success("Skill removed");
     } catch {
       toast.error("Failed to remove skill");
     }
@@ -147,10 +177,7 @@ export default function ProfessionalInfoForm({ data, onSave, saving }) {
   // --- Languages ---
   const handleAddLanguage = async (lang) => {
     if (!workerId) return;
-    if (workerLanguages.find(l => l.language.id === lang.id)) {
-      toast.error("Language already added");
-      return;
-    }
+    if (workerLanguages.find(l => l.language.id === lang.id)) return;
     try {
       setAddingLang(true);
       await api.post(`/workers/${workerId}/languages`, {
@@ -163,7 +190,6 @@ export default function ProfessionalInfoForm({ data, onSave, saving }) {
         isPrimary: workerLanguages.length === 0,
       });
       setWorkerLanguages(prev => [...prev, { id: lang.id, language: lang, proficiencyLevel: "CONVERSATIONAL" }]);
-      toast.success(`${lang.name} added`);
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to add language");
     } finally {
@@ -176,23 +202,9 @@ export default function ProfessionalInfoForm({ data, onSave, saving }) {
     try {
       await api.delete(`/workers/${workerId}/languages/${languageId}`);
       setWorkerLanguages(prev => prev.filter(l => l.language.id !== languageId));
-      toast.success("Language removed");
     } catch {
       toast.error("Failed to remove language");
     }
-  };
-
-  // --- Preferred Locations ---
-  const handleAddLocation = () => {
-    const val = locationInput.trim();
-    if (!val) return;
-    if (formData.preferredLocations.includes(val)) return;
-    setFormData(prev => ({ ...prev, preferredLocations: [...prev.preferredLocations, val] }));
-    setLocationInput("");
-  };
-
-  const handleRemoveLocation = (loc) => {
-    setFormData(prev => ({ ...prev, preferredLocations: prev.preferredLocations.filter(l => l !== loc) }));
   };
 
   const handleSubmit = (e) => {
@@ -211,16 +223,17 @@ export default function ProfessionalInfoForm({ data, onSave, saving }) {
 
   return (
     <div className="animate-fade-in">
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-slate-900">Professional Details</h2>
-        <p className="text-sm text-slate-500 mt-1">Manage your experience, skills, languages and preferences.</p>
-      </div>
+      {!hideHeader && (
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-slate-900">Professional Details</h2>
+          <p className="text-sm text-slate-500 mt-1">Manage your experience, skills, languages and preferences.</p>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
 
         {/* Experience & Salary */}
         <div className={sectionClass}>
-          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Experience & Expected Wage</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label className={labelClass}>Total Experience (Years)</label>
@@ -236,7 +249,7 @@ export default function ProfessionalInfoForm({ data, onSave, saving }) {
               />
             </div>
             <div>
-              <label className={labelClass}>Expected Daily Wage</label>
+              <label className={labelClass}>Expected Daily Wage (Optional)</label>
               <input
                 type="text"
                 name="expectedDailyWage"
@@ -251,84 +264,32 @@ export default function ProfessionalInfoForm({ data, onSave, saving }) {
 
         {/* Skills */}
         <div className={sectionClass}>
-          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Skills</h3>
-          <SearchableSelect
-            placeholder="Search and add a skill..."
-            options={allSkills.filter(s => !workerSkills.find(ws => ws.skill?.id === s.id))}
-            onSelect={handleAddSkill}
+          <label className={labelClass}>Skills</label>
+          <TagInput 
+            placeholder="Type and press Enter to add skills..."
+            selectedItems={workerSkills}
+            options={allSkills}
+            onAdd={handleAddSkill}
+            onRemove={handleRemoveSkill}
             loading={skillsLoading || addingSkill}
           />
-          {workerSkills.length > 0 ? (
-            <div className="flex flex-wrap gap-2 mt-3">
-              {workerSkills.map((ws) => (
-                <Tag
-                  key={ws.skill?.id}
-                  label={ws.skill?.name}
-                  onRemove={() => handleRemoveSkill(ws.skill?.id)}
-                />
-              ))}
-            </div>
-          ) : (
-            <p className="text-xs text-slate-400 italic mt-2">No skills added yet. Search above to add your skills.</p>
-          )}
+          <p className="text-[11px] text-slate-400 mt-1.5">Add skills relevant to the jobs you want to get hired for.</p>
         </div>
 
         {/* Languages */}
         <div className={sectionClass}>
-          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Languages Known</h3>
-          <SearchableSelect
-            placeholder="Search and add a language..."
-            options={allLanguages.filter(l => !workerLanguages.find(wl => wl.language?.id === l.id))}
-            onSelect={handleAddLanguage}
+          <label className={labelClass}>Languages Known</label>
+          <TagInput 
+            placeholder="Type and press Enter to add languages..."
+            selectedItems={workerLanguages}
+            options={allLanguages}
+            onAdd={handleAddLanguage}
+            onRemove={handleRemoveLanguage}
             loading={langsLoading || addingLang}
           />
-          {workerLanguages.length > 0 ? (
-            <div className="flex flex-wrap gap-2 mt-3">
-              {workerLanguages.map((wl) => (
-                <Tag
-                  key={wl.language?.id}
-                  label={wl.language?.name}
-                  onRemove={() => handleRemoveLanguage(wl.language?.id)}
-                />
-              ))}
-            </div>
-          ) : (
-            <p className="text-xs text-slate-400 italic mt-2">No languages added yet. Search above to add your languages.</p>
-          )}
         </div>
 
-        {/* Preferred Work Locations */}
-        <div className={sectionClass}>
-          <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest">Preferred Work Locations</h3>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={locationInput}
-              onChange={(e) => setLocationInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddLocation(); } }}
-              className={`${inputClass} flex-1`}
-              placeholder="e.g. Kochi, Trivandrum, Kozhikode (press Enter)"
-            />
-            <button
-              type="button"
-              onClick={handleAddLocation}
-              className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold transition-colors flex items-center gap-1"
-            >
-              <Plus className="w-4 h-4" /> Add
-            </button>
-          </div>
-          {formData.preferredLocations.length > 0 ? (
-            <div className="flex flex-wrap gap-2 mt-3">
-              {formData.preferredLocations.map((loc) => (
-                <Tag key={loc} label={loc} onRemove={() => handleRemoveLocation(loc)} />
-              ))}
-            </div>
-          ) : (
-            <p className="text-xs text-slate-400 italic mt-2">No preferred locations added yet.</p>
-          )}
-        </div>
-
-        <div className="pt-5 flex justify-end">
+        <div className="pt-5 border-t border-slate-100 flex justify-end">
           <button
             type="submit"
             disabled={saving}

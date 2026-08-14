@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Save } from "lucide-react";
 
-export default function ContactInfoForm({ data, onSave, saving }) {
+export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
   const [formData, setFormData] = useState({
     phone: data?.phone || "",
     email: data?.user?.email || "",
@@ -27,10 +27,12 @@ export default function ContactInfoForm({ data, onSave, saving }) {
 
   return (
     <div className="animate-fade-in">
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-slate-900">Contact Details</h2>
-        <p className="text-sm text-slate-500 mt-1">Manage your contact information and emergency contacts.</p>
-      </div>
+      {!hideHeader && (
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-slate-900">Contact Details</h2>
+          <p className="text-sm text-slate-500 mt-1">Manage your contact information and emergency contacts.</p>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-8">
         

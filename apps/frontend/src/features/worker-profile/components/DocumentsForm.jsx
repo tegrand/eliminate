@@ -3,7 +3,7 @@ import { Save, UploadCloud, FileText, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import api from "../../../api/axios";
 
-export default function DocumentsForm({ data, onSave, saving }) {
+export default function DocumentsForm({ data, onSave, saving, hideHeader }) {
   const [formData, setFormData] = useState({
     aadhaarNumber: data?.aadhaarNumber || "",
     panNumber: data?.panNumber || "",
@@ -65,10 +65,12 @@ export default function DocumentsForm({ data, onSave, saving }) {
 
   return (
     <div className="animate-fade-in">
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-slate-900">Documents & Financial</h2>
-        <p className="text-sm text-slate-500 mt-1">Manage your identity documents, bank details, and certificates.</p>
-      </div>
+      {!hideHeader && (
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-slate-900">Documents & Financial</h2>
+          <p className="text-sm text-slate-500 mt-1">Manage your identity documents, bank details, and certificates.</p>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-8">
         

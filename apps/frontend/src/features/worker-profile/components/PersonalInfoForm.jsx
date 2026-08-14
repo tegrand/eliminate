@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Save, UserCircle2, Camera, Loader2 } from "lucide-react";
 
-export default function PersonalInfoForm({ data, onSave, saving }) {
+export default function PersonalInfoForm({ data, onSave, saving, hideHeader }) {
   const [formData, setFormData] = useState({
     firstName: data?.firstName || "",
     lastName: data?.lastName || "",
@@ -31,10 +31,12 @@ export default function PersonalInfoForm({ data, onSave, saving }) {
 
   return (
     <div className="animate-fade-in">
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-slate-900">Personal Information</h2>
-        <p className="text-sm text-slate-500 mt-1">Update your basic profile details and profile picture.</p>
-      </div>
+      {!hideHeader && (
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-slate-900">Personal Information</h2>
+          <p className="text-sm text-slate-500 mt-1">Update your basic profile details and profile picture.</p>
+        </div>
+      )}
 
       {/* Profile Photo */}
       <div className="flex items-center gap-6 mb-8 p-5 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl border border-indigo-100">

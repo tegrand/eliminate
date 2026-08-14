@@ -5,7 +5,7 @@ import api from "../../../api/axios";
 import Button from "../../../components/ui/button/Button";
 import { Modal } from "../../../components/ui/modal/Modal";
 
-export default function AgencyInfoForm({ data }) {
+export default function AgencyInfoForm({ data, hideHeader }) {
   const [agenciesData, setAgenciesData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -62,12 +62,14 @@ export default function AgencyInfoForm({ data }) {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex items-center justify-between border-b border-slate-200 pb-4">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900">Agency Relationship</h2>
-          <p className="text-sm text-slate-500 mt-1">Manage your agency associations and invitations</p>
+      {!hideHeader && (
+        <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+          <div>
+            <h2 className="text-xl font-bold text-slate-900">Agency Relationship</h2>
+            <p className="text-sm text-slate-500 mt-1">Manage your agency associations and invitations</p>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="space-y-6">
         {/* Active Agency Section */}
