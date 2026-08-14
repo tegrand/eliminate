@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { dashboardApi } from "../../api/dashboard.api";
 import ClientOverviewCards from "./ClientOverviewCards";
 import DashboardChartsRow from "../charts/DashboardChartsRow";
+import ClientAdvertisements from "./ClientAdvertisements";
 import { Loader2, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -36,6 +37,9 @@ export default function ClientDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Featured Ads from Super Admin */}
+      <ClientAdvertisements />
+
       {/* Overview Stat Cards */}
       <ClientOverviewCards stats={topStats} />
 

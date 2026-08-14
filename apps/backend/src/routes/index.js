@@ -23,6 +23,7 @@ import complaintsRoutes from "../modules/complaints/complaints.routes.js";
 import settingsRoutes from "../modules/settings/settings.routes.js";
 
 import invoiceRoutes from "../modules/invoices/invoice.route.js";
+import advertisementRoutes from "../modules/advertisements/advertisement.routes.js";
 
 const router = Router();
 
@@ -46,6 +47,7 @@ router.use("/reports", reportsRoutes);
 router.use("/complaints", complaintsRoutes);
 
 router.use("/invoices", invoiceRoutes);
+router.use("/advertisements", advertisementRoutes);
 
 // Master Data Routes
 router.use("/skills", skillRoutes);

@@ -762,6 +762,23 @@ model JobTemplateItem {
   @@index([categoryId])
 }
 
+model Advertisement {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  imageUrl    String?
+  linkUrl     String?
+  buttonText  String?  @default("Learn More")
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([order])
+}
+
 model SystemSetting {
   id          String  @id @default(uuid())
   key         String  @unique
