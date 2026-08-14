@@ -36,4 +36,14 @@ export const advertisementsApi = {
     const res = await api.delete(`/advertisements/${id}`);
     return res.data;
   },
+
+  // Upload an image file for an ad
+  uploadImage: async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await api.post("/advertisements/upload-image", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return res.data;
+  },
 };

@@ -62,6 +62,7 @@ import InvoiceDetailsPage from "../features/invoice/pages/InvoiceDetailsPage";
 
 
 import SettingsPage from "../features/settings/pages/SettingsPage";
+import AdvertisementsPage from "../features/settings/pages/AdvertisementsPage";
 import AdminRoutes from "../features/admin/routes/AdminRoutes";
 
 const NotFoundPage = () => (
@@ -147,6 +148,7 @@ const AppRouter = () => {
 
             {/* System Settings */}
             <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
+            <Route path={ROUTES.ADVERTISEMENTS} element={<AdvertisementsPage />} />
 
           </Route>
         </Route>

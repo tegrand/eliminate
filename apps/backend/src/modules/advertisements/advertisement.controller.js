@@ -61,3 +61,13 @@ export const deleteAd = asyncHandler(async (req, res) => {
   await adService.deleteAd(id);
   return ApiResponse.success(res, "Advertisement deleted", null, 200);
 });
+
+// POST /advertisements/upload-image — upload ad image
+export const uploadImage = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    return ApiResponse.error(res, "No image uploaded", 400);
+  }
+  // Convert local path to URL
+  const imageUrl = `${req.protocol}://${req.get("host")}/uploads/advertisements/${req.file.filename}`;
+  return ApiResponse.success(res, "Image uploaded successfully", { imageUrl }, 200);
+});

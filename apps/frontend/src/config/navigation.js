@@ -21,6 +21,7 @@ import {
   UserCheck,
   UserPlus,
   Settings,
+  Megaphone,
 } from "lucide-react";
 
 const ALL_ROLES = ["SUPER_ADMIN", "CLIENT", "AGENCY", "WORKER"];
@@ -162,6 +163,12 @@ export const NAVIGATION_CONFIG = [
         title: "Settings",
         path: ROUTES.SETTINGS,
         icon: Settings,
+        roles: ADMIN_ONLY,
+      },
+      {
+        title: "Advertisements",
+        path: ROUTES.ADVERTISEMENTS,
+        icon: Megaphone,
         roles: ADMIN_ONLY,
       },
     ],

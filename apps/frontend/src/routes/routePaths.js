@@ -72,6 +72,7 @@ export const ROUTES = {
 
   // Settings
   SETTINGS: "/settings",
+  ADVERTISEMENTS: "/advertisements",
 
   // Admin
   ADMIN: "/admin/*",
