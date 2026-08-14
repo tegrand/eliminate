@@ -7,13 +7,9 @@ import {
   ShieldCheck, Zap, Users, User, Info, Award, Globe, Star, CheckCircle2
 } from "lucide-react";
 import { useState } from "react";
-import ClientHiringModal from "../components/ClientHiringModal";
-import WorkerAvailabilityModal from "../components/WorkerAvailabilityModal";
 
 export default function ClientWorkerProfilePage() {
   const { id } = useParams();
-  const [isHireModalOpen, setIsHireModalOpen] = useState(false);
-  const [isAvailabilityModalOpen, setIsAvailabilityModalOpen] = useState(false);
 
   const { data: workerData, isLoading, error } = useQuery({
     queryKey: ["workerForClient", id],
@@ -141,26 +137,13 @@ export default function ClientWorkerProfilePage() {
 
               {/* Action Buttons */}
               <div className="flex flex-col gap-2 pt-4 border-t border-gray-100 mt-2">
-                <button
-                  onClick={() => setIsHireModalOpen(true)}
-                  disabled={!worker.presentToday}
-                  title={!worker.presentToday ? "Worker is currently not available (Not present today)" : ""}
-                  className={`w-full px-4 py-2.5 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 ${
-                    !worker.presentToday 
-                      ? 'bg-gray-400 cursor-not-allowed' 
-                      : 'bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-200'
-                  }`}
+                <a
+                  href={`tel:${worker.user?.phone || worker.phone || ''}`}
+                  className="w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm shadow-blue-200"
                 >
-                  {worker.presentToday ? 'Hire Now' : 'Not Available'}
-                  {worker.presentToday && <ChevronRight className="w-4 h-4" />}
-                </button>
-                <button
-                  onClick={() => setIsAvailabilityModalOpen(true)}
-                  className="w-full px-4 py-2.5 bg-white text-gray-700 font-bold border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 shadow-sm"
-                >
-                  <Calendar className="w-4 h-4 text-gray-400" />
-                  Check Availability
-                </button>
+                  Call Now
+                  <ChevronRight className="w-4 h-4" />
+                </a>
               </div>
 
               {/* Trust Indicators */}
@@ -258,76 +241,10 @@ export default function ClientWorkerProfilePage() {
               </div>
             </div>
 
-            {/* Work History & Reviews */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center text-amber-500">
-                  <Star className="w-4 h-4" />
-                </div>
-                <h2 className="text-base font-bold text-gray-900">Work History & Reviews</h2>
-              </div>
-
-              {reviews.length > 0 ? (
-                <div className="space-y-6">
-                  {reviews.map((review) => (
-                    <div key={review.id} className="pb-6 border-b border-gray-50 last:border-0 last:pb-0">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <p className="text-sm font-bold text-gray-900">
-                            {review.reviewer?.companyName ||
-                              `${review.reviewer?.user?.firstName || ''} ${review.reviewer?.user?.lastName || ''}`.trim() ||
-                              'Client'}
-                          </p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <div className="flex items-center">
-                              {[...Array(5)].map((_, i) => (
-                                <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'text-amber-400 fill-amber-400' : 'text-gray-200'}`} />
-                              ))}
-                            </div>
-                            <span className="text-xs text-gray-500">
-                              {new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      {review.comment && (
-                        <p className="text-sm text-gray-600 mt-2">{review.comment}</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="py-8 flex flex-col items-center justify-center text-center">
-                  <div className="w-12 h-12 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center mb-4">
-                    <Star className="w-5 h-5 text-gray-400" />
-                  </div>
-                  <p className="text-sm font-bold text-gray-900 mb-1">No reviews yet</p>
-                  <p className="text-xs text-gray-500">Be the first to work with this worker and leave a review.</p>
-                </div>
-              )}
-            </div>
 
           </div>
         </div>
       </div>
-
-      <ClientHiringModal
-        isOpen={isHireModalOpen}
-        onClose={() => setIsHireModalOpen(false)}
-        targetId={worker.id}
-        targetType="WORKER"
-        targetName={name}
-        targetRate={worker.expectedDailyWage}
-        targetBaseRate={worker.baseExpectedDailyWage}
-        targetPlatformFee={worker.platformFee}
-      />
-
-      <WorkerAvailabilityModal
-        isOpen={isAvailabilityModalOpen}
-        onClose={() => setIsAvailabilityModalOpen(false)}
-        workerId={id}
-        workerName={name}
-      />
     </div>
   );
 }

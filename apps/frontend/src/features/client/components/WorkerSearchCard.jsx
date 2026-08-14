@@ -1,10 +1,7 @@
 import { MapPin, Star, Briefcase, CheckCircle2, XCircle, User } from "lucide-react";
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import ClientHiringModal from "./ClientHiringModal";
 
 export default function WorkerSearchCard({ worker }) {
-  const [isHireModalOpen, setIsHireModalOpen] = useState(false);
 
   // Normalize fields
   const firstName = worker.user?.firstName || worker.firstName || "";
@@ -113,31 +110,15 @@ export default function WorkerSearchCard({ worker }) {
         >
           View Profile
         </Link>
-        <button
-          onClick={() => setIsHireModalOpen(true)}
-          disabled={!worker.presentToday}
-          title={!worker.presentToday ? "Worker is currently not available (Not present today)" : ""}
-          className={`flex-1 py-2.5 text-white text-sm font-semibold rounded-xl transition-colors flex items-center justify-center gap-2 ${
-            !worker.presentToday 
-              ? "bg-gray-400 cursor-not-allowed" 
-              : "bg-blue-600 hover:bg-blue-700 shadow-sm shadow-blue-200"
-          }`}
+        <a
+          href={`tel:${worker.user?.phone || worker.phone || ''}`}
+          className="flex-1 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 shadow-sm shadow-blue-200 transition-colors flex items-center justify-center gap-2"
         >
           <User className="w-4 h-4" />
-          {worker.presentToday ? "Hire Worker" : "Not Available"}
-        </button>
+          Call Now
+        </a>
       </div>
 
-      <ClientHiringModal
-        isOpen={isHireModalOpen}
-        onClose={() => setIsHireModalOpen(false)}
-        targetId={worker.id}
-        targetType="WORKER"
-        targetName={name}
-        targetRate={worker.expectedDailyWage}
-        targetBaseRate={worker.baseExpectedDailyWage}
-        targetPlatformFee={worker.platformFee}
-      />
     </div>
   );
 }
