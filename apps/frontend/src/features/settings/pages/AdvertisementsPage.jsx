@@ -44,7 +44,7 @@ function AdFormModal({ ad, onClose, onSave }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <div className="flex items-center gap-2">
@@ -53,68 +53,19 @@ function AdFormModal({ ad, onClose, onSave }) {
             </div>
             <h3 className="text-base font-semibold text-gray-900">{ad ? "Edit Advertisement" : "New Advertisement"}</h3>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+          <button type="button" onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1.5">
-              <Type className="w-3 h-3" /> Title <span className="text-red-500">*</span>
-            </label>
-            <input name="title" value={form.title} onChange={handleChange} placeholder="e.g. New Construction Company" required
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1.5">
-              <AlignLeft className="w-3 h-3" /> Description
-            </label>
-            <textarea name="description" value={form.description} onChange={handleChange} placeholder="Brief description of the company or service..." rows={3}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none" />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-semibold text-gray-600 flex items-center gap-1.5">
-                  <Image className="w-3 h-3" /> Image
-                </label>
-                <div className="flex items-center bg-gray-100 rounded p-0.5">
-                  <button type="button" onClick={() => setImageMode("upload")} className={`text-[10px] font-semibold px-2 py-0.5 rounded ${imageMode === "upload" ? "bg-white text-gray-800 shadow-sm" : "text-gray-500"}`}>
-                    Upload
-                  </button>
-                  <button type="button" onClick={() => setImageMode("url")} className={`text-[10px] font-semibold px-2 py-0.5 rounded ${imageMode === "url" ? "bg-white text-gray-800 shadow-sm" : "text-gray-500"}`}>
-                    URL
-                  </button>
-                </div>
-              </div>
-              
-              {imageMode === "url" ? (
-                <input name="imageUrl" value={form.imageUrl} onChange={handleChange} placeholder="https://..." type="url"
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" />
-              ) : (
-                <div className="relative w-full h-[38px] border border-gray-200 rounded-lg flex items-center px-3 overflow-hidden bg-white hover:bg-gray-50 cursor-pointer transition-colors">
-                  <input type="file" accept="image/*" onChange={(e) => setSelectedFile(e.target.files[0])} className="absolute inset-0 opacity-0 cursor-pointer" />
-                  <span className="text-sm text-gray-500 truncate">{selectedFile ? selectedFile.name : (form.imageUrl ? "Change existing image..." : "Choose a file...")}</span>
-                </div>
-              )}
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1.5 mt-[26px]">
-                <LinkIcon className="w-3 h-3" /> Link URL
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="md:col-span-2">
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1.5">
+                <Type className="w-3 h-3" /> Title <span className="text-red-500">*</span>
               </label>
-              <input name="linkUrl" value={form.linkUrl} onChange={handleChange} placeholder="https://..." type="url"
-                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-gray-600 mb-1.5">Button Text</label>
-              <input name="buttonText" value={form.buttonText} onChange={handleChange} placeholder="Learn More"
+              <input name="title" value={form.title} onChange={handleChange} placeholder="e.g. New Construction Company" required
                 className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" />
             </div>
             <div>
@@ -126,20 +77,73 @@ function AdFormModal({ ad, onClose, onSave }) {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 pt-1">
-            <input type="checkbox" name="isActive" id="isActive" checked={form.isActive} onChange={handleChange} className="w-4 h-4 rounded text-blue-600" />
-            <label htmlFor="isActive" className="text-sm font-medium text-gray-700 cursor-pointer">Active (visible to clients)</label>
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1.5">
+              <AlignLeft className="w-3 h-3" /> Description
+            </label>
+            <textarea name="description" value={form.description} onChange={handleChange} placeholder="Brief description of the company or service..." rows={3}
+              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none" />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-end">
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold text-gray-600 flex items-center gap-1.5">
+                  <Image className="w-3 h-3" /> Image Source
+                </label>
+                <div className="flex items-center bg-gray-100 rounded p-0.5">
+                  <button type="button" onClick={() => setImageMode("upload")} className={`text-[10px] font-semibold px-2 py-0.5 rounded ${imageMode === "upload" ? "bg-white text-gray-800 shadow-sm" : "text-gray-500"}`}>
+                    Upload File
+                  </button>
+                  <button type="button" onClick={() => setImageMode("url")} className={`text-[10px] font-semibold px-2 py-0.5 rounded ${imageMode === "url" ? "bg-white text-gray-800 shadow-sm" : "text-gray-500"}`}>
+                    Image URL
+                  </button>
+                </div>
+              </div>
+              
+              {imageMode === "url" ? (
+                <input name="imageUrl" value={form.imageUrl} onChange={handleChange} placeholder="https://..." type="url"
+                  className="w-full h-[38px] px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" />
+              ) : (
+                <div className="relative w-full h-[38px] border border-gray-200 rounded-lg flex items-center px-3 overflow-hidden bg-white hover:bg-gray-50 cursor-pointer transition-colors group">
+                  <input type="file" accept="image/*" onChange={(e) => setSelectedFile(e.target.files[0])} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                  <span className="text-sm text-gray-500 truncate group-hover:text-blue-600 transition-colors">{selectedFile ? selectedFile.name : (form.imageUrl ? "Change existing image..." : "Choose a file from device...")}</span>
+                </div>
+              )}
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5 flex items-center gap-1.5">
+                <LinkIcon className="w-3 h-3" /> Destination Link
+              </label>
+              <input name="linkUrl" value={form.linkUrl} onChange={handleChange} placeholder="https://..." type="url"
+                className="w-full h-[38px] px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-center pt-2">
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5">Call to Action Button</label>
+              <input name="buttonText" value={form.buttonText} onChange={handleChange} placeholder="Learn More"
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" />
+            </div>
+            <div className="flex items-center gap-3 md:pl-2 pt-5">
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" name="isActive" checked={form.isActive} onChange={handleChange} className="sr-only peer" />
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+              <span className="text-sm font-medium text-gray-700">Ad is Active (visible to clients)</span>
+            </div>
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 pt-2 border-t border-gray-100">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+          <div className="flex justify-end gap-3 pt-6 mt-4 border-t border-gray-100">
+            <button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">
               Cancel
             </button>
             <button type="submit" disabled={saving}
-              className="flex items-center gap-2 px-5 py-2 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-lg transition-colors">
+              className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-xl transition-colors shadow-sm shadow-blue-200">
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              {saving ? "Saving..." : "Save"}
+              {saving ? "Saving Changes..." : "Save Advertisement"}
             </button>
           </div>
         </form>

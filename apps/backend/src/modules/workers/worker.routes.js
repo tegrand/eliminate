@@ -15,8 +15,24 @@ import {
   leaveAgency,
 
   addAgencyWorkerSingle,
-  addAgencyWorkerBulk
+  addAgencyWorkerBulk,
+  uploadResume
 } from "./worker.controller.js";
+
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+const uploadDir = path.join(process.cwd(), "uploads", "documents");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => cb(null, Date.now() + '-' + Math.round(Math.random() * 1E9) + path.extname(file.originalname))
+});
+const upload = multer({ storage: storage, limits: { fileSize: 10 * 1024 * 1024 } });
+
 
 import {
   createWorkerSchema,
@@ -78,6 +94,12 @@ router.patch(
   "/my-profile",
   validate(updateWorkerSchema),
   updateMyWorkerProfile
+);
+
+router.post(
+  "/my-profile/resume",
+  upload.single("file"),
+  uploadResume
 );
 
 // Worker Agency Relationship Endpoints

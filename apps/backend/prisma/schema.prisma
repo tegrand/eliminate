@@ -263,6 +263,7 @@ model Worker {
   gender           String?
   dateOfBirth      DateTime?
   profilePhoto     String?
+  resumeUrl        String?
   jobType          String?
   addressLine1     String?
   city             String?

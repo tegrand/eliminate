@@ -37,6 +37,7 @@ export const updateWorkerSchema = z.object({
 
   expectedDailyWage: z.string().trim().optional(),
   profilePhoto: z.string().trim().optional().nullable(),
+  resumeUrl: z.string().trim().optional().nullable(),
 }).strict("Unknown fields are not allowed").refine(
   (data) => Object.keys(data).length > 0,
   "Update payload cannot be empty"

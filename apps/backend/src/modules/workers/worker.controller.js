@@ -22,6 +22,15 @@ export const updateMyWorkerProfile = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, "Worker profile updated successfully", worker, 200);
 });
 
+export const uploadResume = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    return ApiResponse.error(res, "No file provided", 400);
+  }
+  const resumeUrl = `/uploads/documents/${req.file.filename}`;
+  const worker = await workerService.updateMyWorkerProfile(req.user.id, { resumeUrl });
+  return ApiResponse.success(res, "Resume uploaded successfully", worker, 200);
+});
+
 export const getWorkerById = asyncHandler(async (req, res) => {
   const worker = await workerService.getWorkerById(req.params.id, req.user);
   return ApiResponse.success(res, "Worker retrieved successfully", worker, 200);

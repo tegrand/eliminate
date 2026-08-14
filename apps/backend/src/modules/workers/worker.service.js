@@ -17,6 +17,7 @@ const workerSelect = {
   gender: true,
   dateOfBirth: true,
   profilePhoto: true,
+  resumeUrl: true,
   addressLine1: true,
   city: true,
   district: true,
