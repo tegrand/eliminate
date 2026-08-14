@@ -49,12 +49,6 @@ export const NAVIGATION_CONFIG = [
     roles: ["WORKER"],
     items: [
       {
-        title: "Profile",
-        path: ROUTES.WORKER_PROFILE,
-        icon: UserCircle,
-        roles: ["WORKER"],
-      },
-      {
         title: "Settings",
         path: ROUTES.WORKER_SETTINGS,
         icon: Settings,
