@@ -115,27 +115,25 @@ export default function Header() {
                 const latestWorkerProfile = workerProfileRes?.data?.data || workerProfileRes?.data || workerProfileRes || user?.workerProfile;
                 const percent = calculateWorkerProfileCompletion({ ...user, workerProfile: latestWorkerProfile });
                 return (
-                <Link to={ROUTES.WORKER_PROFILE} onClick={() => setIsProfileOpen(false)} className="block w-full">
-                  <div className="w-full px-4 py-3 flex items-center justify-between gap-3 border-b border-gray-50 mb-1 bg-slate-50/50 hover:bg-slate-100 transition-colors cursor-pointer">
-                    <div>
-                      <p className="text-xs font-semibold text-gray-900">Profile Completion</p>
-                      <p className="text-[10px] text-blue-600 font-medium">Click to complete</p>
-                    </div>
-                    
-                    {/* Circular Progress */}
-                    <div className="relative w-9 h-9 flex items-center justify-center shrink-0">
-                      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="40" stroke="#E5E7EB" strokeWidth="12" fill="none" />
-                        <circle cx="50" cy="50" r="40" stroke="#2563EB" strokeWidth="12" fill="none" 
-                          strokeDasharray="251.2" strokeDashoffset={251.2 - (251.2 * (percent/100))} strokeLinecap="round" />
-                      </svg>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-[9px] font-bold text-blue-600">{percent}%</span>
-                      </div>
+                <div className="w-full px-4 py-3 flex items-center justify-between gap-3 border-b border-gray-50 mb-1 bg-slate-50/50">
+                  <div>
+                    <p className="text-xs font-semibold text-gray-900">Profile Completion</p>
+                    <p className="text-[10px] text-gray-500">Update in settings</p>
+                  </div>
+                  
+                  {/* Circular Progress */}
+                  <div className="relative w-9 h-9 flex items-center justify-center shrink-0">
+                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                      <circle cx="50" cy="50" r="40" stroke="#E5E7EB" strokeWidth="12" fill="none" />
+                      <circle cx="50" cy="50" r="40" stroke="#2563EB" strokeWidth="12" fill="none" 
+                        strokeDasharray="251.2" strokeDashoffset={251.2 - (251.2 * (percent/100))} strokeLinecap="round" />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-[9px] font-bold text-blue-600">{percent}%</span>
                     </div>
                   </div>
-                </Link>
-                )})()}
+                </div>
+              )})()}
 
               {/* Profile Link (Client Only) */}
               {user?.profileType === "CLIENT" && (
