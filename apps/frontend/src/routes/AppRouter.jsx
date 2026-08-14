@@ -26,6 +26,7 @@ import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
 import DashboardPage from "../features/dashboard/pages/DashboardPage";
 import WorkerListPage from "../features/worker/pages/WorkerListPage";
 import WorkerDetailsPage from "../features/worker/pages/WorkerDetailsPage";
+import WorkerProfilePage from "../features/worker-profile/pages/WorkerProfilePage";
 
 
 import WorkerSettingsPage from "../features/worker/pages/WorkerSettingsPage";
@@ -105,6 +106,7 @@ const AppRouter = () => {
             {/* Workers */}
             <Route path={ROUTES.WORKERS} element={<WorkerListPage />} />
             <Route path={ROUTES.WORKER_DETAILS} element={<WorkerDetailsPage />} />
+            <Route path={ROUTES.WORKER_PROFILE} element={<WorkerProfilePage />} />
             
 
             <Route path={ROUTES.WORKER_SETTINGS} element={<WorkerSettingsPage />} />
