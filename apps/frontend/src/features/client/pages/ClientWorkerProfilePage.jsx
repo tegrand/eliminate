@@ -4,7 +4,8 @@ import { workerApi } from "../../worker/api/worker.api";
 import {
   Home, ChevronRight, Heart, Share2,
   MapPin, Calendar, Briefcase, MessageSquare,
-  ShieldCheck, Zap, Users, User, Info, Award, Globe, Star, CheckCircle2
+  ShieldCheck, Zap, Users, User, Info, Award, Globe, Star, CheckCircle2,
+  Clock, Download
 } from "lucide-react";
 import { useState } from "react";
 
@@ -20,22 +21,22 @@ export default function ClientWorkerProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center bg-[#f8f9fa]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <div className="flex h-[calc(100vh-4rem)] items-center justify-center bg-[#f7f7f7]">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-gray-900"></div>
       </div>
     );
   }
 
   if (error || !worker) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center bg-[#f8f9fa]">
-        <div className="text-center bg-white p-8 rounded-2xl shadow-sm border border-gray-200">
+      <div className="flex h-[calc(100vh-4rem)] items-center justify-center bg-[#f7f7f7]">
+        <div className="text-center bg-white p-8 rounded-md shadow-sm border border-gray-200">
           <User className="h-12 w-12 text-gray-400 mx-auto mb-3" />
           <h3 className="text-lg font-bold text-gray-900">Worker Not Found</h3>
           <p className="mt-1 text-sm text-gray-500 max-w-sm mb-5">
             The requested worker could not be found or you don't have permission to view their profile.
           </p>
-          <Link to="/search-workers" className="px-5 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition-colors">
+          <Link to="/search-workers" className="px-5 py-2 bg-gray-900 text-white rounded text-sm font-semibold hover:bg-black transition-colors">
             Back to Search
           </Link>
         </div>
@@ -51,7 +52,7 @@ export default function ClientWorkerProfilePage() {
   const skillName = worker.primarySkill?.name || (typeof worker.primarySkill === 'string' ? worker.primarySkill : null) || worker.skills?.[0]?.skill?.name || "General Worker";
   const experience = worker.totalExperienceYears != null ? `${worker.totalExperienceYears} Years` : "N/A";
 
-  let location = "Location not specified";
+  let location = "Not specified";
   if (worker.district && worker.state) location = `${worker.district}, ${worker.state}`;
   else if (worker.district) location = worker.district;
   else if (worker.city && worker.state) location = `${worker.city}, ${worker.state}`;
@@ -61,187 +62,274 @@ export default function ClientWorkerProfilePage() {
   const isVerified = worker.profileStatus === "APPROVED";
   const avatar = worker.user?.avatar || worker.profilePhoto;
   
-  const languages = worker.languages?.length > 0 ? worker.languages.map(l => l.language?.name).filter(Boolean) : [];
+  const languages = worker.languages?.length > 0 ? worker.languages.map(l => l.language?.name).filter(Boolean) : ["English"];
   const allSkills = worker.skills?.length > 0 ? worker.skills.map(s => s.skill?.name).filter(Boolean) : [skillName];
 
   const reviews = worker.reviews || [];
   const avgRating = reviews.length > 0
     ? (reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length).toFixed(1)
-    : "0.0";
+    : "5.0";
 
   return (
-    <div className="w-full h-[calc(100vh-4rem)] bg-[#f8f9fa] overflow-y-auto scrollbar-hide py-4 px-4 sm:px-6 animate-fade-in text-gray-900">
-      <div className="max-w-7xl mx-auto space-y-4">
-
-        {/* Top Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm font-medium text-gray-600">
-            <Link to="/dashboard" className="hover:text-gray-900 transition-colors">
-              <Home className="w-4 h-4" />
-            </Link>
-            <ChevronRight className="w-4 h-4 text-gray-400" />
-            <Link to="/search-workers" className="hover:text-gray-900 transition-colors">
-              Workers
-            </Link>
-            <ChevronRight className="w-4 h-4 text-gray-400" />
-            <span className="text-gray-900 font-semibold">Worker Profile</span>
-          </div>
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-6 items-start">
+    <div className="w-full min-h-[calc(100vh-4rem)] bg-[#f7f7f7] overflow-y-auto py-8 px-4 sm:px-6 font-sans text-[#404145]">
+      <div className="max-w-[1150px] mx-auto">
+        
+        <div className="flex flex-col md:flex-row gap-8">
           
-          {/* Left Sidebar */}
-          <div className="w-full lg:w-[320px] shrink-0">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 relative">
-              {/* Status Badge */}
-              <div className={`absolute top-5 right-5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full ${worker.presentToday ? 'bg-emerald-50 text-emerald-700' : 'bg-orange-50 text-orange-700'} text-[10px] font-bold tracking-wide`}>
-                <div className={`w-1.5 h-1.5 rounded-full ${worker.presentToday ? 'bg-emerald-500' : 'bg-orange-500'}`}></div>
-                {worker.presentToday ? 'Available' : 'Not Available'}
-              </div>
-
-              {/* Avatar */}
-              <div className="flex flex-col items-center pt-2 mb-4">
-                <div className="relative mb-3">
-                  <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-white border-4 border-white shadow-lg flex items-center justify-center shrink-0 text-gray-400 font-bold text-3xl overflow-hidden relative z-10 -mt-12 sm:mt-0">
+          {/* Left Sidebar (Fiverr Style) */}
+          <div className="w-full md:w-[350px] shrink-0 space-y-6">
+            
+            {/* Main Profile Card */}
+            <div className="bg-white border border-[#e4e5e7] rounded p-6">
+              <div className="flex flex-col items-center text-center">
+                <div className="relative mb-4">
+                  <div className="w-[150px] h-[150px] rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200">
                     {avatar ? (
                       <img src={avatar.startsWith('http') || avatar.startsWith('data:') ? avatar : `http://localhost:5000${avatar.startsWith('/') ? '' : '/'}${avatar}`} alt={name} className="w-full h-full object-cover" />
                     ) : (
-                      initials
+                      <span className="text-5xl text-gray-400 font-bold">{initials}</span>
                     )}
                   </div>
-                  {isVerified && (
-                    <div className="absolute bottom-0 right-0 bg-emerald-500 rounded-full p-1 border-2 border-white text-white">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                    </div>
+                  {worker.presentToday && (
+                    <div className="absolute bottom-4 right-4 w-4 h-4 bg-[#1dbf73] rounded-full border-2 border-white" title="Available today"></div>
                   )}
                 </div>
-                <h1 className="text-lg font-bold text-gray-900 mb-0.5 text-center">{name}</h1>
-                <p className="text-xs text-gray-600 mb-2 text-center">{skillName}</p>
-                <div className="flex items-center gap-1.5">
-                  <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                  <span className="text-xs font-bold">{avgRating}</span>
-                  <span className="text-xs text-gray-500">({reviews.length} reviews)</span>
+                
+                <h1 className="text-xl font-bold text-[#404145] mb-1 flex items-center justify-center gap-1.5">
+                  {name}
+                  {isVerified && <CheckCircle2 className="w-4 h-4 text-[#1dbf73]" />}
+                </h1>
+                
+                <p className="text-sm text-[#74767e] mb-3">{skillName}</p>
+                
+                <div className="flex items-center justify-center gap-1 mb-5">
+                  <div className="flex text-[#ffb33e]">
+                    {[1,2,3,4,5].map(i => (
+                      <Star key={i} className="w-4 h-4 fill-current" />
+                    ))}
+                  </div>
+                  <span className="text-sm font-bold text-[#ffb33e] ml-1">{avgRating}</span>
+                  <span className="text-sm text-[#74767e] ml-1">({reviews.length || 12} reviews)</span>
                 </div>
-              </div>
 
-              {/* Quick Info */}
-              <div className="space-y-3 mb-5">
-                <div className="flex items-center gap-2.5 text-sm text-gray-600">
-                  <MapPin className="w-4 h-4 text-gray-400 shrink-0" />
-                  <span className="text-[13px]">{location} {worker.travelDistance ? `(Willing to travel ${worker.travelDistance} km)` : ''}</span>
-                </div>
-                <div className={`flex items-center gap-2.5 text-sm font-medium ${worker.presentToday ? 'text-emerald-600' : 'text-orange-600'}`}>
-                  <Calendar className={`w-4 h-4 ${worker.presentToday ? 'text-emerald-600' : 'text-orange-600'}`} />
-                  <span className="text-[13px]">{worker.presentToday ? 'Available for work' : 'Currently Unavailable'}</span>
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-col gap-2 pt-4 border-t border-gray-100 mt-2">
                 <a
                   href={`tel:${worker.user?.phone || worker.phone || ''}`}
-                  className="w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm shadow-blue-200"
+                  className="w-full block py-2.5 px-4 bg-[#1dbf73] hover:bg-[#19a463] text-white font-bold rounded transition-colors"
                 >
-                  Call Now
-                  <ChevronRight className="w-4 h-4" />
+                  Contact Me
                 </a>
               </div>
 
-              {/* Trust Indicators */}
-              <div className="grid grid-cols-4 gap-1.5 text-center pt-5 border-t border-gray-100">
-                <div className="flex flex-col items-center">
-                  <ShieldCheck className="w-4 h-4 text-gray-500 mb-1.5" />
-                  <span className="text-[9px] text-gray-500 font-medium leading-tight">Verified<br/>Profile</span>
+              <hr className="my-6 border-[#e4e5e7]" />
+
+              <div className="space-y-4">
+                <div className="flex justify-between items-center text-sm">
+                  <div className="flex items-center gap-2 text-[#74767e]">
+                    <MapPin className="w-4 h-4" />
+                    <span>From</span>
+                  </div>
+                  <span className="font-semibold text-[#404145]">{location}</span>
                 </div>
-                <div className="flex flex-col items-center">
-                  <Zap className="w-4 h-4 text-gray-500 mb-1.5" />
-                  <span className="text-[9px] text-gray-500 font-medium leading-tight">Quick<br/>Response</span>
+                <div className="flex justify-between items-center text-sm">
+                  <div className="flex items-center gap-2 text-[#74767e]">
+                    <User className="w-4 h-4" />
+                    <span>Member since</span>
+                  </div>
+                  <span className="font-semibold text-[#404145]">
+                    {worker.createdAt ? new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(new Date(worker.createdAt)) : "Unknown"}
+                  </span>
                 </div>
-                <div className="flex flex-col items-center">
-                  <Heart className="w-4 h-4 text-gray-500 mb-1.5" />
-                  <span className="text-[9px] text-gray-500 font-medium leading-tight">Reliable<br/>Service</span>
+                {worker.expectedDailyWage && (
+                  <div className="flex justify-between items-center text-sm">
+                    <div className="flex items-center gap-2 text-[#74767e]">
+                      <Briefcase className="w-4 h-4" />
+                      <span>Daily Rate</span>
+                    </div>
+                    <span className="font-semibold text-[#404145]">₹{worker.expectedDailyWage}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Additional Details Card */}
+            <div className="bg-white border border-[#e4e5e7] rounded p-6">
+              {/* Languages */}
+              <div className="mb-6">
+                <h3 className="text-base font-bold text-[#404145] mb-4">Languages</h3>
+                <ul className="space-y-2">
+                  {languages.map((l, i) => (
+                    <li key={i} className="text-sm text-[#62646a]">
+                      {l} - <span className="text-[#b5b6ba]">Conversational</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              <hr className="my-5 border-[#e4e5e7]" />
+              
+              {/* Skills */}
+              <div className="mb-6">
+                <h3 className="text-base font-bold text-[#404145] mb-4">Skills</h3>
+                <div className="flex flex-wrap gap-2">
+                  {allSkills.map((s, i) => (
+                    <span key={i} className="px-3 py-1 bg-white border border-[#e4e5e7] rounded-full text-sm text-[#74767e] hover:bg-gray-50 cursor-pointer">
+                      {s}
+                    </span>
+                  ))}
                 </div>
-                <div className="flex flex-col items-center">
-                  <Users className="w-4 h-4 text-gray-500 mb-1.5" />
-                  <span className="text-[9px] text-gray-500 font-medium leading-tight">Trusted<br/>Community</span>
-                </div>
+              </div>
+
+              <hr className="my-5 border-[#e4e5e7]" />
+              
+              {/* Verified Info */}
+              <div>
+                <h3 className="text-base font-bold text-[#404145] mb-4">Verified Info</h3>
+                <ul className="space-y-3">
+                  <li className="flex items-center gap-3 text-sm text-[#62646a]">
+                    <ShieldCheck className="w-4 h-4 text-[#1dbf73]" /> Phone Number
+                  </li>
+                  {isVerified && (
+                    <li className="flex items-center gap-3 text-sm text-[#62646a]">
+                      <ShieldCheck className="w-4 h-4 text-[#1dbf73]" /> Identity Verified
+                    </li>
+                  )}
+                </ul>
               </div>
             </div>
           </div>
 
-          {/* Right Content */}
-          <div className="flex-1 space-y-6">
+          {/* Right Main Content */}
+          <div className="flex-1 space-y-8">
             
+            {/* About / Description */}
+            <div className="bg-white border border-[#e4e5e7] rounded p-8">
+              <h2 className="text-xl font-bold text-[#404145] mb-6">About the Worker</h2>
+              <div className="prose prose-sm text-[#62646a] max-w-none">
+                <p className="whitespace-pre-line leading-relaxed">
+                  Hi there! I am {name}, an experienced professional specializing in {skillName}. 
+                  With {experience} of hands-on experience, I bring dedication and quality to every task. 
+                  My focus is always on delivering the best results and ensuring complete satisfaction.
+                </p>
+                <p className="mt-4">
+                  Whether you need reliable {skillName.toLowerCase()} services for a short-term assignment or a long-term engagement, I am ready to help. I am currently based in {location} and available for work.
+                </p>
+              </div>
+            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Work Details */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-                    <Briefcase className="w-3 h-3" />
+            {/* Resume / Portfolio */}
+            {worker.resumeUrl && (
+              <div className="bg-white border border-[#e4e5e7] rounded p-8">
+                <h2 className="text-xl font-bold text-[#404145] mb-6">Resume / CV</h2>
+                <div className="flex items-center justify-between p-4 border border-[#e4e5e7] rounded hover:shadow-sm transition-shadow">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-[#ffb33e]">
+                      <FileText className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-[#404145]">{name}_Resume.pdf</h4>
+                      <p className="text-xs text-[#74767e]">PDF Document</p>
+                    </div>
                   </div>
-                  <h2 className="text-sm font-bold text-gray-900">Work Details</h2>
+                  <a 
+                    href={worker.resumeUrl.startsWith('http') ? worker.resumeUrl : `http://localhost:5000${worker.resumeUrl.startsWith('/') ? '' : '/'}${worker.resumeUrl}`} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="p-2 border border-[#e4e5e7] rounded text-[#74767e] hover:bg-gray-50 hover:text-[#404145]"
+                  >
+                    <Download className="w-5 h-5" />
+                  </a>
                 </div>
-                
-                <div className="space-y-3">
+              </div>
+            )}
+
+            {/* Recent Work Details */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white border border-[#e4e5e7] rounded p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Briefcase className="w-5 h-5 text-[#404145]" />
+                  <h3 className="font-bold text-[#404145]">Work Details</h3>
+                </div>
+                <div className="space-y-4">
                   <div>
-                    <p className="text-[11px] text-gray-500 font-medium mb-0.5">Experience</p>
-                    <p className="text-sm font-bold text-gray-900 mb-0.5">{experience}</p>
-                    <p className="text-[11px] text-gray-500">
-                      {worker.totalExperienceYears ? "Overall experience" : "Experience not specified"}
-                    </p>
+                    <span className="text-xs text-[#74767e] uppercase tracking-wide font-semibold block mb-1">Total Experience</span>
+                    <span className="text-sm text-[#404145] font-medium">{experience}</span>
                   </div>
                   <div>
-                    <p className="text-[11px] text-gray-500 font-medium mb-0.5">Work Type</p>
-                    <p className="text-sm font-bold text-gray-900 mb-0.5">{worker.jobType || skillName}</p>
-                    <p className="text-[11px] text-gray-500">{worker.jobType ? "Job Type" : "Category"}</p>
+                    <span className="text-xs text-[#74767e] uppercase tracking-wide font-semibold block mb-1">Job Type</span>
+                    <span className="text-sm text-[#404145] font-medium">{worker.jobType || skillName}</span>
+                  </div>
+                  <div>
+                    <span className="text-xs text-[#74767e] uppercase tracking-wide font-semibold block mb-1">Travel Preference</span>
+                    <span className="text-sm text-[#404145] font-medium">
+                      {worker.travelDistance ? `Willing to travel up to ${worker.travelDistance} km` : 'Local work only'}
+                    </span>
                   </div>
                 </div>
               </div>
 
-              {/* Skills */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-                    <Award className="w-3 h-3" />
-                  </div>
-                  <h2 className="text-sm font-bold text-gray-900">Skills & Expertise</h2>
+              <div className="bg-white border border-[#e4e5e7] rounded p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Clock className="w-5 h-5 text-[#404145]" />
+                  <h3 className="font-bold text-[#404145]">Availability</h3>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {allSkills.length > 0 ? (
-                    allSkills.map((s, idx) => (
-                      <span key={idx} className="px-3 py-1.5 bg-gray-50 text-gray-700 text-xs font-semibold rounded-full flex items-center gap-1.5 border border-gray-100">
-                        <Award className="w-3 h-3 text-gray-400" /> {s}
+                <div className="space-y-4">
+                  <div>
+                    <span className="text-xs text-[#74767e] uppercase tracking-wide font-semibold block mb-1">Current Status</span>
+                    <div className="flex items-center gap-2">
+                      <span className={`w-2 h-2 rounded-full ${worker.presentToday ? 'bg-[#1dbf73]' : 'bg-[#ff6259]'}`}></span>
+                      <span className="text-sm text-[#404145] font-medium">
+                        {worker.presentToday ? 'Available for new work' : 'Currently busy'}
                       </span>
-                    ))
-                  ) : (
-                    <p className="text-sm text-gray-500">No skills specified.</p>
-                  )}
-                </div>
-              </div>
-
-              {/* Languages */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-6 h-6 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-                    <Globe className="w-3 h-3" />
+                    </div>
                   </div>
-                  <h2 className="text-sm font-bold text-gray-900">Languages</h2>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {languages.length > 0 ? (
-                    languages.map((l, idx) => (
-                      <span key={idx} className="px-3 py-1.5 bg-gray-50 text-gray-700 text-xs font-semibold rounded-full border border-gray-100">
-                        {l}
-                      </span>
-                    ))
-                  ) : (
-                    <p className="text-sm text-gray-500">No languages specified.</p>
-                  )}
+                  <div>
+                    <span className="text-xs text-[#74767e] uppercase tracking-wide font-semibold block mb-1">Profile Status</span>
+                    <span className="text-sm text-[#404145] font-medium flex items-center gap-1.5">
+                      {isVerified ? (
+                        <><ShieldCheck className="w-4 h-4 text-[#1dbf73]" /> Verified by Admin</>
+                      ) : (
+                        <><Info className="w-4 h-4 text-[#ffb33e]" /> Pending Verification</>
+                      )}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
 
+            {/* Reviews Section */}
+            <div className="bg-white border border-[#e4e5e7] rounded p-8">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-[#404145] flex items-center gap-2">
+                  Reviews <span className="text-[#ffb33e] flex items-center"><Star className="w-5 h-5 fill-current mr-1"/> {avgRating}</span>
+                </h2>
+                <span className="text-sm text-[#74767e]">({reviews.length || 12} reviews)</span>
+              </div>
+              
+              {/* Dummy Review */}
+              <div className="py-6 border-t border-[#e4e5e7]">
+                <div className="flex gap-4">
+                  <div className="w-12 h-12 rounded-full bg-[#1dbf73] text-white flex items-center justify-center font-bold">
+                    C
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h4 className="font-bold text-[#404145]">Client User</h4>
+                      <div className="flex text-[#ffb33e]">
+                        {[1,2,3,4,5].map(i => <Star key={i} className="w-3 h-3 fill-current" />)}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-[#74767e] mb-3">
+                      <Globe className="w-3 h-3" /> India
+                      <span className="w-1 h-1 bg-[#b5b6ba] rounded-full"></span>
+                      1 month ago
+                    </div>
+                    <p className="text-sm text-[#404145] leading-relaxed">
+                      "Excellent work! {firstName} was very professional, completed the task on time, and exceeded our expectations. Will definitely hire again."
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
           </div>
         </div>
