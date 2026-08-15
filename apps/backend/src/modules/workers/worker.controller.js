@@ -31,6 +31,22 @@ export const uploadResume = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, "Resume uploaded successfully", worker, 200);
 });
 
+export const uploadDocument = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    return ApiResponse.error(res, "No file provided", 400);
+  }
+  const { documentType } = req.body;
+  if (!documentType) {
+    return ApiResponse.error(res, "Document type is required", 400);
+  }
+  
+  const documentUrl = `/uploads/documents/${req.file.filename}`;
+  const fileName = req.file.originalname;
+  
+  const document = await workerService.uploadDocument(req.user.id, documentType, documentUrl, fileName);
+  return ApiResponse.success(res, "Document uploaded successfully", document, 201);
+});
+
 export const getWorkerById = asyncHandler(async (req, res) => {
   const worker = await workerService.getWorkerById(req.params.id, req.user);
   return ApiResponse.success(res, "Worker retrieved successfully", worker, 200);

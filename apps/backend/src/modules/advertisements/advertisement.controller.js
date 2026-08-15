@@ -87,7 +87,7 @@ export const updateAd = asyncHandler(async (req, res) => {
   if (buttonText !== undefined) data.buttonText = buttonText?.trim() || "Learn More";
   if (isActive !== undefined) data.isActive = Boolean(isActive);
   if (order !== undefined) data.order = parseInt(order);
-  if (adPackageId !== undefined) data.adPackageId = adPackageId;
+  if (adPackageId !== undefined) data.adPackageId = adPackageId || null;
   const ad = await adService.updateAd(id, data);
   return ApiResponse.success(res, "Advertisement updated", ad, 200);
 });

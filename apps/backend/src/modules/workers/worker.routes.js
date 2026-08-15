@@ -16,7 +16,8 @@ import {
 
   addAgencyWorkerSingle,
   addAgencyWorkerBulk,
-  uploadResume
+  uploadResume,
+  uploadDocument
 } from "./worker.controller.js";
 
 import multer from "multer";
@@ -100,6 +101,12 @@ router.post(
   "/my-profile/resume",
   upload.single("file"),
   uploadResume
+);
+
+router.post(
+  "/my-profile/documents",
+  upload.single("file"),
+  uploadDocument
 );
 
 // Worker Agency Relationship Endpoints

@@ -384,6 +384,20 @@ export const updateMyWorkerProfile = async (userId, data) => {
   return updatedWorker;
 };
 
+export const uploadDocument = async (userId, documentType, documentUrl, fileName) => {
+  const worker = await getMyWorkerProfile(userId);
+  
+  return prisma.workerDocument.create({
+    data: {
+      workerId: worker.id,
+      documentType,
+      documentUrl,
+      fileName,
+      status: "PENDING_VERIFICATION"
+    }
+  });
+};
+
 export const getMyAgencies = async (userId) => {
   const worker = await getMyWorkerProfile(userId);
   

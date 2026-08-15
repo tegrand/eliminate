@@ -46,6 +46,7 @@ export default function ClientWorkerProfilePage() {
   const firstName = worker.user?.firstName || worker.firstName || "";
   const lastName = worker.user?.lastName || worker.lastName || "";
   const name = `${firstName} ${lastName}`.trim() || worker.user?.name || worker.name || "Unknown Worker";
+  const initials = name.split(" ").map(n => n?.[0] || "").join("").substring(0, 2).toUpperCase() || "W";
 
   const skillName = worker.primarySkill?.name || (typeof worker.primarySkill === 'string' ? worker.primarySkill : null) || worker.skills?.[0]?.skill?.name || "General Worker";
   const experience = worker.totalExperienceYears != null ? `${worker.totalExperienceYears} Years` : "N/A";
