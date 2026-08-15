@@ -177,6 +177,12 @@ export const NAVIGATION_CONFIG = [
         icon: Megaphone,
         roles: ADMIN_ONLY,
       },
+      {
+        title: "Ad Packages",
+        path: ROUTES.AD_PACKAGES,
+        icon: Tags,
+        roles: ADMIN_ONLY,
+      },
     ],
   },
 ];

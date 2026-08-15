@@ -25,6 +25,13 @@ router.get("/", authenticate, adController.getActiveAds);
 
 // Super Admin only routes
 router.get("/admin", authenticate, authorize("SUPER_ADMIN"), adController.getAllAds);
+
+// Ad Packages
+router.get("/packages", authenticate, authorize("SUPER_ADMIN"), adController.getAdPackages);
+router.post("/packages", authenticate, authorize("SUPER_ADMIN"), adController.createAdPackage);
+router.put("/packages/:id", authenticate, authorize("SUPER_ADMIN"), adController.updateAdPackage);
+router.delete("/packages/:id", authenticate, authorize("SUPER_ADMIN"), adController.deleteAdPackage);
+
 router.post("/", authenticate, authorize("SUPER_ADMIN"), adController.createAd);
 router.put("/:id", authenticate, authorize("SUPER_ADMIN"), adController.updateAd);
 router.patch("/:id/toggle", authenticate, authorize("SUPER_ADMIN"), adController.toggleAd);

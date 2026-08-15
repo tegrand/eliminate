@@ -11,6 +11,7 @@ import WorkerProfileStatus from "../components/worker/WorkerProfileStatus";
 import ClientDashboard from "../components/client/ClientDashboard";
 
 import AgencyDashboard from "../components/agency/AgencyDashboard";
+import AdPopupOverlay from "../components/AdPopupOverlay";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -60,8 +61,10 @@ export default function DashboardPage() {
     );
   };
 
+  const isClientOrWorkerOrAgency = ["WORKER", "CLIENT", "AGENCY"].includes(user?.profileType);
+
   return (
-    <div className="w-full pt-2 pb-6 space-y-4 animate-fade-in">
+    <div className="w-full pt-2 pb-6 space-y-4 animate-fade-in relative">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
         {user?.profileType !== "WORKER" ? (
           <div>
@@ -86,6 +89,9 @@ export default function DashboardPage() {
       ) : (
         renderAdminDashboard()
       )}
+      
+      {/* Show Ad Overlay for Clients, Workers, and Agencies */}
+      {isClientOrWorkerOrAgency && <AdPopupOverlay />}
     </div>
   );
 }

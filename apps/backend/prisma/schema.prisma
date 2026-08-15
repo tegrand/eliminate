@@ -763,6 +763,17 @@ model JobTemplateItem {
   @@index([categoryId])
 }
 
+model AdPackage {
+  id           String          @id @default(uuid())
+  name         String          @unique
+  description  String?
+  price        Float?          @default(0)
+  durationDays Int?            // How many days the ad will run
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  ads          Advertisement[]
+}
+
 model Advertisement {
   id          String   @id @default(uuid())
   title       String
@@ -773,11 +784,17 @@ model Advertisement {
   isActive    Boolean  @default(true)
   order       Int      @default(0)
 
+  adPackageId String?
+  adPackage   AdPackage? @relation(fields: [adPackageId], references: [id])
+  
+  expiresAt   DateTime? // Automatically calculated based on package duration
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@index([isActive])
   @@index([order])
+  @@index([expiresAt])
 }
 
 model SystemSetting {
