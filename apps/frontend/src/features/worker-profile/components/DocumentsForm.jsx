@@ -7,9 +7,6 @@ export default function DocumentsForm({ data, onSave, saving, hideHeader }) {
   const [formData, setFormData] = useState({
     aadhaarNumber: data?.aadhaarNumber || "",
     panNumber: data?.panNumber || "",
-    bankAccountNumber: data?.bankAccountNumber || "",
-    bankIfsc: data?.bankIfsc || "",
-    bankName: data?.bankName || "",
   });
   
   const [uploadingResume, setUploadingResume] = useState(false);
@@ -56,8 +53,8 @@ export default function DocumentsForm({ data, onSave, saving, hideHeader }) {
     <div className="animate-fade-in">
       {!hideHeader && (
         <div className="mb-6">
-          <h2 className="text-xl font-bold text-slate-900">Documents & Financial</h2>
-          <p className="text-sm text-slate-500 mt-1">Manage your identity documents, bank details, and certificates.</p>
+          <h2 className="text-xl font-bold text-slate-900">Documents & Verification</h2>
+          <p className="text-sm text-slate-500 mt-1">Manage your identity documents and certificates.</p>
         </div>
       )}
 
@@ -74,7 +71,7 @@ export default function DocumentsForm({ data, onSave, saving, hideHeader }) {
                 name="aadhaarNumber"
                 value={formData.aadhaarNumber}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
                 placeholder="Enter 12 digit Aadhaar number"
               />
             </div>
@@ -85,52 +82,14 @@ export default function DocumentsForm({ data, onSave, saving, hideHeader }) {
                 name="panNumber"
                 value={formData.panNumber}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
                 placeholder="Enter PAN"
               />
             </div>
           </div>
         </div>
 
-        {/* Bank Details */}
-        <div>
-          <h3 className="text-sm font-bold text-slate-800 uppercase tracking-widest mb-4">Bank Details</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-emerald-50/50 p-5 rounded-2xl border border-emerald-100/50">
-            <div className="space-y-2 md:col-span-2">
-              <label className="text-sm font-medium text-slate-700">Bank Name</label>
-              <input
-                type="text"
-                name="bankName"
-                value={formData.bankName}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
-                placeholder="e.g., State Bank of India"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">Account Number</label>
-              <input
-                type="text"
-                name="bankAccountNumber"
-                value={formData.bankAccountNumber}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
-                placeholder="Account Number"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">IFSC Code</label>
-              <input
-                type="text"
-                name="bankIfsc"
-                value={formData.bankIfsc}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
-                placeholder="IFSC Code"
-              />
-            </div>
-          </div>
-        </div>
+
 
         {/* File Uploads */}
         <div>

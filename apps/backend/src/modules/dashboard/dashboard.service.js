@@ -28,20 +28,20 @@ export const getWorkerDashboard = async (userId) => {
   }
 
   const fieldsToCheck = [
-    'firstName', 'lastName', 'phone', 'dateOfBirth', 'profilePhoto', 
+    'firstName', 'lastName', 'phone', 'dateOfBirth', 'profilePhoto',
     'addressLine1', 'totalExperienceYears', 'expectedDailyWage', 'joiningDate'
   ];
   const filledFieldsCount = fieldsToCheck.filter(field => worker[field] !== null && worker[field] !== undefined && worker[field] !== '').length;
-  
-  const totalRequired = fieldsToCheck.length + 1; 
+
+  const totalRequired = fieldsToCheck.length + 1;
   const hasDocuments = worker.documents && worker.documents.length > 0;
   const currentFilled = filledFieldsCount + (hasDocuments ? 1 : 0);
-  
+
   const profileCompletion = Math.round((currentFilled / totalRequired) * 100);
   const currentAgency = worker.agencies && worker.agencies.length > 0 ? worker.agencies[0].agency : null;
 
   const totalReviews = worker.reviews?.length || 0;
-  const averageRating = totalReviews > 0 
+  const averageRating = totalReviews > 0
     ? (worker.reviews.reduce((acc, rev) => acc + rev.rating, 0) / totalReviews).toFixed(1)
     : 0;
 
@@ -66,13 +66,29 @@ export const getWorkerDashboard = async (userId) => {
     { name: 'Oct', value: 0 }, { name: 'Nov', value: 0 }, { name: 'Dec', value: 0 }
   ];
 
+  const monthlyData = getEmptyMonthlyData();
+
+  attendanceRecords.forEach(rec => {
+    const d = new Date(rec.date);
+    if (d.getFullYear() === today.getFullYear() && rec.totalHours) {
+      monthlyData[d.getMonth()].value += rec.totalHours;
+    }
+  });
+
+  let estimatedRevenue = 0;
+  const hourlyRate = worker.expectedDailyWage ? parseFloat(worker.expectedDailyWage) / 8 : 100; // fallback to 100 per hour if not set
+  if (!isNaN(hourlyRate) && totalHoursLogged) {
+    estimatedRevenue = Math.round(totalHoursLogged * hourlyRate);
+  }
+
   const chartData = {
-    lineData: getEmptyMonthlyData(),
+    lineData: monthlyData,
     donutData: [
-      { name: 'Completed', value: 0 },
-      { name: 'Active', value: 0 }
-    ],
-    donutTotal: 0
+      { name: 'Present', value: presentCount },
+      { name: 'Absent', value: absentCount },
+      { name: 'On Leave', value: onLeaveCount }
+    ].filter(d => d.value > 0),
+    donutTotal: presentCount + absentCount + onLeaveCount
   };
 
   return {
@@ -93,8 +109,8 @@ export const getWorkerDashboard = async (userId) => {
     pendingPayments: null,
     recentActivities: [],
     topStats: {
-      totalCompletedWork: 0,
-      totalRevenue: "₹0",
+      totalCompletedWork: presentCount,
+      totalRevenue: `₹${estimatedRevenue}`,
       pendingAmount: "₹0",
       totalHoursLogged: `${totalHoursLogged} hrs`,
       activeAssignments: 0,

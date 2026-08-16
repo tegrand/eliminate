@@ -3,95 +3,70 @@ import { Save, X, Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import api from "../../../api/axios";
 
-// Tag badge component (inside input)
-function Pill({ label, onRemove }) {
-  return (
-    <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-100 text-indigo-700 rounded-md text-[11px] font-bold tracking-wide mt-1 mb-1 ml-1.5">
-      {label}
-      <button
-        type="button"
-        onClick={(e) => { e.preventDefault(); onRemove(); }}
-        className="text-indigo-400 hover:text-indigo-800 transition-colors focus:outline-none ml-1"
-      >
-        <X className="w-3 h-3" />
-      </button>
-    </span>
-  );
-}
+import CreatableSelect from 'react-select/creatable';
 
-// Modern Tag Input component
-function TagInput({ placeholder, selectedItems, onAdd, onRemove, options, loading }) {
-  const [query, setQuery] = useState("");
-  const [open, setOpen] = useState(false);
-  const inputRef = useRef(null);
+function CustomTagSelect({ placeholder, selectedItems, options, onAdd, onRemove, loading, isLanguage, onCreate }) {
+  // Map API items to react-select options
+  const selectOptions = options.map(o => ({ value: o.id, label: o.name, raw: o }));
+  
+  // Map selected items back to react-select format
+  const selectValue = selectedItems.map(item => {
+    const data = isLanguage ? item.language : item.skill;
+    return { value: data?.id, label: data?.name, raw: item };
+  });
 
-  const filtered = options.filter(o =>
-    o.name.toLowerCase().includes(query.toLowerCase()) && 
-    !selectedItems.find(s => (s.skill?.id || s.language?.id) === o.id)
-  ).slice(0, 10);
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Backspace' && query === "" && selectedItems.length > 0) {
-      // Remove last item on backspace if input is empty
-      const lastItem = selectedItems[selectedItems.length - 1];
-      onRemove(lastItem.skill?.id || lastItem.language?.id || lastItem);
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      if (filtered.length > 0) {
-        onAdd(filtered[0]);
-        setQuery("");
-      }
+  const handleChange = (newValue, actionMeta) => {
+    if (actionMeta.action === 'select-option') {
+      onAdd(actionMeta.option.raw);
+    } else if (actionMeta.action === 'remove-value') {
+      const removedId = actionMeta.removedValue.value;
+      onRemove(removedId);
+    } else if (actionMeta.action === 'create-option') {
+      if (onCreate) onCreate(actionMeta.option.value);
     }
   };
 
   return (
-    <div className="relative w-full">
-      <div 
-        className="flex flex-wrap items-center w-full min-h-[46px] bg-white border border-slate-200 rounded-xl focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500 transition-all cursor-text overflow-hidden pl-1 pr-2 py-0.5"
-        onClick={() => inputRef.current?.focus()}
-      >
-        {selectedItems.map((item, idx) => (
-          <Pill 
-            key={idx} 
-            label={item.skill?.name || item.language?.name || item} 
-            onRemove={() => onRemove(item.skill?.id || item.language?.id || item)} 
-          />
-        ))}
-        
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onChange={(e) => { setQuery(e.target.value); setOpen(true); }}
-          onKeyDown={handleKeyDown}
-          onFocus={() => setOpen(true)}
-          onBlur={() => setTimeout(() => setOpen(false), 200)}
-          placeholder={selectedItems.length === 0 ? placeholder : ""}
-          className="flex-1 min-w-[120px] outline-none bg-transparent text-sm text-slate-800 placeholder:text-slate-400 py-2.5 px-2"
-        />
-        {loading && <Loader2 className="w-4 h-4 animate-spin text-indigo-500 ml-2 shrink-0" />}
-      </div>
-
-      {open && filtered.length > 0 && (
-        <div className="absolute z-30 left-0 right-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden max-h-60 overflow-y-auto">
-          {filtered.map(opt => (
-            <button
-              key={opt.id}
-              type="button"
-              className="w-full text-left px-4 py-2.5 text-sm text-slate-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors focus:bg-indigo-50 focus:outline-none"
-              onMouseDown={(e) => { 
-                e.preventDefault(); 
-                onAdd(opt); 
-                setQuery(""); 
-                inputRef.current?.focus(); 
-              }}
-            >
-              {opt.name}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+    <CreatableSelect
+      isMulti
+      placeholder={placeholder}
+      options={selectOptions}
+      value={selectValue}
+      onChange={handleChange}
+      isLoading={loading}
+      styles={{
+        control: (base, state) => ({
+          ...base,
+          minHeight: '46px',
+          borderColor: state.isFocused ? '#6366f1' : '#e2e8f0',
+          borderRadius: '0.75rem',
+          boxShadow: state.isFocused ? '0 0 0 2px rgba(99, 102, 241, 0.2)' : 'none',
+          '&:hover': { borderColor: state.isFocused ? '#6366f1' : '#cbd5e1' },
+          padding: '2px',
+        }),
+        multiValue: (base) => ({
+          ...base,
+          backgroundColor: '#e0e7ff',
+          borderRadius: '0.375rem',
+          padding: '2px',
+          margin: '2px 4px 2px 0',
+        }),
+        multiValueLabel: (base) => ({
+          ...base,
+          color: '#4338ca',
+          fontSize: '12px',
+          fontWeight: '700',
+        }),
+        multiValueRemove: (base) => ({
+          ...base,
+          color: '#818cf8',
+          ':hover': {
+            backgroundColor: '#c7d2fe',
+            color: '#3730a3',
+          },
+        }),
+      }}
+    />
   );
 }
 
@@ -145,13 +120,38 @@ export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader 
   };
 
   // --- Skills ---
+  const handleCreateSkill = async (inputValue) => {
+    if (!workerId) return;
+    try {
+      setAddingSkill(true);
+      const slug = inputValue.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      // Create skill globally
+      const res = await api.post("/skills", { name: inputValue, slug });
+      const newSkill = res.data.data;
+      
+      setAllSkills(prev => [...prev, newSkill]);
+      
+      // Assign to worker
+      await api.post(`/workers/${workerId}/skills`, {
+        skillId: newSkill.id,
+        proficiencyLevel: "INTERMEDIATE",
+        isPrimary: workerSkills.length === 0,
+      });
+      setWorkerSkills(prev => [...prev, { id: newSkill.id, skill: newSkill, proficiencyLevel: "INTERMEDIATE", isPrimary: prev.length === 0 }]);
+      toast.success(`Skill '${newSkill.name}' created and added`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to create skill");
+    } finally {
+      setAddingSkill(false);
+    }
+  };
+
   const handleAddSkill = async (skill) => {
     if (!workerId) return;
     if (workerSkills.find(s => s.skill.id === skill.id)) return;
     try {
       setAddingSkill(true);
       await api.post(`/workers/${workerId}/skills`, {
-        workerId,
         skillId: skill.id,
         proficiencyLevel: "INTERMEDIATE",
         isPrimary: workerSkills.length === 0,
@@ -175,13 +175,39 @@ export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader 
   };
 
   // --- Languages ---
+  const handleCreateLanguage = async (inputValue) => {
+    if (!workerId) return;
+    try {
+      setAddingLang(true);
+      const slug = inputValue.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const res = await api.post("/languages", { name: inputValue, slug });
+      const newLang = res.data.data;
+      
+      setAllLanguages(prev => [...prev, newLang]);
+      
+      await api.post(`/workers/${workerId}/languages`, {
+        languageId: newLang.id,
+        proficiencyLevel: "CONVERSATIONAL",
+        canSpeak: true,
+        canRead: true,
+        canWrite: false,
+        isPrimary: workerLanguages.length === 0,
+      });
+      setWorkerLanguages(prev => [...prev, { id: newLang.id, language: newLang, proficiencyLevel: "CONVERSATIONAL" }]);
+      toast.success(`Language '${newLang.name}' created and added`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to create language");
+    } finally {
+      setAddingLang(false);
+    }
+  };
+
   const handleAddLanguage = async (lang) => {
     if (!workerId) return;
     if (workerLanguages.find(l => l.language.id === lang.id)) return;
     try {
       setAddingLang(true);
       await api.post(`/workers/${workerId}/languages`, {
-        workerId,
         languageId: lang.id,
         proficiencyLevel: "CONVERSATIONAL",
         canSpeak: true,
@@ -212,12 +238,11 @@ export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader 
     const payload = {
       totalExperienceYears: formData.totalExperienceYears !== "" ? parseInt(formData.totalExperienceYears) : null,
       expectedDailyWage: formData.expectedDailyWage || undefined,
-      preferredLocations: formData.preferredLocations,
     };
     onSave(payload);
   };
 
-  const inputClass = "w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-800 placeholder:text-slate-400 text-sm";
+  const inputClass = "w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-800 placeholder:text-slate-400 text-sm";
   const labelClass = "block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide";
   const sectionClass = "space-y-4 pb-6 border-b border-slate-100 last:border-0 last:pb-0";
 
@@ -265,13 +290,15 @@ export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader 
         {/* Skills */}
         <div className={sectionClass}>
           <label className={labelClass}>Skills</label>
-          <TagInput 
-            placeholder="Type and press Enter to add skills..."
+          <CustomTagSelect 
+            placeholder="Search and select skills..."
             selectedItems={workerSkills}
             options={allSkills}
             onAdd={handleAddSkill}
             onRemove={handleRemoveSkill}
+            onCreate={handleCreateSkill}
             loading={skillsLoading || addingSkill}
+            isLanguage={false}
           />
           <p className="text-[11px] text-slate-400 mt-1.5">Add skills relevant to the jobs you want to get hired for.</p>
         </div>
@@ -279,13 +306,15 @@ export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader 
         {/* Languages */}
         <div className={sectionClass}>
           <label className={labelClass}>Languages Known</label>
-          <TagInput 
-            placeholder="Type and press Enter to add languages..."
+          <CustomTagSelect 
+            placeholder="Search and select languages..."
             selectedItems={workerLanguages}
             options={allLanguages}
             onAdd={handleAddLanguage}
             onRemove={handleRemoveLanguage}
+            onCreate={handleCreateLanguage}
             loading={langsLoading || addingLang}
+            isLanguage={true}
           />
         </div>
 

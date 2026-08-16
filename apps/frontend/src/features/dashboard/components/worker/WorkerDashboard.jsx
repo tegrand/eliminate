@@ -42,10 +42,10 @@ export default function WorkerDashboard() {
       <WorkerTopStatsWidget stats={data.topStats} />
 
       <DashboardChartsRow
-        lineTitle="Earnings Overview"
-        lineSubtitle="Monthly income overview"
+        lineTitle="Hours Logged"
+        lineSubtitle="Monthly work hours overview"
         lineData={data.chartData?.lineData || []}
-        donutTitle="Task Completion"
+        donutTitle="Attendance Overview"
         donutSubtitle="Status breakdown"
         donutTotal={data.chartData?.donutTotal || 0}
         donutData={data.chartData?.donutData || []}

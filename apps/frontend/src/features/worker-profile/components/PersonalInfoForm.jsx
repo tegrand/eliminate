@@ -26,7 +26,7 @@ export default function PersonalInfoForm({ data, onSave, saving, hideHeader }) {
     onSave(formData);
   };
 
-  const inputClass = "w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-800 placeholder:text-slate-400 text-sm";
+  const inputClass = "w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-800 placeholder:text-slate-400 text-sm";
   const labelClass = "block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide";
 
   return (

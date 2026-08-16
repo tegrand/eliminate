@@ -66,24 +66,21 @@ export default function ClientWorkerProfilePage() {
   const allSkills = worker.skills?.length > 0 ? worker.skills.map(s => s.skill?.name).filter(Boolean) : [skillName];
 
   const reviews = worker.reviews || [];
-  const avgRating = reviews.length > 0
-    ? (reviews.reduce((acc, curr) => acc + curr.rating, 0) / reviews.length).toFixed(1)
-    : "5.0";
 
   return (
-    <div className="w-full min-h-[calc(100vh-4rem)] bg-[#f7f7f7] overflow-y-auto py-8 px-4 sm:px-6 font-sans text-[#404145]">
-      <div className="max-w-[1150px] mx-auto">
+    <div className="w-full min-h-[calc(100vh-4rem)] bg-[#f7f7f7] overflow-y-auto py-6 px-4 sm:px-6 font-sans text-[#404145]">
+      <div className="max-w-[1200px] mx-auto">
         
-        <div className="flex flex-col md:flex-row gap-8">
+        <div className="flex flex-col md:flex-row gap-6">
           
           {/* Left Sidebar (Fiverr Style) */}
-          <div className="w-full md:w-[350px] shrink-0 space-y-6">
+          <div className="w-full md:w-[320px] shrink-0 space-y-5">
             
             {/* Main Profile Card */}
-            <div className="bg-white border border-[#e4e5e7] rounded p-6">
+            <div className="bg-white border border-[#e4e5e7] rounded p-5">
               <div className="flex flex-col items-center text-center">
                 <div className="relative mb-4">
-                  <div className="w-[150px] h-[150px] rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200">
+                  <div className="w-[120px] h-[120px] rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200">
                     {avatar ? (
                       <img src={avatar.startsWith('http') || avatar.startsWith('data:') ? avatar : `http://localhost:5000${avatar.startsWith('/') ? '' : '/'}${avatar}`} alt={name} className="w-full h-full object-cover" />
                     ) : (
@@ -100,17 +97,7 @@ export default function ClientWorkerProfilePage() {
                   {isVerified && <CheckCircle2 className="w-4 h-4 text-[#1dbf73]" />}
                 </h1>
                 
-                <p className="text-sm text-[#74767e] mb-3">{skillName}</p>
-                
-                <div className="flex items-center justify-center gap-1 mb-5">
-                  <div className="flex text-[#ffb33e]">
-                    {[1,2,3,4,5].map(i => (
-                      <Star key={i} className="w-4 h-4 fill-current" />
-                    ))}
-                  </div>
-                  <span className="text-sm font-bold text-[#ffb33e] ml-1">{avgRating}</span>
-                  <span className="text-sm text-[#74767e] ml-1">({reviews.length || 12} reviews)</span>
-                </div>
+                <p className="text-sm text-[#74767e] mb-5">{skillName}</p>
 
                 <a
                   href={`tel:${worker.user?.phone || worker.phone || ''}`}
@@ -152,7 +139,7 @@ export default function ClientWorkerProfilePage() {
             </div>
 
             {/* Additional Details Card */}
-            <div className="bg-white border border-[#e4e5e7] rounded p-6">
+            <div className="bg-white border border-[#e4e5e7] rounded p-5">
               {/* Languages */}
               <div className="mb-6">
                 <h3 className="text-base font-bold text-[#404145] mb-4">Languages</h3>
@@ -199,10 +186,10 @@ export default function ClientWorkerProfilePage() {
           </div>
 
           {/* Right Main Content */}
-          <div className="flex-1 space-y-8">
+          <div className="flex-1 space-y-6">
             
             {/* About / Description */}
-            <div className="bg-white border border-[#e4e5e7] rounded p-8">
+            <div className="bg-white border border-[#e4e5e7] rounded p-6">
               <h2 className="text-xl font-bold text-[#404145] mb-6">About the Worker</h2>
               <div className="prose prose-sm text-[#62646a] max-w-none">
                 <p className="whitespace-pre-line leading-relaxed">
@@ -218,7 +205,7 @@ export default function ClientWorkerProfilePage() {
 
             {/* Resume / Portfolio */}
             {worker.resumeUrl && (
-              <div className="bg-white border border-[#e4e5e7] rounded p-8">
+              <div className="bg-white border border-[#e4e5e7] rounded p-6">
                 <h2 className="text-xl font-bold text-[#404145] mb-6">Resume / CV</h2>
                 <div className="flex items-center justify-between p-4 border border-[#e4e5e7] rounded hover:shadow-sm transition-shadow">
                   <div className="flex items-center gap-4">
@@ -243,8 +230,8 @@ export default function ClientWorkerProfilePage() {
             )}
 
             {/* Recent Work Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white border border-[#e4e5e7] rounded p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="bg-white border border-[#e4e5e7] rounded p-5">
                 <div className="flex items-center gap-3 mb-4">
                   <Briefcase className="w-5 h-5 text-[#404145]" />
                   <h3 className="font-bold text-[#404145]">Work Details</h3>
@@ -296,40 +283,7 @@ export default function ClientWorkerProfilePage() {
               </div>
             </div>
 
-            {/* Reviews Section */}
-            <div className="bg-white border border-[#e4e5e7] rounded p-8">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-[#404145] flex items-center gap-2">
-                  Reviews <span className="text-[#ffb33e] flex items-center"><Star className="w-5 h-5 fill-current mr-1"/> {avgRating}</span>
-                </h2>
-                <span className="text-sm text-[#74767e]">({reviews.length || 12} reviews)</span>
-              </div>
-              
-              {/* Dummy Review */}
-              <div className="py-6 border-t border-[#e4e5e7]">
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 rounded-full bg-[#1dbf73] text-white flex items-center justify-center font-bold">
-                    C
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <h4 className="font-bold text-[#404145]">Client User</h4>
-                      <div className="flex text-[#ffb33e]">
-                        {[1,2,3,4,5].map(i => <Star key={i} className="w-3 h-3 fill-current" />)}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-[#74767e] mb-3">
-                      <Globe className="w-3 h-3" /> India
-                      <span className="w-1 h-1 bg-[#b5b6ba] rounded-full"></span>
-                      1 month ago
-                    </div>
-                    <p className="text-sm text-[#404145] leading-relaxed">
-                      "Excellent work! {firstName} was very professional, completed the task on time, and exceeded our expectations. Will definitely hire again."
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Reviews Section Removed */}
 
           </div>
         </div>

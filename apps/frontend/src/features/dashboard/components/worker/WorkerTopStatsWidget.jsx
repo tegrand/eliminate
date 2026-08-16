@@ -56,21 +56,21 @@ export default function WorkerTopStatsWidget({ stats }) {
 
   const cards = [
     {
-      title: t('workerDashboard.completedWork') || "Completed Work",
+      title: t('workerDashboard.completedWork') || "Completed Shifts",
       value: stats.totalCompletedWork || "0",
-      description: t('workerDashboard.tasksCompleted') || "Tasks completed",
+      description: t('workerDashboard.tasksCompleted') || "Total shifts completed",
       gradient: "from-indigo-500 to-indigo-600",
     },
     {
-      title: t('workerDashboard.totalRevenue') || "Total Revenue",
+      title: t('workerDashboard.totalRevenue') || "Estimated Revenue",
       value: stats.totalRevenue || "₹0",
-      description: t('workerDashboard.thisMonth') || "This month",
+      description: t('workerDashboard.thisMonth') || "Based on hours logged",
       gradient: "from-emerald-500 to-emerald-600",
     },
     {
-      title: t('workerDashboard.pendingAmount') || "Pending Amount",
-      value: stats.pendingAmount || "₹0",
-      description: t('workerDashboard.dueByEndOfMonth') || "Due by end of month",
+      title: t('workerDashboard.hoursLogged') || "Hours Logged",
+      value: stats.totalHoursLogged || "0 hrs",
+      description: t('workerDashboard.totalHours') || "Total hours worked",
       gradient: "from-orange-500 to-orange-600",
     },
     {
@@ -78,12 +78,6 @@ export default function WorkerTopStatsWidget({ stats }) {
       value: (stats.attendanceSummary?.present || "0") + " Days",
       description: `Absent: ${stats.attendanceSummary?.absent || 0} | Leave: ${stats.attendanceSummary?.onLeave || 0}`,
       gradient: "from-blue-500 to-blue-600",
-    },
-    {
-      title: t('workerDashboard.activeAssignments') || "Active Assignments",
-      value: stats.activeAssignments || "0",
-      description: t('workerDashboard.currentlyWorkingOn') || "Currently working on",
-      gradient: "from-purple-500 to-purple-600",
     }
   ];
 

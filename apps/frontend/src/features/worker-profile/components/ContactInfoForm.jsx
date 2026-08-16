@@ -47,7 +47,7 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm"
+              className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm"
               placeholder="Enter mobile number"
             />
           </div>
@@ -58,7 +58,7 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
               name="email"
               value={formData.email}
               disabled
-              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 text-slate-400 rounded-xl cursor-not-allowed text-sm"
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 text-slate-400 rounded-xl cursor-not-allowed text-sm"
             />
             <p className="text-[11px] text-slate-400 mt-1">Email cannot be changed here. Contact support.</p>
           </div>
@@ -76,7 +76,7 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
                 name="addressLine1"
                 value={formData.addressLine1}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
                 placeholder="House/Flat No., Building Name, Street"
               />
             </div>
@@ -87,7 +87,7 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
                 name="addressLine2"
                 value={formData.addressLine2}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
                 placeholder="Area, Landmark"
               />
             </div>
@@ -98,7 +98,7 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
                 name="city"
                 value={formData.city}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
               />
             </div>
             <div className="space-y-2">
@@ -108,7 +108,7 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
                 name="state"
                 value={formData.state}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
               />
             </div>
             <div className="space-y-2">
@@ -118,7 +118,7 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
                 name="country"
                 value={formData.country}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
               />
             </div>
             <div className="space-y-2">
@@ -128,7 +128,7 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
                 name="postalCode"
                 value={formData.postalCode}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
               />
             </div>
           </div>
@@ -145,7 +145,7 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
                 name="emergencyContactName"
                 value={formData.emergencyContactName}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
                 placeholder="Name"
               />
             </div>
@@ -156,7 +156,7 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
                 name="emergencyContactPhone"
                 value={formData.emergencyContactPhone}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
                 placeholder="Phone Number"
               />
             </div>
@@ -167,7 +167,7 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
                 name="emergencyContactRelation"
                 value={formData.emergencyContactRelation}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
                 placeholder="e.g., Brother, Spouse"
               />
             </div>
