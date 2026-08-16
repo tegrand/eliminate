@@ -1,21 +1,38 @@
 import React, { useState } from 'react';
 import { 
   Building2, MapPin, Mail, Phone, Globe, ShieldCheck, 
-  Clock, FileText, Briefcase, Camera, Edit2, Save,
-  X, CheckCircle, AlertCircle, FileCheck
+  AlertCircle, Building, Briefcase, FileCheck, CheckCircle2,
+  PhoneCall, AlertTriangle, Clock, XCircle, User
 } from 'lucide-react';
 import { useAuth } from '../../../hooks/useAuth';
+import clsx from 'clsx';
+
+import AgencyBasicInfoForm from '../components/AgencyBasicInfoForm';
+import AgencyContactForm from '../components/AgencyContactForm';
+import AgencyComplianceForm from '../components/AgencyComplianceForm';
+import AgencyOperationsForm from '../components/AgencyOperationsForm';
+
+const TABS = [
+  { id: "basic", label: "Basic Info", icon: Building },
+  { id: "contact", label: "Contact Details", icon: PhoneCall },
+  { id: "compliance", label: "Compliance", icon: FileCheck },
+  { id: "operations", label: "Operations", icon: Briefcase },
+];
 
 export default function AgencyProfilePage() {
   const { user } = useAuth();
-  const [isEditing, setIsEditing] = useState(false);
   
+  const [activeTab, setActiveTab] = useState("basic");
+  const [saving, setSaving] = useState(false);
+  const [agencyType, setAgencyType] = useState("corporate"); // 'corporate' or 'individual'
+
   // Mock data for the agency profile
   const [profile, setProfile] = useState({
     agencyName: user?.agencyProfile?.name || 'Tegrand Manpower Solutions',
     description: 'A leading manpower and staffing solutions provider with over 10 years of experience in the construction and hospitality sectors.',
     logo: null,
     isVerified: true,
+    profileStatus: 'APPROVED',
     contact: {
       email: user?.email || 'contact@tegrand.com',
       phone: '+91 98765 43210',
@@ -33,301 +50,200 @@ export default function AgencyProfilePage() {
     },
     serviceAreas: ['Kochi', 'Trivandrum', 'Calicut', 'Bangalore'],
     businessHours: {
-      open: '09:00 AM',
-      close: '06:00 PM',
+      open: '09:00',
+      close: '18:00',
       workingDays: 'Monday - Saturday'
     },
     feePercentage: 10,
-    workerFixedAmount: 1580
+    workerFixedAmount: 1580,
+    createdAt: new Date().toISOString()
   });
 
-  const handleSave = async () => {
+  const handleSave = async (updatedData) => {
+    setSaving(true);
+    setProfile(updatedData);
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    // Existing save logic for fee
     if (user?.agencyProfile?.id) {
       try {
         const { agencyApi } = await import('../api/agency.api.js');
         await agencyApi.updateAgency(user.agencyProfile.id, {
-          feePercentage: Number(profile.feePercentage),
-          workerFixedAmount: Number(profile.workerFixedAmount)
+          feePercentage: Number(updatedData.feePercentage),
+          workerFixedAmount: Number(updatedData.workerFixedAmount)
         });
-        alert("Settings saved successfully!");
       } catch (err) {
         console.error(err);
-        alert("Failed to save settings");
       }
     }
-    setIsEditing(false);
+    setSaving(false);
   };
 
+  const name = agencyType === 'corporate' ? profile.agencyName : (profile.ownerName || user?.name || "Individual Recruiter");
+  const initials = name.split(" ").map(n => n?.[0] || "").join("").substring(0, 2).toUpperCase() || "A";
+
+  let location = "Location not set";
+  if (profile?.address?.city && profile?.address?.state) location = `${profile.address.city}, ${profile.address.state}`;
+  else if (profile?.address?.city) location = profile.address.city;
+
   return (
-    <div className="max-w-6xl mx-auto pb-12 animate-fade-in">
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Agency Profile</h1>
-          <p className="text-gray-500 mt-1">Manage your agency's public profile and business details.</p>
-        </div>
-        <div className="flex items-center gap-3">
-          {isEditing ? (
-            <>
-              <button 
-                onClick={() => setIsEditing(false)}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors flex items-center gap-2"
-              >
-                <X className="w-4 h-4" /> Cancel
-              </button>
-              <button 
-                onClick={handleSave}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors shadow-sm flex items-center gap-2"
-              >
-                <Save className="w-4 h-4" /> Save Changes
-              </button>
-            </>
-          ) : (
-            <button 
-              onClick={() => setIsEditing(true)}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium transition-colors shadow-sm flex items-center gap-2"
-            >
-              <Edit2 className="w-4 h-4" /> Edit Profile
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="w-full min-h-[calc(100vh-4rem)] bg-[#f7f7f7] overflow-y-auto py-4 px-4 sm:px-6 font-sans text-[#404145]">
+      <div className="max-w-[1200px] mx-auto">
         
-        {/* Left Column: Basic Info & Logo */}
-        <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-indigo-500 to-purple-600"></div>
-            
-            <div className="relative mt-12 flex flex-col items-center">
-              <div className="relative group">
-                <div className="w-28 h-28 bg-white rounded-full p-2 shadow-lg flex items-center justify-center border-4 border-white">
-                  {profile.logo ? (
-                    <img src={profile.logo} alt="Logo" className="w-full h-full rounded-full object-cover" />
-                  ) : (
-                    <Building2 className="w-12 h-12 text-indigo-300" />
-                  )}
-                </div>
-                {isEditing && (
-                  <button className="absolute bottom-0 right-0 p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 shadow-md transition-colors">
-                    <Camera className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-
-              <div className="mt-4 text-center w-full">
-                {isEditing ? (
-                  <input 
-                    type="text" 
-                    value={profile.agencyName}
-                    onChange={(e) => setProfile({...profile, agencyName: e.target.value})}
-                    className="w-full text-center text-xl font-bold text-gray-900 border-b-2 border-indigo-200 focus:border-indigo-600 bg-transparent outline-none px-2 py-1"
-                  />
-                ) : (
-                  <h2 className="text-xl font-bold text-gray-900">{profile.agencyName}</h2>
-                )}
-                
-                <div className="flex items-center justify-center gap-1.5 mt-2">
-                  {profile.isVerified ? (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-100">
-                      <ShieldCheck className="w-3.5 h-3.5" /> Verified Agency
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold border border-amber-100">
-                      <AlertCircle className="w-3.5 h-3.5" /> Unverified
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-8 pt-6 border-t border-gray-100 space-y-4">
-              <div className="flex items-start gap-3 text-gray-600">
-                <Mail className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">Email Address</p>
-                  {isEditing ? (
-                    <input type="email" value={profile.contact.email} onChange={(e) => setProfile({...profile, contact: {...profile.contact, email: e.target.value}})} className="w-full mt-1 text-sm border-gray-200 rounded-md p-1.5 focus:ring-indigo-500 focus:border-indigo-500" />
-                  ) : (
-                    <p className="text-sm mt-0.5">{profile.contact.email}</p>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-start gap-3 text-gray-600">
-                <Phone className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">Phone Number</p>
-                  {isEditing ? (
-                    <input type="text" value={profile.contact.phone} onChange={(e) => setProfile({...profile, contact: {...profile.contact, phone: e.target.value}})} className="w-full mt-1 text-sm border-gray-200 rounded-md p-1.5 focus:ring-indigo-500 focus:border-indigo-500" />
-                  ) : (
-                    <p className="text-sm mt-0.5">{profile.contact.phone}</p>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-start gap-3 text-gray-600">
-                <Globe className="w-5 h-5 text-gray-400 shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">Website</p>
-                  {isEditing ? (
-                    <input type="text" value={profile.contact.website} onChange={(e) => setProfile({...profile, contact: {...profile.contact, website: e.target.value}})} className="w-full mt-1 text-sm border-gray-200 rounded-md p-1.5 focus:ring-indigo-500 focus:border-indigo-500" />
-                  ) : (
-                    <a href={`https://${profile.contact.website}`} className="text-sm mt-0.5 text-indigo-600 hover:underline">{profile.contact.website}</a>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+        {/* Header Title */}
+        <div className="mb-4">
+          <h1 className="text-2xl font-bold text-[#404145] tracking-tight">Agency Profile</h1>
+          <p className="text-sm text-[#74767e] mt-0.5">Manage your agency's public profile and business details.</p>
         </div>
 
-        {/* Right Column: Detailed Info */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="flex flex-col md:flex-row gap-5">
           
-          {/* About Section */}
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-4">
-              <FileText className="w-5 h-5 text-indigo-500" /> About Agency
-            </h3>
-            {isEditing ? (
-              <textarea 
-                value={profile.description}
-                onChange={(e) => setProfile({...profile, description: e.target.value})}
-                rows={4}
-                className="w-full text-sm text-gray-700 border-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 p-3"
-              />
-            ) : (
-              <p className="text-sm text-gray-600 leading-relaxed">{profile.description}</p>
-            )}
-          </div>
-
-          {/* Compliance & Registration */}
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-4">
-              <FileCheck className="w-5 h-5 text-emerald-500" /> Compliance & Registration
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">GST Number</label>
-                {isEditing ? (
-                  <input type="text" value={profile.compliance.gst} onChange={(e) => setProfile({...profile, compliance: {...profile.compliance, gst: e.target.value}})} className="w-full text-sm border-gray-200 rounded-md p-2 focus:ring-emerald-500 focus:border-emerald-500" />
-                ) : (
-                  <div className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100 font-mono">{profile.compliance.gst}</div>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">License Number</label>
-                {isEditing ? (
-                  <input type="text" value={profile.compliance.licenseNumber} onChange={(e) => setProfile({...profile, compliance: {...profile.compliance, licenseNumber: e.target.value}})} className="w-full text-sm border-gray-200 rounded-md p-2 focus:ring-emerald-500 focus:border-emerald-500" />
-                ) : (
-                  <div className="text-sm text-gray-900 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100 font-mono">{profile.compliance.licenseNumber}</div>
-                )}
-              </div>
-            </div>
-
-            <div className="mt-6 pt-6 border-t border-gray-100">
-              <label className="block text-sm font-medium text-gray-700 mb-3">Registration Documents</label>
-              <div className="flex flex-wrap gap-3">
-                <div className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-xl hover:border-indigo-300 hover:shadow-sm transition-all cursor-pointer group">
-                  <div className="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center group-hover:bg-indigo-100 transition-colors">
-                    <FileText className="w-5 h-5 text-indigo-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">Trade License.pdf</p>
-                    <p className="text-xs text-gray-500">2.4 MB • Uploaded Jan 12</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-3 bg-white border border-gray-200 rounded-xl hover:border-indigo-300 hover:shadow-sm transition-all cursor-pointer group">
-                  <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
-                    <FileText className="w-5 h-5 text-emerald-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">GST Certificate.pdf</p>
-                    <p className="text-xs text-gray-500">1.1 MB • Uploaded Jan 12</p>
-                  </div>
-                </div>
-                {isEditing && (
-                  <button className="flex items-center justify-center gap-2 p-3 border-2 border-dashed border-gray-300 rounded-xl text-sm font-medium text-gray-600 hover:text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50 transition-all min-w-[200px]">
-                    + Upload Document
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Operational Details */}
-          <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-4">
-              <Briefcase className="w-5 h-5 text-blue-500" /> Operational Details
-            </h3>
+          {/* Left Sidebar */}
+          <div className="w-full md:w-[320px] shrink-0 space-y-4">
             
-            <div className="space-y-6">
-              <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                  <MapPin className="w-4 h-4 text-gray-400" /> Office Address
-                </label>
-                {isEditing ? (
-                  <div className="grid grid-cols-2 gap-4">
-                    <input type="text" placeholder="Street" value={profile.address.street} onChange={(e) => setProfile({...profile, address: {...profile.address, street: e.target.value}})} className="col-span-2 text-sm border-gray-200 rounded-md p-2" />
-                    <input type="text" placeholder="City" value={profile.address.city} onChange={(e) => setProfile({...profile, address: {...profile.address, city: e.target.value}})} className="text-sm border-gray-200 rounded-md p-2" />
-                    <input type="text" placeholder="State" value={profile.address.state} onChange={(e) => setProfile({...profile, address: {...profile.address, state: e.target.value}})} className="text-sm border-gray-200 rounded-md p-2" />
-                    <input type="text" placeholder="Pincode" value={profile.address.pincode} onChange={(e) => setProfile({...profile, address: {...profile.address, pincode: e.target.value}})} className="text-sm border-gray-200 rounded-md p-2" />
+            {/* Profile Card */}
+            <div className="bg-white border border-[#e4e5e7] rounded p-4 shadow-sm">
+              <div className="flex flex-col items-center text-center">
+                <div className="relative mb-4">
+                  <div className="w-[120px] h-[120px] rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200 shadow-inner">
+                    {profile.logo ? (
+                      <img src={profile.logo} alt="Logo" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-5xl text-gray-400 font-bold">{initials}</span>
+                    )}
                   </div>
-                ) : (
-                  <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                    {profile.address.street}, {profile.address.city}, {profile.address.state} - {profile.address.pincode}
-                  </p>
-                )}
-              </div>
+                </div>
+                
+                <h2 className="text-lg font-bold text-[#404145] mb-1 flex items-center justify-center gap-1.5">
+                  {name}
+                  {profile.isVerified && <CheckCircle2 className="w-4 h-4 text-[#1dbf73]" />}
+                </h2>
+                
+                <p className="text-sm text-[#74767e] mb-5">{agencyType === 'corporate' ? 'Corporate Agency' : 'Individual Recruiter'}</p>
 
-              <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                  <Globe className="w-4 h-4 text-gray-400" /> Service Areas
-                </label>
-                <div className="flex flex-wrap gap-2">
-                  {profile.serviceAreas.map((area, idx) => (
-                    <span key={idx} className="px-3 py-1 bg-blue-50 text-blue-700 text-sm font-medium rounded-full border border-blue-100">
-                      {area}
-                    </span>
-                  ))}
-                  {isEditing && (
-                    <button className="px-3 py-1 border border-dashed border-gray-300 text-gray-500 text-sm font-medium rounded-full hover:border-indigo-400 hover:text-indigo-600 transition-colors">
-                      + Add Area
-                    </button>
-                  )}
+                {/* Profile Status Badge */}
+                <div className="w-full mb-5 flex justify-center">
+                  {profile.profileStatus === 'APPROVED' && <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold uppercase tracking-wider bg-[#e8f8f0] text-[#1dbf73] border border-[#b2e5cc]"><ShieldCheck className="w-4 h-4"/> Verified</span>}
+                  {profile.profileStatus === 'PENDING' && <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold uppercase tracking-wider bg-[#fff7e6] text-[#ffb33e] border border-[#ffe0a3]"><Clock className="w-4 h-4"/> Pending Verification</span>}
+                  {profile.profileStatus === 'REJECTED' && <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold uppercase tracking-wider bg-[#ffebeb] text-[#ff6259] border border-[#ffb8b4]"><XCircle className="w-4 h-4"/> Rejected</span>}
+                  {profile.profileStatus === 'SUSPENDED' && <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold uppercase tracking-wider bg-gray-100 text-gray-700 border border-gray-300"><AlertTriangle className="w-4 h-4"/> Suspended</span>}
                 </div>
               </div>
 
-              <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                  <Clock className="w-4 h-4 text-gray-400" /> Business Hours
-                </label>
-                <div className="flex items-center gap-4 bg-gray-50 p-3 rounded-lg border border-gray-100">
-                  <div className="flex-1">
-                    <p className="text-xs text-gray-500 mb-1">Working Days</p>
-                    {isEditing ? (
-                      <input type="text" value={profile.businessHours.workingDays} onChange={(e) => setProfile({...profile, businessHours: {...profile.businessHours, workingDays: e.target.value}})} className="w-full text-sm border-gray-200 rounded-md p-1.5" />
-                    ) : (
-                      <p className="text-sm font-medium text-gray-900">{profile.businessHours.workingDays}</p>
-                    )}
+              <hr className="my-4 border-[#e4e5e7]" />
+
+              <div className="space-y-4">
+                <div className="flex justify-between items-center text-sm">
+                  <div className="flex items-center gap-2 text-[#74767e]">
+                    <MapPin className="w-4 h-4" />
+                    <span>Location</span>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-xs text-gray-500 mb-1">Timings</p>
-                    {isEditing ? (
-                      <div className="flex items-center gap-2">
-                        <input type="text" value={profile.businessHours.open} onChange={(e) => setProfile({...profile, businessHours: {...profile.businessHours, open: e.target.value}})} className="w-20 text-sm border-gray-200 rounded-md p-1.5" />
-                        <span className="text-gray-400">-</span>
-                        <input type="text" value={profile.businessHours.close} onChange={(e) => setProfile({...profile, businessHours: {...profile.businessHours, close: e.target.value}})} className="w-20 text-sm border-gray-200 rounded-md p-1.5" />
-                      </div>
-                    ) : (
-                      <p className="text-sm font-medium text-gray-900">{profile.businessHours.open} - {profile.businessHours.close}</p>
-                    )}
+                  <span className="font-semibold text-[#404145]">{location}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <div className="flex items-center gap-2 text-[#74767e]">
+                    <Mail className="w-4 h-4" />
+                    <span>Email</span>
                   </div>
+                  <span className="font-semibold text-[#404145] truncate max-w-[150px]">{profile.contact.email}</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <div className="flex items-center gap-2 text-[#74767e]">
+                    <Building className="w-4 h-4" />
+                    <span>Member since</span>
+                  </div>
+                  <span className="font-semibold text-[#404145]">
+                    {profile.createdAt ? new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(new Date(profile.createdAt)) : "Unknown"}
+                  </span>
                 </div>
               </div>
             </div>
+
+            {/* Profile Completion Card */}
+            <div className="bg-white border border-[#e4e5e7] rounded p-4 shadow-sm">
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-base font-bold text-[#404145]">Profile Completion</span>
+                <span className="text-sm font-bold text-[#1dbf73]">100%</span>
+              </div>
+              <div className="w-full bg-[#f4f4f4] rounded-full h-2.5 overflow-hidden mb-4">
+                <div className="h-2.5 rounded-full transition-all duration-1000 bg-[#1dbf73]" style={{ width: `100%` }}></div>
+              </div>
+              <div className="flex items-center gap-2 text-[#1dbf73] bg-[#e8f8f0] px-3 py-2 rounded text-sm font-bold border border-[#b2e5cc]">
+                <CheckCircle2 className="w-4 h-4" /> All Set!
+              </div>
+            </div>
+
           </div>
 
-          
+          {/* Right Main Content */}
+          <div className="flex-1 relative min-h-[600px] md:min-h-0">
+            <div className="md:absolute md:inset-0 w-full h-full bg-white border border-[#e4e5e7] rounded shadow-sm overflow-hidden flex flex-col">
+              
+              {/* Tabs Header */}
+              <div className="flex border-b border-[#e4e5e7] overflow-x-auto scrollbar-hide bg-[#fafafa] shrink-0">
+                {TABS.filter(tab => !(agencyType === 'individual' && tab.id === 'compliance')).map(tab => {
+                  let Icon = tab.icon;
+                  let label = tab.label;
+                  if (agencyType === 'individual' && tab.id === 'basic') {
+                    Icon = User;
+                    label = 'Personal Info';
+                  }
+
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex items-center gap-2 px-4 py-3 text-sm font-bold whitespace-nowrap transition-colors border-b-2 outline-none ${
+                        isActive 
+                          ? 'border-[#1dbf73] text-[#1dbf73] bg-white' 
+                          : 'border-transparent text-[#74767e] hover:text-[#404145] hover:bg-gray-50'
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Tab Content */}
+              <div className="p-5 sm:p-6 flex-1 bg-white overflow-y-auto">
+                <div className={activeTab === 'basic' ? 'block animate-fade-in' : 'hidden'}>
+                  <div className="mb-5 pb-3 border-b border-[#e4e5e7]">
+                    <h2 className="text-lg font-bold text-[#404145]">{agencyType === 'corporate' ? 'Basic Information' : 'Personal Information'}</h2>
+                    <p className="text-xs text-[#74767e] mt-1">{agencyType === 'corporate' ? "Update your agency's name and description." : "Update your personal details."}</p>
+                  </div>
+                  <AgencyBasicInfoForm data={profile} onSave={handleSave} saving={saving} agencyType={agencyType} setAgencyType={setAgencyType} hideHeader />
+                </div>
+                <div className={activeTab === 'contact' ? 'block animate-fade-in' : 'hidden'}>
+                  <div className="mb-5 pb-3 border-b border-[#e4e5e7]">
+                    <h2 className="text-lg font-bold text-[#404145]">Contact Details</h2>
+                    <p className="text-xs text-[#74767e] mt-1">How clients and workers can reach you.</p>
+                  </div>
+                  <AgencyContactForm data={profile} onSave={handleSave} saving={saving} agencyType={agencyType} hideHeader />
+                </div>
+                <div className={activeTab === 'compliance' ? 'block animate-fade-in' : 'hidden'}>
+                  <div className="mb-5 pb-3 border-b border-[#e4e5e7]">
+                    <h2 className="text-lg font-bold text-[#404145]">Compliance & Registration</h2>
+                    <p className="text-xs text-[#74767e] mt-1">Manage your agency's legal registration details.</p>
+                  </div>
+                  <AgencyComplianceForm data={profile} onSave={handleSave} saving={saving} agencyType={agencyType} hideHeader />
+                </div>
+                <div className={activeTab === 'operations' ? 'block animate-fade-in' : 'hidden'}>
+                  <div className="mb-5 pb-3 border-b border-[#e4e5e7]">
+                    <h2 className="text-lg font-bold text-[#404145]">{agencyType === 'corporate' ? 'Operational Details' : 'Work Details'}</h2>
+                    <p className="text-xs text-[#74767e] mt-1">{agencyType === 'corporate' ? "Manage your office address, service areas, and business hours." : "Manage your address and service areas."}</p>
+                  </div>
+                  <AgencyOperationsForm data={profile} onSave={handleSave} saving={saving} agencyType={agencyType} hideHeader />
+                </div>
+              </div>
+
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
