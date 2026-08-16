@@ -26,7 +26,8 @@ export default function DashboardPage() {
   });
 
   const renderAdminDashboard = () => {
-    if (isLoading) {
+    // Only show loading if we are actually fetching data for SUPER_ADMIN
+    if (isLoading && user?.profileType === "SUPER_ADMIN") {
       return (
         <div className="flex flex-col items-center justify-center min-h-[50vh]">
           <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />

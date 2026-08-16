@@ -136,17 +136,17 @@ export const getSuperAdminDashboard = async () => {
     recentUsers,
     usersThisYear
   ] = await Promise.all([
-    prisma.worker.count({ where: { deletedAt: null } }),
-    prisma.client.count({ where: { deletedAt: null } }),
-    prisma.agency.count({ where: { deletedAt: null } }),
+    prisma.worker.count(),
+    prisma.client.count(),
+    prisma.agency.count(),
     prisma.user.findMany({
-      where: { deletedAt: null, profileType: { not: "SUPER_ADMIN" } },
+      where: { profileType: { not: "SUPER_ADMIN" } },
       orderBy: { createdAt: "desc" },
       take: 5,
       select: { id: true, email: true, profileType: true, status: true, createdAt: true, firstName: true, lastName: true }
     }),
     prisma.user.findMany({
-      where: { deletedAt: null, createdAt: { gte: startOfYear }, profileType: { not: "SUPER_ADMIN" } },
+      where: { createdAt: { gte: startOfYear }, profileType: { not: "SUPER_ADMIN" } },
       select: { createdAt: true, profileType: true }
     })
   ]);

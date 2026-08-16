@@ -1,6 +1,7 @@
 import { Router } from "express";
 
-import { register, login, googleLogin, refreshToken, logout, me, changePassword, verifyPassword, forgotPassword, resetPassword, verifyEmail, resendVerification } from "./auth.controller.js";
+import { register, login, refreshToken, logout, me, changePassword, verifyPassword, forgotPassword, resetPassword, verifyEmail, resendVerification } from "./auth.controller.js";
+
 import { registerSchema, loginSchema, changePasswordSchema, forgotPasswordSchema, resetPasswordSchema, verifyEmailSchema, resendVerificationSchema } from "./auth.validation.js";
 
 import validate from "../../middleware/validate.middleware.js";
@@ -22,8 +23,6 @@ router.post(
   validate(loginSchema),
   login
 );
-
-router.post("/google-login", googleLogin);
 
 router.post("/refresh-token", refreshToken);
 
