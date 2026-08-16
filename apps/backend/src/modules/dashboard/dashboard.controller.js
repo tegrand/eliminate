@@ -52,12 +52,6 @@ export const getDashboardData = asyncHandler(async (req, res) => {
     return ApiResponse.success(res, "Agency dashboard retrieved successfully", data, 200);
   }
 
-  if (profileType === "PENDING_ROLE") {
-    // Return empty mock data so UI doesn't crash before redirecting
-    const data = { topStats: {}, recentActivities: [], chartData: {} };
-    return ApiResponse.success(res, "Pending role dashboard", data, 200);
-  }
-
   // Fallback for others
   throw new AppError(`Dashboard for profile type ${profileType} is not implemented yet.`, 501);
 });

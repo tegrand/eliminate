@@ -50,7 +50,18 @@ export default function LoginForm() {
       login(user, accessToken, variables.rememberMe);
       toast.success("Login successful!");
       
-      navigate(ROUTES.DASHBOARD);
+      // Role-based redirect
+      if (user.role === "SUPER_ADMIN") {
+        navigate(ROUTES.DASHBOARD);
+      } else if (user.role === "CLIENT") {
+        navigate(ROUTES.DASHBOARD); // Assuming unified dashboard or replace with client specific
+      } else if (user.role === "AGENCY") {
+        navigate(ROUTES.DASHBOARD);
+      } else if (user.role === "WORKER") {
+        navigate(ROUTES.DASHBOARD);
+      } else {
+        navigate(ROUTES.DASHBOARD);
+      }
     },
     onError: (error) => {
       toast.error(error?.response?.data?.message || "Invalid email or password");
@@ -127,7 +138,6 @@ export default function LoginForm() {
           >
             Sign In
           </Button>
-          
           <div className="text-sm text-center text-gray-500 mt-2">
             Don't have an account?{" "}
             <Link to={ROUTES.SIGNUP} className="text-blue-600 font-medium hover:underline">

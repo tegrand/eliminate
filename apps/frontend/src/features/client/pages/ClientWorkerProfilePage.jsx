@@ -5,7 +5,7 @@ import {
   Home, ChevronRight, Heart, Share2,
   MapPin, Calendar, Briefcase, MessageSquare,
   ShieldCheck, Zap, Users, User, Info, Award, Globe, Star, CheckCircle2,
-  Clock, Download
+  Clock, Download, FileText
 } from "lucide-react";
 import { useState } from "react";
 import AdvertisementBanner from "../../../components/ui/AdvertisementBanner";
@@ -196,22 +196,40 @@ export default function ClientWorkerProfilePage() {
             {/* About / Description */}
             <div className="bg-white border border-[#e4e5e7] rounded p-6">
               <h2 className="text-xl font-bold text-[#404145] mb-6">About the Worker</h2>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 pb-6 border-b border-[#e4e5e7]">
+                <div>
+                  <span className="text-xs text-[#74767e] uppercase tracking-wide font-semibold block mb-1">Gender</span>
+                  <span className="text-sm text-[#404145] font-medium capitalize">{worker.gender?.toLowerCase() || 'N/A'}</span>
+                </div>
+                <div>
+                  <span className="text-xs text-[#74767e] uppercase tracking-wide font-semibold block mb-1">Age</span>
+                  <span className="text-sm text-[#404145] font-medium">{worker.dateOfBirth ? (new Date().getFullYear() - new Date(worker.dateOfBirth).getFullYear()) + ' Years' : 'N/A'}</span>
+                </div>
+                <div className="col-span-2">
+                  <span className="text-xs text-[#74767e] uppercase tracking-wide font-semibold block mb-1">Full Address</span>
+                  <span className="text-sm text-[#404145] font-medium">{worker.addressLine1 || location}</span>
+                </div>
+              </div>
+
               <div className="prose prose-sm text-[#62646a] max-w-none">
-                <p className="whitespace-pre-line leading-relaxed">
-                  Hi there! I am {name}, an experienced professional specializing in {skillName}. 
-                  With {experience} of hands-on experience, I bring dedication and quality to every task. 
-                  My focus is always on delivering the best results and ensuring complete satisfaction.
-                </p>
-                <p className="mt-4">
-                  Whether you need reliable {skillName.toLowerCase()} services for a short-term assignment or a long-term engagement, I am ready to help. I am currently based in {location} and available for work.
-                </p>
+                <h3 className="text-sm font-bold text-[#404145] mb-3 uppercase tracking-wide">Bio</h3>
+                {worker.notes ? (
+                  <p className="whitespace-pre-line leading-relaxed">
+                    {worker.notes}
+                  </p>
+                ) : (
+                  <p className="whitespace-pre-line leading-relaxed text-gray-400 italic">
+                    This worker hasn't added a bio yet.
+                  </p>
+                )}
               </div>
             </div>
 
             {/* Resume / Portfolio */}
-            {worker.resumeUrl && (
-              <div className="bg-white border border-[#e4e5e7] rounded p-6">
-                <h2 className="text-xl font-bold text-[#404145] mb-6">Resume / CV</h2>
+            <div className="bg-white border border-[#e4e5e7] rounded p-6">
+              <h2 className="text-xl font-bold text-[#404145] mb-6">Resume / CV</h2>
+              {worker.resumeUrl ? (
                 <div className="flex items-center justify-between p-4 border border-[#e4e5e7] rounded hover:shadow-sm transition-shadow">
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-[#ffb33e]">
@@ -226,13 +244,17 @@ export default function ClientWorkerProfilePage() {
                     href={worker.resumeUrl.startsWith('http') ? worker.resumeUrl : `http://localhost:5000${worker.resumeUrl.startsWith('/') ? '' : '/'}${worker.resumeUrl}`} 
                     target="_blank" 
                     rel="noreferrer"
-                    className="p-2 border border-[#e4e5e7] rounded text-[#74767e] hover:bg-gray-50 hover:text-[#404145]"
+                    className="flex items-center gap-2 p-2 px-4 border border-[#e4e5e7] rounded text-[#74767e] hover:bg-gray-50 hover:text-[#404145] font-semibold text-sm transition-colors"
                   >
-                    <Download className="w-5 h-5" />
+                    View Resume <Download className="w-4 h-4 ml-1" />
                   </a>
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="p-4 border border-dashed border-[#e4e5e7] rounded text-center text-[#74767e]">
+                  <p className="italic text-sm">This worker has not uploaded a resume yet.</p>
+                </div>
+              )}
+            </div>
 
             {/* Recent Work Details */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

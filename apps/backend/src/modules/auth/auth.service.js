@@ -311,7 +311,6 @@ export const login = async (data, meta) => {
   return issueTokensAndUpdateUser(user, meta, "LOGIN");
 };
 
-
 export const refreshToken = async (token, meta) => {
   const payload = verifyRefreshToken(token);
   if (!payload || !payload.sub) {

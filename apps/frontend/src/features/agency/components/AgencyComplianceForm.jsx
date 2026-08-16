@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Save, Loader2, FileText, Upload } from "lucide-react";
 
-export default function AgencyComplianceForm({ data, onSave, saving, hideHeader }) {
+export default function AgencyComplianceForm({ data, onSave, saving, hideHeader, agencyType }) {
   const [formData, setFormData] = useState({
     gst: data?.compliance?.gst || "",
     licenseNumber: data?.compliance?.licenseNumber || "",
@@ -40,61 +40,101 @@ export default function AgencyComplianceForm({ data, onSave, saving, hideHeader 
         
         <div className={sectionClass}>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <div className="space-y-2">
-              <label className={labelClass}>GST Number</label>
-              <input
-                type="text"
-                name="gst"
-                value={formData.gst}
-                onChange={handleChange}
-                className={inputClass}
-                placeholder="e.g. 32ABCDE1234F1Z5"
-              />
+          {agencyType === 'corporate' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-2">
+                <label className={labelClass}>GST Number</label>
+                <input
+                  type="text"
+                  name="gst"
+                  value={formData.gst}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="e.g. 32ABCDE1234F1Z5"
+                />
+              </div>
+  
+              <div className="space-y-2">
+                <label className={labelClass}>License Number</label>
+                <input
+                  type="text"
+                  name="licenseNumber"
+                  value={formData.licenseNumber}
+                  onChange={handleChange}
+                  className={inputClass}
+                  placeholder="e.g. LIC/2023/KOC/8892"
+                />
+              </div>
             </div>
-
-            <div className="space-y-2">
-              <label className={labelClass}>License Number</label>
-              <input
-                type="text"
-                name="licenseNumber"
-                value={formData.licenseNumber}
-                onChange={handleChange}
-                className={inputClass}
-                placeholder="e.g. LIC/2023/KOC/8892"
-              />
-            </div>
-          </div>
+          )}
 
           <div className="pt-6 border-t border-slate-100">
             <label className={labelClass}>Registration Documents</label>
-            <div className="flex flex-wrap gap-3 mt-3">
-              {/* Dummy documents to match UI */}
-              <div className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl hover:border-indigo-300 hover:shadow-sm transition-all cursor-pointer group">
-                <div className="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center group-hover:bg-indigo-100 transition-colors">
-                  <FileText className="w-5 h-5 text-indigo-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-slate-900">Trade License.pdf</p>
-                  <p className="text-[11px] text-slate-500">2.4 MB • Uploaded Jan 12</p>
-                </div>
+            <div className="mt-3 bg-slate-50 border border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-slate-100 transition-colors group relative">
+              <div className="w-full text-left mb-4 max-w-sm mx-auto">
+                <label className="text-sm font-medium text-slate-700 mb-1.5 block">Select Document Type</label>
+                <select
+                  id="agencyDocType"
+                  className="w-full px-4 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors text-sm"
+                  defaultValue={agencyType === 'corporate' ? "LICENSE" : "AADHAAR"}
+                >
+                  {agencyType === 'corporate' ? (
+                    <>
+                      <option value="LICENSE">Trade License</option>
+                      <option value="GST">GST Certificate</option>
+                      <option value="OTHER">Other Document</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="AADHAAR">Aadhaar Card</option>
+                      <option value="PAN">PAN Card</option>
+                      <option value="OTHER">Other Document</option>
+                    </>
+                  )}
+                </select>
               </div>
-              <div className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-xl hover:border-indigo-300 hover:shadow-sm transition-all cursor-pointer group">
-                <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
-                  <FileText className="w-5 h-5 text-emerald-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-slate-900">GST Certificate.pdf</p>
-                  <p className="text-[11px] text-slate-500">1.1 MB • Uploaded Jan 12</p>
-                </div>
+
+              <div className="relative w-full flex flex-col items-center">
+                <input 
+                  type="file" 
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    const docType = document.getElementById('agencyDocType')?.value || "OTHER";
+                    const formDataFile = new FormData();
+                    formDataFile.append("file", file);
+                    formDataFile.append("documentType", docType);
+
+                    try {
+                      const { agencyApi } = await import('../api/agency.api.js');
+                      
+                      // Using a dynamic import for toast to avoid breaking if not at top level, 
+                      // or just standard alert if toast is not imported.
+                      // Wait, I can just import toast at the top of the file!
+                      const { toast } = await import('sonner');
+                      
+                      toast.loading("Uploading document...", { id: "agency-doc-upload" });
+                      await agencyApi.uploadDocument(formDataFile);
+                      toast.success("Document uploaded successfully", { id: "agency-doc-upload" });
+                    } catch (err) {
+                      const { toast } = await import('sonner');
+                      toast.error(err?.response?.data?.message || "Failed to upload document", { id: "agency-doc-upload" });
+                    } finally {
+                      e.target.value = "";
+                    }
+                  }}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+                <button type="button" className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-white border border-slate-200 text-slate-700 shadow-sm group-hover:border-indigo-300 group-hover:text-indigo-700 transition-colors flex items-center gap-2">
+                  <Upload className="w-4 h-4" />
+                  Upload Selected Document
+                </button>
+                <p className="text-xs text-slate-500 mt-3">Supported formats: PDF, JPG, PNG. Admin will verify uploaded documents.</p>
               </div>
-              
-              <button type="button" className="flex items-center justify-center gap-2 p-3 border-2 border-dashed border-slate-300 rounded-xl text-sm font-medium text-slate-600 hover:text-indigo-600 hover:border-indigo-300 hover:bg-indigo-50 transition-all min-w-[200px]">
-                <Upload className="w-4 h-4" /> Upload Document
-              </button>
             </div>
           </div>
-
         </div>
 
         <div className="pt-6 border-t border-slate-100 flex justify-end">

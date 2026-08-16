@@ -20,10 +20,6 @@ export const authApi = {
     return api.post("/auth/register", payload);
   },
   
-  googleLogin: async (data) => {
-    return api.post("/auth/google-login", data);
-  },
-
   logout: async () => {
     return api.post("/auth/logout");
   },

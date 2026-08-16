@@ -19,7 +19,10 @@ export default function DocumentsForm({ data, onSave, saving, hideHeader }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(formData); // Note: we could include resumeUrl here if needed, but it's already saved by the upload endpoint
+    // Identity fields were removed because they aren't in the schema, 
+    // and all file uploads trigger their own endpoints instantly on selection.
+    // So there is nothing else left to save here!
+    toast.success("Documents section is up to date");
   };
 
   const handleResumeUpload = async (e) => {
@@ -59,38 +62,6 @@ export default function DocumentsForm({ data, onSave, saving, hideHeader }) {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        
-        {/* Identity Numbers */}
-        <div>
-          <h3 className="text-sm font-bold text-slate-800 uppercase tracking-widest mb-4">Identity Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">Aadhaar / ID Number</label>
-              <input
-                type="text"
-                name="aadhaarNumber"
-                value={formData.aadhaarNumber}
-                onChange={handleChange}
-                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
-                placeholder="Enter 12 digit Aadhaar number"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">PAN Number (Optional)</label>
-              <input
-                type="text"
-                name="panNumber"
-                value={formData.panNumber}
-                onChange={handleChange}
-                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
-                placeholder="Enter PAN"
-              />
-            </div>
-          </div>
-        </div>
-
-
-
         {/* File Uploads */}
         <div>
           <h3 className="text-sm font-bold text-slate-800 uppercase tracking-widest mb-4">Document Uploads</h3>
@@ -110,13 +81,13 @@ export default function DocumentsForm({ data, onSave, saving, hideHeader }) {
                 {resumeUrl ? <FileText className="w-6 h-6" /> : <UploadCloud className="w-6 h-6" />}
               </div>
               <h4 className="font-semibold text-slate-800 mb-1">Resume / CV</h4>
-              <p className="text-xs text-slate-500 mb-4">{resumeUrl ? "Document uploaded" : "Click to upload (PDF, DOCX)"}</p>
+              <p className="text-xs text-slate-500 mb-4">{resumeUrl ? "Document uploaded" : "Click to upload (PDF, DOCX, JPG, PNG)"}</p>
               
               <div className="relative">
                 <input 
                   type="file" 
                   ref={fileInputRef}
-                  accept=".pdf,.doc,.docx"
+                  accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
                   onChange={handleResumeUpload}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />

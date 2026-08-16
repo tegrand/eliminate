@@ -32,8 +32,8 @@ export default function AgencyProfilePage() {
     agencyName: user?.agencyProfile?.name || user?.agencyProfile?.agencyName || 'Tegrand Manpower Solutions',
     description: 'A leading manpower and staffing solutions provider with over 10 years of experience in the construction and hospitality sectors.',
     logo: user?.agencyProfile?.logoUrl || null,
-    isVerified: true,
-    profileStatus: 'APPROVED',
+    isVerified: user?.agencyProfile?.profileStatus === 'APPROVED',
+    profileStatus: user?.agencyProfile?.profileStatus || 'PENDING',
     contact: {
       email: user?.email || 'contact@tegrand.com',
       phone: user?.agencyProfile?.phone || '+91 98765 43210',
@@ -175,14 +175,47 @@ export default function AgencyProfilePage() {
             <div className="bg-white border border-[#e4e5e7] rounded p-4 shadow-sm">
               <div className="flex justify-between items-center mb-3">
                 <span className="text-base font-bold text-[#404145]">Profile Completion</span>
-                <span className="text-sm font-bold text-[#1dbf73]">100%</span>
+                <span className="text-sm font-bold text-[#1dbf73]">{(() => {
+                  let score = 0;
+                  if (profile.agencyName) score += 20;
+                  if (profile.logo) score += 20;
+                  if (profile.contact?.phone) score += 20;
+                  if (profile.address?.city) score += 20;
+                  if (agencyType === 'corporate' && (profile.compliance?.gst || profile.compliance?.licenseNumber)) score += 20;
+                  if (agencyType === 'individual' && profile.address?.state) score += 20;
+                  return `${score}%`;
+                })()}</span>
               </div>
               <div className="w-full bg-[#f4f4f4] rounded-full h-2.5 overflow-hidden mb-4">
-                <div className="h-2.5 rounded-full transition-all duration-1000 bg-[#1dbf73]" style={{ width: `100%` }}></div>
+                <div className="h-2.5 rounded-full transition-all duration-1000 bg-[#1dbf73]" style={{ width: (() => {
+                  let score = 0;
+                  if (profile.agencyName) score += 20;
+                  if (profile.logo) score += 20;
+                  if (profile.contact?.phone) score += 20;
+                  if (profile.address?.city) score += 20;
+                  if (agencyType === 'corporate' && (profile.compliance?.gst || profile.compliance?.licenseNumber)) score += 20;
+                  if (agencyType === 'individual' && profile.address?.state) score += 20;
+                  return `${score}%`;
+                })() }}></div>
               </div>
-              <div className="flex items-center gap-2 text-[#1dbf73] bg-[#e8f8f0] px-3 py-2 rounded text-sm font-bold border border-[#b2e5cc]">
-                <CheckCircle2 className="w-4 h-4" /> All Set!
-              </div>
+              {(() => {
+                  let score = 0;
+                  if (profile.agencyName) score += 20;
+                  if (profile.logo) score += 20;
+                  if (profile.contact?.phone) score += 20;
+                  if (profile.address?.city) score += 20;
+                  if (agencyType === 'corporate' && (profile.compliance?.gst || profile.compliance?.licenseNumber)) score += 20;
+                  if (agencyType === 'individual' && profile.address?.state) score += 20;
+                  return score === 100 ? (
+                    <div className="flex items-center gap-2 text-[#1dbf73] bg-[#e8f8f0] px-3 py-2 rounded text-sm font-bold border border-[#b2e5cc]">
+                      <CheckCircle2 className="w-4 h-4" /> All Set!
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 text-[#ffb33e] bg-[#fff7e6] px-3 py-2 rounded text-sm font-bold border border-[#ffe0a3]">
+                      <AlertCircle className="w-4 h-4" /> Please complete profile
+                    </div>
+                  );
+              })()}
             </div>
 
           </div>
@@ -193,7 +226,7 @@ export default function AgencyProfilePage() {
               
               {/* Tabs Header */}
               <div className="flex border-b border-[#e4e5e7] overflow-x-auto scrollbar-hide bg-[#fafafa] shrink-0">
-                {TABS.filter(tab => !(agencyType === 'individual' && tab.id === 'compliance')).map(tab => {
+                {TABS.map(tab => {
                   let Icon = tab.icon;
                   let label = tab.label;
                   if (agencyType === 'individual' && tab.id === 'basic') {

@@ -22,7 +22,20 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(formData);
+    
+    // The backend Zod schema does not accept these extra frontend-only fields
+    const {
+      email,
+      addressLine2,
+      country,
+      postalCode,
+      emergencyContactName,
+      emergencyContactPhone,
+      emergencyContactRelation,
+      ...validData
+    } = formData;
+
+    onSave(validData);
   };
 
   return (
