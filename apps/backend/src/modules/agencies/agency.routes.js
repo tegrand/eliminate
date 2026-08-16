@@ -39,7 +39,7 @@ const upload = multer({ storage: storage, limits: { fileSize: 5 * 1024 * 1024 } 
 
 router.post(
   "/upload-document",
-  requirePermission("agency:update"),
+  authorize("AGENCY", "SUPER_ADMIN"),
   upload.single('file'),
   uploadAgencyDocument
 );
@@ -67,7 +67,7 @@ router.get(
 
 router.patch(
   "/:id",
-  requirePermission("agency:update"),
+  authorize("SUPER_ADMIN", "AGENCY"),
   validate(agencyIdParamSchema, "params"),
   validate(updateAgencySchema),
   updateAgency

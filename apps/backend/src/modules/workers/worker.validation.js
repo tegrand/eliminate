@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+const phoneRegex = /^\+?[0-9]\d{1,14}$/;
 
 export const createWorkerSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required").max(100, "First name is too long"),
@@ -38,6 +38,14 @@ export const updateWorkerSchema = z.object({
   expectedDailyWage: z.string().trim().optional(),
   profilePhoto: z.string().trim().optional().nullable(),
   resumeUrl: z.string().trim().optional().nullable(),
+  
+  email: z.string().trim().email("Invalid email format").optional().nullable(),
+  addressLine2: z.string().trim().max(500, "Address is too long").optional().nullable(),
+  country: z.string().trim().max(100).optional().nullable(),
+  postalCode: z.string().trim().max(50).optional().nullable(),
+  emergencyContactName: z.string().trim().max(100).optional().nullable(),
+  emergencyContactPhone: z.string().trim().regex(phoneRegex, "Invalid phone number format").optional().nullable(),
+  emergencyContactRelation: z.string().trim().max(50).optional().nullable(),
 }).strict("Unknown fields are not allowed").refine(
   (data) => Object.keys(data).length > 0,
   "Update payload cannot be empty"

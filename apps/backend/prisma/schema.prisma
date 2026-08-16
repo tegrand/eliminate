@@ -265,10 +265,17 @@ model Worker {
   profilePhoto     String?
   resumeUrl        String?
   jobType          String?
+  email            String?
   addressLine1     String?
+  addressLine2     String?
   city             String?
   district         String?
   state            String?
+  country          String?
+  postalCode       String?
+  emergencyContactName     String?
+  emergencyContactPhone    String?
+  emergencyContactRelation String?
   travelDistance   Int?
   totalExperienceYears Int?
   employmentStatus EmploymentStatus @default(ACTIVE)
@@ -352,6 +359,7 @@ model Agency {
 
   agencyCode     String?             @unique
   agencyName     String?
+  agencyType     String              @default("CORPORATE")
   contactPerson  String?
   phone          String?
   alternatePhone String?
@@ -364,6 +372,11 @@ model Agency {
   state          String?
   country        String?
   postalCode     String?
+  website        String?
+  serviceAreas   String[]
+  workingDays    String?
+  openTime       String?
+  closeTime      String?
   notes          String?
   feePercentage  Float?
   workerFixedAmount Float?

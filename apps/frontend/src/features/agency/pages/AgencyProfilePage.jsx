@@ -25,35 +25,37 @@ export default function AgencyProfilePage() {
   
   const [activeTab, setActiveTab] = useState("basic");
   const [saving, setSaving] = useState(false);
-  const [agencyType, setAgencyType] = useState("corporate"); // 'corporate' or 'individual'
+  const [agencyType, setAgencyType] = useState(user?.agencyProfile?.agencyType?.toLowerCase() || "corporate"); // 'corporate' or 'individual'
 
-  // Mock data for the agency profile
+  // Real data for the agency profile
   const [profile, setProfile] = useState({
-    agencyName: user?.agencyProfile?.name || user?.agencyProfile?.agencyName || 'Tegrand Manpower Solutions',
-    description: 'A leading manpower and staffing solutions provider with over 10 years of experience in the construction and hospitality sectors.',
+    agencyName: user?.agencyProfile?.agencyName || '',
+    description: user?.agencyProfile?.notes || '',
     logo: user?.agencyProfile?.logoUrl || null,
     isVerified: user?.agencyProfile?.profileStatus === 'APPROVED',
     profileStatus: user?.agencyProfile?.profileStatus || 'PENDING',
     contact: {
-      email: user?.email || 'contact@tegrand.com',
-      phone: user?.agencyProfile?.phone || '+91 98765 43210',
-      website: 'www.tegrandmanpower.com'
+      email: user?.agencyProfile?.email || user?.email || '',
+      phone: user?.agencyProfile?.phone || '',
+      website: user?.agencyProfile?.website || ''
     },
     address: {
-      street: user?.agencyProfile?.addressLine1 || '123 Business Park, Tech Boulevard',
-      city: user?.agencyProfile?.city || 'Kochi',
-      state: user?.agencyProfile?.state || 'Kerala',
-      pincode: user?.agencyProfile?.postalCode || '682030'
+      street: user?.agencyProfile?.addressLine1 || '',
+      addressLine2: user?.agencyProfile?.addressLine2 || '',
+      city: user?.agencyProfile?.city || '',
+      state: user?.agencyProfile?.state || '',
+      country: user?.agencyProfile?.country || '',
+      pincode: user?.agencyProfile?.postalCode || ''
     },
     compliance: {
-      gst: user?.agencyProfile?.gstNumber || '32ABCDE1234F1Z5',
-      licenseNumber: user?.agencyProfile?.licenseNumber || 'LIC/2023/KOC/8892'
+      gst: user?.agencyProfile?.gstNumber || '',
+      licenseNumber: user?.agencyProfile?.licenseNumber || ''
     },
-    serviceAreas: ['Kochi', 'Trivandrum', 'Calicut', 'Bangalore'],
+    serviceAreas: user?.agencyProfile?.serviceAreas || [],
     businessHours: {
-      open: '09:00',
-      close: '18:00',
-      workingDays: 'Monday - Saturday'
+      workingDays: user?.agencyProfile?.workingDays || '',
+      open: user?.agencyProfile?.openTime || '',
+      close: user?.agencyProfile?.closeTime || ''
     },
     feePercentage: user?.agencyProfile?.feePercentage || 10,
     workerFixedAmount: user?.agencyProfile?.workerFixedAmount || 1580,
@@ -64,23 +66,50 @@ export default function AgencyProfilePage() {
     setSaving(true);
     setProfile(updatedData);
     
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    // Existing save logic for fee
     if (user?.agencyProfile?.id) {
       try {
         const { agencyApi } = await import('../api/agency.api.js');
+        const { toast } = await import('sonner');
+        
         const payload = {
+          agencyName: updatedData.agencyName || undefined,
+          notes: updatedData.description || undefined,
+          logoUrl: updatedData.logo || undefined,
+          agencyType: agencyType.toUpperCase(),
+          
+          email: updatedData.contact?.email || undefined,
+          phone: updatedData.contact?.phone || undefined,
+          website: updatedData.contact?.website || undefined,
+          
+          addressLine1: updatedData.address?.street || undefined,
+          addressLine2: updatedData.address?.addressLine2 || undefined,
+          city: updatedData.address?.city || undefined,
+          state: updatedData.address?.state || undefined,
+          country: updatedData.address?.country || undefined,
+          postalCode: updatedData.address?.pincode || undefined,
+          
+          gstNumber: updatedData.compliance?.gst || undefined,
+          licenseNumber: updatedData.compliance?.licenseNumber || undefined,
+          
+          serviceAreas: updatedData.serviceAreas || undefined,
+          workingDays: updatedData.businessHours?.workingDays || undefined,
+          openTime: updatedData.businessHours?.open || undefined,
+          closeTime: updatedData.businessHours?.close || undefined,
+          
           feePercentage: Number(updatedData.feePercentage),
           workerFixedAmount: Number(updatedData.workerFixedAmount)
         };
-        if (updatedData.logo) payload.logoUrl = updatedData.logo;
-        if (updatedData.agencyName) payload.agencyName = updatedData.agencyName;
+        
+        // Remove undefined keys to prevent sending empty updates if not intended,
+        // but since we want to clear fields if empty, we should send empty strings if that's what's in the form.
+        Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
 
         await agencyApi.updateAgency(user.agencyProfile.id, payload);
+        toast.success("Profile saved perfectly!", { id: "agency-save" });
       } catch (err) {
         console.error(err);
+        const { toast } = await import('sonner');
+        toast.error("Failed to save profile", { id: "agency-save" });
       }
     }
     setSaving(false);
@@ -157,8 +186,26 @@ export default function AgencyProfilePage() {
                     <Mail className="w-4 h-4" />
                     <span>Email</span>
                   </div>
-                  <span className="font-semibold text-[#404145] truncate max-w-[150px]">{profile.contact.email}</span>
+                  <span className="font-semibold text-[#404145] truncate max-w-[150px]">{profile.contact.email || "-"}</span>
                 </div>
+                <div className="flex justify-between items-center text-sm">
+                  <div className="flex items-center gap-2 text-[#74767e]">
+                    <Phone className="w-4 h-4" />
+                    <span>Phone</span>
+                  </div>
+                  <span className="font-semibold text-[#404145]">{profile.contact.phone || "-"}</span>
+                </div>
+                {profile.contact.website && (
+                  <div className="flex justify-between items-center text-sm">
+                    <div className="flex items-center gap-2 text-[#74767e]">
+                      <Globe className="w-4 h-4" />
+                      <span>Website</span>
+                    </div>
+                    <span className="font-semibold text-[#404145] truncate max-w-[150px]">
+                      <a href={profile.contact.website.startsWith('http') ? profile.contact.website : `https://${profile.contact.website}`} target="_blank" rel="noopener noreferrer" className="hover:text-[#1dbf73] transition-colors">{profile.contact.website.replace(/^https?:\/\//, '')}</a>
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between items-center text-sm">
                   <div className="flex items-center gap-2 text-[#74767e]">
                     <Building className="w-4 h-4" />

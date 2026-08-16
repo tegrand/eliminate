@@ -206,9 +206,11 @@ export default function ClientWorkerProfilePage() {
                   <span className="text-xs text-[#74767e] uppercase tracking-wide font-semibold block mb-1">Age</span>
                   <span className="text-sm text-[#404145] font-medium">{worker.dateOfBirth ? (new Date().getFullYear() - new Date(worker.dateOfBirth).getFullYear()) + ' Years' : 'N/A'}</span>
                 </div>
-                <div className="col-span-2">
+                <div className="col-span-2 md:col-span-4">
                   <span className="text-xs text-[#74767e] uppercase tracking-wide font-semibold block mb-1">Full Address</span>
-                  <span className="text-sm text-[#404145] font-medium">{worker.addressLine1 || location}</span>
+                  <span className="text-sm text-[#404145] font-medium">
+                    {[worker.addressLine1, worker.addressLine2, worker.city, worker.district, worker.state, worker.postalCode, worker.country].filter(Boolean).join(", ") || location}
+                  </span>
                 </div>
               </div>
 
@@ -224,6 +226,28 @@ export default function ClientWorkerProfilePage() {
                   </p>
                 )}
               </div>
+
+              {(worker.emergencyContactName || worker.emergencyContactPhone) && (
+                <div className="mt-6 pt-6 border-t border-[#e4e5e7]">
+                  <h3 className="text-sm font-bold text-[#404145] mb-4 uppercase tracking-wide flex items-center gap-2">
+                    <Heart className="w-4 h-4 text-rose-500" /> Emergency Contact
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-rose-50/50 p-4 rounded-xl border border-rose-100">
+                    <div>
+                      <span className="text-xs text-[#74767e] uppercase tracking-wide font-semibold block mb-1">Name</span>
+                      <span className="text-sm text-[#404145] font-medium">{worker.emergencyContactName || 'N/A'}</span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-[#74767e] uppercase tracking-wide font-semibold block mb-1">Phone</span>
+                      <span className="text-sm text-[#404145] font-medium">{worker.emergencyContactPhone || 'N/A'}</span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-[#74767e] uppercase tracking-wide font-semibold block mb-1">Relation</span>
+                      <span className="text-sm text-[#404145] font-medium">{worker.emergencyContactRelation || 'N/A'}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Resume / Portfolio */}
