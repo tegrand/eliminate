@@ -1,14 +1,58 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Save, Loader2, Camera } from "lucide-react";
+import { toast } from "sonner";
+import { useAuth } from "../../../hooks/useAuth";
 
 export default function AgencyBasicInfoForm({ data, onSave, saving, hideHeader, agencyType, setAgencyType }) {
+  const { updateUser } = useAuth();
   const [formData, setFormData] = useState({
     agencyName: data?.agencyName || "",
     description: data?.description || "",
   });
+  
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("documentType", "PHOTO");
+      formData.append("file", file);
+
+      const { agencyApi } = await import('../api/agency.api.js');
+      const res = await agencyApi.uploadDocument(formData);
+      const documentUrl = res?.data?.documentUrl || res?.documentUrl || res?.data?.data?.documentUrl;
+
+      if (!documentUrl) {
+        throw new Error("Upload failed: no URL returned");
+      }
+
+      // Update parent state
+      onSave({ ...data, logo: documentUrl });
+      
+      try {
+        const { usersApi } = await import('../../../api/users.api.js');
+        await usersApi.updateProfile({ avatar: documentUrl });
+        updateUser({ avatar: documentUrl });
+      } catch (userErr) {
+        console.warn('Failed to update user avatar globally:', userErr);
+      }
+
+      toast.success("Profile photo uploaded successfully");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to upload photo");
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   };
 
   const handleSubmit = (e) => {
@@ -59,18 +103,23 @@ export default function AgencyBasicInfoForm({ data, onSave, saving, hideHeader, 
 
       {/* Profile Photo */}
       <div className="flex items-center gap-6 mb-8 p-5 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl border border-indigo-100">
-        <div className="relative group cursor-pointer" onClick={() => {}}>
-          <div className="w-24 h-24 rounded-2xl bg-white border-2 border-indigo-200 shadow-sm flex items-center justify-center overflow-hidden">
+        <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+          <div className="w-24 h-24 rounded-2xl bg-white border-2 border-indigo-200 shadow-sm flex items-center justify-center overflow-hidden relative">
             {data?.logo ? (
-              <img src={data.logo} alt="Profile" className="w-full h-full object-cover" />
+              <img src={data.logo.startsWith('http') ? data.logo : `http://localhost:5000${data.logo.startsWith('/') ? '' : '/'}${data.logo}`} alt="Profile" className="w-full h-full object-cover" />
             ) : (
               <Camera className="w-10 h-10 text-slate-300" />
+            )}
+            {isUploading && (
+              <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+                <Loader2 className="w-6 h-6 animate-spin text-indigo-600" />
+              </div>
             )}
           </div>
           <div className="absolute inset-0 bg-black/40 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
             <Camera className="w-6 h-6 text-white" />
           </div>
-          <input type="file" className="hidden" accept="image/png,image/jpg,image/jpeg" />
+          <input ref={fileInputRef} type="file" className="hidden" accept="image/png,image/jpg,image/jpeg" onChange={handlePhotoUpload} />
           <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-indigo-600 rounded-full flex items-center justify-center shadow-md">
             <Camera className="w-3.5 h-3.5 text-white" />
           </div>
@@ -82,9 +131,11 @@ export default function AgencyBasicInfoForm({ data, onSave, saving, hideHeader, 
           </p>
           <button
             type="button"
-            className="px-4 py-2 bg-white border border-indigo-200 text-sm font-semibold text-indigo-600 rounded-xl hover:bg-indigo-50 transition-colors shadow-sm"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+            className="px-4 py-2 bg-white border border-indigo-200 text-sm font-semibold text-indigo-600 rounded-xl hover:bg-indigo-50 transition-colors shadow-sm disabled:opacity-50"
           >
-            Change Photo
+            {isUploading ? "Uploading..." : "Change Photo"}
           </button>
         </div>
       </div>

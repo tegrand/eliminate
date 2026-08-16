@@ -29,6 +29,20 @@ export const login = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, "Login successful", { accessToken, user });
 });
 
+export const googleLogin = asyncHandler(async (req, res) => {
+  const meta = { ipAddress: req.ip, userAgent: req.headers["user-agent"] };
+  const { idToken } = req.body;
+  
+  if (!idToken) {
+    throw new AppError("ID Token is required", 400);
+  }
+  
+  const { accessToken, refreshToken, user, isNewUser } = await authService.googleLogin(idToken, meta);
+  setRefreshTokenCookie(res, refreshToken);
+  
+  return ApiResponse.success(res, "Google login successful", { accessToken, user, isNewUser });
+});
+
 export const refreshToken = asyncHandler(async (req, res) => {
   const token = req.cookies.refreshToken;
   if (!token) {

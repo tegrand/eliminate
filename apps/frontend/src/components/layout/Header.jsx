@@ -8,6 +8,7 @@ import LanguageSwitcher from "../ui/LanguageSwitcher";
 import { calculateWorkerProfileCompletion } from "../../utils/profileCompletion";
 import { useQuery } from "@tanstack/react-query";
 import { workerApi } from "../../features/worker/api/worker.api";
+import AdvertisementBanner from "../ui/AdvertisementBanner";
 
 export default function Header() {
   const { logout, user } = useAuth();
@@ -67,6 +68,9 @@ export default function Header() {
 
       {/* Right Actions */}
       <div className="flex items-center space-x-3 sm:space-x-5 ml-auto">
+        <div className="hidden lg:block mr-2">
+          <AdvertisementBanner slotName="header" variant="small" />
+        </div>
         <LanguageSwitcher />
         {/* Profile Section with Dropdown */}
         <div className="relative" ref={dropdownRef}>

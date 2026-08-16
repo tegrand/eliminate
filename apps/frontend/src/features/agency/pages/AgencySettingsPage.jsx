@@ -5,6 +5,7 @@ import { useAuth } from "../../../hooks/useAuth";
 import { documentsApi } from "../../../api/documents.api";
 import { usersApi } from "../../../api/users.api";
 import toast from "react-hot-toast";
+import AdvertisementBanner from "../../../components/ui/AdvertisementBanner";
 
 export default function AgencySettingsPage() {
   const { user, updateUser } = useAuth();
@@ -262,18 +263,18 @@ export default function AgencySettingsPage() {
   const currentDocUrl = agencyDocs[currentDocField];
 
   return (
-    <div className="w-full py-6 animate-fade-in max-w-6xl mx-auto space-y-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-          <Settings className="w-6 h-6 text-indigo-600" />
-          Agency Settings
-        </h1>
-        <p className="text-gray-500 mt-1 text-sm">
-          Manage your profile, financial configurations and account security.
-        </p>
+    <div className="max-w-4xl mx-auto space-y-6 animate-fade-in-up">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Agency Settings</h1>
+        <p className="text-slate-500 mt-1">Manage your account security and preferences.</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 items-start">
+      {/* Advertisement Banner */}
+      <AdvertisementBanner slotName="page" variant="standard" />
+
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Change Password Card */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
           <div className="p-5 border-b border-gray-200">

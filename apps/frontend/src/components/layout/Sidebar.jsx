@@ -4,11 +4,14 @@ import SidebarGroup from "./sidebar/SidebarGroup";
 import { useAuth } from "../../hooks/useAuth";
 import { useSidebar } from "../../contexts/SidebarContext";
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import AdvertisementBanner from "../ui/AdvertisementBanner";
 
 export default function Sidebar() {
   const { user } = useAuth();
   const { isSidebarOpen, closeSidebar } = useSidebar();
   const profileType = user?.profileType;
+  const location = useLocation();
 
   const filteredNavigation = NAVIGATION_CONFIG.map(group => {
     if (group.roles && !group.roles.includes(profileType)) return null;
@@ -25,7 +28,9 @@ export default function Sidebar() {
   // Close sidebar on route change on mobile
   useEffect(() => {
     closeSidebar();
-  }, [window.location.pathname]);
+  }, [location.pathname, closeSidebar]);
+
+  const shouldShowAd = !['/client/profile', '/agency/profile', '/agency/settings'].some(path => location.pathname.includes(path));
 
   return (
     <>
@@ -51,6 +56,12 @@ export default function Sidebar() {
             <SidebarGroup key={group.group || index} group={group} />
           ))}
         </div>
+
+        {shouldShowAd && (
+          <div className="p-4 border-t border-gray-100 bg-gray-50/50 mt-auto shrink-0">
+            <AdvertisementBanner slotName="sidebar" variant="sidebar" />
+          </div>
+        )}
       </div>
     </>
   );

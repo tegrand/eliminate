@@ -50,26 +50,54 @@ export default function LoginForm() {
       login(user, accessToken, variables.rememberMe);
       toast.success("Login successful!");
       
-      // Role-based redirect
-      if (user.role === "SUPER_ADMIN") {
-        navigate(ROUTES.DASHBOARD);
-      } else if (user.role === "CLIENT") {
-        navigate(ROUTES.DASHBOARD); // Assuming unified dashboard or replace with client specific
-      } else if (user.role === "AGENCY") {
-        navigate(ROUTES.DASHBOARD);
-      } else if (user.role === "WORKER") {
-        navigate(ROUTES.DASHBOARD);
-      } else {
-        navigate(ROUTES.DASHBOARD);
-      }
+      navigate(ROUTES.DASHBOARD);
     },
     onError: (error) => {
       toast.error(error?.response?.data?.message || "Invalid email or password");
     },
   });
 
+  const googleLoginMutation = useMutation({
+    mutationFn: (data) => authApi.googleLogin(data),
+    onSuccess: (response) => {
+      const { user, accessToken, isNewUser } = response.data.data;
+      
+      // If the backend indicates it's a completely new user who needs a role
+      if (isNewUser && user.profileType === "PENDING_ROLE") {
+        login(user, accessToken, false);
+        toast.success("Please select your account type to continue.");
+        navigate(ROUTES.ROLE_SELECTION || "/role-selection"); // fallback if route doesn't exist yet
+        return;
+      }
+      
+      login(user, accessToken, false);
+      toast.success("Login successful!");
+      navigate(ROUTES.DASHBOARD);
+    },
+    onError: (error) => {
+      toast.error(error?.response?.data?.message || "Google login failed");
+    },
+  });
+
   const onSubmit = (data) => {
     loginMutation.mutate(data);
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const { signInWithPopup } = await import("firebase/auth");
+      const { auth, googleProvider } = await import("../../../config/firebase");
+      
+      const result = await signInWithPopup(auth, googleProvider);
+      const idToken = await result.user.getIdToken();
+      
+      googleLoginMutation.mutate({ idToken });
+    } catch (error) {
+      console.error("Firebase Google Login Error:", error);
+      if (error.code !== "auth/popup-closed-by-user") {
+        toast.error("Failed to login with Google.");
+      }
+    }
   };
 
   return (
@@ -138,6 +166,37 @@ export default function LoginForm() {
           >
             Sign In
           </Button>
+          
+          <div className="relative w-full py-2">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-gray-200" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-gray-500">Or continue with</span>
+            </div>
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            fullWidth
+            disabled={googleLoginMutation.isPending}
+            onClick={handleGoogleLogin}
+            className="relative bg-white text-gray-700 hover:bg-gray-50 border-gray-300 h-10"
+          >
+            {googleLoginMutation.isPending ? (
+              <span className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+            ) : (
+              <svg className="w-5 h-5 absolute left-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.56 12.25C22.56 11.47 22.49 10.72 22.36 10H12V14.26H17.92C17.67 15.63 16.89 16.78 15.72 17.57V20.34H19.28C21.36 18.42 22.56 15.6 22.56 12.25Z" fill="#4285F4"/>
+                <path d="M12 23C14.97 23 17.46 22.02 19.28 20.34L15.72 17.57C14.73 18.23 13.47 18.63 12 18.63C9.16 18.63 6.75 16.71 5.88 14.15H2.21V16.99C4.01 20.57 7.71 23 12 23Z" fill="#34A853"/>
+                <path d="M5.88 14.15C5.66 13.49 5.54 12.77 5.54 12C5.54 11.23 5.66 10.51 5.88 9.85V7.01H2.21C1.47 8.49 1.05 10.18 1.05 12C1.05 13.82 1.47 15.51 2.21 16.99L5.88 14.15Z" fill="#FBBC05"/>
+                <path d="M12 5.38C13.62 5.38 15.06 5.93 16.2 7.02L19.35 3.87C17.45 2.1 14.97 1 12 1C7.71 1 4.01 3.43 2.21 7.01L5.88 9.85C6.75 7.29 9.16 5.38 12 5.38Z" fill="#EA4335"/>
+              </svg>
+            )}
+            Google
+          </Button>
+
           <div className="text-sm text-center text-gray-500 mt-2">
             Don't have an account?{" "}
             <Link to={ROUTES.SIGNUP} className="text-blue-600 font-medium hover:underline">

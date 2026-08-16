@@ -11,6 +11,7 @@ import AgencyBasicInfoForm from '../components/AgencyBasicInfoForm';
 import AgencyContactForm from '../components/AgencyContactForm';
 import AgencyComplianceForm from '../components/AgencyComplianceForm';
 import AgencyOperationsForm from '../components/AgencyOperationsForm';
+import AdvertisementBanner from '../../../components/ui/AdvertisementBanner';
 
 const TABS = [
   { id: "basic", label: "Basic Info", icon: Building },
@@ -28,25 +29,25 @@ export default function AgencyProfilePage() {
 
   // Mock data for the agency profile
   const [profile, setProfile] = useState({
-    agencyName: user?.agencyProfile?.name || 'Tegrand Manpower Solutions',
+    agencyName: user?.agencyProfile?.name || user?.agencyProfile?.agencyName || 'Tegrand Manpower Solutions',
     description: 'A leading manpower and staffing solutions provider with over 10 years of experience in the construction and hospitality sectors.',
-    logo: null,
+    logo: user?.agencyProfile?.logoUrl || null,
     isVerified: true,
     profileStatus: 'APPROVED',
     contact: {
       email: user?.email || 'contact@tegrand.com',
-      phone: '+91 98765 43210',
+      phone: user?.agencyProfile?.phone || '+91 98765 43210',
       website: 'www.tegrandmanpower.com'
     },
     address: {
-      street: '123 Business Park, Tech Boulevard',
+      street: user?.agencyProfile?.addressLine1 || '123 Business Park, Tech Boulevard',
       city: user?.agencyProfile?.city || 'Kochi',
       state: user?.agencyProfile?.state || 'Kerala',
-      pincode: '682030'
+      pincode: user?.agencyProfile?.postalCode || '682030'
     },
     compliance: {
-      gst: '32ABCDE1234F1Z5',
-      licenseNumber: 'LIC/2023/KOC/8892'
+      gst: user?.agencyProfile?.gstNumber || '32ABCDE1234F1Z5',
+      licenseNumber: user?.agencyProfile?.licenseNumber || 'LIC/2023/KOC/8892'
     },
     serviceAreas: ['Kochi', 'Trivandrum', 'Calicut', 'Bangalore'],
     businessHours: {
@@ -54,9 +55,9 @@ export default function AgencyProfilePage() {
       close: '18:00',
       workingDays: 'Monday - Saturday'
     },
-    feePercentage: 10,
-    workerFixedAmount: 1580,
-    createdAt: new Date().toISOString()
+    feePercentage: user?.agencyProfile?.feePercentage || 10,
+    workerFixedAmount: user?.agencyProfile?.workerFixedAmount || 1580,
+    createdAt: user?.agencyProfile?.createdAt || new Date().toISOString()
   });
 
   const handleSave = async (updatedData) => {
@@ -70,10 +71,14 @@ export default function AgencyProfilePage() {
     if (user?.agencyProfile?.id) {
       try {
         const { agencyApi } = await import('../api/agency.api.js');
-        await agencyApi.updateAgency(user.agencyProfile.id, {
+        const payload = {
           feePercentage: Number(updatedData.feePercentage),
           workerFixedAmount: Number(updatedData.workerFixedAmount)
-        });
+        };
+        if (updatedData.logo) payload.logoUrl = updatedData.logo;
+        if (updatedData.agencyName) payload.agencyName = updatedData.agencyName;
+
+        await agencyApi.updateAgency(user.agencyProfile.id, payload);
       } catch (err) {
         console.error(err);
       }
@@ -98,6 +103,11 @@ export default function AgencyProfilePage() {
           <p className="text-sm text-[#74767e] mt-0.5">Manage your agency's public profile and business details.</p>
         </div>
 
+        {/* Advertisement Banner */}
+        <div className="mb-5">
+          <AdvertisementBanner slotName="page" variant="standard" />
+        </div>
+
         <div className="flex flex-col md:flex-row gap-5">
           
           {/* Left Sidebar */}
@@ -109,7 +119,7 @@ export default function AgencyProfilePage() {
                 <div className="relative mb-4">
                   <div className="w-[120px] h-[120px] rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200 shadow-inner">
                     {profile.logo ? (
-                      <img src={profile.logo} alt="Logo" className="w-full h-full object-cover" />
+                      <img src={profile.logo.startsWith('http') || profile.logo.startsWith('data:') ? profile.logo : `http://localhost:5000${profile.logo.startsWith('/') ? '' : '/'}${profile.logo}`} alt="Logo" className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-5xl text-gray-400 font-bold">{initials}</span>
                     )}
