@@ -88,9 +88,6 @@ export default function ClientWorkerSearchPage() {
           <Users className="w-6 h-6 text-blue-600" />
           Workforce Search
         </h1>
-        <p className="text-sm text-gray-500 mt-1.5 max-w-2xl">
-          Discover and hire the best independent workers or agency talent for your requirements.
-        </p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6 items-start relative">

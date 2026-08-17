@@ -55,9 +55,6 @@ export default function ClientAgencySearchPage() {
           <Building2 className="w-6 h-6 text-blue-600" />
           Agencies Search
         </h1>
-        <p className="text-sm text-gray-500 mt-1.5 max-w-2xl">
-          Discover and collaborate with the best verified agencies.
-        </p>
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6 items-start relative">
