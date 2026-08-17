@@ -65,28 +65,14 @@ export default function ClientAgencySearchPage() {
         {/* Main Content Area */}
         <div className="flex-1 w-full min-w-0">
           {/* Header Controls */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
-            <div className="text-sm text-gray-600 font-medium">
-              Showing <span className="text-gray-900 font-bold">{filteredAgencies.length}</span> agencies
-            </div>
-            
-            <div className="flex items-center gap-3 w-full sm:w-auto">
-              <button
-                onClick={() => setIsFilterModalOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg text-sm font-bold shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5"
-              >
-                <Filter className="w-4 h-4" />
-                Filters
-              </button>
-              <div className="flex items-center gap-2 text-sm text-gray-500 border-l border-gray-200 pl-3">
-                <span>Sort by:</span>
-                <select className="flex-1 sm:flex-none bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all">
-                  <option>Recommended</option>
-                  <option>Highest Rated</option>
-                  <option>Newest</option>
-                </select>
-              </div>
-            </div>
+          <div className="flex items-center mb-6 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+            <button
+              onClick={() => setIsFilterModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg text-sm font-bold shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5"
+            >
+              <Filter className="w-4 h-4" />
+              Filters
+            </button>
           </div>
 
           {/* Error State */}
