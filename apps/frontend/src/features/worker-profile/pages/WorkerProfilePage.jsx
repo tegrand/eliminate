@@ -230,23 +230,23 @@ export default function WorkerProfilePage() {
         </div>
 
         {/* ── Profile Completion Card ── */}
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-4 sm:p-5">
-          <div className="flex justify-between items-center mb-3">
-            <span className="text-sm sm:text-base font-bold text-gray-900">Profile Completion</span>
-            <span className={`text-sm sm:text-base font-black ${isComplete ? 'text-emerald-500' : 'text-blue-600'}`}>{completion}%</span>
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 sm:p-4">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-xs sm:text-sm font-bold text-gray-900">Profile Completion</span>
+            <span className={`text-xs sm:text-sm font-black ${isComplete ? 'text-emerald-500' : 'text-blue-600'}`}>{completion}%</span>
           </div>
-          <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden mb-3">
+          <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden mb-2">
             <div
               className={`h-full rounded-full transition-all duration-1000 ease-out ${isComplete ? 'bg-emerald-500' : 'bg-blue-600'}`}
               style={{ width: `${completion}%` }}
             />
           </div>
           {isComplete ? (
-            <div className="flex items-center justify-center gap-2 text-emerald-700 bg-emerald-50 px-4 py-2.5 rounded-xl text-sm font-bold border border-emerald-100">
-              <CheckCircle2 className="w-4 h-4" /> Profile is 100% Complete!
+            <div className="flex items-center justify-center gap-1.5 text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg text-xs font-bold border border-emerald-100">
+              <CheckCircle2 className="w-3.5 h-3.5" /> Profile is 100% Complete!
             </div>
           ) : (
-            <p className="text-xs sm:text-sm text-gray-500 text-center font-medium">Complete the sections below to reach 100% and get noticed.</p>
+            <p className="text-[11px] sm:text-xs text-gray-500 text-center font-medium">Complete the sections below to reach 100% and get noticed.</p>
           )}
         </div>
 
