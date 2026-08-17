@@ -141,7 +141,7 @@ export default function WorkerProfilePage() {
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 relative z-10 -mt-12 sm:-mt-16 space-y-3 sm:space-y-4">
+      <div className="max-w-3xl mx-auto px-2 sm:px-4 relative z-10 -mt-12 sm:-mt-16 space-y-3 sm:space-y-4">
 
         {/* ── Profile Overview Card ── */}
         <div className="bg-white rounded-3xl border border-gray-100 shadow-sm px-4 pb-4 pt-0 flex flex-col items-center text-center">
