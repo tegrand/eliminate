@@ -25,7 +25,6 @@ router.use(authenticate);
 
 router.post(
   "/",
-  requirePermission("language:create"),
   validate(createLanguageSchema),
   createLanguage
 );
