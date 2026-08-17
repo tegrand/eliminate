@@ -104,14 +104,14 @@ export default function WorkerProfilePage() {
 
   return (
     <div className="w-full min-h-screen bg-gray-50 pb-12">
-      <div className="max-w-2xl mx-auto px-4 pt-5 space-y-4">
+      <div className="max-w-2xl mx-auto px-3 sm:px-4 pt-3 sm:pt-5 space-y-3 sm:space-y-4">
 
         <div>
           <h1 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">My Profile</h1>
         </div>
 
         {/* ── Profile Overview Card ── */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 sm:p-4">
           {/* Top row: avatar + info */}
           <div className="flex items-start gap-4">
             {/* Avatar */}
@@ -165,7 +165,7 @@ export default function WorkerProfilePage() {
           </div>
 
           {/* Divider */}
-          <div className="border-t border-gray-100 mt-4 pt-4 grid grid-cols-2 gap-3">
+          <div className="border-t border-gray-100 mt-3 pt-3 sm:mt-4 sm:pt-4 grid grid-cols-2 gap-2 sm:gap-3">
             <div className="flex items-center gap-2">
               <MapPin className="w-4 h-4 text-gray-400 shrink-0" />
               <div>
@@ -184,7 +184,7 @@ export default function WorkerProfilePage() {
         </div>
 
         {/* ── Profile Completion Card ── */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 sm:p-4">
           <div className="flex justify-between items-center mb-3">
             <span className="text-sm font-bold text-gray-900">Profile Completion</span>
             <span className={`text-sm font-bold ${isComplete ? 'text-emerald-500' : 'text-blue-600'}`}>{completion}%</span>
@@ -229,7 +229,7 @@ export default function WorkerProfilePage() {
           </div>
 
           {/* Tab content */}
-          <div className="p-4 sm:p-5">
+          <div className="p-3 sm:p-4">
             <div className={activeTab === 'personal' ? 'block animate-fade-in' : 'hidden'}>
               <div className="mb-4 pb-3 border-b border-gray-100">
                 <h3 className="text-base font-bold text-gray-900">Personal Information</h3>
