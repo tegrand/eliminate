@@ -261,7 +261,7 @@ export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader 
         <div className={sectionClass}>
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label className={labelClass}>Total Experience (Years)</label>
+              <label className={labelClass}>Experience (Yrs)</label>
               <input
                 type="number"
                 name="totalExperienceYears"
@@ -274,7 +274,7 @@ export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader 
               />
             </div>
             <div>
-              <label className={labelClass}>Expected Daily Wage (Optional)</label>
+              <label className={labelClass}>Expected Wage</label>
               <input
                 type="text"
                 name="expectedDailyWage"
