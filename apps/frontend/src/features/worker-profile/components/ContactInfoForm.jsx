@@ -65,56 +65,56 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader, isAc
         {/* Address */}
         <div>
           <h3 className="text-sm font-bold text-slate-800 uppercase tracking-widest mb-3">Address Information</h3>
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            <div className="space-y-1.5 col-span-2">
-              <label className="text-sm font-medium text-slate-700">Address Line 1</label>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="col-span-2">
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">Address Line 1</label>
               <input
                 type="text"
                 name="addressLine1"
                 value={formData.addressLine1}
                 onChange={handleChange}
-                className="w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                className="w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm"
                 placeholder="House/Flat No., Building Name, Street"
               />
             </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-700">City</label>
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">City</label>
               <input
                 type="text"
                 name="city"
                 value={formData.city}
                 onChange={handleChange}
-                className="w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                className="w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm"
               />
             </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-700">State</label>
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">State</label>
               <input
                 type="text"
                 name="state"
                 value={formData.state}
                 onChange={handleChange}
-                className="w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                className="w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm"
               />
             </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-700">Country</label>
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">Country</label>
               <input
                 type="text"
                 name="country"
                 value={formData.country}
                 onChange={handleChange}
-                className="w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                className="w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm"
               />
             </div>
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-700">Postal/PIN Code</label>
+            <div>
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">Postal/PIN Code</label>
               <input
                 type="text"
                 name="postalCode"
                 value={formData.postalCode}
                 onChange={handleChange}
-                className="w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+                className="w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm"
               />
             </div>
           </div>
