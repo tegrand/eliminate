@@ -32,6 +32,7 @@ export const ROUTES = {
   WORKFORCE_SEARCH: "/search-workers",
   WORKFORCE_PROFILE: "/search-workers/:id",
   AGENCY_SEARCH: "/search-agencies",
+  AGENCY_PROFILE_CLIENT: "/search-agencies/:id",
   CLIENT_JOBS: "/jobs",
 
   // Agency
