@@ -84,7 +84,7 @@ export default function ClientWorkerProfilePage() {
             {/* Main Profile Card */}
             <div className="bg-white border border-[#e4e5e7] rounded p-5">
               <div className="flex flex-col items-center text-center">
-                <div className="relative mb-4">
+                <div className="relative mb-4 w-[128px] h-[128px] flex items-center justify-center mx-auto">
                   <div className="w-[120px] h-[120px] rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200">
                     {avatar ? (
                       <img src={avatar.startsWith('http') || avatar.startsWith('data:') ? avatar : `http://localhost:5000${avatar.startsWith('/') ? '' : '/'}${avatar}`} alt={name} className="w-full h-full object-cover" />
@@ -92,8 +92,30 @@ export default function ClientWorkerProfilePage() {
                       <span className="text-5xl text-gray-400 font-bold">{initials}</span>
                     )}
                   </div>
+
+                  {/* LinkedIn Style Curved Badge */}
+                  <div className="absolute inset-0 z-10 pointer-events-none">
+                    <svg viewBox="0 0 128 128" className="w-full h-full drop-shadow-sm">
+                      <defs>
+                        <path id="badgePath" d="M 12 75 A 54 54 0 0 0 116 75" />
+                      </defs>
+                      <path 
+                        d="M 12 75 A 54 54 0 0 0 116 75" 
+                        fill="none" 
+                        stroke={isVerified ? "#1dbf73" : "#828282"} 
+                        strokeWidth="16" 
+                        strokeLinecap="round" 
+                      />
+                      <text className="text-[10px] font-black fill-white uppercase tracking-widest">
+                        <textPath href="#badgePath" startOffset="50%" textAnchor="middle" dy="3.5">
+                          {isVerified ? 'VERIFIED' : 'UNVERIFIED'}
+                        </textPath>
+                      </text>
+                    </svg>
+                  </div>
+
                   {worker.presentToday && (
-                    <div className="absolute bottom-4 right-4 w-4 h-4 bg-[#1dbf73] rounded-full border-2 border-white" title="Available today"></div>
+                    <div className="absolute bottom-2 right-2 w-4 h-4 bg-[#1dbf73] rounded-full border-2 border-white z-20" title="Available today"></div>
                   )}
                 </div>
                 
