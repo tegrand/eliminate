@@ -260,7 +260,7 @@ export default function ClientWorkerProfilePage() {
             </div>
 
             {/* Recent Work Details */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 gap-5">
               <div className="bg-white border border-[#e4e5e7] rounded p-5">
                 <div className="flex items-center gap-3 mb-4">
                   <Briefcase className="w-5 h-5 text-[#404145]" />
@@ -279,34 +279,6 @@ export default function ClientWorkerProfilePage() {
                     <span className="text-xs text-[#74767e] uppercase tracking-wide font-semibold block mb-1">Travel Preference</span>
                     <span className="text-sm text-[#404145] font-medium">
                       {worker.travelDistance ? `Willing to travel up to ${worker.travelDistance} km` : 'Local work only'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white border border-[#e4e5e7] rounded p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <Clock className="w-5 h-5 text-[#404145]" />
-                  <h3 className="font-bold text-[#404145]">Availability</h3>
-                </div>
-                <div className="space-y-4">
-                  <div>
-                    <span className="text-xs text-[#74767e] uppercase tracking-wide font-semibold block mb-1">Current Status</span>
-                    <div className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${worker.presentToday ? 'bg-[#1dbf73]' : 'bg-[#ff6259]'}`}></span>
-                      <span className="text-sm text-[#404145] font-medium">
-                        {worker.presentToday ? 'Available for new work' : 'Currently busy'}
-                      </span>
-                    </div>
-                  </div>
-                  <div>
-                    <span className="text-xs text-[#74767e] uppercase tracking-wide font-semibold block mb-1">Profile Status</span>
-                    <span className="text-sm text-[#404145] font-medium flex items-center gap-1.5">
-                      {isVerified ? (
-                        <><ShieldCheck className="w-4 h-4 text-[#1dbf73]" /> Verified by Admin</>
-                      ) : (
-                        <><Info className="w-4 h-4 text-[#ffb33e]" /> Pending Verification</>
-                      )}
                     </span>
                   </div>
                 </div>
