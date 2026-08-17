@@ -70,11 +70,10 @@ export default function AgencySearchCard({ agency }) {
 
         </div>
       </div>
-      
-      {/* Absolute contact button for desktop hover */}
+      {/* Action Buttons */}
       <div className="flex items-center gap-2.5 sm:gap-3 mt-4 sm:mt-5 w-full">
         <Link 
-          to={`/search-agencies/${agency.id}`}
+          to={`/agencies/${agency.id}`}
           className="flex-1 py-2.5 text-center bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-colors"
         >
           View Profile
