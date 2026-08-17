@@ -1,4 +1,4 @@
-import { MapPin, Star, Briefcase, CheckCircle2, XCircle, User } from "lucide-react";
+import { MapPin, Briefcase, CheckCircle2, XCircle, User } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function WorkerSearchCard({ worker }) {
@@ -23,8 +23,7 @@ export default function WorkerSearchCard({ worker }) {
   const avatar = worker.user?.avatar || worker.profilePhoto;
   const initials = name !== "Unknown" ? name.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase() : "W";
 
-  // Mock rating same as agency card
-  const rating = 5.0;
+  // Rating removed
 
   // Tag pills: skill + agency/independent
   const tags = [
@@ -33,19 +32,19 @@ export default function WorkerSearchCard({ worker }) {
   ];
 
   return (
-    <div className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all group relative max-w-[550px]">
-      <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center">
+    <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all group relative max-w-[550px]">
+      <div className="flex flex-col sm:flex-row gap-3.5 sm:gap-5 items-start sm:items-center">
 
         {/* Avatar */}
-        <div className="w-16 h-16 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0 text-indigo-600 font-bold text-lg">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0 text-indigo-600 font-bold text-lg">
           {avatar ? (
             <img src={avatar.startsWith('http') || avatar.startsWith('data:') ? avatar : `http://localhost:5000${avatar.startsWith('/') ? '' : '/'}${avatar}`} alt={name} className="w-full h-full object-cover rounded-xl" />
           ) : initials}
         </div>
 
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1">
-            <h3 className="text-lg font-bold text-gray-900 truncate pr-4">
+        <div className="flex-1 min-w-0 w-full">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 mb-1">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 truncate pr-4">
               {name}
             </h3>
 
@@ -75,23 +74,14 @@ export default function WorkerSearchCard({ worker }) {
 
             <div className="w-1 h-1 rounded-full bg-gray-300 hidden sm:block"></div>
 
-            {/* Experience */}
             <div className="flex items-center gap-1.5">
               <Briefcase className="w-4 h-4 text-gray-400" />
               <span>{experience}</span>
             </div>
-
-            <div className="w-1 h-1 rounded-full bg-gray-300 hidden sm:block"></div>
-
-            {/* Rating */}
-            <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-              <span className="font-medium text-gray-700">{rating.toFixed(1)}</span>
-            </div>
           </div>
 
           {/* Skill + Type tags */}
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-2.5 sm:mt-4 flex flex-wrap gap-2">
             <span className="px-2.5 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg">
               {skill}
             </span>
@@ -103,7 +93,7 @@ export default function WorkerSearchCard({ worker }) {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-3 mt-5 w-full">
+      <div className="flex items-center gap-2.5 sm:gap-3 mt-4 sm:mt-5 w-full">
         <Link
           to={`/search-workers/${worker.id}`}
           className="flex-1 py-2.5 text-center bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-colors"
