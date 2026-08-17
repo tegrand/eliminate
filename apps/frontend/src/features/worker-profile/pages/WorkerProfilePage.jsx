@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { User, Phone, Briefcase, FileText, Loader2, ShieldCheck, AlertTriangle, Clock, XCircle, CheckCircle2, MapPin } from "lucide-react";
+import { User, Phone, Briefcase, FileText, Loader2, ShieldCheck, AlertTriangle, Clock, XCircle, CheckCircle2, MapPin, Camera } from "lucide-react";
 
 import { useAuth } from "../../../hooks/useAuth";
 import api from "../../../api/axios";
@@ -15,6 +15,35 @@ export default function WorkerProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('personal');
+
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const formDataFile = new FormData();
+      formDataFile.append("file", file);
+
+      const { usersApi } = await import("../../../api/users.api.js");
+      const res = await usersApi.uploadAvatar(formDataFile);
+      const documentUrl = res.data?.data?.avatar || res.data?.avatar;
+
+      if (!documentUrl) throw new Error("Upload failed");
+
+      // Save to worker profile too
+      handleSave({ profilePhoto: documentUrl });
+      toast.success("Profile photo uploaded successfully");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to upload photo");
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -103,38 +132,52 @@ export default function WorkerProfilePage() {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-gray-50/50 pb-12 sm:pb-16 font-sans">
+    <div className="w-full min-h-screen bg-gray-50/50 pb-8 sm:pb-10 font-sans">
       
       {/* ── Cover Header ── */}
-      <div className="h-32 sm:h-40 bg-gradient-to-r from-blue-600 to-indigo-700 w-full relative">
+      <div className="h-28 sm:h-32 bg-gradient-to-r from-blue-600 to-indigo-700 w-full relative">
         <div className="absolute top-4 left-4 sm:top-6 sm:left-6">
           <h1 className="text-xs sm:text-sm font-bold text-white/90 uppercase tracking-widest">My Profile</h1>
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 relative z-10 -mt-12 sm:-mt-16 space-y-4 sm:space-y-6">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 relative z-10 -mt-12 sm:-mt-16 space-y-3 sm:space-y-4">
 
         {/* ── Profile Overview Card ── */}
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm px-5 pb-6 pt-0 flex flex-col items-center text-center">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm px-4 pb-4 pt-0 flex flex-col items-center text-center">
           
           {/* Avatar */}
-          <div className="relative shrink-0 -mt-10 sm:-mt-12">
-            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-white p-1 border border-gray-100 shadow-sm">
-              <div className="w-full h-full rounded-full bg-gray-100 overflow-hidden flex items-center justify-center">
-                {avatar ? (
+          <div className="relative shrink-0 -mt-10 sm:-mt-12 group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-white p-1 border border-gray-100 shadow-sm relative">
+              <div className="w-full h-full rounded-full bg-gray-100 overflow-hidden flex items-center justify-center relative">
+                {isUploading ? (
+                  <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+                ) : avatar ? (
                   <img src={getAvatarUrl(avatar)} alt={name} className="w-full h-full object-cover" />
                 ) : (
                   <span className="text-3xl sm:text-4xl font-bold text-gray-400">{initials}</span>
                 )}
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Camera className="w-8 h-8 text-white" />
+                </div>
               </div>
             </div>
+            
+            {/* Camera badge */}
+            <div className="absolute bottom-1 right-1 sm:bottom-2 sm:right-2 w-7 h-7 sm:w-8 sm:h-8 bg-indigo-600 rounded-full flex items-center justify-center shadow-md border-2 border-white z-10 hover:bg-indigo-700 transition-colors">
+              <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
+            </div>
+
             {profileData?.presentToday && (
-              <div className="absolute bottom-2 right-2 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white shadow-sm" />
+              <div className="absolute bottom-1 left-1 sm:bottom-2 sm:left-2 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white shadow-sm z-10" />
             )}
+
+            <input ref={fileInputRef} onChange={handlePhotoUpload} type="file" className="hidden" accept="image/png,image/jpg,image/jpeg" />
           </div>
 
           {/* Name & Title */}
-          <div className="mt-3 w-full">
+          <div className="mt-2 w-full">
             <div className="flex items-center gap-1.5 justify-center flex-wrap">
               <h2 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight">{name}</h2>
               {profileData?.profileStatus === 'APPROVED' && (
@@ -144,7 +187,7 @@ export default function WorkerProfilePage() {
             <p className="text-sm font-medium text-gray-500 mt-1">{skillName}</p>
 
             {/* Status Badge */}
-            <div className="mt-3 flex justify-center">
+            <div className="mt-2 flex justify-center">
               {profileData?.profileStatus === 'APPROVED' && (
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">
                   <ShieldCheck className="w-4 h-4" /> Approved
@@ -169,7 +212,7 @@ export default function WorkerProfilePage() {
           </div>
 
           {/* Location & Joined Info */}
-          <div className="w-full grid grid-cols-2 gap-4 border-t border-gray-100 mt-6 pt-5">
+          <div className="w-full grid grid-cols-2 gap-4 border-t border-gray-100 mt-4 pt-4">
             <div className="flex flex-col items-center">
               <MapPin className="w-5 h-5 text-gray-400 mb-1.5" />
               <span className="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider font-bold">Location</span>
@@ -184,7 +227,7 @@ export default function WorkerProfilePage() {
         </div>
 
         {/* ── Profile Completion Card ── */}
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5 sm:p-6">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-4 sm:p-5">
           <div className="flex justify-between items-center mb-3">
             <span className="text-sm sm:text-base font-bold text-gray-900">Profile Completion</span>
             <span className={`text-sm sm:text-base font-black ${isComplete ? 'text-emerald-500' : 'text-blue-600'}`}>{completion}%</span>
