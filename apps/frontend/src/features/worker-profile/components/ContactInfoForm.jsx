@@ -6,7 +6,6 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
     phone: data?.phone || "",
     email: data?.user?.email || "",
     addressLine1: data?.addressLine1 || "",
-    addressLine2: data?.addressLine2 || "",
     city: data?.city || "",
     state: data?.state || "",
     country: data?.country || "",
@@ -75,17 +74,6 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
                 onChange={handleChange}
                 className="w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
                 placeholder="House/Flat No., Building Name, Street"
-              />
-            </div>
-            <div className="space-y-1.5 col-span-2">
-              <label className="text-sm font-medium text-slate-700">Address Line 2 (Optional)</label>
-              <input
-                type="text"
-                name="addressLine2"
-                value={formData.addressLine2}
-                onChange={handleChange}
-                className="w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
-                placeholder="Area, Landmark"
               />
             </div>
             <div className="space-y-1.5">
