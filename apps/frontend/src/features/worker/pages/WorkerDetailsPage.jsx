@@ -14,7 +14,6 @@ import SuspendDialog from "../../../components/ui/action-dialogs/SuspendDialog";
 import ReactivateDialog from "../../../components/ui/action-dialogs/ReactivateDialog";
 import toast from "react-hot-toast";
 import { Button } from "../../../components/ui/button";
-import AdvertisementBanner from "../../../components/ui/AdvertisementBanner";
 
 export default function WorkerDetailsPage() {
   const { id } = useParams();
@@ -114,8 +113,6 @@ export default function WorkerDetailsPage() {
             )}
           </div>
         </div>
-
-        <AdvertisementBanner slotName="page" variant="standard" />
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Personal Info */}
