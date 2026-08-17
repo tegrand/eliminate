@@ -1,14 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { dashboardApi } from "../../api/dashboard.api";
-import ClientOverviewCards from "./ClientOverviewCards";
-import DashboardChartsRow from "../charts/DashboardChartsRow";
-import ClientAdvertisements from "./ClientAdvertisements";
+import ClientProfileStatus from "./ClientProfileStatus";
 import { Loader2, AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export default function ClientDashboard() {
   const { t } = useTranslation();
-  const { data: dashboardData, isLoading, error } = useQuery({
+  
+  // We can still fetch the data if needed for topStats etc, but the profile
+  // structure mostly relies on useAuth in the ClientProfileStatus component.
+  const { isLoading, error } = useQuery({
     queryKey: ["clientDashboard"],
     queryFn: async () => {
       const res = await dashboardApi.getDashboardData();
@@ -18,8 +19,8 @@ export default function ClientDashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-64 w-full">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      <div className="w-full pt-4 pb-8 space-y-6 animate-pulse">
+        <div className="h-48 bg-gray-200 rounded-2xl w-full" />
       </div>
     );
   }
@@ -33,27 +34,10 @@ export default function ClientDashboard() {
     );
   }
 
-  const { topStats, chartData } = dashboardData || {};
-
   return (
-    <div className="space-y-6">
-      {/* Overview Stat Cards */}
-      <ClientOverviewCards stats={topStats} />
-
-      {/* Featured Ads from Super Admin */}
-      <ClientAdvertisements />
-
-      {/* Analytics Charts */}
-      <DashboardChartsRow
-        lineTitle="Monthly Expenditure"
-        lineSubtitle="Monthly spending overview on assignments"
-        lineData={chartData?.lineData || []}
-        donutTitle="Project Status"
-        donutSubtitle="Status breakdown"
-        donutTotal={chartData?.donutTotal || 0}
-        donutData={chartData?.donutData || []}
-      />
-
+    <div className="w-full space-y-6 animate-fade-in pb-8">
+      {/* Exact replica of the Worker Dashboard Structure for Client */}
+      <ClientProfileStatus />
     </div>
   );
 }
