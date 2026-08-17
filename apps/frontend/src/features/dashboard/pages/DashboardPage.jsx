@@ -66,7 +66,7 @@ export default function DashboardPage() {
   return (
     <div className="w-full pt-2 pb-6 space-y-4 animate-fade-in relative">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
-        {user?.profileType !== "WORKER" ? (
+        {user?.profileType !== "WORKER" && user?.profileType !== "CLIENT" ? (
           <div>
             <h1 className="text-xl sm:text-2xl font-medium text-gray-900 flex flex-wrap items-center gap-2">
               <span>Welcome back, {user?.profileType === "SUPER_ADMIN" ? "Super Admin" : user?.email?.split('@')[0] || "User"}! 👋</span>
