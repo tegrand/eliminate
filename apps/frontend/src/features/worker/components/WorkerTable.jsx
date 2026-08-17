@@ -14,7 +14,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../../../hooks/useAuth";
 import { useTranslation } from "react-i18next";
 
-export default function WorkerTable({ workers, loading, page, totalPages }) {
+export default function WorkerTable({ workers, loading, page, totalPages, onPageChange }) {
   const { user } = useAuth();
   const { t } = useTranslation();
   const [selectedWorker, setSelectedWorker] = useState(null);
@@ -59,35 +59,35 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
 
   const columns = [
     { key: "checkbox", title: <input type="checkbox" className="rounded border-gray-300" />, render: () => <input type="checkbox" className="rounded border-gray-300" /> },
-    { key: "employeeId", title: <div className="flex items-center gap-1.5"><Briefcase className="w-3.5 h-3.5" />{t('table.employeeId') || 'EMPLOYEE ID'}</div>, render: (row) => <span className="font-bold text-gray-900 text-sm">{row.employeeId}</span> },
-    { key: "name", title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />{t('table.name') || 'NAME'}</div>, render: (row) => (
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs">
+    { key: "employeeId", title: <div className="flex items-center gap-1.5 whitespace-nowrap"><Briefcase className="w-3.5 h-3.5" />{t('table.employeeId') || 'EMPLOYEE ID'}</div>, render: (row) => <span className="font-bold text-gray-900 text-sm whitespace-nowrap">{row.employeeId}</span> },
+    { key: "name", title: <div className="flex items-center gap-1.5 whitespace-nowrap"><User className="w-3.5 h-3.5" />{t('table.name') || 'NAME'}</div>, render: (row) => (
+      <div className="flex items-center gap-3 whitespace-nowrap">
+        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs shrink-0">
           {row.name.split(' ').map(n => n[0]).join('')}
         </div>
-        <span className="text-sm font-semibold text-gray-900">{row.name}</span>
+        <span className="text-sm font-semibold text-gray-900 truncate max-w-[200px]">{row.name}</span>
       </div>
     )},
   ];
 
   if (user?.profileType !== "AGENCY") {
-    columns.push({ key: "gender", title: <div className="flex items-center gap-1.5">{t('table.gender') || 'GENDER'}</div>, render: (row) => <span className="text-sm text-gray-600 capitalize">{row.gender && row.gender !== "—" ? row.gender : "-"}</span> });
+    columns.push({ key: "gender", title: <div className="flex items-center gap-1.5 whitespace-nowrap">{t('table.gender') || 'GENDER'}</div>, render: (row) => <span className="text-sm text-gray-600 capitalize whitespace-nowrap">{row.gender && row.gender !== "—" ? row.gender : "-"}</span> });
     if (user?.profileType !== "SUPER_ADMIN") {
-      columns.push({ key: "agency", title: <div className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" />{t('table.agency') || 'AGENCY'}</div>, render: (row) => <span className="text-sm text-gray-600">{row.agency}</span> });
+      columns.push({ key: "agency", title: <div className="flex items-center gap-1.5 whitespace-nowrap"><Building className="w-3.5 h-3.5" />{t('table.agency') || 'AGENCY'}</div>, render: (row) => <span className="text-sm text-gray-600 whitespace-nowrap">{row.agency}</span> });
     }
   } else {
     // Agency specific columns
     columns.push({
       key: "availability",
-      title: <div className="flex items-center gap-1.5">{t('table.availability') || 'AVAILABILITY'}</div>,
+      title: <div className="flex items-center gap-1.5 whitespace-nowrap">{t('table.availability') || 'AVAILABILITY'}</div>,
       render: (row) => {
         const getAvailabilityBadge = (status) => {
           switch(status) {
-            case 'Available': return <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">Available</span>;
-            case 'Busy': return <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200">Busy</span>;
-            case 'On Leave': return <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-orange-50 text-orange-700 border border-orange-200">On Leave</span>;
-            case 'Offline': return <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-50 text-gray-600 border border-gray-200">Offline</span>;
-            default: return <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">{status}</span>;
+            case 'Available': return <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 whitespace-nowrap">Available</span>;
+            case 'Busy': return <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 whitespace-nowrap">Busy</span>;
+            case 'On Leave': return <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-orange-50 text-orange-700 border border-orange-200 whitespace-nowrap">On Leave</span>;
+            case 'Offline': return <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-50 text-gray-600 border border-gray-200 whitespace-nowrap">Offline</span>;
+            default: return <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200 whitespace-nowrap">{status}</span>;
           }
         };
         return getAvailabilityBadge(row.availability);
@@ -96,9 +96,9 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
 
     columns.push({
       key: "performance",
-      title: <div className="flex items-center gap-1.5">{t('table.performance') || 'PERFORMANCE'}</div>,
+      title: <div className="flex items-center gap-1.5 whitespace-nowrap">{t('table.performance') || 'PERFORMANCE'}</div>,
       render: (row) => (
-        <div className="flex flex-col gap-1 w-44">
+        <div className="flex flex-col gap-1 w-44 whitespace-nowrap">
           <div className="flex items-center justify-between text-[11px] text-gray-600">
             <span>Attd: <span className="font-semibold text-gray-900">{row.performance?.attendance}%</span></span>
             <span className="flex items-center gap-0.5"><Star className="w-3 h-3 text-yellow-500 fill-yellow-500"/> {row.performance?.rating}</span>
@@ -113,18 +113,18 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
     });
   }
 
-  columns.push({ key: "phone", title: <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />{t('table.phone') || 'PHONE'}</div>, render: (row) => <span className="text-sm text-gray-600">{row.phone}</span> });
-  columns.push({ key: "primarySkill", title: <div className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5" />{t('table.primarySkill') || 'PRIMARY SKILL'}</div>, render: (row) => <span className="text-sm text-gray-600">{row.primarySkill}</span> });
+  columns.push({ key: "phone", title: <div className="flex items-center gap-1.5 whitespace-nowrap"><Phone className="w-3.5 h-3.5" />{t('table.phone') || 'PHONE'}</div>, render: (row) => <span className="text-sm text-gray-600 whitespace-nowrap">{row.phone}</span> });
+  columns.push({ key: "primarySkill", title: <div className="flex items-center gap-1.5 whitespace-nowrap"><Star className="w-3.5 h-3.5" />{t('table.primarySkill') || 'PRIMARY SKILL'}</div>, render: (row) => <span className="text-sm text-gray-600 whitespace-nowrap">{row.primarySkill}</span> });
   columns.push({ 
     key: "status", 
-    title: t('table.status') || "STATUS", 
-    render: (row) => <WorkerStatusBadge status={row.status} /> 
+    title: <div className="whitespace-nowrap">{t('table.status') || "STATUS"}</div>, 
+    render: (row) => <div className="whitespace-nowrap"><WorkerStatusBadge status={row.status} /></div> 
   });
   columns.push({
       key: "actions",
-      title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />{t('table.actions') || 'ACTIONS'}</div>,
+      title: <div className="flex items-center gap-1.5 whitespace-nowrap"><Settings className="w-3.5 h-3.5" />{t('table.actions') || 'ACTIONS'}</div>,
       render: (row) => (
-        <div className="flex items-center gap-3 text-sm font-semibold relative">
+        <div className="flex items-center gap-3 text-sm font-semibold relative whitespace-nowrap">
           <Link to={`/workers/${row.id}`} className="text-blue-600 hover:text-blue-800 transition-colors whitespace-nowrap">
             View Details
           </Link>
@@ -166,22 +166,24 @@ export default function WorkerTable({ workers, loading, page, totalPages }) {
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm flex flex-col h-full">
-      <div className="flex-1 overflow-x-auto overflow-y-auto">
-        <DataTable 
-          columns={columns} 
-          data={workers || []} 
-          loading={loading}
-          rowKey="id" 
-          hover 
-        />
+      <div className="flex-1 overflow-x-auto overflow-y-auto min-h-[300px]">
+        <div className="min-w-[800px]">
+          <DataTable 
+            columns={columns} 
+            data={workers || []} 
+            loading={loading}
+            rowKey="id" 
+            hover 
+          />
+        </div>
       </div>
       {workers && workers.length > 0 && (
-        <div className="p-4 border-t border-gray-100 flex justify-between items-center bg-white flex-shrink-0">
+        <div className="p-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white flex-shrink-0">
           <span className="text-sm text-gray-500 font-medium">Showing 1 to {workers.length} of {workers.length} workers</span>
           <Pagination 
             currentPage={page}
             totalPages={totalPages}
-            onPageChange={(p) => console.log("Page changed to:", p)}
+            onPageChange={onPageChange || ((p) => console.log("Page changed to:", p))}
           />
         </div>
       )}

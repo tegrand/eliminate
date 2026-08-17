@@ -167,7 +167,7 @@ export default function MyAttendancePage() {
                 <div className="space-y-8">
                   
                   {/* Daily Action Widget */}
-                  <div className="bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-100 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+                  <div className="bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-100 rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                     <div>
                       <h2 className="text-lg font-bold text-indigo-950">Today's Attendance</h2>
                       <p className="text-indigo-700/80 text-sm mt-1">{format(new Date(), 'EEEE, MMMM do yyyy')}</p>
@@ -228,8 +228,8 @@ export default function MyAttendancePage() {
                   {/* History Table */}
                   <div>
                     <h3 className="text-lg font-bold text-slate-900 mb-4">Monthly History</h3>
-                    <div className="border border-slate-200 rounded-xl overflow-hidden">
-                      <table className="w-full text-left text-sm text-slate-600">
+                    <div className="border border-slate-200 rounded-xl overflow-x-auto">
+                      <table className="w-full text-left text-sm text-slate-600 min-w-[600px]">
                         <thead className="bg-slate-50 border-b border-slate-200 text-xs uppercase font-semibold text-slate-500">
                           <tr>
                             <th className="px-4 py-3">Date</th>

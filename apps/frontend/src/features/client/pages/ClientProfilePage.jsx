@@ -1,228 +1,22 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-  User, Phone, Mail, MapPin, Lock, History, Monitor,
-  Loader2, Save, Camera, ShieldCheck, LogOut, ChevronRight,
-  Globe, Hash, CheckCircle2, AlertCircle, Smartphone, Eye, EyeOff, Settings
+  User, Phone, Mail, MapPin, Lock, Loader2, Save, Camera,
+  CheckCircle2, Globe, Hash, Eye, EyeOff, ShieldCheck, AlertCircle, Settings
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { usersApi } from "../../../api/users.api";
 import { useAuth } from "../../../hooks/useAuth";
 import { clientApi } from "../api/client.api";
-import ClientProfileForm from "../components/ClientProfileForm";
 
-const TABS = []; // Not used anymore
-
-// ── Action badge colours for login history ────────────────────────────────────
-const ACTION_STYLE = {
-  LOGIN:           { bg: "bg-emerald-50", text: "text-emerald-700", dot: "bg-emerald-500", label: "Login" },
-  LOGOUT:          { bg: "bg-gray-50",    text: "text-gray-600",    dot: "bg-gray-400",    label: "Logout" },
-  FAILED_LOGIN:    { bg: "bg-red-50",     text: "text-red-600",     dot: "bg-red-500",     label: "Failed Login" },
-  REFRESH:         { bg: "bg-blue-50",    text: "text-blue-600",    dot: "bg-blue-400",    label: "Token Refresh" },
-  PASSWORD_CHANGE: { bg: "bg-violet-50",  text: "text-violet-700",  dot: "bg-violet-500",  label: "Password Changed" },
-  ACCOUNT_LOCK:    { bg: "bg-orange-50",  text: "text-orange-700",  dot: "bg-orange-500",  label: "Account Locked" },
-};
-
-function parseUserAgent(ua = "") {
-  if (!ua) return "Unknown device";
-  if (ua.includes("iPhone") || ua.includes("Android")) return "📱 Mobile";
-  if (ua.includes("Chrome"))  return "🌐 Chrome";
-  if (ua.includes("Firefox")) return "🦊 Firefox";
-  if (ua.includes("Safari"))  return "🧭 Safari";
-  if (ua.includes("Edge"))    return "🌐 Edge";
-  return "💻 Desktop";
-}
-
-// ── Sub-sections ─────────────────────────────────────────────────────────────
-
-function ChangePasswordTab() {
-  const [show, setShow] = useState({ current: false, new: false, confirm: false });
-
-  const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
-
-  const { mutate: change, isPending } = useMutation({
-    mutationFn: (d) => usersApi.changePassword({ currentPassword: d.currentPassword, newPassword: d.newPassword }),
-    onSuccess: () => { toast.success("Password changed!"); reset(); },
-    onError: (e) => toast.error(e.response?.data?.message || "Failed to change password"),
-  });
-
-  const toggle = (field) => setShow(s => ({ ...s, [field]: !s[field] }));
-
-  return (
-    <form onSubmit={handleSubmit(change)} className="flex flex-col h-full">
-      <div className="p-5 space-y-5 flex-1">
-
-
-      {[
-        { id: "currentPassword", label: "Current Password", placeholder: "Enter current password", field: "current" },
-        { id: "newPassword",     label: "New Password",     placeholder: "Enter new password",     field: "new",
-          validate: v => v.length >= 8 || "Minimum 8 characters" },
-        { id: "confirmPassword", label: "Confirm Password", placeholder: "Re-enter new password",  field: "confirm",
-          validate: v => v === watch("newPassword") || "Passwords do not match" },
-      ].map(({ id, label, placeholder, field, validate }) => (
-        <div key={id} className="flex flex-col gap-1.5">
-          <label className="text-sm font-semibold text-gray-700">{label}</label>
-          <div className="relative">
-            <input
-              {...register(id, { required: `${label} is required`, validate })}
-              type={show[field] ? "text" : "password"}
-              placeholder={placeholder}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all pr-10"
-            />
-            <button type="button" onClick={() => toggle(field)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-              {show[field] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
-          </div>
-          {errors[id] && <p className="text-xs text-red-500">{errors[id].message}</p>}
-        </div>
-      ))}
-
-      </div>
-      <div className="px-5 py-4 bg-gray-50 border-t border-gray-200 flex justify-end mt-auto">
-        <button type="submit" disabled={isPending}
-          className="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-colors">
-          {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
-          {isPending ? "Changing…" : "Change Password"}
-        </button>
-      </div>
-    </form>
-  );
-}
-
-function LoginHistoryTab() {
-  const { data, isLoading } = useQuery({
-    queryKey: ["loginHistory"],
-    queryFn: async () => {
-      const res = await usersApi.getLoginHistory();
-      return res.data.data;
-    },
-  });
-
-  if (isLoading) return <Spinner />;
-
-  const logs = data || [];
-
-  return (
-    <div className="space-y-3">
-      <p className="text-sm text-gray-500">Showing last {logs.length} auth events for your account.</p>
-
-      {logs.length === 0 ? (
-        <Empty icon={History} message="No login history found." />
-      ) : (
-        <div className="divide-y divide-gray-100 border border-gray-100 rounded-2xl overflow-hidden">
-          {logs.map((log) => {
-            const style = ACTION_STYLE[log.action] || ACTION_STYLE["LOGIN"];
-            return (
-              <div key={log.id} className="flex items-center gap-4 px-5 py-4 bg-white hover:bg-gray-50 transition-colors">
-                <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${style.dot}`} />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${style.bg} ${style.text}`}>
-                      {style.label}
-                    </span>
-                    <span className="text-xs text-gray-400">{parseUserAgent(log.userAgent)}</span>
-                    {log.ipAddress && (
-                      <span className="text-xs text-gray-400">· {log.ipAddress}</span>
-                    )}
-                  </div>
-                  <p className="text-xs text-gray-400 mt-1">
-                    {new Date(log.timestamp).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ActiveSessionsTab() {
-  const queryClient = useQueryClient();
-
-  const { data, isLoading } = useQuery({
-    queryKey: ["activeSessions"],
-    queryFn: async () => {
-      const res = await usersApi.getActiveSessions();
-      return res.data.data;
-    },
-  });
-
-  const { mutate: revokeAll, isPending: revoking } = useMutation({
-    mutationFn: () => usersApi.revokeAllSessions(),
-    onSuccess: () => {
-      toast.success("All sessions revoked. You will be logged out.");
-      queryClient.invalidateQueries(["activeSessions"]);
-    },
-    onError: () => toast.error("Failed to revoke sessions"),
-  });
-
-  if (isLoading) return <Spinner />;
-
-  const sessions = data?.sessions || [];
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-500">{sessions.length} active session{sessions.length !== 1 ? "s" : ""} found.</p>
-        {sessions.length > 0 && (
-          <button onClick={() => revokeAll()} disabled={revoking}
-            className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-red-600 bg-red-50 hover:bg-red-100 rounded-xl border border-red-100 transition-colors disabled:opacity-50">
-            {revoking ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogOut className="w-4 h-4" />}
-            Revoke All Sessions
-          </button>
-        )}
-      </div>
-
-      {sessions.length === 0 ? (
-        <Empty icon={Monitor} message="No active sessions found." />
-      ) : (
-        <div className="space-y-3">
-          {sessions.map((session) => (
-            <div key={session.id}
-              className="flex items-center gap-4 p-4 bg-white border border-gray-100 rounded-2xl shadow-sm">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-                <Smartphone className="w-5 h-5 text-blue-600" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-semibold text-gray-900">{session.label}</p>
-                  {session.isCurrent && (
-                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">
-                      Current
-                    </span>
-                  )}
-                </div>
-                <p className="text-xs text-gray-400 mt-0.5">
-                  Last active: {session.lastActive
-                    ? new Date(session.lastActive).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })
-                    : "Unknown"}
-                </p>
-                <p className="text-xs text-gray-400">
-                  Expires: {session.expiresAt
-                    ? new Date(session.expiresAt).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })
-                    : "Unknown"}
-                </p>
-              </div>
-              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" title="Active" />
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── Small helpers ─────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 function Field({ label, icon: Icon, error, className = "", children }) {
   return (
     <div className={`flex flex-col gap-1.5 ${className}`}>
-      <label className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
-        {Icon && <Icon className="w-3.5 h-3.5 text-gray-400" />} {label}
+      <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">
+        {label}
       </label>
       {children}
       {error && <p className="text-xs text-red-500">{error}</p>}
@@ -238,29 +32,111 @@ function Spinner() {
   );
 }
 
-function Empty({ icon: Icon, message }) {
+// ── Change Password Tab ────────────────────────────────────────────────────────
+
+function ChangePasswordTab() {
+  const [show, setShow] = useState({ current: false, new: false, confirm: false });
+  const { register, handleSubmit, watch, reset, formState: { errors } } = useForm();
+
+  const { mutate: change, isPending } = useMutation({
+    mutationFn: (d) => usersApi.changePassword({ currentPassword: d.currentPassword, newPassword: d.newPassword }),
+    onSuccess: () => { toast.success("Password changed!"); reset(); },
+    onError: (e) => toast.error(e.response?.data?.message || "Failed to change password"),
+  });
+
+  const toggle = (field) => setShow(s => ({ ...s, [field]: !s[field] }));
+
   return (
-    <div className="flex flex-col items-center gap-3 py-14 text-gray-400">
-      <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center">
-        <Icon className="w-7 h-7 text-gray-300" />
+    <form onSubmit={handleSubmit(change)} className="space-y-4">
+      {[
+        { id: "currentPassword", label: "Current Password", placeholder: "Enter current password", field: "current" },
+        { id: "newPassword", label: "New Password", placeholder: "Enter new password", field: "new",
+          validate: v => v.length >= 8 || "Minimum 8 characters" },
+        { id: "confirmPassword", label: "Confirm Password", placeholder: "Re-enter new password", field: "confirm",
+          validate: v => v === watch("newPassword") || "Passwords do not match" },
+      ].map(({ id, label, placeholder, field, validate }) => (
+        <Field key={id} label={label} error={errors[id]?.message}>
+          <div className="relative">
+            <input
+              {...register(id, { required: `${label} is required`, validate })}
+              type={show[field] ? "text" : "password"}
+              placeholder={placeholder}
+              className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all pr-10"
+            />
+            <button type="button" onClick={() => toggle(field)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+              {show[field] ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
+        </Field>
+      ))}
+      <div className="flex justify-end pt-2">
+        <button type="submit" disabled={isPending}
+          className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-semibold rounded-xl transition-colors">
+          {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
+          {isPending ? "Changing…" : "Change Password"}
+        </button>
       </div>
-      <p className="text-sm font-medium">{message}</p>
-    </div>
+    </form>
   );
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function ClientProfilePage() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
+  const [activeTab, setActiveTab] = useState("profile");
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   const { data: clientData, isLoading, refetch } = useQuery({
     queryKey: ["clientProfile"],
     queryFn: async () => {
-      const res = await clientApi.getMe(); // returns ApiResponse body: { success, data: client }
-      return res.data ?? res;              // extract the actual client object
+      const res = await clientApi.getMe();
+      return res.data ?? res;
     },
   });
+
+  const { register, handleSubmit, formState: { errors, isDirty } } = useForm({
+    values: {
+      contactPerson:  clientData?.contactPerson  || "",
+      phone:          clientData?.phone          || "",
+      alternatePhone: clientData?.alternatePhone || "",
+      email:          clientData?.email          || clientData?.user?.email || "",
+      addressLine1:   clientData?.addressLine1   || "",
+      addressLine2:   clientData?.addressLine2   || "",
+      city:           clientData?.city           || "",
+      state:          clientData?.state          || "",
+      country:        clientData?.country        || "India",
+      postalCode:     clientData?.postalCode     || "",
+    },
+  });
+
+  const { mutate: save, isPending: saving } = useMutation({
+    mutationFn: (data) => clientApi.updateMe(data),
+    onSuccess: () => { toast.success("Profile updated successfully!"); refetch(); },
+    onError: (e) => toast.error(e.response?.data?.message || "Failed to update profile"),
+  });
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploadingAvatar(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await usersApi.uploadAvatar(formData);
+      const profile = res.data?.data;
+      if (profile?.avatar) {
+        updateUser({ avatar: profile.avatar });
+        refetch();
+        toast.success("Profile picture updated successfully");
+      }
+    } catch {
+      toast.error("Failed to upload profile picture");
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -270,49 +146,283 @@ export default function ClientProfilePage() {
     );
   }
 
+  // Derived values
+  const name = clientData?.contactPerson || user?.name || "Client";
+  const email = clientData?.email || clientData?.user?.email || user?.email || "";
+  const avatar = clientData?.user?.avatar || user?.avatar;
+  const initials = name.split(" ").map(n => n?.[0] || "").join("").substring(0, 2).toUpperCase() || "C";
+  const status = clientData?.profileStatus || "ACTIVE";
+
+  const getAvatarUrl = (src) => {
+    if (!src) return null;
+    if (src.startsWith('http') || src.startsWith('data:')) return src;
+    return `http://localhost:5000${src.startsWith('/') ? '' : '/'}${src}`;
+  };
+
+  // Completion calculation
+  const requiredFields = [
+    clientData?.contactPerson,
+    clientData?.phone,
+    clientData?.email || clientData?.user?.email,
+    clientData?.city,
+    clientData?.state,
+  ];
+  const filled = requiredFields.filter(Boolean).length;
+  const completion = Math.round((filled / requiredFields.length) * 100);
+  const isComplete = completion === 100;
+
+  const location = [clientData?.city, clientData?.state].filter(Boolean).join(", ") || "Location not set";
+  const memberSince = clientData?.createdAt
+    ? new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(new Date(clientData.createdAt))
+    : "Unknown";
+
+  const tabs = [
+    { id: "profile",   label: "Profile",   icon: User },
+    { id: "contact",   label: "Contact",   icon: Phone },
+    { id: "location",  label: "Location",  icon: MapPin },
+    { id: "password",  label: "Password",  icon: Lock },
+  ];
+
   return (
-    <div className="w-full py-6 animate-fade-in">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-          <Settings className="w-6 h-6 text-blue-600" />
-          Settings
-        </h1>
-        <p className="text-gray-500 mt-1 text-sm">Manage your account details, password, and security settings</p>
-      </div>
+    <div className="w-full min-h-screen bg-gray-50 pb-12">
+      <div className="max-w-2xl mx-auto px-4 pt-5 space-y-4">
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-        {/* Profile Details Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full">
-          <div className="p-5 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-              <User className="w-5 h-5 text-blue-600" />
-              Profile Details
-            </h2>
-            <p className="text-sm text-gray-500 mt-1">
-              Update your personal or company information.
-            </p>
+        {/* ── Profile Overview Card ── */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+          {/* Top row: avatar + info */}
+          <div className="flex items-start gap-4">
+            {/* Avatar with upload */}
+            <div className="relative shrink-0">
+              <div className="w-20 h-20 rounded-full bg-gray-100 overflow-hidden border border-gray-200 shadow-inner flex items-center justify-center text-gray-500 text-3xl font-bold">
+                {avatar ? (
+                  <img src={getAvatarUrl(avatar)} alt={name} className="w-full h-full object-cover" />
+                ) : (
+                  initials
+                )}
+              </div>
+              <label className="absolute bottom-1 right-1 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm hover:bg-gray-50 cursor-pointer transition-colors">
+                {isUploadingAvatar
+                  ? <Loader2 className="w-3 h-3 animate-spin text-blue-600" />
+                  : <Camera className="w-3 h-3 text-gray-500" />}
+                <input type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} disabled={isUploadingAvatar} />
+              </label>
+            </div>
+
+            {/* Info */}
+            <div className="flex-1 min-w-0 pt-1">
+              <h2 className="text-lg font-bold text-gray-900 leading-tight truncate">{name}</h2>
+              <p className="text-sm text-gray-500 mt-0.5 truncate">{email}</p>
+              <div className="mt-2">
+                {status === 'ACTIVE' && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-200">
+                    <ShieldCheck className="w-3.5 h-3.5" /> Verified
+                  </span>
+                )}
+                {status === 'PENDING' && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-amber-50 text-amber-600 border border-amber-200">
+                    Pending
+                  </span>
+                )}
+                {status !== 'ACTIVE' && status !== 'PENDING' && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider bg-gray-100 text-gray-600 border border-gray-200">
+                    {status}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
-          <div className="flex-1 flex flex-col">
-            <ClientProfileForm clientData={clientData} refetchClient={refetch} />
+
+          {/* Divider row */}
+          <div className="border-t border-gray-100 mt-4 pt-4 grid grid-cols-2 gap-3">
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-gray-400 shrink-0" />
+              <div>
+                <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Location</p>
+                <p className="text-sm font-semibold text-gray-800">{location}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <User className="w-4 h-4 text-gray-400 shrink-0" />
+              <div>
+                <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Member since</p>
+                <p className="text-sm font-semibold text-gray-800">{memberSince}</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Change Password Card */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-full">
-          <div className="p-5 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-              <Settings className="w-5 h-5 text-gray-600" />
-              Change Password
-            </h2>
-            <p className="text-sm text-gray-500 mt-1">
-              Update your account password securely.
-            </p>
+        {/* ── Profile Completion Card ── */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+          <div className="flex justify-between items-center mb-3">
+            <span className="text-sm font-bold text-gray-900">Profile Completion</span>
+            <span className={`text-sm font-bold ${isComplete ? 'text-emerald-500' : 'text-blue-600'}`}>{completion}%</span>
           </div>
-          <div className="flex-1 flex flex-col">
-            <ChangePasswordTab />
+          <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden mb-3">
+            <div
+              className={`h-2.5 rounded-full transition-all duration-1000 ${isComplete ? 'bg-emerald-500' : 'bg-blue-500'}`}
+              style={{ width: `${completion}%` }}
+            />
           </div>
+          {isComplete ? (
+            <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-3 py-2 rounded-xl text-sm font-bold border border-emerald-100">
+              <CheckCircle2 className="w-4 h-4" /> All Set!
+            </div>
+          ) : (
+            <p className="text-xs text-gray-500">Fill in your contact and location details to complete your profile.</p>
+          )}
         </div>
+
+        {/* ── Tabs + Form Card ── */}
+        <form onSubmit={handleSubmit(save)}>
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            {/* Tab bar */}
+            <div className="flex border-b border-gray-100 overflow-x-auto scrollbar-hide bg-gray-50/80">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-1.5 px-4 py-3 text-sm font-semibold whitespace-nowrap transition-colors border-b-2 outline-none flex-1 justify-center ${
+                      isActive
+                        ? 'border-emerald-500 text-emerald-600 bg-white'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Tab content */}
+            <div className="p-4 sm:p-5">
+
+              {/* Profile Tab */}
+              {activeTab === "profile" && (
+                <div className="animate-fade-in space-y-4">
+                  <div className="pb-3 border-b border-gray-100">
+                    <h3 className="text-base font-bold text-gray-900">Profile Details</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">Update your personal or company information.</p>
+                  </div>
+                  <Field label="Contact Person" error={errors.contactPerson?.message}>
+                    <input
+                      {...register("contactPerson", { required: "Contact person is required" })}
+                      className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                      placeholder="e.g. John Doe"
+                    />
+                  </Field>
+                  <div className="flex justify-end pt-2">
+                    <button type="submit" disabled={saving || !isDirty}
+                      className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50">
+                      {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      {saving ? "Saving…" : "Save Changes"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Contact Tab */}
+              {activeTab === "contact" && (
+                <div className="animate-fade-in space-y-4">
+                  <div className="pb-3 border-b border-gray-100">
+                    <h3 className="text-base font-bold text-gray-900">Contact Details</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">Manage how clients can reach you.</p>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Field label="Primary Phone" error={errors.phone?.message}>
+                      <input {...register("phone", { required: "Primary phone is required" })}
+                        className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                        placeholder="+91 9876543210" />
+                    </Field>
+                    <Field label="Alternate Phone">
+                      <input {...register("alternatePhone")}
+                        className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                        placeholder="Optional" />
+                    </Field>
+                    <Field label="Email Address" error={errors.email?.message} className="sm:col-span-2">
+                      <input {...register("email", { required: "Email is required" })} type="email"
+                        className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                        placeholder="you@example.com" />
+                    </Field>
+                  </div>
+                  <div className="flex justify-end pt-2">
+                    <button type="submit" disabled={saving || !isDirty}
+                      className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50">
+                      {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      {saving ? "Saving…" : "Save Changes"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Location Tab */}
+              {activeTab === "location" && (
+                <div className="animate-fade-in space-y-4">
+                  <div className="pb-3 border-b border-gray-100">
+                    <h3 className="text-base font-bold text-gray-900">Location</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">Set your address and region.</p>
+                  </div>
+                  <Field label="Address Line 1">
+                    <input {...register("addressLine1")}
+                      className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                      placeholder="Building, Street, Area" />
+                  </Field>
+                  <Field label="Address Line 2">
+                    <input {...register("addressLine2")}
+                      className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                      placeholder="Landmark, Locality (Optional)" />
+                  </Field>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Field label="City / District">
+                      <input {...register("city")}
+                        className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                        placeholder="e.g. Kochi" />
+                    </Field>
+                    <Field label="State">
+                      <input {...register("state")}
+                        className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                        placeholder="e.g. Kerala" />
+                    </Field>
+                    <Field label="PIN Code">
+                      <input {...register("postalCode")}
+                        className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                        placeholder="e.g. 682001" />
+                    </Field>
+                    <Field label="Country">
+                      <input {...register("country")}
+                        className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all"
+                        placeholder="e.g. India" />
+                    </Field>
+                  </div>
+                  <div className="flex justify-end pt-2">
+                    <button type="submit" disabled={saving || !isDirty}
+                      className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50">
+                      {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                      {saving ? "Saving…" : "Save Changes"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Password Tab */}
+              {activeTab === "password" && (
+                <div className="animate-fade-in">
+                  <div className="pb-3 border-b border-gray-100 mb-4">
+                    <h3 className="text-base font-bold text-gray-900">Change Password</h3>
+                    <p className="text-xs text-gray-500 mt-0.5">Update your account password securely.</p>
+                  </div>
+                  <ChangePasswordTab />
+                </div>
+              )}
+
+            </div>
+          </div>
+        </form>
+
       </div>
     </div>
   );

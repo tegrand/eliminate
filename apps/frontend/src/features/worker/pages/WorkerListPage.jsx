@@ -10,7 +10,7 @@ import { useAuth } from "../../../hooks/useAuth";
 
 export default function WorkerListPage() {
   const { user } = useAuth();
-  const [page] = useState(1);
+  const [page, setPage] = useState(1);
   const [searchParams] = useSearchParams();
   const currentStatus = searchParams.get("status") || "ALL";
   const viewMode = searchParams.get("view") || "all";
@@ -130,6 +130,7 @@ export default function WorkerListPage() {
               loading={isLoading} 
               page={pagination.page || 1}
               totalPages={pagination.totalPages || 1}
+              onPageChange={setPage}
             />
           </div>
         </div>

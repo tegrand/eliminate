@@ -65,16 +65,16 @@ export default function WorkerDashboard() {
   ];
 
   return (
-    <div className="w-full space-y-6 animate-fade-in pb-8">
+    <div className="w-full space-y-4 sm:space-y-6 animate-fade-in pb-8">
       {/* Profile Overview */}
       <WorkerProfileStatus />
 
       {/* Top Stats Cards */}
       <WorkerTopStatsWidget stats={data.topStats} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Left Column: Jobs Overview */}
-        <div className="lg:col-span-2 h-full">
+        <div className="lg:col-span-2 h-full w-full">
           <WorkerJobsWidget 
             activeJob={activeJob} 
             upcomingJobs={upcomingJobs} 
@@ -83,7 +83,7 @@ export default function WorkerDashboard() {
         </div>
 
         {/* Right Column: Recent Activity */}
-        <div className="lg:col-span-1 h-full">
+        <div className="lg:col-span-1 h-full w-full">
           <WorkerActivityWidget recentActivities={recentActivities} />
         </div>
       </div>

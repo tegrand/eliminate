@@ -8,7 +8,7 @@ import AgencyStats from "../components/AgencyStats";
 import { useAgencies } from "../hooks/useAgencies";
 
 export default function AgencyListPage() {
-  const [page] = useState(1);
+  const [page, setPage] = useState(1);
   const [searchParams] = useSearchParams();
   const currentStatus = searchParams.get("status") || "ALL";
 
@@ -81,6 +81,7 @@ export default function AgencyListPage() {
               loading={isLoading} 
               page={data?.data?.page || 1}
               totalPages={data?.data?.totalPages || 1}
+              onPageChange={setPage}
             />
           </div>
         </div>

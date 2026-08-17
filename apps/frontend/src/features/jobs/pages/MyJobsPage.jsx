@@ -198,19 +198,19 @@ export default function MyJobsPage() {
                     </div>
                   ) : (
                     savedJobs.map(saved => (
-                      <div key={saved.id} className="bg-white border border-slate-200 rounded-xl p-5 flex justify-between items-center gap-4">
+                      <div key={saved.id} className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                           <h3 className="font-bold text-slate-900">{saved.jobRequirement?.title}</h3>
                           <div className="flex items-center gap-4 text-sm text-slate-500 mt-1">
                             <div className="flex items-center gap-1">
                               <Building className="w-4 h-4" />
-                              {saved.jobRequirement?.client?.companyName}
+                              <span className="truncate max-w-[200px]">{saved.jobRequirement?.client?.companyName}</span>
                             </div>
                           </div>
                         </div>
                         <button 
                           onClick={() => handleRemoveSaved(saved.jobRequirementId)}
-                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors self-end sm:self-auto"
                           title="Remove from saved"
                         >
                           <Trash2 className="w-5 h-5" />
