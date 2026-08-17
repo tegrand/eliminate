@@ -8,7 +8,7 @@ export default function AdvertisementBanner({ slotName, className = "", variant 
   const ad = getAdForSlot(slotName);
 
   useEffect(() => {
-    if (user?.profileType === 'SUPER_ADMIN') return;
+    if (user?.profileType !== 'CLIENT') return;
     
     // Request an ad for this slot on mount
     requestAd(slotName);
@@ -19,8 +19,8 @@ export default function AdvertisementBanner({ slotName, className = "", variant 
     };
   }, [slotName, requestAd, releaseAd, user?.profileType]);
 
-  if (isLoading || !ad || user?.profileType === 'SUPER_ADMIN') {
-    return null; // Return nothing if loading, no ad available, or user is Super Admin
+  if (isLoading || !ad || user?.profileType !== 'CLIENT') {
+    return null; // Return nothing if loading, no ad available, or user is not a Client
   }
 
   // Common styling logic based on variant

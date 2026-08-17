@@ -5,7 +5,7 @@ import { useAuth } from "../../../hooks/useAuth";
 import { documentsApi } from "../../../api/documents.api";
 import { usersApi } from "../../../api/users.api";
 import toast from "react-hot-toast";
-import AdvertisementBanner from "../../../components/ui/AdvertisementBanner";
+
 
 export default function AgencySettingsPage() {
   const { user, updateUser } = useAuth();
@@ -270,8 +270,6 @@ export default function AgencySettingsPage() {
         <p className="text-slate-500 mt-1">Manage your account security and preferences.</p>
       </div>
 
-      {/* Advertisement Banner */}
-      <AdvertisementBanner slotName="page" variant="standard" />
 
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

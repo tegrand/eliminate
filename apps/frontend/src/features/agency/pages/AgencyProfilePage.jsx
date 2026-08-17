@@ -11,7 +11,7 @@ import AgencyBasicInfoForm from '../components/AgencyBasicInfoForm';
 import AgencyContactForm from '../components/AgencyContactForm';
 import AgencyComplianceForm from '../components/AgencyComplianceForm';
 import AgencyOperationsForm from '../components/AgencyOperationsForm';
-import AdvertisementBanner from '../../../components/ui/AdvertisementBanner';
+
 
 const TABS = [
   { id: "basic", label: "Basic Info", icon: Building },
@@ -130,11 +130,6 @@ export default function AgencyProfilePage() {
         <div className="mb-4">
           <h1 className="text-2xl font-bold text-[#404145] tracking-tight">Agency Profile</h1>
           <p className="text-sm text-[#74767e] mt-0.5">Manage your agency's public profile and business details.</p>
-        </div>
-
-        {/* Advertisement Banner */}
-        <div className="mb-5">
-          <AdvertisementBanner slotName="page" variant="standard" />
         </div>
 
         <div className="flex flex-col md:flex-row gap-5">

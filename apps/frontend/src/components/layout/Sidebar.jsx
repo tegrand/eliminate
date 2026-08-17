@@ -5,7 +5,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { useSidebar } from "../../contexts/SidebarContext";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import AdvertisementBanner from "../ui/AdvertisementBanner";
+
 
 export default function Sidebar() {
   const { user } = useAuth();
@@ -59,7 +59,7 @@ export default function Sidebar() {
 
         {shouldShowAd && (
           <div className="p-4 border-t border-gray-100 bg-gray-50/50 mt-auto shrink-0">
-            <AdvertisementBanner slotName="sidebar" variant="sidebar" />
+
           </div>
         )}
       </div>
