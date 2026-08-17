@@ -179,8 +179,8 @@ export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader 
     if (!workerId) return;
     try {
       setAddingLang(true);
-      const slug = inputValue.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      const res = await api.post("/languages", { name: inputValue, slug });
+      const code = inputValue.toUpperCase().replace(/[^A-Z0-9]+/g, '-').slice(0, 20);
+      const res = await api.post("/languages", { name: inputValue, code });
       const newLang = res.data.data;
       
       setAllLanguages(prev => [...prev, newLang]);
