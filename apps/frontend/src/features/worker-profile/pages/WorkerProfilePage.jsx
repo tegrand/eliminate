@@ -106,10 +106,8 @@ export default function WorkerProfilePage() {
     <div className="w-full min-h-screen bg-gray-50 pb-12">
       <div className="max-w-2xl mx-auto px-4 pt-5 space-y-4">
 
-        {/* ── Page Title ── */}
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">My Profile</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Fill in your details below to stand out and get hired faster.</p>
+          <h1 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">My Profile</h1>
         </div>
 
         {/* ── Profile Overview Card ── */}
