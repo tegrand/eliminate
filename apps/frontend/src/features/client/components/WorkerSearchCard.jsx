@@ -43,8 +43,8 @@ export default function WorkerSearchCard({ worker }) {
         </div>
 
         <div className="flex-1 min-w-0 w-full">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 mb-1">
-            <h3 className="text-base sm:text-lg font-bold text-gray-900 truncate pr-4">
+          <div className="flex items-center justify-between gap-2 mb-1">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 truncate pr-2">
               {name}
             </h3>
 
