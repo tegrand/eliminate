@@ -95,11 +95,20 @@ export default function ClientWorkerProfilePage() {
                       <svg viewBox="0 0 120 120" className="w-full h-full">
                         <defs>
                           <path id="textPath" d="M 12 84 A 53 53 0 0 0 108 84" />
+                          <linearGradient id="verifiedGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#10a35e" />
+                            <stop offset="50%" stopColor="#1dbf73" />
+                            <stop offset="100%" stopColor="#26d986" />
+                          </linearGradient>
+                          <linearGradient id="unverifiedGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#6b7280" />
+                            <stop offset="100%" stopColor="#9ca3af" />
+                          </linearGradient>
                         </defs>
                         <path 
                           d="M 5 84 A 60 60 0 0 0 115 84" 
                           fill="none" 
-                          stroke={isVerified ? "#1dbf73" : "#828282"} 
+                          stroke={isVerified ? "url(#verifiedGradient)" : "url(#unverifiedGradient)"} 
                           strokeWidth="28" 
                         />
                         <text className="text-[11px] font-black fill-white uppercase tracking-widest" style={{ letterSpacing: '0.12em' }}>
