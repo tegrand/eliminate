@@ -11,9 +11,6 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
     state: data?.state || "",
     country: data?.country || "",
     postalCode: data?.postalCode || "",
-    emergencyContactName: data?.emergencyContactName || "",
-    emergencyContactPhone: data?.emergencyContactPhone || "",
-    emergencyContactRelation: data?.emergencyContactRelation || "",
   });
 
   const handleChange = (e) => {
@@ -129,46 +126,6 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
                 value={formData.postalCode}
                 onChange={handleChange}
                 className="w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Emergency Contact */}
-        <div>
-          <h3 className="text-sm font-bold text-slate-800 uppercase tracking-widest mb-3">Emergency Contact</h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 bg-rose-50/50 p-4 rounded-2xl border border-rose-100/50">
-            <div className="space-y-1.5 col-span-2 md:col-span-1">
-              <label className="text-sm font-medium text-slate-700">Contact Name</label>
-              <input
-                type="text"
-                name="emergencyContactName"
-                value={formData.emergencyContactName}
-                onChange={handleChange}
-                className="w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
-                placeholder="Name"
-              />
-            </div>
-            <div className="space-y-1.5 col-span-1">
-              <label className="text-sm font-medium text-slate-700">Contact Number</label>
-              <input
-                type="text"
-                name="emergencyContactPhone"
-                value={formData.emergencyContactPhone}
-                onChange={handleChange}
-                className="w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
-                placeholder="Phone Number"
-              />
-            </div>
-            <div className="space-y-1.5 col-span-1">
-              <label className="text-sm font-medium text-slate-700">Relationship</label>
-              <input
-                type="text"
-                name="emergencyContactRelation"
-                value={formData.emergencyContactRelation}
-                onChange={handleChange}
-                className="w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
-                placeholder="e.g., Brother, Spouse"
               />
             </div>
           </div>
