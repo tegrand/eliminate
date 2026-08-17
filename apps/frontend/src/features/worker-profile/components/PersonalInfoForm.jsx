@@ -67,7 +67,7 @@ export default function PersonalInfoForm({ data, onSave, saving, hideHeader }) {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           <div>
             <label className={labelClass}>First Name</label>
             <input
@@ -93,7 +93,7 @@ export default function PersonalInfoForm({ data, onSave, saving, hideHeader }) {
         </div>
 
         {/* DOB & Gender */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           <div>
             <label className={labelClass}>Date of Birth</label>
             <input

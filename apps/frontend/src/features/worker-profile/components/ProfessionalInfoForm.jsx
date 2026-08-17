@@ -259,7 +259,7 @@ export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader 
 
         {/* Experience & Salary */}
         <div className={sectionClass}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className={labelClass}>Total Experience (Years)</label>
               <input

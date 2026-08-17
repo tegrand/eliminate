@@ -68,8 +68,8 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
         {/* Address */}
         <div>
           <h3 className="text-sm font-bold text-slate-800 uppercase tracking-widest mb-3">Address Information</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-            <div className="space-y-1.5 md:col-span-2">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            <div className="space-y-1.5 col-span-2">
               <label className="text-sm font-medium text-slate-700">Address Line 1</label>
               <input
                 type="text"
@@ -80,7 +80,7 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
                 placeholder="House/Flat No., Building Name, Street"
               />
             </div>
-            <div className="space-y-1.5 md:col-span-2">
+            <div className="space-y-1.5 col-span-2">
               <label className="text-sm font-medium text-slate-700">Address Line 2 (Optional)</label>
               <input
                 type="text"
@@ -137,8 +137,8 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
         {/* Emergency Contact */}
         <div>
           <h3 className="text-sm font-bold text-slate-800 uppercase tracking-widest mb-3">Emergency Contact</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 bg-rose-50/50 p-4 rounded-2xl border border-rose-100/50">
-            <div className="space-y-1.5">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 bg-rose-50/50 p-4 rounded-2xl border border-rose-100/50">
+            <div className="space-y-1.5 col-span-2 md:col-span-1">
               <label className="text-sm font-medium text-slate-700">Contact Name</label>
               <input
                 type="text"
@@ -149,7 +149,7 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
                 placeholder="Name"
               />
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 col-span-1">
               <label className="text-sm font-medium text-slate-700">Contact Number</label>
               <input
                 type="text"
@@ -160,7 +160,7 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
                 placeholder="Phone Number"
               />
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 col-span-1">
               <label className="text-sm font-medium text-slate-700">Relationship</label>
               <input
                 type="text"
