@@ -132,7 +132,7 @@ export default function WorkerProfilePage() {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-gray-50/50 pb-8 sm:pb-10 font-sans">
+    <div className="w-full min-h-screen bg-gray-50/50 pb-24 sm:pb-28 font-sans">
       
       {/* ── Cover Header ── */}
       <div className="h-28 sm:h-32 bg-gradient-to-r from-blue-600 to-indigo-700 w-full relative">
@@ -280,7 +280,7 @@ export default function WorkerProfilePage() {
                 <h3 className="text-lg font-bold text-gray-900">Personal Info</h3>
                 <p className="text-sm text-gray-500 mt-1">Update your basic details and identification.</p>
               </div>
-              <PersonalInfoForm data={profileData} onSave={handleSave} saving={saving} hideHeader />
+              <PersonalInfoForm data={profileData} onSave={handleSave} saving={saving} hideHeader isActive={activeTab === 'personal'} />
             </div>
 
             <div className={activeTab === 'contact' ? 'block animate-fade-in' : 'hidden'}>
@@ -288,7 +288,7 @@ export default function WorkerProfilePage() {
                 <h3 className="text-lg font-bold text-gray-900">Contact Details</h3>
                 <p className="text-sm text-gray-500 mt-1">Manage how clients can reach out to you.</p>
               </div>
-              <ContactInfoForm data={profileData} onSave={handleSave} saving={saving} hideHeader />
+              <ContactInfoForm data={profileData} onSave={handleSave} saving={saving} hideHeader isActive={activeTab === 'contact'} />
             </div>
 
             <div className={activeTab === 'professional' ? 'block animate-fade-in' : 'hidden'}>
@@ -296,7 +296,7 @@ export default function WorkerProfilePage() {
                 <h3 className="text-lg font-bold text-gray-900">Professional Info</h3>
                 <p className="text-sm text-gray-500 mt-1">Set your skills, experience, and work preferences.</p>
               </div>
-              <ProfessionalInfoForm data={profileData} onSave={handleSave} saving={saving} hideHeader />
+              <ProfessionalInfoForm data={profileData} onSave={handleSave} saving={saving} hideHeader isActive={activeTab === 'professional'} />
             </div>
 
             <div className={activeTab === 'documents' ? 'block animate-fade-in' : 'hidden'}>
@@ -304,12 +304,26 @@ export default function WorkerProfilePage() {
                 <h3 className="text-lg font-bold text-gray-900">Documents</h3>
                 <p className="text-sm text-gray-500 mt-1">Upload files for verification and client viewing.</p>
               </div>
-              <DocumentsForm data={profileData} onSave={handleSave} saving={saving} hideHeader />
+              <DocumentsForm data={profileData} onSave={handleSave} saving={saving} hideHeader isActive={activeTab === 'documents'} />
             </div>
           </div>
         </div>
 
       </div>
+
+      {/* Floating Save Button Container */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-50 flex justify-center">
+        <button
+          type="submit"
+          form="profile-form"
+          disabled={saving}
+          className="w-full max-w-2xl flex justify-center items-center gap-2 px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white text-base font-bold rounded-2xl shadow-lg hover:shadow-xl transition-all disabled:opacity-70 active:scale-[0.98]"
+        >
+          {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+          {saving ? "Saving Changes..." : "Save Changes"}
+        </button>
+      </div>
+
     </div>
   );
 }

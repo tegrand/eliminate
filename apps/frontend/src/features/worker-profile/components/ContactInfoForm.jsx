@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Save } from "lucide-react";
 
-export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
+export default function ContactInfoForm({ data, onSave, saving, hideHeader, isActive }) {
   const [formData, setFormData] = useState({
     phone: data?.phone || "",
     email: data?.user?.email || "",
@@ -30,7 +30,7 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form id={isActive ? "profile-form" : undefined} onSubmit={handleSubmit} className="space-y-5">
         
         {/* Basic Contact */}
         <div>
@@ -119,16 +119,6 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader }) {
           </div>
         </div>
 
-        <div className="pt-4 border-t border-slate-100 flex justify-end">
-          <button
-            type="submit"
-            disabled={saving}
-            className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow transition-all disabled:opacity-70"
-          >
-            <Save className="w-4 h-4" />
-            {saving ? "Saving..." : "Save Changes"}
-          </button>
-        </div>
       </form>
     </div>
   );

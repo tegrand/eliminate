@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Save, UserCircle2, Camera, Loader2 } from "lucide-react";
 
-export default function PersonalInfoForm({ data, onSave, saving, hideHeader }) {
+export default function PersonalInfoForm({ data, onSave, saving, hideHeader, isActive }) {
   const [formData, setFormData] = useState({
     firstName: data?.firstName || "",
     lastName: data?.lastName || "",
@@ -65,7 +65,7 @@ export default function PersonalInfoForm({ data, onSave, saving, hideHeader }) {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form id={isActive ? "profile-form" : undefined} onSubmit={handleSubmit} className="space-y-4">
         {/* Name */}
         <div className="grid grid-cols-2 gap-3 sm:gap-4">
           <div>
@@ -148,16 +148,6 @@ export default function PersonalInfoForm({ data, onSave, saving, hideHeader }) {
           <p className="text-[11px] text-slate-400 mt-1.5">{formData.notes.length}/2000 characters</p>
         </div>
 
-        <div className="pt-5 border-t border-slate-100 flex justify-end">
-          <button
-            type="submit"
-            disabled={saving}
-            className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-sm hover:shadow-md transition-all disabled:opacity-70"
-          >
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            {saving ? "Saving..." : "Save Changes"}
-          </button>
-        </div>
       </form>
     </div>
   );

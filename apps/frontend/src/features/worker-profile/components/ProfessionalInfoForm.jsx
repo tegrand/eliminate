@@ -70,7 +70,7 @@ function CustomTagSelect({ placeholder, selectedItems, options, onAdd, onRemove,
   );
 }
 
-export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader }) {
+export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader, isActive }) {
   const workerId = data?.id;
 
   const [formData, setFormData] = useState({
@@ -255,7 +255,7 @@ export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader 
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form id={isActive ? "profile-form" : undefined} onSubmit={handleSubmit} className="space-y-4">
 
         {/* Experience & Salary */}
         <div className={sectionClass}>
@@ -318,16 +318,6 @@ export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader 
           />
         </div>
 
-        <div className="pt-4 border-t border-slate-100 flex justify-end">
-          <button
-            type="submit"
-            disabled={saving}
-            className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-sm hover:shadow-md transition-all disabled:opacity-70"
-          >
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            {saving ? "Saving..." : "Save Changes"}
-          </button>
-        </div>
       </form>
     </div>
   );
