@@ -1,8 +1,7 @@
-import { MapPin, Star, Building2, CheckCircle2, XCircle, Briefcase } from "lucide-react";
+import { MapPin, Building2, CheckCircle2, XCircle, Briefcase } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function AgencySearchCard({ agency }) {
-  // Use a mock rating since rating is not implemented in DB
-  const rating = 5.0; 
   const isVerified = agency.verificationStatus === "VERIFIED";
 
   const getFullUrl = (url) => {
@@ -11,11 +10,11 @@ export default function AgencySearchCard({ agency }) {
   };
 
   return (
-    <div className="bg-white rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all group relative">
-      <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center">
+    <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all group relative">
+      <div className="flex flex-col sm:flex-row gap-3.5 sm:gap-5 items-start sm:items-center">
         
         {/* Avatar / Logo */}
-        <div className="w-16 h-16 rounded-xl bg-blue-50 border border-blue-100 overflow-hidden flex items-center justify-center shrink-0">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-blue-50 border border-blue-100 overflow-hidden flex items-center justify-center shrink-0">
           {agency.logoUrl ? (
             <img src={getFullUrl(agency.logoUrl)} alt="Agency Logo" className="w-full h-full object-cover" />
           ) : (
@@ -23,9 +22,9 @@ export default function AgencySearchCard({ agency }) {
           )}
         </div>
 
-        <div className="flex-1 min-w-0">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1">
-            <h3 className="text-lg font-bold text-gray-900 truncate pr-4">
+        <div className="flex-1 min-w-0 w-full">
+          <div className="flex items-center justify-between gap-2 mb-1">
+            <h3 className="text-base sm:text-lg font-bold text-gray-900 truncate pr-2">
               {agency.companyName || "Unnamed Agency"}
             </h3>
             
@@ -54,18 +53,10 @@ export default function AgencySearchCard({ agency }) {
                 {agency.address || agency.location || "Location not specified"}
               </span>
             </div>
-
-            <div className="w-1 h-1 rounded-full bg-gray-300 hidden sm:block"></div>
-
-            {/* Rating */}
-            <div className="flex items-center gap-1">
-              <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-              <span className="font-medium text-gray-700">{rating.toFixed(1)}</span>
-            </div>
           </div>
 
           {/* Skills / Specializations (Mocked as Agencies don't have direct skills array usually, but we display something) */}
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-2.5 sm:mt-4 flex flex-wrap gap-2">
             <span className="px-2.5 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg">
               Construction
             </span>
@@ -81,10 +72,13 @@ export default function AgencySearchCard({ agency }) {
       </div>
       
       {/* Absolute contact button for desktop hover */}
-      <div className="flex items-center gap-3 mt-5 w-full">
-        <button className="flex-1 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-colors">
+      <div className="flex items-center gap-2.5 sm:gap-3 mt-4 sm:mt-5 w-full">
+        <Link 
+          to={`/search-agencies/${agency.id}`}
+          className="flex-1 py-2.5 text-center bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-colors"
+        >
           View Profile
-        </button>
+        </Link>
         <a 
           href={`tel:${agency.phone || agency.user?.phone || ''}`}
           className="flex-1 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 shadow-sm shadow-blue-200 transition-colors flex items-center justify-center gap-2"
