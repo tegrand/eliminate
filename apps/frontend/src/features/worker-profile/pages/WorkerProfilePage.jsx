@@ -15,6 +15,7 @@ export default function WorkerProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('personal');
+  const [isDirty, setIsDirty] = useState(false);
 
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef(null);
@@ -38,24 +39,25 @@ export default function WorkerProfilePage() {
       handleSave({ profilePhoto: documentUrl });
       toast.success("Profile photo uploaded successfully");
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to upload photo");
+      toast.error(err?.response?.data?.message || "Failed to upload photo");
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
+  const fetchProfile = async () => {
+    try {
+      const response = await api.get("/workers/my-profile");
+      setProfileData(response.data.data);
+    } catch (error) {
+      toast.error("Failed to load profile data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await api.get("/workers/my-profile");
-        setProfileData(response.data.data);
-      } catch (error) {
-        toast.error("Failed to load profile data");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchProfile();
   }, []);
 
@@ -65,8 +67,9 @@ export default function WorkerProfilePage() {
       const response = await api.patch(`/workers/my-profile`, updatedFields);
       setProfileData(response.data.data);
       toast.success("Profile updated successfully");
+      setIsDirty(false);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to update profile");
+      toast.error(err.response?.data?.message || "Failed to update profile");
     } finally {
       setSaving(false);
     }
@@ -258,7 +261,7 @@ export default function WorkerProfilePage() {
                 return (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => { setActiveTab(tab.id); setIsDirty(false); }}
                     className={`flex items-center gap-1.5 px-3 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap transition-all flex-1 justify-center rounded-lg ${
                       isActive
                         ? 'bg-white text-gray-900 shadow-sm border border-gray-100/50'
@@ -280,7 +283,7 @@ export default function WorkerProfilePage() {
                 <h3 className="text-lg font-bold text-gray-900">Personal Info</h3>
                 <p className="text-sm text-gray-500 mt-1">Update your basic details and identification.</p>
               </div>
-              <PersonalInfoForm data={profileData} onSave={handleSave} saving={saving} hideHeader isActive={activeTab === 'personal'} />
+              <PersonalInfoForm data={profileData} onSave={handleSave} saving={saving} hideHeader isActive={activeTab === 'personal'} onDirty={() => setIsDirty(true)} />
             </div>
 
             <div className={activeTab === 'contact' ? 'block animate-fade-in' : 'hidden'}>
@@ -288,7 +291,7 @@ export default function WorkerProfilePage() {
                 <h3 className="text-lg font-bold text-gray-900">Contact Details</h3>
                 <p className="text-sm text-gray-500 mt-1">Manage how clients can reach out to you.</p>
               </div>
-              <ContactInfoForm data={profileData} onSave={handleSave} saving={saving} hideHeader isActive={activeTab === 'contact'} />
+              <ContactInfoForm data={profileData} onSave={handleSave} saving={saving} hideHeader isActive={activeTab === 'contact'} onDirty={() => setIsDirty(true)} />
             </div>
 
             <div className={activeTab === 'professional' ? 'block animate-fade-in' : 'hidden'}>
@@ -296,7 +299,7 @@ export default function WorkerProfilePage() {
                 <h3 className="text-lg font-bold text-gray-900">Professional Info</h3>
                 <p className="text-sm text-gray-500 mt-1">Set your skills, experience, and work preferences.</p>
               </div>
-              <ProfessionalInfoForm data={profileData} onSave={handleSave} saving={saving} hideHeader isActive={activeTab === 'professional'} />
+              <ProfessionalInfoForm data={profileData} onSave={handleSave} saving={saving} hideHeader isActive={activeTab === 'professional'} onDirty={() => setIsDirty(true)} />
             </div>
 
             <div className={activeTab === 'documents' ? 'block animate-fade-in' : 'hidden'}>
@@ -304,7 +307,7 @@ export default function WorkerProfilePage() {
                 <h3 className="text-lg font-bold text-gray-900">Documents</h3>
                 <p className="text-sm text-gray-500 mt-1">Upload files for verification and client viewing.</p>
               </div>
-              <DocumentsForm data={profileData} onSave={handleSave} saving={saving} hideHeader isActive={activeTab === 'documents'} />
+              <DocumentsForm data={profileData} onSave={handleSave} saving={saving} hideHeader isActive={activeTab === 'documents'} onDirty={() => setIsDirty(true)} />
             </div>
           </div>
         </div>
@@ -312,7 +315,7 @@ export default function WorkerProfilePage() {
       </div>
 
       {/* Floating Save Button Container */}
-      <div className="fixed bottom-0 left-0 right-0 p-3 bg-white/80 backdrop-blur-md border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-50 flex justify-center">
+      <div className={`fixed bottom-0 left-0 right-0 p-3 bg-white/80 backdrop-blur-md border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-50 flex justify-center transition-transform duration-300 ${isDirty ? 'translate-y-0' : 'translate-y-full'}`}>
         <button
           type="submit"
           form="profile-form"

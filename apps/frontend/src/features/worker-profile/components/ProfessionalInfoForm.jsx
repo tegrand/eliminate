@@ -70,7 +70,7 @@ function CustomTagSelect({ placeholder, selectedItems, options, onAdd, onRemove,
   );
 }
 
-export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader, isActive }) {
+export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader, isActive, onDirty }) {
   const workerId = data?.id;
 
   const [formData, setFormData] = useState({
@@ -117,6 +117,7 @@ export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader,
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (onDirty) onDirty();
   };
 
   // --- Skills ---

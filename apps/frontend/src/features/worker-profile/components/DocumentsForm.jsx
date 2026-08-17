@@ -3,7 +3,7 @@ import { Save, UploadCloud, FileText, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import api from "../../../api/axios";
 
-export default function DocumentsForm({ data, onSave, saving, hideHeader, isActive }) {
+export default function DocumentsForm({ data, onSave, saving, hideHeader, isActive, onDirty }) {
   const [formData, setFormData] = useState({
     aadhaarNumber: data?.aadhaarNumber || "",
     panNumber: data?.panNumber || "",
@@ -15,6 +15,7 @@ export default function DocumentsForm({ data, onSave, saving, hideHeader, isActi
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (onDirty) onDirty();
   };
 
   const handleSubmit = (e) => {

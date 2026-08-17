@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Save, UserCircle2, Camera, Loader2 } from "lucide-react";
 
-export default function PersonalInfoForm({ data, onSave, saving, hideHeader, isActive }) {
+export default function PersonalInfoForm({ data, onSave, saving, hideHeader, isActive, onDirty }) {
   const [formData, setFormData] = useState({
     firstName: data?.firstName || "",
     lastName: data?.lastName || "",
@@ -20,6 +20,7 @@ export default function PersonalInfoForm({ data, onSave, saving, hideHeader, isA
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (onDirty) onDirty();
   };
 
   const handlePhotoUpload = async (e) => {

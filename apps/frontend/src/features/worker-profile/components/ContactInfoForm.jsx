@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Save } from "lucide-react";
 
-export default function ContactInfoForm({ data, onSave, saving, hideHeader, isActive }) {
+export default function ContactInfoForm({ data, onSave, saving, hideHeader, isActive, onDirty }) {
   const [formData, setFormData] = useState({
     phone: data?.phone || "",
     email: data?.user?.email || "",
@@ -14,6 +14,7 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader, isAc
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (onDirty) onDirty();
   };
 
   const handleSubmit = (e) => {
