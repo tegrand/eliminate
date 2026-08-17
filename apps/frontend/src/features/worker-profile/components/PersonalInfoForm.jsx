@@ -53,21 +53,21 @@ export default function PersonalInfoForm({ data, onSave, saving, hideHeader }) {
     onSave(formData);
   };
 
-  const inputClass = "w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-800 placeholder:text-slate-400 text-sm";
-  const labelClass = "block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide";
+  const inputClass = "w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-800 placeholder:text-slate-400 text-sm";
+  const labelClass = "block text-xs font-semibold text-slate-600 mb-1 uppercase tracking-wide";
 
   return (
     <div className="animate-fade-in">
       {!hideHeader && (
-        <div className="mb-6">
+        <div className="mb-4">
           <h2 className="text-xl font-bold text-slate-900">Personal Information</h2>
           <p className="text-sm text-slate-500 mt-1">Update your basic profile details and profile picture.</p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           <div>
             <label className={labelClass}>First Name</label>
             <input
@@ -93,7 +93,7 @@ export default function PersonalInfoForm({ data, onSave, saving, hideHeader }) {
         </div>
 
         {/* DOB & Gender */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           <div>
             <label className={labelClass}>Date of Birth</label>
             <input
@@ -141,7 +141,7 @@ export default function PersonalInfoForm({ data, onSave, saving, hideHeader }) {
             name="notes"
             value={formData.notes}
             onChange={handleChange}
-            rows={4}
+            rows={3}
             className={`${inputClass} resize-none`}
             placeholder="Tell employers about yourself — your experience, strengths, and what kind of work you're looking for..."
           />

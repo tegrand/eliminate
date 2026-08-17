@@ -242,24 +242,24 @@ export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader 
     onSave(payload);
   };
 
-  const inputClass = "w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-800 placeholder:text-slate-400 text-sm";
-  const labelClass = "block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide";
-  const sectionClass = "space-y-4 pb-6 border-b border-slate-100 last:border-0 last:pb-0";
+  const inputClass = "w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-800 placeholder:text-slate-400 text-sm";
+  const labelClass = "block text-xs font-semibold text-slate-600 mb-1 uppercase tracking-wide";
+  const sectionClass = "space-y-3 pb-4 border-b border-slate-100 last:border-0 last:pb-0";
 
   return (
     <div className="animate-fade-in">
       {!hideHeader && (
-        <div className="mb-6">
+        <div className="mb-4">
           <h2 className="text-xl font-bold text-slate-900">Professional Details</h2>
           <p className="text-sm text-slate-500 mt-1">Manage your experience, skills, languages and preferences.</p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
 
         {/* Experience & Salary */}
         <div className={sectionClass}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className={labelClass}>Total Experience (Years)</label>
               <input
@@ -318,7 +318,7 @@ export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader 
           />
         </div>
 
-        <div className="pt-5 border-t border-slate-100 flex justify-end">
+        <div className="pt-4 border-t border-slate-100 flex justify-end">
           <button
             type="submit"
             disabled={saving}

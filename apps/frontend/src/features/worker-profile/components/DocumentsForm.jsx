@@ -55,21 +55,21 @@ export default function DocumentsForm({ data, onSave, saving, hideHeader }) {
   return (
     <div className="animate-fade-in">
       {!hideHeader && (
-        <div className="mb-6">
+        <div className="mb-4">
           <h2 className="text-xl font-bold text-slate-900">Documents & Verification</h2>
           <p className="text-sm text-slate-500 mt-1">Manage your identity documents and certificates.</p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-5">
         {/* File Uploads */}
         <div>
-          <h3 className="text-sm font-bold text-slate-800 uppercase tracking-widest mb-4">Document Uploads</h3>
+          <h3 className="text-sm font-bold text-slate-800 uppercase tracking-widest mb-3">Document Uploads</h3>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             
             {/* Real Resume Upload */}
-            <div className="relative border border-dashed border-indigo-300 rounded-xl p-6 flex flex-col items-center justify-center text-center bg-indigo-50/50 hover:bg-indigo-50 transition-colors group overflow-hidden cursor-pointer">
+            <div className="relative border border-dashed border-indigo-300 rounded-xl p-4 sm:p-5 flex flex-col items-center justify-center text-center bg-indigo-50/50 hover:bg-indigo-50 transition-colors group overflow-hidden cursor-pointer">
               {uploadingResume && (
                 <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center">
                   <Loader2 className="w-8 h-8 text-indigo-600 animate-spin mb-2" />
@@ -104,7 +104,7 @@ export default function DocumentsForm({ data, onSave, saving, hideHeader }) {
             </div>
 
             {/* Document Upload */}
-            <div className="relative border border-dashed border-slate-300 rounded-xl p-6 flex flex-col items-center justify-center text-center bg-slate-50 hover:bg-slate-100 transition-colors group overflow-hidden md:col-span-2">
+            <div className="relative border border-dashed border-slate-300 rounded-xl p-4 sm:p-5 flex flex-col items-center justify-center text-center bg-slate-50 hover:bg-slate-100 transition-colors group overflow-hidden md:col-span-2">
               <div className="w-full text-left mb-4">
                 <label className="text-sm font-medium text-slate-700 mb-1.5 block">Select Document Type</label>
                 <select
@@ -163,7 +163,7 @@ export default function DocumentsForm({ data, onSave, saving, hideHeader }) {
           </div>
         </div>
 
-        <div className="pt-6 border-t border-slate-100 flex justify-end">
+        <div className="pt-4 border-t border-slate-100 flex justify-end">
           <button
             type="submit"
             disabled={saving || uploadingResume}
