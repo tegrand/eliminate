@@ -94,10 +94,10 @@ export default function ClientWorkerProfilePage() {
                     <div className="absolute inset-0 z-10 pointer-events-none">
                       <svg viewBox="0 0 120 120" className="w-full h-full">
                         <defs>
-                          <path id="textPath" d="M -10 76 A 54 54 0 0 0 130 76" />
+                          <path id="textPath" d="M 12 84 A 53 53 0 0 0 108 84" />
                         </defs>
                         <path 
-                          d="M -10 76 A 60 60 0 0 0 130 76" 
+                          d="M 5 84 A 60 60 0 0 0 115 84" 
                           fill="none" 
                           stroke={isVerified ? "#1dbf73" : "#828282"} 
                           strokeWidth="28" 
