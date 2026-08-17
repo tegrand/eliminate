@@ -72,9 +72,7 @@ export default function ClientWorkerProfilePage() {
     <div className="w-full min-h-[calc(100vh-4rem)] bg-[#f7f7f7] overflow-y-auto py-6 px-4 sm:px-6 font-sans text-[#404145]">
       <div className="max-w-[1200px] mx-auto">
         
-        <div className="mb-6">
-          <AdvertisementBanner slotName="page" variant="standard" />
-        </div>
+        <AdvertisementBanner slotName="page" variant="standard" />
 
         <div className="flex flex-col md:flex-row gap-6">
           
