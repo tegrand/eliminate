@@ -227,40 +227,19 @@ export default function ClientWorkerProfilePage() {
                 )}
               </div>
 
-              {(worker.emergencyContactName || worker.emergencyContactPhone) && (
-                <div className="mt-6 pt-6 border-t border-[#e4e5e7]">
-                  <h3 className="text-sm font-bold text-[#404145] mb-4 uppercase tracking-wide flex items-center gap-2">
-                    <Heart className="w-4 h-4 text-rose-500" /> Emergency Contact
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-rose-50/50 p-4 rounded-xl border border-rose-100">
-                    <div>
-                      <span className="text-xs text-[#74767e] uppercase tracking-wide font-semibold block mb-1">Name</span>
-                      <span className="text-sm text-[#404145] font-medium">{worker.emergencyContactName || 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-xs text-[#74767e] uppercase tracking-wide font-semibold block mb-1">Phone</span>
-                      <span className="text-sm text-[#404145] font-medium">{worker.emergencyContactPhone || 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-xs text-[#74767e] uppercase tracking-wide font-semibold block mb-1">Relation</span>
-                      <span className="text-sm text-[#404145] font-medium">{worker.emergencyContactRelation || 'N/A'}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Resume / Portfolio */}
             <div className="bg-white border border-[#e4e5e7] rounded p-6">
               <h2 className="text-xl font-bold text-[#404145] mb-6">Resume / CV</h2>
               {worker.resumeUrl ? (
-                <div className="flex items-center justify-between p-4 border border-[#e4e5e7] rounded hover:shadow-sm transition-shadow">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-[#ffb33e]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border border-[#e4e5e7] rounded hover:shadow-sm transition-shadow">
+                  <div className="flex items-center gap-4 overflow-hidden">
+                    <div className="w-12 h-12 shrink-0 bg-gray-100 rounded flex items-center justify-center text-[#ffb33e]">
                       <FileText className="w-6 h-6" />
                     </div>
-                    <div>
-                      <h4 className="font-bold text-[#404145]">{name}_Resume.pdf</h4>
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-[#404145] truncate">{name}_Resume.pdf</h4>
                       <p className="text-xs text-[#74767e]">PDF Document</p>
                     </div>
                   </div>
@@ -268,7 +247,7 @@ export default function ClientWorkerProfilePage() {
                     href={worker.resumeUrl.startsWith('http') ? worker.resumeUrl : `http://localhost:5000${worker.resumeUrl.startsWith('/') ? '' : '/'}${worker.resumeUrl}`} 
                     target="_blank" 
                     rel="noreferrer"
-                    className="flex items-center gap-2 p-2 px-4 border border-[#e4e5e7] rounded text-[#74767e] hover:bg-gray-50 hover:text-[#404145] font-semibold text-sm transition-colors"
+                    className="flex items-center justify-center sm:justify-start gap-2 p-2 px-4 border border-[#e4e5e7] rounded text-[#74767e] hover:bg-gray-50 hover:text-[#404145] font-semibold text-sm transition-colors w-full sm:w-auto"
                   >
                     View Resume <Download className="w-4 h-4 ml-1" />
                   </a>
