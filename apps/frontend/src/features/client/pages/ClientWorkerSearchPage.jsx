@@ -99,24 +99,24 @@ export default function ClientWorkerSearchPage() {
               <div className="flex items-center gap-3 mb-6">
                 {/* Search Input */}
                 <div className="flex-1 relative flex items-center">
-                  <Search className="w-4.5 h-4.5 text-slate-400 absolute left-4" />
+                  <Search className="w-5 h-5 text-slate-800 absolute left-4.5" />
                   <input
                     type="text"
                     value={filters.search}
                     onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
                     placeholder="Search by name, location, skill..."
-                    className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-full text-sm outline-none focus:ring-2 focus:ring-blue-50 focus:border-blue-400 transition-all text-slate-700 placeholder-slate-400 shadow-sm"
+                    className="w-full pl-12 pr-4 py-2.5 bg-white border border-slate-200 rounded-full text-sm outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all text-slate-700 placeholder-slate-400"
                   />
                 </div>
 
                 {/* Filters Trigger Button */}
                 <button
                   onClick={() => setIsFilterModalOpen(true)}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-blue-50/70 hover:bg-blue-100/70 text-blue-600 rounded-full text-sm font-bold border border-blue-100/30 shadow-sm transition-all shrink-0 cursor-pointer"
+                  className="flex items-center gap-2 px-5 py-2.5 bg-[#eef2ff] hover:bg-[#e0e7ff] text-[#2563eb] rounded-full text-sm font-semibold transition-all shrink-0 cursor-pointer"
                 >
-                  <Filter className="w-4 h-4 text-blue-600" />
+                  <Filter className="w-4 h-4 text-[#2563eb]" />
                   <span>Filters</span>
-                  <ChevronDown className="w-4 h-4 text-blue-600" />
+                  <ChevronDown className="w-4 h-4 text-[#2563eb]" />
                 </button>
               </div>
 
