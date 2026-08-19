@@ -97,7 +97,7 @@ export default function WorkerProfileStatus() {
         </div>
 
         {/* Edit Profile */}
-        <Link to={ROUTES.WORKER_SETTINGS} className="block w-full mt-3 relative z-10">
+        <Link to={ROUTES.WORKER_PROFILE} className="block w-full mt-3 relative z-10">
           <button className="w-full px-4 py-2.5 bg-white text-slate-700 font-medium border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 shadow-sm text-sm">
             <Edit3 className="w-4 h-4 text-slate-400" />
             Edit Profile
@@ -134,7 +134,7 @@ export default function WorkerProfileStatus() {
       </div>
 
       {/* ─── Work Details Card ─── */}
-      <Link to={ROUTES.WORKER_SETTINGS} className="block">
+      <Link to={ROUTES.WORKER_PROFILE} className="block">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
             <Briefcase className="w-5 h-5 text-blue-500" />
@@ -158,7 +158,7 @@ export default function WorkerProfileStatus() {
       </Link>
 
       {/* ─── Skills & Expertise Card ─── */}
-      <Link to={ROUTES.WORKER_SETTINGS} className="block">
+      <Link to={ROUTES.WORKER_PROFILE} className="block">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center shrink-0">
             <Award className="w-5 h-5 text-teal-500" />
@@ -176,7 +176,7 @@ export default function WorkerProfileStatus() {
       </Link>
 
       {/* ─── Languages Card ─── */}
-      <Link to={ROUTES.WORKER_SETTINGS} className="block">
+      <Link to={ROUTES.WORKER_PROFILE} className="block">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-center gap-4">
           <div className="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center shrink-0">
             <Globe className="w-5 h-5 text-pink-500" />
@@ -210,7 +210,7 @@ export default function WorkerProfileStatus() {
           <h4 className="text-sm font-bold text-white">Want to get more calls?</h4>
           <p className="text-[11px] text-white/70 mt-0.5 leading-snug">Add more skills and details to your profile to rank higher in client searches.</p>
         </div>
-        <Link to={ROUTES.WORKER_SETTINGS} className="shrink-0 relative z-10">
+        <Link to={ROUTES.WORKER_PROFILE} className="shrink-0 relative z-10">
           <button className="bg-white text-indigo-600 text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1 whitespace-nowrap shadow-sm hover:bg-indigo-50 transition-colors">
             Update Profile
             <ChevronRight className="w-3.5 h-3.5" />
