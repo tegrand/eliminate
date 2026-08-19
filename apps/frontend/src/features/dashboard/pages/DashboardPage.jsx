@@ -62,9 +62,10 @@ export default function DashboardPage() {
   };
 
   const isClientOrWorkerOrAgency = ["WORKER", "CLIENT", "AGENCY"].includes(user?.profileType);
+  const isClient = user?.profileType === "CLIENT";
 
   return (
-    <div className="w-full pt-2 pb-6 space-y-4 animate-fade-in relative">
+    <div className={`w-full ${isClient ? "pt-0" : "pt-2"} pb-6 space-y-4 animate-fade-in relative`}>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
         {user?.profileType !== "WORKER" && user?.profileType !== "CLIENT" ? (
           <div>

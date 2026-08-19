@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
 import PageContainer from "../components/layout/PageContainer";
+import BottomNav from "../components/layout/BottomNav";
 import { SidebarProvider } from "../contexts/SidebarContext";
 
 export default function DashboardLayout() {
@@ -18,6 +19,7 @@ export default function DashboardLayout() {
           </PageContainer>
         </div>
       </div>
+      <BottomNav />
     </SidebarProvider>
   );
 }
