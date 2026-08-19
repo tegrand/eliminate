@@ -30,18 +30,31 @@ export default function WorkerSearchCard({ worker }) {
   };
 
   return (
-    <div className="bg-white rounded-[32px] p-5 border border-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.015)] hover:shadow-md hover:border-slate-200/80 transition-all duration-305 group relative overflow-hidden w-full max-w-[550px]">
+    <div className="bg-white rounded-[32px] p-5 border border-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.015)] hover:shadow-md hover:border-slate-200/80 transition-all duration-300 group relative overflow-hidden w-full max-w-[550px]">
       
       {/* Premium Background Mesh Gradient Wave */}
       <div className="absolute bottom-0 right-0 w-36 h-36 bg-[radial-gradient(circle_at_bottom_right,_var(--tw-gradient-stops))] from-blue-100/40 via-purple-100/10 to-transparent rounded-br-[32px] pointer-events-none" />
+
+      {/* Verified / Unverified Badge in Top-Right (Absolute Positioned to prevent name truncation) */}
+      {isVerified ? (
+        <div className="absolute top-5 right-5 flex items-center gap-1 px-3 py-1 bg-[#eff6ff] text-[#2563eb] text-xs font-semibold rounded-full border border-blue-100/60 shrink-0 select-none">
+          <CheckCircle2 className="w-3.5 h-3.5 text-[#2563eb]" />
+          Verified
+        </div>
+      ) : (
+        <div className="absolute top-5 right-5 flex items-center gap-1 px-3 py-1 bg-slate-50 text-slate-500 text-xs font-semibold rounded-full border border-slate-200 shrink-0 select-none">
+          <XCircle className="w-3.5 h-3.5 text-slate-400" />
+          Unverified
+        </div>
+      )}
 
       <div className="flex gap-4 sm:gap-5 items-start">
 
         {/* Avatar with Availability Dot */}
         <div className="relative shrink-0">
-          <div className="w-[92px] h-[92px] rounded-[24px] bg-gradient-to-br from-blue-50 to-indigo-50 border border-indigo-100/50 flex items-center justify-center text-blue-600 font-extrabold text-2xl overflow-hidden shadow-inner">
+          <div className="w-[88px] h-[88px] rounded-[18px] bg-gradient-to-br from-blue-50 to-indigo-50 border border-indigo-100/50 flex items-center justify-center text-blue-600 font-extrabold text-2xl overflow-hidden shadow-inner">
             {avatar ? (
-              <img src={getAvatarUrl(avatar)} alt={name} className="w-full h-full object-cover rounded-[24px]" />
+              <img src={getAvatarUrl(avatar)} alt={name} className="w-full h-full object-cover rounded-[18px]" />
             ) : initials}
           </div>
           {/* Availability Badge (Green Dot) */}
@@ -49,28 +62,13 @@ export default function WorkerSearchCard({ worker }) {
         </div>
 
         {/* Content Details */}
-        <div className="flex-1 min-w-0 h-[92px] flex flex-col justify-between py-0.5">
-          <div className="flex justify-between items-start w-full gap-2">
-            <div className="flex items-center gap-1.5 min-w-0">
-              <h3 className="text-base sm:text-[17px] font-bold text-slate-800 lowercase truncate leading-none">
-                {name}
-              </h3>
-              {isVerified && (
-                <BadgeCheck className="w-[19px] h-[19px] text-white fill-blue-600 shrink-0" />
-              )}
-            </div>
-
-            {/* Verified / Unverified Badge in Top-Right */}
-            {isVerified ? (
-              <div className="flex items-center gap-1 px-2.5 py-0.5 bg-[#eff6ff] text-blue-600 text-[11px] font-semibold rounded-full border border-blue-100 shrink-0 select-none">
-                <CheckCircle2 className="w-3 h-3 text-blue-600" />
-                Verified
-              </div>
-            ) : (
-              <div className="flex items-center gap-1 px-2.5 py-0.5 bg-slate-50 text-slate-500 text-[11px] font-semibold rounded-full border border-slate-200 shrink-0 select-none">
-                <XCircle className="w-3 h-3 text-slate-400" />
-                Unverified
-              </div>
+        <div className="flex-1 min-w-0 h-[88px] flex flex-col justify-between py-0.5">
+          <div className="flex items-center gap-1.5 min-w-0 pr-[85px]">
+            <h3 className="text-base sm:text-[17px] font-bold text-slate-800 lowercase truncate leading-none">
+              {name}
+            </h3>
+            {isVerified && (
+              <BadgeCheck className="w-[19px] h-[19px] text-white fill-blue-600 shrink-0" />
             )}
           </div>
 
@@ -88,7 +86,7 @@ export default function WorkerSearchCard({ worker }) {
           <div className="flex items-center gap-2.5 text-xs text-slate-400 font-semibold leading-none">
             <div className="flex items-center gap-1 min-w-0">
               <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-              <span className="truncate">{location}</span>
+              <span>{location}</span>
             </div>
             <span className="text-slate-200 shrink-0">|</span>
             <div className="flex items-center gap-1 shrink-0">
@@ -101,10 +99,10 @@ export default function WorkerSearchCard({ worker }) {
 
       {/* Skill + Type Tags */}
       <div className="mt-4 flex flex-wrap gap-2">
-        <span className="px-3.5 py-1 bg-blue-50/70 text-blue-600 text-xs font-semibold rounded-full border border-blue-100/10">
+        <span className="px-3.5 py-1 bg-[#eff6ff] text-[#2563eb] text-xs font-semibold rounded-full border border-blue-100/10">
           {skill}
         </span>
-        <span className={`px-3.5 py-1 text-xs font-semibold rounded-full border ${isAgency ? "bg-purple-50/70 text-purple-650 border-purple-100/10" : "bg-orange-50/70 text-orange-650 border-orange-100/10"}`}>
+        <span className={`px-3.5 py-1 text-xs font-semibold rounded-full border ${isAgency ? "bg-purple-50/70 text-purple-650 border-purple-100/10" : "bg-[#fff7ed] text-[#ea580c] border-orange-100/10"}`}>
           {isAgency ? "Agency Worker" : "Independent"}
         </span>
       </div>
