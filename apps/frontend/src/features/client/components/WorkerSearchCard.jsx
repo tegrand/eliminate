@@ -32,8 +32,26 @@ export default function WorkerSearchCard({ worker }) {
   return (
     <div className="bg-white rounded-[24px] p-3 border border-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.015)] hover:shadow-md hover:border-slate-200/80 transition-all duration-300 group relative overflow-hidden w-full max-w-[550px]">
       
-      {/* Premium Background Mesh Gradient Wave */}
-      <div className="absolute bottom-0 right-0 w-36 h-36 bg-[radial-gradient(circle_at_bottom_right,_var(--tw-gradient-stops))] from-blue-100/40 via-purple-100/10 to-transparent rounded-br-[24px] pointer-events-none" />
+      {/* Premium Overlapping Background Wave SVG */}
+      <svg className="absolute bottom-0 right-0 w-44 h-32 pointer-events-none select-none" viewBox="0 0 176 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 128C50 70 100 45 176 70V128H0Z" fill="url(#paint0_linear)" opacity="0.08" />
+        <path d="M40 128C80 95 120 80 176 90V128H40Z" fill="url(#paint1_linear)" opacity="0.11" />
+        <path d="M80 128C110 110 140 105 176 108V128H80Z" fill="url(#paint2_linear)" opacity="0.14" />
+        <defs>
+          <linearGradient id="paint0_linear" x1="176" y1="70" x2="0" y2="128" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#818cf8" />
+            <stop offset="1" stopColor="#3b82f6" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="paint1_linear" x1="176" y1="90" x2="40" y2="128" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#6366f1" />
+            <stop offset="1" stopColor="#a855f7" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="paint2_linear" x1="176" y1="108" x2="80" y2="128" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#3b82f6" />
+            <stop offset="1" stopColor="#60a5fa" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+      </svg>
 
       {/* Verified / Unverified Badge in Top-Right (Absolute Positioned to prevent name truncation) */}
       {isVerified ? (

@@ -83,7 +83,7 @@ export default function ClientWorkerSearchPage() {
     <div className="w-full flex flex-col animate-fade-in h-[calc(100vh-4rem)] overflow-y-auto scrollbar-hide">
           
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-3">
         <h1 className="text-base sm:text-xl font-bold text-gray-900 tracking-tight flex items-center gap-2.5">
           <Users className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
           Workforce Search
