@@ -66,8 +66,7 @@ export default function ClientWorkerProfilePage() {
   const allSkills = worker.skills?.length > 0 ? worker.skills.map(s => s.skill?.name).filter(Boolean) : [skillName];
 
   return (
-    <div className="w-full min-h-[calc(100vh-4rem)] bg-slate-50 overflow-y-auto py-4 px-4 sm:px-6 font-sans text-slate-650">
-      <div className="max-w-[1250px] mx-auto animate-fade-in">
+    <div className="max-w-[1250px] mx-auto animate-fade-in font-sans text-slate-650">
         
         {/* Back navigation */}
         <Link to="/search-workers" className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors mb-4 cursor-pointer">
@@ -295,7 +294,6 @@ export default function ClientWorkerProfilePage() {
 
           </div>
 
-        </div>
       </div>
     </div>
   );
