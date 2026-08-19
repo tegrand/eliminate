@@ -1,4 +1,4 @@
-import { MapPin, Briefcase, CheckCircle2, XCircle, User } from "lucide-react";
+import { MapPin, Briefcase, CheckCircle2, XCircle, Eye, Phone } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function WorkerSearchCard({ worker }) {
@@ -23,69 +23,86 @@ export default function WorkerSearchCard({ worker }) {
   const avatar = worker.user?.avatar || worker.profilePhoto;
   const initials = name !== "Unknown" ? name.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase() : "W";
 
-  // Rating removed
-
-  // Tag pills: skill + agency/independent
-  const tags = [
-    { label: skill },
-    { label: isAgency ? "Agency Worker" : "Independent" },
-  ];
+  const getAvatarUrl = (src) => {
+    if (!src) return null;
+    if (src.startsWith('http') || src.startsWith('data:')) return src;
+    return `http://localhost:5000${src.startsWith('/') ? '' : '/'}${src}`;
+  };
 
   return (
-    <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-sm hover:shadow-md transition-all group relative max-w-[550px]">
-      <div className="flex flex-col sm:flex-row gap-3.5 sm:gap-5 items-start sm:items-center">
+    <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-100 shadow-[0_4px_24px_rgba(0,0,0,0.015)] hover:shadow-lg hover:border-slate-200/80 transition-all duration-300 group relative overflow-hidden w-full max-w-[550px]">
+      
+      {/* Premium Background Mesh Gradient Wave */}
+      <div className="absolute bottom-0 right-0 w-32 h-32 bg-[radial-gradient(circle_at_bottom_right,_var(--tw-gradient-stops))] from-blue-100/50 via-purple-100/20 to-transparent rounded-br-[28px] pointer-events-none" />
 
-        {/* Avatar */}
-        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0 text-indigo-600 font-bold text-lg">
-          {avatar ? (
-            <img src={avatar.startsWith('http') || avatar.startsWith('data:') ? avatar : `http://localhost:5000${avatar.startsWith('/') ? '' : '/'}${avatar}`} alt={name} className="w-full h-full object-cover rounded-xl" />
-          ) : initials}
+      <div className="flex gap-4 sm:gap-5 items-start">
+
+        {/* Avatar with Availability Dot */}
+        <div className="relative shrink-0">
+          <div className="w-20 h-20 rounded-[20px] bg-gradient-to-br from-blue-50 to-indigo-50 border border-indigo-100/50 flex items-center justify-center text-blue-600 font-extrabold text-2xl overflow-hidden shadow-inner">
+            {avatar ? (
+              <img src={getAvatarUrl(avatar)} alt={name} className="w-full h-full object-cover rounded-[20px]" />
+            ) : initials}
+          </div>
+          {/* Availability Badge (Mocked Green Dot) */}
+          <span className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full shadow-sm z-10" />
         </div>
 
-        <div className="flex-1 min-w-0 w-full">
-          <div className="flex items-center justify-between gap-2 mb-1">
-            <h3 className="text-base sm:text-lg font-bold text-gray-900 truncate pr-2">
-              {name}
-            </h3>
-
-            {/* Verified / Unverified Badge */}
-            <div className="flex items-center gap-2 shrink-0">
-              {isVerified ? (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-100">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  Verified
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-gray-50 text-gray-600 text-xs font-semibold border border-gray-200">
-                  <XCircle className="w-3.5 h-3.5" />
-                  Unverified
-                </span>
+        {/* Content Details */}
+        <div className="flex-1 min-w-0">
+          <div className="flex justify-between items-start w-full gap-2">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <h3 className="text-base sm:text-lg font-extrabold text-slate-800 lowercase truncate">
+                {name}
+              </h3>
+              {isVerified && (
+                <CheckCircle2 className="w-4 h-4 text-white fill-blue-600 shrink-0" />
               )}
             </div>
+
+            {/* Verified / Unverified Badge in Top-Right */}
+            {isVerified ? (
+              <div className="flex items-center gap-1 px-2.5 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-full border border-blue-100 shrink-0 capitalize">
+                <CheckCircle2 className="w-3 h-3 text-blue-600" />
+                Verified
+              </div>
+            ) : (
+              <div className="flex items-center gap-1 px-2.5 py-0.5 bg-slate-50 text-slate-500 text-[10px] font-bold rounded-full border border-slate-200 shrink-0 capitalize">
+                <XCircle className="w-3 h-3 text-slate-400" />
+                Unverified
+              </div>
+            )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-sm text-gray-500 mt-2">
+          {/* Skill Title */}
+          <p className="text-sm font-medium text-slate-400 mt-1">{skill}</p>
 
-            {/* Location */}
-            <div className="flex items-center gap-1.5">
-              <MapPin className="w-4 h-4 text-gray-400" />
-              <span className="truncate max-w-[150px]">{location}</span>
+          {/* Rating */}
+          <div className="flex items-center gap-1 mt-2">
+            <span className="text-amber-500 text-sm">★</span>
+            <span className="text-xs font-extrabold text-slate-700">4.8</span>
+            <span className="text-[10px] text-slate-400 font-medium">(32 reviews)</span>
+          </div>
+
+          {/* Location & Experience */}
+          <div className="flex items-center gap-2.5 text-xs text-slate-400 mt-2 font-semibold">
+            <div className="flex items-center gap-1 min-w-0">
+              <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              <span className="truncate">{location}</span>
             </div>
-
-            <div className="w-1 h-1 rounded-full bg-gray-300 hidden sm:block"></div>
-
-            <div className="flex items-center gap-1.5">
-              <Briefcase className="w-4 h-4 text-gray-400" />
+            <span className="text-slate-200 shrink-0">|</span>
+            <div className="flex items-center gap-1 shrink-0">
+              <Briefcase className="w-3.5 h-3.5 text-slate-400" />
               <span>{experience}</span>
             </div>
           </div>
 
-          {/* Skill + Type tags */}
-          <div className="mt-2.5 sm:mt-4 flex flex-wrap gap-2">
-            <span className="px-2.5 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg">
+          {/* Skill + Type Tags */}
+          <div className="mt-4 flex flex-wrap gap-2">
+            <span className="px-3 py-1 bg-blue-50/70 text-blue-600 text-xs font-semibold rounded-full border border-blue-100/10">
               {skill}
             </span>
-            <span className={`px-2.5 py-1 text-xs font-medium rounded-lg ${isAgency ? "bg-purple-50 text-purple-600" : "bg-orange-50 text-orange-600"}`}>
+            <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${isAgency ? "bg-purple-50/70 text-purple-600 border-purple-100/10" : "bg-orange-50/70 text-orange-600 border-orange-100/10"}`}>
               {isAgency ? "Agency Worker" : "Independent"}
             </span>
           </div>
@@ -93,18 +110,19 @@ export default function WorkerSearchCard({ worker }) {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-2.5 sm:gap-3 mt-4 sm:mt-5 w-full">
+      <div className="flex items-center gap-3 mt-5 w-full relative z-10">
         <Link
           to={`/search-workers/${worker.id}`}
-          className="flex-1 py-2.5 text-center bg-white border border-gray-200 text-gray-700 text-sm font-semibold rounded-xl hover:bg-gray-50 hover:text-gray-900 transition-colors"
+          className="flex-1 py-2.5 bg-white border border-slate-200 text-slate-700 text-sm font-bold rounded-2xl hover:bg-slate-50 transition-all flex items-center justify-center gap-2 shadow-[0_2px_6px_rgba(0,0,0,0.01)] cursor-pointer"
         >
+          <Eye className="w-4 h-4 text-slate-500" />
           View Profile
         </Link>
         <a
           href={`tel:${worker.user?.phone || worker.phone || ''}`}
-          className="flex-1 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 shadow-sm shadow-blue-200 transition-colors flex items-center justify-center gap-2"
+          className="flex-1 py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white text-sm font-bold rounded-2xl shadow-md shadow-blue-500/10 hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
         >
-          <User className="w-4 h-4" />
+          <Phone className="w-4 h-4 text-white" />
           Call Now
         </a>
       </div>
