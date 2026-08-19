@@ -96,27 +96,27 @@ export default function ClientWorkerSearchPage() {
         <div className="flex-1 min-w-0 w-full">
               
               {/* Search and Filters Bar */}
-              <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center gap-2 sm:gap-3 mb-6">
                 {/* Search Input */}
                 <div className="flex-1 relative flex items-center">
-                  <Search className="w-5 h-5 text-slate-800 absolute left-4.5" />
+                  <Search className="w-4 h-4 sm:w-5 sm:h-5 text-slate-800 absolute left-3.5 sm:left-4.5" />
                   <input
                     type="text"
                     value={filters.search}
                     onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
                     placeholder="Search by name, location, skill..."
-                    className="w-full pl-12 pr-4 py-2.5 bg-white border border-slate-200 rounded-full text-sm outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all text-slate-700 placeholder-slate-400"
+                    className="w-full pl-10 sm:pl-12 pr-4 py-2 sm:py-2.5 bg-white border border-slate-200 rounded-full text-xs sm:text-sm outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all text-slate-700 placeholder-slate-400"
                   />
                 </div>
 
                 {/* Filters Trigger Button */}
                 <button
                   onClick={() => setIsFilterModalOpen(true)}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-[#eef2ff] hover:bg-[#e0e7ff] text-[#2563eb] rounded-full text-sm font-semibold transition-all shrink-0 cursor-pointer"
+                  className="flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-5 py-2 sm:py-2.5 bg-[#eef2ff] hover:bg-[#e0e7ff] text-[#2563eb] rounded-full text-xs sm:text-sm font-semibold transition-all shrink-0 cursor-pointer"
                 >
-                  <Filter className="w-4 h-4 text-[#2563eb]" />
+                  <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#2563eb]" />
                   <span>Filters</span>
-                  <ChevronDown className="w-4 h-4 text-[#2563eb]" />
+                  <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#2563eb]" />
                 </button>
               </div>
 
