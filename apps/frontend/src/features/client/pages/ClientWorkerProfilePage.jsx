@@ -67,7 +67,7 @@ export default function ClientWorkerProfilePage() {
 
   return (
     <div className="w-full min-h-[calc(100vh-4rem)] bg-slate-50 overflow-y-auto py-6 px-4 sm:px-6 font-sans text-slate-700">
-      <div className="max-w-[1100px] mx-auto">
+      <div className="max-w-[1100px] mx-auto animate-fade-in">
         
         {/* Back navigation */}
         <Link to="/search-workers" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors mb-5 cursor-pointer">
@@ -108,7 +108,7 @@ export default function ClientWorkerProfilePage() {
                     {name}
                   </h1>
                   {isVerified && (
-                    <BadgeCheck className="w-6 h-6 text-white fill-blue-550 shrink-0" />
+                    <BadgeCheck className="w-6 h-6 text-white fill-blue-500 shrink-0" />
                   )}
                 </div>
                 <p className="text-blue-100 text-sm font-semibold mt-1">{skillName}</p>
@@ -137,12 +137,25 @@ export default function ClientWorkerProfilePage() {
           <div className="lg:col-span-2 space-y-6">
             
             {/* About / Description Card */}
-            <div className="bg-white rounded-[24px] p-6 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.01)]">
+            <div className="bg-white rounded-[24px] p-6 border border-slate-100/50 shadow-[0_4px_24px_rgba(0,0,0,0.015)]">
               <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <Info className="w-5 h-5 text-blue-600" />
                 <span>About the Worker</span>
               </h2>
               
+              <div className="mb-5 pb-5 border-b border-slate-100 flex flex-col gap-3">
+                <div className="flex items-start gap-2.5">
+                  <MapPin className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+                  <div>
+                    <span className="text-[10px] text-slate-400 font-bold block uppercase tracking-wider leading-none">Full Address</span>
+                    <span className="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed block mt-1.5">
+                      {[worker.addressLine1, worker.addressLine2, worker.city, worker.district, worker.state, worker.postalCode, worker.country].filter(Boolean).join(", ") || location}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <h3 className="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">Bio</h3>
               {worker.notes ? (
                 <p className="text-sm text-slate-600 whitespace-pre-line leading-relaxed">
                   {worker.notes}
@@ -155,7 +168,7 @@ export default function ClientWorkerProfilePage() {
             </div>
 
             {/* Resume / Portfolio Card */}
-            <div className="bg-white rounded-[24px] p-6 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.01)]">
+            <div className="bg-white rounded-[24px] p-6 border border-slate-100/50 shadow-[0_4px_24px_rgba(0,0,0,0.015)]">
               <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <FileText className="w-5 h-5 text-blue-600" />
                 <span>Resume / CV</span>
@@ -188,21 +201,31 @@ export default function ClientWorkerProfilePage() {
             </div>
 
             {/* Work Details & Travel preferences */}
-            <div className="bg-white rounded-[24px] p-6 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.01)]">
+            <div className="bg-white rounded-[24px] p-6 border border-slate-100/50 shadow-[0_4px_24px_rgba(0,0,0,0.015)]">
               <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <Briefcase className="w-5 h-5 text-blue-600" />
                 <span>Work Preferences</span>
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 bg-slate-50/50 border border-slate-100 rounded-2xl">
-                  <span className="text-xs text-slate-400 font-bold block mb-1 uppercase tracking-wider">Job Type</span>
-                  <span className="text-sm text-slate-700 font-bold">{worker.jobType || skillName}</span>
+                <div className="p-4 bg-slate-50/50 border border-slate-100 rounded-2xl flex items-start gap-3">
+                  <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center shrink-0">
+                    <Zap className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-xs text-slate-400 font-bold block uppercase tracking-wider">Job Type</span>
+                    <span className="text-sm text-slate-700 font-bold mt-0.5 block">{worker.jobType || skillName}</span>
+                  </div>
                 </div>
-                <div className="p-4 bg-slate-50/50 border border-slate-100 rounded-2xl">
-                  <span className="text-xs text-slate-400 font-bold block mb-1 uppercase tracking-wider">Travel Preference</span>
-                  <span className="text-sm text-slate-700 font-bold">
-                    {worker.travelDistance ? `Willing to travel up to ${worker.travelDistance} km` : 'Local work only'}
-                  </span>
+                <div className="p-4 bg-slate-50/50 border border-slate-100 rounded-2xl flex items-start gap-3">
+                  <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center shrink-0">
+                    <MapPin className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-xs text-slate-400 font-bold block uppercase tracking-wider">Travel Preference</span>
+                    <span className="text-sm text-slate-700 font-bold mt-0.5 block">
+                      {worker.travelDistance ? `Willing to travel up to ${worker.travelDistance} km` : 'Local work only'}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -213,38 +236,59 @@ export default function ClientWorkerProfilePage() {
           <div className="space-y-6">
             
             {/* Quick Stats Grid Card */}
-            <div className="bg-white rounded-[24px] p-6 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.01)]">
-              <h2 className="text-lg font-bold text-slate-800 mb-4">Quick Stats</h2>
-              <div className="grid grid-cols-2 gap-3.5">
-                <div className="p-3 bg-slate-50/50 border border-slate-100 rounded-2xl text-center">
-                  <span className="text-[10px] text-slate-400 font-bold block mb-1 uppercase tracking-wider">Experience</span>
-                  <span className="text-sm text-slate-700 font-extrabold">{experience}</span>
+            <div className="bg-white rounded-[24px] p-6 border border-slate-100/50 shadow-[0_4px_24px_rgba(0,0,0,0.015)]">
+              <h2 className="text-base font-extrabold text-slate-800 mb-4 tracking-tight">Quick Stats</h2>
+              <div className="grid grid-cols-2 gap-4">
+                
+                {/* Experience */}
+                <div className="p-3 bg-blue-50/50 border border-blue-100/10 rounded-2xl flex flex-col items-center justify-center text-center">
+                  <div className="w-9 h-9 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 mb-2">
+                    <Award className="w-5 h-5" />
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-none">Experience</span>
+                  <span className="text-sm text-slate-700 font-extrabold mt-1.5">{experience}</span>
                 </div>
+
+                {/* Daily Rate */}
                 {worker.expectedDailyWage && (
-                  <div className="p-3 bg-slate-50/50 border border-slate-100 rounded-2xl text-center">
-                    <span className="text-[10px] text-slate-400 font-bold block mb-1 uppercase tracking-wider">Daily Rate</span>
-                    <span className="text-sm text-blue-600 font-extrabold">₹{worker.expectedDailyWage}</span>
+                  <div className="p-3 bg-emerald-50/40 border border-emerald-100/10 rounded-2xl flex flex-col items-center justify-center text-center">
+                    <div className="w-9 h-9 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 mb-2">
+                      <Briefcase className="w-5 h-5" />
+                    </div>
+                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-none">Daily Rate</span>
+                    <span className="text-sm text-emerald-600 font-extrabold mt-1.5">₹{worker.expectedDailyWage}</span>
                   </div>
                 )}
-                <div className="p-3 bg-slate-50/50 border border-slate-100 rounded-2xl text-center">
-                  <span className="text-[10px] text-slate-400 font-bold block mb-1 uppercase tracking-wider">Age</span>
-                  <span className="text-sm text-slate-700 font-extrabold">
+
+                {/* Age */}
+                <div className="p-3 bg-purple-50/50 border border-purple-100/10 rounded-2xl flex flex-col items-center justify-center text-center">
+                  <div className="w-9 h-9 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 mb-2">
+                    <Calendar className="w-5 h-5" />
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-none">Age</span>
+                  <span className="text-sm text-slate-700 font-extrabold mt-1.5">
                     {worker.dateOfBirth ? (new Date().getFullYear() - new Date(worker.dateOfBirth).getFullYear()) + ' Yrs' : 'N/A'}
                   </span>
                 </div>
-                <div className="p-3 bg-slate-50/50 border border-slate-100 rounded-2xl text-center">
-                  <span className="text-[10px] text-slate-400 font-bold block mb-1 uppercase tracking-wider">Gender</span>
-                  <span className="text-sm text-slate-700 font-extrabold capitalize">{worker.gender?.toLowerCase() || 'N/A'}</span>
+
+                {/* Gender */}
+                <div className="p-3 bg-pink-50/50 border border-pink-100/10 rounded-2xl flex flex-col items-center justify-center text-center">
+                  <div className="w-9 h-9 bg-pink-50 rounded-xl flex items-center justify-center text-pink-600 mb-2">
+                    <User className="w-5 h-5" />
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider leading-none">Gender</span>
+                  <span className="text-sm text-slate-700 font-extrabold capitalize mt-1.5">{worker.gender?.toLowerCase() || 'N/A'}</span>
                 </div>
+
               </div>
             </div>
 
             {/* Skills & Tags Card */}
-            <div className="bg-white rounded-[24px] p-6 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.01)]">
+            <div className="bg-white rounded-[24px] p-6 border border-slate-100/50 shadow-[0_4px_24px_rgba(0,0,0,0.015)]">
               <h3 className="text-base font-bold text-slate-800 mb-3.5">Specialized Skills</h3>
               <div className="flex flex-wrap gap-2">
                 {allSkills.map((s, i) => (
-                  <span key={i} className="px-3 py-1 bg-blue-50/60 text-blue-600 text-xs font-bold rounded-full border border-blue-100/10">
+                  <span key={i} className="px-3 py-1 bg-blue-50/70 text-blue-600 text-xs font-bold rounded-full border border-blue-100/10">
                     {s}
                   </span>
                 ))}
@@ -263,23 +307,29 @@ export default function ClientWorkerProfilePage() {
             </div>
 
             {/* Verification checklist card */}
-            <div className="bg-white rounded-[24px] p-6 border border-slate-100 shadow-[0_4px_20px_rgba(0,0,0,0.01)]">
+            <div className="bg-white rounded-[24px] p-6 border border-slate-100/50 shadow-[0_4px_24px_rgba(0,0,0,0.015)]">
               <h3 className="text-base font-bold text-slate-800 mb-4">Verification Check</h3>
-              <ul className="space-y-3.5">
+              <ul className="space-y-4">
                 <li className="flex items-center gap-3 text-sm font-semibold text-slate-600">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 fill-emerald-500/10 shrink-0" />
+                  <div className="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-5 h-5" />
+                  </div>
                   <span>Phone Number Verified</span>
                 </li>
                 <li className="flex items-center gap-3 text-sm font-semibold text-slate-600">
                   {isVerified ? (
                     <>
-                      <CheckCircle2 className="w-5 h-5 text-emerald-500 fill-emerald-500/10 shrink-0" />
+                      <div className="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="w-5 h-5" />
+                      </div>
                       <span>Identity Verified (ID Card)</span>
                     </>
                   ) : (
                     <>
-                      <Clock className="w-5 h-5 text-amber-500 shrink-0" />
-                      <span className="text-slate-400">Identity Verification Pending</span>
+                      <div className="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center shrink-0">
+                        <Clock className="w-5 h-5" />
+                      </div>
+                      <span className="text-slate-400 font-medium">Identity Verification Pending</span>
                     </>
                   )}
                 </li>
