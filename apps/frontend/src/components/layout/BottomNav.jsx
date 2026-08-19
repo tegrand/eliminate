@@ -30,7 +30,7 @@ export default function BottomNav() {
   };
 
   const getSettingsPath = () => {
-    if (profileType === "CLIENT") return `${ROUTES.DASHBOARD}?tab=password`;
+    if (profileType === "CLIENT") return ROUTES.CLIENT_PROFILE;
     if (profileType === "WORKER") return ROUTES.WORKER_SETTINGS;
     if (profileType === "AGENCY") return ROUTES.AGENCY_SETTINGS;
     if (profileType === "SUPER_ADMIN") return ROUTES.SETTINGS;
