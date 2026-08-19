@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Users, Loader2, Filter, X } from "lucide-react";
+import { Users, Loader2, Filter, X, Search, ChevronDown } from "lucide-react";
 import WorkerSearchFilters from "../components/WorkerSearchFilters";
 import WorkerSearchCard from "../components/WorkerSearchCard";
 import { workerApi } from "../../worker/api/worker.api";
@@ -95,14 +95,28 @@ export default function ClientWorkerSearchPage() {
         {/* Results Grid */}
         <div className="flex-1 min-w-0 w-full">
               
-              {/* Results count bar */}
-              <div className="bg-white rounded-xl border border-gray-200 shadow-sm px-5 py-3 mb-6 flex items-center">
+              {/* Search and Filters Bar */}
+              <div className="flex items-center gap-3 mb-6">
+                {/* Search Input */}
+                <div className="flex-1 relative flex items-center">
+                  <Search className="w-4.5 h-4.5 text-slate-400 absolute left-4" />
+                  <input
+                    type="text"
+                    value={filters.search}
+                    onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                    placeholder="Search by name, location, skill..."
+                    className="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-full text-sm outline-none focus:ring-2 focus:ring-blue-50 focus:border-blue-400 transition-all text-slate-700 placeholder-slate-400 shadow-sm"
+                  />
+                </div>
+
+                {/* Filters Trigger Button */}
                 <button
                   onClick={() => setIsFilterModalOpen(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg text-sm font-bold shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5"
+                  className="flex items-center gap-2 px-5 py-2.5 bg-blue-50/70 hover:bg-blue-100/70 text-blue-600 rounded-full text-sm font-bold border border-blue-100/30 shadow-sm transition-all shrink-0 cursor-pointer"
                 >
-                  <Filter className="w-4 h-4" />
-                  Filters
+                  <Filter className="w-4 h-4 text-blue-600" />
+                  <span>Filters</span>
+                  <ChevronDown className="w-4 h-4 text-blue-600" />
                 </button>
               </div>
 
