@@ -29,6 +29,13 @@ export const login = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, "Login successful", { accessToken, user });
 });
 
+export const socialLogin = asyncHandler(async (req, res) => {
+  const meta = { ipAddress: req.ip, userAgent: req.headers["user-agent"] };
+  const { accessToken, refreshToken, user } = await authService.socialLogin(req.body, meta);
+  setRefreshTokenCookie(res, refreshToken);
+  return ApiResponse.success(res, "Login successful", { accessToken, user });
+});
+
 export const refreshToken = asyncHandler(async (req, res) => {
   const token = req.cookies.refreshToken;
   if (!token) {

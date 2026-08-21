@@ -20,8 +20,8 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
-// Public authenticated route — any logged-in user can see active ads
-router.get("/", authenticate, adController.getActiveAds);
+// Public route — anyone can see active ads
+router.get("/", adController.getActiveAds);
 
 // Super Admin only routes
 router.get("/admin", authenticate, authorize("SUPER_ADMIN"), adController.getAllAds);

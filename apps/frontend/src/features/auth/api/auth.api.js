@@ -5,6 +5,10 @@ export const authApi = {
     return api.post("/auth/login", credentials);
   },
 
+  socialLogin: async (data) => {
+    return api.post("/auth/social", data);
+  },
+
   registerClient: async (data) => {
     const payload = { ...data, accountType: "CLIENT" };
     return api.post("/auth/register", payload);

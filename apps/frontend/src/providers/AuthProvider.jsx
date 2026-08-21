@@ -119,20 +119,35 @@ export default function AuthProvider({ children }) {
     return result;
   };
 
-  const setupRecaptcha = (containerId) => {
-    if (!window.recaptchaVerifier) {
+  const requestOTP = async (phoneNumber, containerId = 'recaptcha-container') => {
+    try {
+      // Always clear any existing verifier to prevent stale DOM nodes in React
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = null;
+      }
+      
+      // Ensure the container exists and is completely empty
+      const container = document.getElementById(containerId);
+      if (!container) {
+        throw new Error("Recaptcha container not found in DOM.");
+      }
+      container.innerHTML = '';
+
       window.recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
         size: 'invisible'
       });
-    }
-  };
 
-  const requestOTP = async (phoneNumber, containerId = 'recaptcha-container') => {
-    setupRecaptcha(containerId);
-    const appVerifier = window.recaptchaVerifier;
-    const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
-    window.confirmationResult = confirmationResult;
-    return confirmationResult;
+      const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier);
+      window.confirmationResult = confirmationResult;
+      return confirmationResult;
+    } catch (error) {
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = null;
+      }
+      throw error;
+    }
   };
 
   const verifyOTP = async (otp) => {

@@ -3,6 +3,7 @@ import crypto from "crypto";
 
 import prisma from "../../config/prisma.js";
 import authConfig from "../../config/auth.config.js";
+import { firebaseAuth } from "../../config/firebase.js";
 import AppError from "../../shared/errors/app-error.js";
 import { generateAccessToken, generateRefreshToken, parseExpToMs, verifyRefreshToken } from "./auth.utils.js";
 
@@ -304,6 +305,102 @@ export const login = async (data, meta) => {
         break;
       default:
         throw new AppError("Invalid account status.", 403);
+    }
+  }
+
+  return issueTokensAndUpdateUser(user, meta, "LOGIN");
+};
+
+export const socialLogin = async (data, meta) => {
+  const { token, role: accountType, name } = data;
+
+  if (!token) throw new AppError("Token is required", 400);
+
+  let decodedToken;
+  try {
+    if (!firebaseAuth) {
+        throw new AppError("Firebase Admin not configured on server", 500);
+    }
+    decodedToken = await firebaseAuth.verifyIdToken(token);
+  } catch (error) {
+    throw new AppError("Invalid or expired Firebase token", 401);
+  }
+
+  let email = decodedToken.email;
+  const phone = decodedToken.phone_number;
+
+  if (!email && !phone) {
+    throw new AppError("Token does not contain email or phone number", 400);
+  }
+
+  if (!email) {
+    email = `${phone.replace('+', '')}@eliminate.local`;
+  }
+
+  const normalizedEmail = email.toLowerCase();
+
+  let user = await prisma.user.findUnique({
+    where: { email: normalizedEmail },
+    select: {
+      id: true,
+      status: true,
+      profileType: true,
+      role: { select: { id: true, name: true, displayName: true } },
+    }
+  });
+
+  if (!user) {
+    if (!accountType) {
+        throw new AppError("Account not found. Please sign up first.", 404);
+    }
+
+    const fakePassword = crypto.randomBytes(16).toString("hex");
+    const registrationData = {
+      email: normalizedEmail,
+      password: fakePassword,
+      accountType,
+      phone: phone || null,
+    };
+    
+    if (accountType === 'AGENCY') {
+        registrationData.agencyName = name;
+        registrationData.ownerName = name;
+    } else if (accountType === 'CLIENT') {
+        registrationData.contactPerson = name;
+    } else {
+        registrationData.fullName = name;
+    }
+
+    const newUser = await register(registrationData);
+    
+    user = await prisma.user.findUnique({
+      where: { id: newUser.id },
+      select: {
+        id: true,
+        status: true,
+        profileType: true,
+        role: { select: { id: true, name: true, displayName: true } },
+      }
+    });
+  }
+
+  if (user.profileType === "WORKER" || user.profileType === "AGENCY") {
+    switch (user.status) {
+      case "SUSPENDED": throw new AppError("Your account has been suspended.", 403);
+      case "REJECTED": throw new AppError("Your account has been rejected.", 403);
+      case "DELETED": throw new AppError("Account not available.", 403);
+      case "PENDING":
+      case "ACTIVE": break;
+      default: throw new AppError("Invalid account status.", 403);
+    }
+  } else {
+    switch (user.status) {
+      case "PENDING": throw new AppError("Your account is pending approval.", 403);
+      case "SUSPENDED": throw new AppError("Your account has been suspended.", 403);
+      case "REJECTED": throw new AppError("Your account has been rejected.", 403);
+      case "DELETED": throw new AppError("Account not available.", 403);
+      case "ACTIVE": break;
+      default: throw new AppError("Invalid account status.", 403);
     }
   }
 
