@@ -7,6 +7,7 @@ import { Button } from "../../../components/ui/button";
 import { ArrowLeft, Users, CheckCircle, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "../../../hooks/useAuth";
+import SocialSignupOptions from "../components/SocialSignupOptions";
 
 const KERALA_DISTRICTS = [
   "Thiruvananthapuram", "Kollam", "Pathanamthitta", "Alappuzha", "Kottayam", 
@@ -166,6 +167,8 @@ export default function WorkerSignupPage() {
             </Button>
           </div>
         </form>
+        
+        <SocialSignupOptions role="WORKER" />
       </div>
     </div>
   );

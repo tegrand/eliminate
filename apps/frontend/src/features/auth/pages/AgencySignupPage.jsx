@@ -6,6 +6,7 @@ import { Button } from "../../../components/ui/button";
 import { ArrowLeft, Briefcase, CheckCircle, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "../../../hooks/useAuth";
+import SocialSignupOptions from "../components/SocialSignupOptions";
 
 export default function AgencySignupPage() {
   const navigate = useNavigate();
@@ -188,6 +189,8 @@ export default function AgencySignupPage() {
             </Button>
           </div>
         </form>
+        
+        <SocialSignupOptions role="AGENCY" />
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import { Input } from "../../../components/ui/input";
 import { Button } from "../../../components/ui/button";
 import { ArrowLeft, Building2, User, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
+import SocialSignupOptions from "../components/SocialSignupOptions";
 
 export default function ClientSignupPage() {
   const navigate = useNavigate();
@@ -113,6 +114,8 @@ export default function ClientSignupPage() {
             <Link to={ROUTES.LOGIN} className="text-blue-600 font-semibold hover:underline">Sign in</Link>
           </p>
         </form>
+        
+        <SocialSignupOptions role="CLIENT" />
       </div>
     </div>
   );

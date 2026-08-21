@@ -1,7 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import api from '../api/axios';
-
+import { 
+  signInWithPopup, 
+  GoogleAuthProvider, 
+  RecaptchaVerifier, 
+  signInWithPhoneNumber
+} from 'firebase/auth';
+import { auth } from '../config/firebase';
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -107,6 +113,34 @@ export default function AuthProvider({ children }) {
     }
   };
 
+  const loginWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    return result;
+  };
+
+  const setupRecaptcha = (containerId) => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
+        size: 'invisible'
+      });
+    }
+  };
+
+  const requestOTP = async (phoneNumber, containerId = 'recaptcha-container') => {
+    setupRecaptcha(containerId);
+    const appVerifier = window.recaptchaVerifier;
+    const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+    window.confirmationResult = confirmationResult;
+    return confirmationResult;
+  };
+
+  const verifyOTP = async (otp) => {
+    if (!window.confirmationResult) throw new Error("No confirmation result available.");
+    const result = await window.confirmationResult.confirm(otp);
+    return result;
+  };
+
   // Memoize the context value to prevent unnecessary re-renders of consuming components
   const value = useMemo(
     () => ({
@@ -117,6 +151,9 @@ export default function AuthProvider({ children }) {
       logout,
       refreshSession,
       updateUser,
+      loginWithGoogle,
+      requestOTP,
+      verifyOTP
     }),
     [user, isAuthenticated, isLoading]
   );
