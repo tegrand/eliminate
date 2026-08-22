@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Phone, Mail, ArrowLeft } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
+import Select from "../../../components/ui/select/Select";
 import { useAuth } from "../../../hooks/useAuth";
 import { authApi } from "../api/auth.api";
 import { toast } from "sonner";
@@ -13,6 +14,7 @@ export default function SocialSignupOptions({ role }) {
   const navigate = useNavigate();
   const [signupMethod, setSignupMethod] = useState("social"); // 'social' or 'phone'
   const [fullName, setFullName] = useState("");
+  const [countryCode, setCountryCode] = useState("+91");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -50,8 +52,10 @@ export default function SocialSignupOptions({ role }) {
     if (!phoneNumber) return toast.error("Please enter a phone number");
     
     let formattedPhone = phoneNumber.trim();
-    if (!formattedPhone.startsWith('+')) {
-      formattedPhone = `+91${formattedPhone}`;
+    if (formattedPhone.startsWith('+')) {
+      // If user typed the country code manually, use it
+    } else {
+      formattedPhone = `${countryCode}${formattedPhone}`;
     }
 
     try {
@@ -104,14 +108,35 @@ export default function SocialSignupOptions({ role }) {
                 onChange={(e) => setFullName(e.target.value)}
                 disabled={loading}
               />
-              <Input
-                label="Phone Number"
-                type="tel"
-                placeholder="+91 98765 43210"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                disabled={loading}
-              />
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+                <div className="flex gap-2">
+                  <div className="w-[35%]">
+                    <Select
+                      value={countryCode}
+                      onChange={(e) => setCountryCode(e.target.value)}
+                      disabled={loading}
+                      options={[
+                        { value: "+91", label: "🇮🇳 +91 (IN)" },
+                        { value: "+1", label: "🇺🇸 +1 (US/CA)" },
+                        { value: "+44", label: "🇬🇧 +44 (UK)" },
+                        { value: "+971", label: "🇦🇪 +971 (AE)" },
+                        { value: "+966", label: "🇸🇦 +966 (SA)" },
+                        { value: "+61", label: "🇦🇺 +61 (AU)" },
+                      ]}
+                    />
+                  </div>
+                  <div className="w-[65%]">
+                    <Input
+                      type="tel"
+                      placeholder="98765 43210"
+                      value={phoneNumber}
+                      onChange={(e) => setPhoneNumber(e.target.value)}
+                      disabled={loading}
+                    />
+                  </div>
+                </div>
+              </div>
               <Button fullWidth onClick={handleSendOTP} loading={loading} type="button" className="bg-gray-900 hover:bg-gray-800">
                 Send OTP
               </Button>

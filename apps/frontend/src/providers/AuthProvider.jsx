@@ -123,16 +123,22 @@ export default function AuthProvider({ children }) {
     try {
       // Always clear any existing verifier to prevent stale DOM nodes in React
       if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.clear();
+        try {
+          window.recaptchaVerifier.clear();
+        } catch (e) {
+          console.error("Error clearing recaptcha:", e);
+        }
         window.recaptchaVerifier = null;
       }
       
-      // Ensure the container exists and is completely empty
-      const container = document.getElementById(containerId);
+      // Ensure the container exists and replace it with a fresh clone to completely avoid 'already rendered' errors
+      let container = document.getElementById(containerId);
       if (!container) {
         throw new Error("Recaptcha container not found in DOM.");
       }
-      container.innerHTML = '';
+      
+      const newContainer = container.cloneNode(false);
+      container.parentNode.replaceChild(newContainer, container);
 
       window.recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
         size: 'invisible'

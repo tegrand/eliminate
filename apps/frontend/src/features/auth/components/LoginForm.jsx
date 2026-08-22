@@ -6,13 +6,16 @@ import { Phone, ArrowLeft } from "lucide-react";
 
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
+import Select from "../../../components/ui/select/Select";
 import { Card, CardContent } from "../../../components/ui/card";
 import { ROUTES } from "../../../routes/routePaths";
+import { authApi } from "../api/auth.api";
 
 export default function LoginForm() {
-  const { loginWithGoogle, requestOTP, verifyOTP } = useAuth();
+  const { login, loginWithGoogle, requestOTP, verifyOTP } = useAuth();
   const navigate = useNavigate();
   const [loginMethod, setLoginMethod] = useState("social"); // 'social' or 'phone'
+  const [countryCode, setCountryCode] = useState("+91");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
@@ -21,11 +24,19 @@ export default function LoginForm() {
   const handleGoogleLogin = async () => {
     try {
       setLoading(true);
-      await loginWithGoogle();
+      const result = await loginWithGoogle();
+      
+      const response = await authApi.socialLogin({
+        token: result.user.accessToken,
+      });
+
+      login(response.data.data.user, response.data.data.accessToken);
+
       toast.success("Google login successful!");
       navigate(ROUTES.DASHBOARD);
     } catch (error) {
-      toast.error("Google login failed");
+      console.error("Google login error:", error);
+      toast.error(error.response?.data?.message || "Google login failed");
     } finally {
       setLoading(false);
     }
@@ -35,8 +46,10 @@ export default function LoginForm() {
     if (!phoneNumber) return toast.error("Please enter a phone number");
     
     let formattedPhone = phoneNumber.trim();
-    if (!formattedPhone.startsWith('+')) {
-      formattedPhone = `+91${formattedPhone}`;
+    if (formattedPhone.startsWith('+')) {
+      // If user typed the country code manually, use it
+    } else {
+      formattedPhone = `${countryCode}${formattedPhone}`;
     }
 
     try {
@@ -56,11 +69,19 @@ export default function LoginForm() {
     if (!otp) return toast.error("Please enter OTP");
     try {
       setLoading(true);
-      await verifyOTP(otp);
+      const result = await verifyOTP(otp);
+      
+      const response = await authApi.socialLogin({
+        token: result.user.accessToken,
+      });
+
+      login(response.data.data.user, response.data.data.accessToken);
+
       toast.success("Phone login successful!");
       navigate(ROUTES.DASHBOARD);
     } catch (error) {
-      toast.error("Invalid OTP");
+      console.error("OTP verification error:", error);
+      toast.error(error.response?.data?.message || "Invalid OTP or login failed");
     } finally {
       setLoading(false);
     }
@@ -134,14 +155,35 @@ export default function LoginForm() {
             
             {!otpSent ? (
               <div className="space-y-4">
-                <Input
-                  label="Phone Number"
-                  type="tel"
-                  placeholder="+91 98765 43210"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  disabled={loading}
-                />
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+                  <div className="flex gap-2">
+                    <div className="w-[35%]">
+                      <Select
+                        value={countryCode}
+                        onChange={(e) => setCountryCode(e.target.value)}
+                        disabled={loading}
+                        options={[
+                          { value: "+91", label: "🇮🇳 +91 (IN)" },
+                          { value: "+1", label: "🇺🇸 +1 (US/CA)" },
+                          { value: "+44", label: "🇬🇧 +44 (UK)" },
+                          { value: "+971", label: "🇦🇪 +971 (AE)" },
+                          { value: "+966", label: "🇸🇦 +966 (SA)" },
+                          { value: "+61", label: "🇦🇺 +61 (AU)" },
+                        ]}
+                      />
+                    </div>
+                    <div className="w-[65%]">
+                      <Input
+                        type="tel"
+                        placeholder="98765 43210"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        disabled={loading}
+                      />
+                    </div>
+                  </div>
+                </div>
                 <Button fullWidth onClick={handleSendOTP} loading={loading} type="button" className="bg-gray-900 hover:bg-gray-800">
                   Send OTP
                 </Button>
