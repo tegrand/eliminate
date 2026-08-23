@@ -10,28 +10,28 @@ export default function AgencyOverviewCards({ stats }) {
       title: t('agencyDashboard.activeWorkers') || "Active Workers",
       value: stats?.activeWorkers || "0",
       description: "Workers currently on job",
-      gradient: "from-violet-500 to-purple-600",
+      gradient: "from-violet-400 to-purple-500",
       link: ROUTES.AGENCY_WORKERS,
     },
     {
       title: t('agencyDashboard.availableWorkers') || "Available Workers",
       value: stats?.availableWorkers || "0",
       description: "Workers ready for assignment",
-      gradient: "from-purple-500 to-indigo-600",
+      gradient: "from-purple-400 to-indigo-500",
       link: ROUTES.AGENCY_WORKERS,
     },
     {
       title: t('agencyDashboard.busyWorkers') || "Busy Workers",
       value: stats?.busyWorkers || "0",
       description: "Workers temporarily unavailable",
-      gradient: "from-fuchsia-500 to-violet-600",
+      gradient: "from-fuchsia-400 to-violet-500",
       link: ROUTES.AGENCY_WORKERS,
     },
     {
       title: t('agencyDashboard.pendingRequests') || "Pending Requests",
       value: stats?.pendingRequests || "0",
       description: "Pending worker assignments",
-      gradient: "from-indigo-500 to-purple-600",
+      gradient: "from-indigo-400 to-purple-500",
       link: ROUTES.AGENCY_ASSIGNMENTS,
     }
   ];

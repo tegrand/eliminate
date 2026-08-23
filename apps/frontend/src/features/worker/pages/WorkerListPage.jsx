@@ -90,7 +90,7 @@ export default function WorkerListPage() {
   const availableSkills = [...new Set(rawWorkers.map(w => w.primarySkill?.name || (typeof w.primarySkill === 'string' ? w.primarySkill : null) || w.skills?.[0]?.name).filter(Boolean))];
 
   return (
-    <div className="w-full h-[calc(100vh-4rem)] px-4 pb-4 pt-4 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
+    <div className="w-full min-h-screen pb-20 pt-2 flex flex-col animate-fade-in bg-transparent overflow-y-auto">
       <WorkerToolbar 
         totalWorkers={displayedWorkers.length} 
         availableStatuses={availableStatuses}
