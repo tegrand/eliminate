@@ -103,10 +103,10 @@ export default function AgencyBulkWorkerModal({ isOpen, onClose, onSuccess }) {
             </label>
             <textarea 
               required
-              rows={5}
+              rows={8}
               value={bulkText}
               onChange={(e) => setBulkText(e.target.value)}
-              className="w-full p-3 border border-gray-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none transition-all font-mono whitespace-pre bg-slate-50/50 hover:bg-white"
+              className="w-full p-3.5 border border-gray-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none transition-all font-mono whitespace-pre bg-slate-50/50 hover:bg-white"
               placeholder="Paste CSV rows here (one worker per line)..."
             />
           </div>
