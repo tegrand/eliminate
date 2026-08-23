@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Save } from "lucide-react";
+import { Save, Loader2 } from "lucide-react";
 
 export default function ContactInfoForm({ data, onSave, saving, hideHeader, isActive, onDirty }) {
   const [formData, setFormData] = useState({
@@ -118,6 +118,18 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader, isAc
               />
             </div>
           </div>
+        </div>
+
+        {/* Submit Button */}
+        <div className="pt-3">
+          <button
+            type="submit"
+            disabled={saving}
+            className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold text-sm rounded-xl shadow-md transition-all disabled:opacity-70 cursor-pointer"
+          >
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            <span>{saving ? "Saving Changes..." : "Save Changes"}</span>
+          </button>
         </div>
 
       </form>

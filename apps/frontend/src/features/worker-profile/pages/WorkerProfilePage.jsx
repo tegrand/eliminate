@@ -317,16 +317,16 @@ export default function WorkerProfilePage() {
 
       </div>
 
-      {/* Floating Save Button Container */}
-      <div className={`fixed bottom-0 left-0 right-0 p-3 bg-white/80 backdrop-blur-md border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-50 flex justify-center transition-transform duration-300 ${isDirty ? 'translate-y-0' : 'translate-y-full'}`}>
+      {/* Floating Save Button Container - Always Visible */}
+      <div className="fixed bottom-0 left-0 right-0 p-3 sm:p-4 bg-white/90 backdrop-blur-md border-t border-gray-200 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] z-50 flex justify-center">
         <button
           type="submit"
           form="profile-form"
           disabled={saving}
-          className="w-full max-w-2xl flex justify-center items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-lg hover:shadow-xl transition-all disabled:opacity-70 active:scale-[0.98]"
+          className="w-full max-w-2xl flex justify-center items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-sm sm:text-base font-bold rounded-xl shadow-lg hover:shadow-indigo-500/20 transition-all disabled:opacity-70 active:scale-[0.98] cursor-pointer"
         >
-          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-          {saving ? "Saving Changes..." : "Save Changes"}
+          {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+          <span>{saving ? "Saving Changes..." : "Save Changes"}</span>
         </button>
       </div>
 
