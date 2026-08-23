@@ -80,7 +80,7 @@ export default function DashboardPage() {
 
   return (
     <div className={`w-full ${isClient ? "pt-0" : "pt-2"} pb-6 space-y-4 animate-fade-in relative`}>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 sm:mb-6">
         {user?.profileType !== "WORKER" && user?.profileType !== "CLIENT" ? (
           <div className="w-full space-y-3">
             <h1 className="text-xl sm:text-2xl font-medium text-gray-900">
@@ -110,18 +110,18 @@ export default function DashboardPage() {
               const initialLetter = (user?.agencyName || user?.name || user?.email || "A").charAt(0).toUpperCase();
 
               return (
-                <div className="w-full bg-white/90 backdrop-blur-md rounded-2xl border border-purple-100/90 p-5 sm:p-6 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="w-full bg-white/90 backdrop-blur-md rounded-2xl border border-violet-100/90 p-5 sm:p-6 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-4 min-w-0">
                     {/* Avatar Container with SVG Progress Ring */}
                     <div className="relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center shrink-0">
                       <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                        <circle cx="50" cy="50" r="42" fill="none" stroke="#f3e8ff" strokeWidth="8" />
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="#f5f3ff" strokeWidth="8" />
                         <circle
                           cx="50"
                           cy="50"
                           r="42"
                           fill="none"
-                          stroke="#9333ea"
+                          stroke="#c084fc"
                           strokeWidth="8"
                           strokeDasharray="263.89"
                           strokeDashoffset={263.89 - (263.89 * (score / 100))}
@@ -130,11 +130,11 @@ export default function DashboardPage() {
                         />
                       </svg>
                       {/* Center Avatar Image */}
-                      <div className="absolute inset-2 rounded-full overflow-hidden bg-purple-50 flex items-center justify-center border-2 border-white shadow-inner">
+                      <div className="absolute inset-2 rounded-full overflow-hidden bg-violet-50 flex items-center justify-center border-2 border-white shadow-inner">
                         {fullAvatarUrl ? (
                           <img src={fullAvatarUrl} alt="Agency Avatar" className="w-full h-full object-cover" />
                         ) : (
-                          <span className="text-xl font-bold text-purple-700">{initialLetter}</span>
+                          <span className="text-xl font-bold text-violet-600">{initialLetter}</span>
                         )}
                       </div>
                     </div>
@@ -143,16 +143,16 @@ export default function DashboardPage() {
                     <div className="min-w-0 flex-1 space-y-1">
                       <div className="flex items-center gap-2">
                         <h3 className="text-base sm:text-lg font-bold text-slate-900 leading-snug truncate">Complete Your Profile</h3>
-                        <span className="text-xs font-extrabold text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-full shrink-0">
+                        <span className="text-xs font-extrabold text-violet-600 bg-violet-50 border border-violet-200 px-2 py-0.5 rounded-full shrink-0">
                           {score}%
                         </span>
                       </div>
                       <p className="text-xs text-slate-500 font-medium truncate">Update agency details, logo & verification documents</p>
                       
                       {/* Progress Bar */}
-                      <div className="w-full max-w-md bg-purple-50 rounded-full h-2 overflow-hidden mt-2 border border-purple-100">
+                      <div className="w-full max-w-md bg-violet-50 rounded-full h-2 overflow-hidden mt-2 border border-violet-100">
                         <div 
-                          className="h-full bg-purple-600 rounded-full transition-all duration-1000" 
+                          className="h-full bg-violet-400 rounded-full transition-all duration-1000" 
                           style={{ width: `${score}%` }} 
                         />
                       </div>
@@ -162,7 +162,7 @@ export default function DashboardPage() {
                   {/* Complete Now Action Button */}
                   <Link 
                     to={ROUTES.AGENCY_PROFILE} 
-                    className="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer self-stretch sm:self-auto"
+                    className="px-4 py-2.5 bg-violet-500 hover:bg-violet-600 active:bg-violet-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer self-stretch sm:self-auto"
                   >
                     <span>Complete Now</span>
                     <ArrowRight className="w-4 h-4" />

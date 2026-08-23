@@ -163,7 +163,7 @@ export default function BottomNav() {
     : profileType === "CLIENT"
       ? "text-sky-600 font-bold"
       : profileType === "AGENCY"
-        ? "text-purple-600 font-bold"
+        ? "text-violet-500 font-bold"
         : "text-blue-600 font-semibold";
 
   const activeLineColor = isWorker 
@@ -171,7 +171,7 @@ export default function BottomNav() {
     : profileType === "CLIENT"
       ? "bg-sky-500"
       : profileType === "AGENCY"
-        ? "bg-purple-600"
+        ? "bg-violet-400"
         : "bg-blue-600";
 
   return (
