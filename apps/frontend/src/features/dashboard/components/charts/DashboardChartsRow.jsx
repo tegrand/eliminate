@@ -39,10 +39,13 @@ export default function DashboardChartsRow({
     { name: 'Jun', value: 0 }
   ] : lineData;
 
+  const hasLineChart = Boolean(lineTitle);
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6 mb-6">
+    <div className={`grid grid-cols-1 ${hasLineChart ? "lg:grid-cols-3" : "w-full"} gap-6 mt-6 mb-6`}>
       {/* Line Chart */}
-      <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
+      {hasLineChart && (
+        <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
         <div>
           <h3 className="text-sm font-bold text-slate-900">{lineTitle}</h3>
           <p className="text-[11px] text-slate-500 mb-6">{lineSubtitle}</p>
@@ -88,6 +91,7 @@ export default function DashboardChartsRow({
           </ResponsiveContainer>
         </div>
       </div>
+      )}
 
       {/* Donut Chart */}
       <div className="bg-white p-6 rounded-xl border border-slate-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] flex flex-col">

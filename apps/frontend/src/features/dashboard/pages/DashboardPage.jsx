@@ -1,7 +1,9 @@
 import { useAuth } from "../../../hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
-import { Calendar, ChevronDown, BadgeCheck, Clock, Loader2 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Calendar, ChevronDown, BadgeCheck, Clock, Loader2, Building2, ArrowRight } from "lucide-react";
 import { dashboardApi } from "../api/dashboard.api";
+import { ROUTES } from "../../../routes/routePaths";
 
 import DashboardStats from "../components/DashboardStats";
 import RecentActivity from "../components/RecentActivity";
@@ -64,17 +66,110 @@ export default function DashboardPage() {
   const isClientOrWorkerOrAgency = ["WORKER", "CLIENT", "AGENCY"].includes(user?.profileType);
   const isClient = user?.profileType === "CLIENT";
 
+  const getDisplayName = () => {
+    if (user?.profileType === "SUPER_ADMIN") return "Super Admin";
+    if (user?.agencyName) return user.agencyName;
+    if (user?.agency?.agencyName) return user.agency.agencyName;
+    if (user?.firstName) {
+      return `${user.firstName} ${user.lastName || ""}`.trim();
+    }
+    if (user?.name) return user.name;
+    if (user?.contactPerson) return user.contactPerson;
+    return user?.email?.split('@')[0] || "User";
+  };
+
   return (
     <div className={`w-full ${isClient ? "pt-0" : "pt-2"} pb-6 space-y-4 animate-fade-in relative`}>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-1">
         {user?.profileType !== "WORKER" && user?.profileType !== "CLIENT" ? (
-          <div>
-            <h1 className="text-xl sm:text-2xl font-medium text-gray-900 flex flex-wrap items-center gap-2">
-              <span>Welcome back, {user?.profileType === "SUPER_ADMIN" ? "Super Admin" : user?.email?.split('@')[0] || "User"}! 👋</span>
+          <div className="w-full space-y-3">
+            <h1 className="text-xl sm:text-2xl font-medium text-gray-900">
+              Welcome back, {getDisplayName()}!
             </h1>
-            <p className="text-sm text-gray-500 mt-1">
-              Here's what's happening in your system today.
-            </p>
+
+            {/* Full-Width "Complete Your Profile" Card for Agency with Avatar & SVG Progress Ring */}
+            {user?.profileType === "AGENCY" && (() => {
+              const profile = user?.agencyProfile || {};
+              let score = 0;
+              if (user?.agencyName || profile?.agencyName || user?.name) score += 20;
+              if (user?.avatar || profile?.logo) score += 20;
+              if (user?.phone || profile?.contact?.phone) score += 20;
+              if (user?.address || profile?.address?.city) score += 20;
+              if (profile?.compliance?.gst || profile?.compliance?.licenseNumber || profile?.address?.state || user?.email) score += 20;
+
+              const avatarUrl = user?.avatar || profile?.logo;
+              const getImageUrl = (path) => {
+                if (!path) return null;
+                if (path.startsWith('http') || path.startsWith('data:')) return path;
+                const baseUrl = import.meta.env.VITE_API_BASE_URL
+                  ? import.meta.env.VITE_API_BASE_URL.replace('/api/v1', '')
+                  : 'http://localhost:5000';
+                return `${baseUrl}/${path.replace(/\\/g, '/').replace(/^\//, '')}`;
+              };
+              const fullAvatarUrl = getImageUrl(avatarUrl);
+              const initialLetter = (user?.agencyName || user?.name || user?.email || "A").charAt(0).toUpperCase();
+
+              return (
+                <div className="w-full bg-white/90 backdrop-blur-md rounded-2xl border border-purple-100/90 p-5 sm:p-6 shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-4 min-w-0">
+                    {/* Avatar Container with SVG Progress Ring */}
+                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center shrink-0">
+                      <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="#f3e8ff" strokeWidth="8" />
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="42"
+                          fill="none"
+                          stroke="#9333ea"
+                          strokeWidth="8"
+                          strokeDasharray="263.89"
+                          strokeDashoffset={263.89 - (263.89 * (score / 100))}
+                          strokeLinecap="round"
+                          className="transition-all duration-1000 ease-out"
+                        />
+                      </svg>
+                      {/* Center Avatar Image */}
+                      <div className="absolute inset-2 rounded-full overflow-hidden bg-purple-50 flex items-center justify-center border-2 border-white shadow-inner">
+                        {fullAvatarUrl ? (
+                          <img src={fullAvatarUrl} alt="Agency Avatar" className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-xl font-bold text-purple-700">{initialLetter}</span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Content Section */}
+                    <div className="min-w-0 flex-1 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-base sm:text-lg font-bold text-slate-900 leading-snug truncate">Complete Your Profile</h3>
+                        <span className="text-xs font-extrabold text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-full shrink-0">
+                          {score}%
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 font-medium truncate">Update agency details, logo & verification documents</p>
+                      
+                      {/* Progress Bar */}
+                      <div className="w-full max-w-md bg-purple-50 rounded-full h-2 overflow-hidden mt-2 border border-purple-100">
+                        <div 
+                          className="h-full bg-purple-600 rounded-full transition-all duration-1000" 
+                          style={{ width: `${score}%` }} 
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Complete Now Action Button */}
+                  <Link 
+                    to={ROUTES.AGENCY_PROFILE} 
+                    className="px-4 py-2.5 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer self-stretch sm:self-auto"
+                  >
+                    <span>Complete Now</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              );
+            })()}
           </div>
         ) : (
           <div />

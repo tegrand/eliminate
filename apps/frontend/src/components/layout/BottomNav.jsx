@@ -102,6 +102,33 @@ export default function BottomNav() {
         isActive: pathname === ROUTES.CLIENT_PROFILE,
       },
     ];
+  } else if (profileType === "AGENCY") {
+    navItems = [
+      {
+        label: "Home",
+        icon: LayoutGrid,
+        path: ROUTES.DASHBOARD,
+        isActive: isDashboardActive,
+      },
+      {
+        label: "Workers",
+        icon: Users,
+        path: ROUTES.WORKERS + "?view=my",
+        isActive: pathname.startsWith(ROUTES.WORKERS),
+      },
+      {
+        label: "Profile",
+        icon: Building2,
+        path: ROUTES.AGENCY_PROFILE,
+        isActive: pathname === ROUTES.AGENCY_PROFILE,
+      },
+      {
+        label: "Settings",
+        icon: Settings,
+        path: ROUTES.AGENCY_SETTINGS,
+        isActive: pathname === ROUTES.AGENCY_SETTINGS,
+      },
+    ];
   } else {
     navItems = [
       {
@@ -131,12 +158,25 @@ export default function BottomNav() {
     ];
   }
 
-  const activeTextColor = isWorker ? "text-emerald-600 font-bold" : "text-blue-600 font-semibold";
-  const activeLineColor = isWorker ? "bg-emerald-500" : "bg-blue-600";
+  const activeTextColor = isWorker 
+    ? "text-emerald-600 font-bold" 
+    : profileType === "CLIENT"
+      ? "text-sky-600 font-bold"
+      : profileType === "AGENCY"
+        ? "text-purple-600 font-bold"
+        : "text-blue-600 font-semibold";
+
+  const activeLineColor = isWorker 
+    ? "bg-emerald-500" 
+    : profileType === "CLIENT"
+      ? "bg-sky-500"
+      : profileType === "AGENCY"
+        ? "bg-purple-600"
+        : "bg-blue-600";
 
   return (
     <div className={`fixed bottom-0 left-0 right-0 h-[64px] bg-white border-t border-slate-100 flex items-center justify-around z-[100] shadow-[0_-4px_10px_rgba(0,0,0,0.03)] px-2 ${
-      isWorker ? "" : "lg:hidden"
+      isWorker || profileType === "AGENCY" ? "" : "lg:hidden"
     }`}>
       {navItems.map((item, idx) => {
         const Icon = item.icon;

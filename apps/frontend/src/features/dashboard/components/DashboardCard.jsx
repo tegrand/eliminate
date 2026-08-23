@@ -16,9 +16,9 @@ export default function DashboardCard({ title, count, colorClass, link, descript
         )}
       </div>
 
-      <div className="relative z-10 mt-6">
-        <h3 className="text-3xl font-bold text-slate-900 mb-1">{count}</h3>
-        <p className="text-sm font-medium text-slate-700">{title}</p>
+      <div className="relative z-10 mt-4 sm:mt-6">
+        <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-0.5">{count}</h3>
+        <p className="text-xs sm:text-sm font-medium text-slate-700 truncate">{title}</p>
       </div>
     </div>
   );
