@@ -43,11 +43,8 @@ export default function AgencyDashboard() {
       {/* Top Row: Overview Cards */}
       <AgencyOverviewCards stats={topStats} />
 
-      {/* Analytics Charts */}
+      {/* Analytics Charts (Worker Allocation Donut Chart) */}
       <DashboardChartsRow
-        lineTitle="Monthly Agency Revenue"
-        lineSubtitle="Revenue overview from deployed workers"
-        lineData={chartData?.lineData || []}
         donutTitle="Worker Allocation"
         donutSubtitle="Status breakdown"
         donutTotal={chartData?.donutTotal || 0}

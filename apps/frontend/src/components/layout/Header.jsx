@@ -36,7 +36,7 @@ export default function Header() {
   return (
     <header className="pt-2 pb-1 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40 flex-shrink-0 bg-transparent pointer-events-none">
       {/* Mobile/Sidebar Toggle (Three Lines Button) */}
-      {user?.profileType !== "WORKER" && (
+      {user?.profileType !== "WORKER" && user?.profileType !== "CLIENT" && user?.profileType !== "AGENCY" && (
         <div className="flex items-center pointer-events-auto">
           <button 
             onClick={toggleSidebar}
@@ -119,17 +119,7 @@ export default function Header() {
                 </div>
               )})()}
 
-              {/* Profile Link (Agency Only) */}
-              {user?.profileType === "AGENCY" && (
-                <Link 
-                  to={ROUTES.AGENCY_PROFILE}
-                  onClick={() => setIsProfileOpen(false)}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors mb-1"
-                >
-                  <User className="w-4 h-4" />
-                  <span>Agency Profile</span>
-                </Link>
-              )}
+
 
               {/* Logout Button */}
               <button 
