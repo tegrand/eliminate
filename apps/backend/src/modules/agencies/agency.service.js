@@ -180,12 +180,17 @@ export const updateAgency = async (id, data) => {
     throw new AppError("Agency not found", 404);
   }
 
-  if (data.email && data.email !== agency.email) {
-    const existingEmail = await prisma.agency.findFirst({
-      where: { email: data.email, id: { not: id } },
-    });
-    if (existingEmail) {
-      throw new AppError("An agency with this email already exists", 409);
+  if (data.email) {
+    const normalizedEmail = data.email.trim().toLowerCase();
+    data.email = normalizedEmail;
+
+    if (agency.userId) {
+      const existingUser = await prisma.user.findFirst({
+        where: { email: normalizedEmail, id: { not: agency.userId } },
+      });
+      if (existingUser) {
+        throw new AppError("An account with this email address already exists", 409);
+      }
     }
   }
 
@@ -198,11 +203,19 @@ export const updateAgency = async (id, data) => {
     }
   }
 
-  const updatedAgency = await prisma.agency.update({
-    where: { id },
-    data,
-    select: agencySelect,
-  });
+  const [updatedAgency] = await prisma.$transaction([
+    prisma.agency.update({
+      where: { id },
+      data,
+      select: agencySelect,
+    }),
+    ...(data.email && agency.userId ? [
+      prisma.user.update({
+        where: { id: agency.userId },
+        data: { email: data.email },
+      })
+    ] : [])
+  ]);
 
   return updatedAgency;
 };

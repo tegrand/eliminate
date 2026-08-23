@@ -1,13 +1,9 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { workerFilterSchema } from "../schemas/workerFilter.schema";
-import { Select } from "../../../components/ui/select";
-import { Button } from "../../../components/ui/button";
-import { Card, CardContent } from "../../../components/ui/card";
 import { useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
-
-import { Filter, RotateCcw } from "lucide-react";
+import { Filter, RotateCcw, ChevronDown } from "lucide-react";
 import { useAuth } from "../../../hooks/useAuth";
 
 export default function WorkerFilters({ availableStatuses = [], availableAgencies = [], availableSkills = [] }) {
@@ -49,42 +45,51 @@ export default function WorkerFilters({ availableStatuses = [], availableAgencie
     setSearchParams(new URLSearchParams());
   };
 
+  const selectContainerClass = "relative w-full";
+  const selectClass = "w-full bg-white border border-slate-200/90 rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm appearance-none outline-none focus:border-indigo-500 transition-all pr-10 cursor-pointer";
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col sm:flex-row items-center gap-2 mt-0">
-      <div className="w-full sm:w-[130px]">
-        <select {...register("status")} className="block w-full pl-3 pr-8 py-1.5 text-sm border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-lg text-gray-600 border bg-white h-9">
-          <option value="">Status (All)</option>
-          {availableStatuses.map(status => (
-            <option key={status} value={status}>{status}</option>
-          ))}
-        </select>
-      </div>
-      {user?.profileType !== "AGENCY" && user?.profileType !== "SUPER_ADMIN" && (
-        <div className="w-full sm:w-[130px]">
-          <select {...register("agency")} className="block w-full pl-3 pr-8 py-1.5 text-sm border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-lg text-gray-600 border bg-white h-9">
-            <option value="">Agency (All)</option>
-            {availableAgencies.map(agency => (
-              <option key={agency} value={agency}>{agency}</option>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 w-full mb-3">
+      {/* Row 1: Dropdowns */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className={selectContainerClass}>
+          <select {...register("status")} className={selectClass}>
+            <option value="">Status (All)</option>
+            {availableStatuses.map(status => (
+              <option key={status} value={status}>{status}</option>
             ))}
           </select>
+          <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
         </div>
-      )}
-      <div className="w-full sm:w-[130px]">
-        <select {...register("skill")} className="block w-full pl-3 pr-8 py-1.5 text-sm border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-lg text-gray-600 border bg-white h-9">
-          <option value="">Skill (All)</option>
-          {availableSkills.map(skill => (
-            <option key={skill} value={skill}>{skill}</option>
-          ))}
-        </select>
+
+        <div className={selectContainerClass}>
+          <select {...register("skill")} className={selectClass}>
+            <option value="">Skill (All)</option>
+            {availableSkills.map(skill => (
+              <option key={skill} value={skill}>{skill}</option>
+            ))}
+          </select>
+          <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+        </div>
       </div>
-      <div className="flex gap-2 w-full sm:w-auto">
-        <button type="button" onClick={handleReset} className="h-9 px-3 inline-flex items-center justify-center border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full sm:w-auto gap-1.5">
-          <RotateCcw className="w-3.5 h-3.5" />
-          Reset
+
+      {/* Row 2: Action Buttons */}
+      <div className="grid grid-cols-2 gap-3">
+        <button
+          type="button"
+          onClick={handleReset}
+          className="w-full bg-white border border-slate-200 text-slate-700 font-bold py-3 px-4 rounded-2xl shadow-sm flex items-center justify-center gap-2 text-sm hover:bg-slate-50 active:scale-[0.98] transition-all cursor-pointer"
+        >
+          <RotateCcw className="w-4 h-4 text-slate-600" />
+          <span>Reset</span>
         </button>
-        <button type="submit" className="h-9 px-3 inline-flex items-center justify-center border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full sm:w-auto gap-1.5">
-          <Filter className="w-3.5 h-3.5" />
-          Apply
+
+        <button
+          type="submit"
+          className="w-full bg-[#4f46e5] hover:bg-[#4338ca] text-white font-bold py-3 px-4 rounded-2xl shadow-md flex items-center justify-center gap-2 text-sm active:scale-[0.98] transition-all cursor-pointer"
+        >
+          <Filter className="w-4 h-4 text-white" />
+          <span>Apply</span>
         </button>
       </div>
     </form>

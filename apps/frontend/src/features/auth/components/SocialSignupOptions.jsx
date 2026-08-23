@@ -20,8 +20,12 @@ export default function SocialSignupOptions({ role }) {
   const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleRoleRedirect = () => {
+  const handleRoleRedirect = (userObj) => {
+    if (userObj?.status === "PENDING") {
+      navigate(ROUTES.PENDING_APPROVAL);
+    } else {
       navigate(ROUTES.DASHBOARD);
+    }
   };
 
   const handleGoogleSignup = async () => {
@@ -36,12 +40,14 @@ export default function SocialSignupOptions({ role }) {
         name: fullName,
       });
 
-      login(response.data.data.user, response.data.data.accessToken);
+      const userObj = response.data.data.user;
+      login(userObj, response.data.data.accessToken);
       
-      toast.success(`Welcome back!`);
-      handleRoleRedirect();
+      toast.success(userObj.status === "PENDING" ? "Registration submitted for verification!" : "Welcome!");
+      handleRoleRedirect(userObj);
     } catch (error) {
-      toast.error("Google signup failed");
+      console.error("Google signup error:", error);
+      toast.error(error.response?.data?.message || "Google signup failed");
     } finally {
       setLoading(false);
     }
@@ -83,12 +89,14 @@ export default function SocialSignupOptions({ role }) {
         name: fullName,
       });
 
-      login(response.data.data.user, response.data.data.accessToken);
+      const userObj = response.data.data.user;
+      login(userObj, response.data.data.accessToken);
 
-      toast.success(`Welcome back!`);
-      handleRoleRedirect();
+      toast.success(userObj.status === "PENDING" ? "Registration submitted for verification!" : "Welcome!");
+      handleRoleRedirect(userObj);
     } catch (error) {
-      toast.error("Invalid OTP");
+      console.error("OTP signup error:", error);
+      toast.error(error.response?.data?.message || "Invalid OTP or signup failed");
     } finally {
       setLoading(false);
     }

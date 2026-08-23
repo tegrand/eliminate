@@ -19,8 +19,6 @@ import WorkerSignupPage from "../features/auth/pages/WorkerSignupPage";
 import PendingApprovalPage from "../features/auth/pages/PendingApprovalPage";
 
 import LoginPage from "../features/auth/pages/LoginPage";
-import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
-import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
 
 // Dashboard & Feature Pages
 import DashboardPage from "../features/dashboard/pages/DashboardPage";
@@ -92,8 +90,6 @@ const AppRouter = () => {
 
           <Route element={<AuthLayout />}>
             <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-            <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
-            <Route path={ROUTES.RESET_PASSWORD} element={<ResetPasswordPage />} />
           </Route>
         </Route>
 

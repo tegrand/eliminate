@@ -339,8 +339,13 @@ export const socialLogin = async (data, meta) => {
 
   const normalizedEmail = email.toLowerCase();
 
-  let user = await prisma.user.findUnique({
-    where: { email: normalizedEmail },
+  let user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email: normalizedEmail },
+        ...(phone ? [{ phone }] : [])
+      ]
+    },
     select: {
       id: true,
       status: true,
@@ -349,7 +354,12 @@ export const socialLogin = async (data, meta) => {
     }
   });
 
-  if (!user) {
+  if (user) {
+    // If request comes from a role-specific signup page (accountType provided), ensure role matches
+    if (accountType && user.profileType !== accountType) {
+      throw new AppError(`An account with this email/phone is already registered as ${user.profileType}. Please log in instead.`, 409);
+    }
+  } else {
     if (!accountType) {
         throw new AppError("Account not found. Please sign up first.", 404);
     }

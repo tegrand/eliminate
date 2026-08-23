@@ -7,8 +7,6 @@ export default function BottomNav() {
   const { user } = useAuth();
   const location = useLocation();
   const pathname = location.pathname;
-  const searchParams = new URLSearchParams(location.search);
-  const tab = searchParams.get("tab");
 
   if (!user) return null;
 
@@ -41,18 +39,15 @@ export default function BottomNav() {
   const profilePath = getProfilePath();
   const settingsPath = getSettingsPath();
 
-  // Determine active state for other roles
-  const isDashboardActive = pathname === ROUTES.DASHBOARD && profileType !== "CLIENT";
+  // Determine active state for roles
+  const isDashboardActive = pathname === ROUTES.DASHBOARD;
   const isClientsActive = pathname.startsWith(ROUTES.WORKFORCE_SEARCH) || pathname.startsWith(ROUTES.CLIENTS) || (pathname.startsWith(ROUTES.WORKERS) && !pathname.includes("profile"));
-  const isProfileActive = 
-    ((pathname === ROUTES.CLIENT_PROFILE || pathname === ROUTES.WORKER_PROFILE || pathname === ROUTES.AGENCY_PROFILE) && tab !== "password") ||
-    (pathname === ROUTES.DASHBOARD && profileType === "CLIENT" && tab !== "password");
+  const isProfileActive = pathname === ROUTES.CLIENT_PROFILE || pathname === ROUTES.WORKER_PROFILE || pathname === ROUTES.AGENCY_PROFILE;
   const isSettingsActive = 
     pathname === ROUTES.SETTINGS || 
     pathname === ROUTES.WORKER_SETTINGS || 
-    pathname === ROUTES.AGENCY_SETTINGS || 
-    (pathname === ROUTES.CLIENT_PROFILE && tab === "password") ||
-    (pathname === ROUTES.DASHBOARD && profileType === "CLIENT" && tab === "password");
+    pathname === ROUTES.AGENCY_SETTINGS ||
+    pathname === ROUTES.CLIENT_PROFILE;
 
   // Choose items dynamically depending on role
   const navItems = profileType === "CLIENT" 
@@ -61,7 +56,7 @@ export default function BottomNav() {
           label: "Dashboard",
           icon: LayoutGrid,
           path: ROUTES.DASHBOARD,
-          isActive: pathname === ROUTES.DASHBOARD && tab !== "password",
+          isActive: pathname === ROUTES.DASHBOARD,
         },
         {
           label: "Workers",
@@ -78,8 +73,8 @@ export default function BottomNav() {
         {
           label: "Settings",
           icon: Settings,
-          path: `${ROUTES.DASHBOARD}?tab=password`,
-          isActive: pathname === ROUTES.DASHBOARD && tab === "password",
+          path: ROUTES.CLIENT_PROFILE,
+          isActive: pathname === ROUTES.CLIENT_PROFILE,
         },
       ]
     : [
@@ -118,7 +113,7 @@ export default function BottomNav() {
             key={idx}
             to={item.path}
             className={`relative flex flex-col items-center justify-center flex-1 h-full py-2 transition-all ${
-              item.isActive ? "text-blue-600 font-semibold" : "text-slate-400 hover:text-slate-600"
+              item.isActive ? "text-blue-600 font-semibold" : "text-slate-400 hover:text-slate-655"
             }`}
           >
             {/* Top active blue line indicator */}

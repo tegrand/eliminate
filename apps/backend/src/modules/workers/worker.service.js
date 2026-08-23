@@ -305,11 +305,32 @@ export const updateWorker = async (id, data, user) => {
     throw new AppError("Forbidden: You cannot update another worker's profile.", 403);
   }
 
-  const updatedWorker = await prisma.worker.update({
-    where: { id },
-    data,
-    select: workerSelect,
-  });
+  if (data.email) {
+    const normalizedEmail = data.email.trim().toLowerCase();
+    data.email = normalizedEmail;
+    if (worker.userId) {
+      const existingUser = await prisma.user.findFirst({
+        where: { email: normalizedEmail, id: { not: worker.userId } },
+      });
+      if (existingUser) {
+        throw new AppError("An account with this email address already exists", 409);
+      }
+    }
+  }
+
+  const [updatedWorker] = await prisma.$transaction([
+    prisma.worker.update({
+      where: { id },
+      data,
+      select: workerSelect,
+    }),
+    ...(data.email && worker.userId ? [
+      prisma.user.update({
+        where: { id: worker.userId },
+        data: { email: data.email },
+      })
+    ] : [])
+  ]);
 
   return updatedWorker;
 };
@@ -329,17 +350,6 @@ export const updateWorkerStatus = async (id, status) => {
     select: workerSelect,
   });
   
-  // Optionally sync with User status
-  // let userStatus = "PENDING";
-  // if (status === "APPROVED") userStatus = "ACTIVE";
-  // else if (status === "REJECTED") userStatus = "REJECTED";
-  // else if (status === "SUSPENDED") userStatus = "SUSPENDED";
-  // 
-  // await prisma.user.update({
-  //   where: { id: worker.userId },
-  //   data: { status: userStatus }
-  // });
-
   return updatedWorker;
 };
 
@@ -382,11 +392,30 @@ export const updateMyWorkerProfile = async (userId, data) => {
     throw new AppError("Worker profile not found", 404);
   }
 
-  const updatedWorker = await prisma.worker.update({
-    where: { id: worker.id },
-    data,
-    select: workerSelect,
-  });
+  if (data.email) {
+    const normalizedEmail = data.email.trim().toLowerCase();
+    data.email = normalizedEmail;
+    const existingUser = await prisma.user.findFirst({
+      where: { email: normalizedEmail, id: { not: userId } },
+    });
+    if (existingUser) {
+      throw new AppError("An account with this email address already exists", 409);
+    }
+  }
+
+  const [updatedWorker] = await prisma.$transaction([
+    prisma.worker.update({
+      where: { id: worker.id },
+      data,
+      select: workerSelect,
+    }),
+    ...(data.email && userId ? [
+      prisma.user.update({
+        where: { id: userId },
+        data: { email: data.email },
+      })
+    ] : [])
+  ]);
 
   return updatedWorker;
 };

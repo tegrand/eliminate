@@ -30,10 +30,15 @@ export default function LoginForm() {
         token: result.user.accessToken,
       });
 
-      login(response.data.data.user, response.data.data.accessToken);
+      const userObj = response.data.data.user;
+      login(userObj, response.data.data.accessToken);
 
       toast.success("Google login successful!");
-      navigate(ROUTES.DASHBOARD);
+      if (userObj.status === "PENDING") {
+        navigate(ROUTES.PENDING_APPROVAL);
+      } else {
+        navigate(ROUTES.DASHBOARD);
+      }
     } catch (error) {
       console.error("Google login error:", error);
       toast.error(error.response?.data?.message || "Google login failed");
@@ -75,10 +80,15 @@ export default function LoginForm() {
         token: result.user.accessToken,
       });
 
-      login(response.data.data.user, response.data.data.accessToken);
+      const userObj = response.data.data.user;
+      login(userObj, response.data.data.accessToken);
 
       toast.success("Phone login successful!");
-      navigate(ROUTES.DASHBOARD);
+      if (userObj.status === "PENDING") {
+        navigate(ROUTES.PENDING_APPROVAL);
+      } else {
+        navigate(ROUTES.DASHBOARD);
+      }
     } catch (error) {
       console.error("OTP verification error:", error);
       toast.error(error.response?.data?.message || "Invalid OTP or login failed");

@@ -54,10 +54,10 @@ export default function ContactInfoForm({ data, onSave, saving, hideHeader, isAc
               type="email"
               name="email"
               value={formData.email}
-              disabled
-              className="w-full px-3 py-1.5 sm:py-2 bg-slate-50 border border-slate-200 text-slate-400 rounded-xl cursor-not-allowed text-sm"
+              onChange={handleChange}
+              className="w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm"
+              placeholder="you@example.com"
             />
-            <p className="text-[11px] text-slate-400 mt-1">Email cannot be changed here. Contact support.</p>
           </div>
         </div>
         </div>

@@ -9,8 +9,6 @@ export const ROUTES = {
 
   // Auth
   LOGIN: "/login",
-  FORGOT_PASSWORD: "/forgot-password",
-  RESET_PASSWORD: "/reset-password",
 
   // Overview
   DASHBOARD: "/dashboard",

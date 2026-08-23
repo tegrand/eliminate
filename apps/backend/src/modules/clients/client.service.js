@@ -150,12 +150,17 @@ export const updateClient = async (id, data) => {
     throw new AppError("Client not found", 404);
   }
 
-  if (data.email && data.email !== client.email) {
-    const existingEmail = await prisma.client.findFirst({
-      where: { email: data.email, id: { not: id } },
-    });
-    if (existingEmail) {
-      throw new AppError("A client with this email already exists", 409);
+  if (data.email) {
+    const normalizedEmail = data.email.trim().toLowerCase();
+    data.email = normalizedEmail;
+
+    if (client.userId) {
+      const existingUser = await prisma.user.findFirst({
+        where: { email: normalizedEmail, id: { not: client.userId } },
+      });
+      if (existingUser) {
+        throw new AppError("An account with this email address already exists", 409);
+      }
     }
   }
 
@@ -168,11 +173,19 @@ export const updateClient = async (id, data) => {
     }
   }
 
-  const updatedClient = await prisma.client.update({
-    where: { id },
-    data,
-    select: clientSelect,
-  });
+  const [updatedClient] = await prisma.$transaction([
+    prisma.client.update({
+      where: { id },
+      data,
+      select: clientSelect,
+    }),
+    ...(data.email && client.userId ? [
+      prisma.user.update({
+        where: { id: client.userId },
+        data: { email: data.email },
+      })
+    ] : [])
+  ]);
 
   return updatedClient;
 };
@@ -247,17 +260,24 @@ export const updateClientByUserId = async (userId, data) => {
     throw new AppError("Client profile not found", 404);
   }
 
-  if (data.email && data.email !== client.email) {
-    const existingEmail = await prisma.client.findFirst({
-      where: { email: data.email, id: { not: client.id } },
+  if (data.email) {
+    const normalizedEmail = data.email.trim().toLowerCase();
+    data.email = normalizedEmail;
+
+    const existingUser = await prisma.user.findFirst({
+      where: { email: normalizedEmail, id: { not: userId } },
     });
-    if (existingEmail) {
-      throw new AppError("A client with this email already exists", 409);
+    if (existingUser) {
+      throw new AppError("An account with this email address already exists", 409);
     }
   }
   
   // Extract user fields
   const { avatar, ...clientData } = data;
+
+  const userUpdatePayload = {};
+  if (avatar) userUpdatePayload.avatar = avatar;
+  if (data.email) userUpdatePayload.email = data.email;
 
   const [updatedClient] = await prisma.$transaction([
     prisma.client.update({
@@ -278,10 +298,10 @@ export const updateClientByUserId = async (userId, data) => {
         },
       },
     }),
-    ...(avatar ? [
+    ...(Object.keys(userUpdatePayload).length > 0 ? [
       prisma.user.update({
         where: { id: userId },
-        data: { avatar },
+        data: userUpdatePayload,
       })
     ] : [])
   ]);

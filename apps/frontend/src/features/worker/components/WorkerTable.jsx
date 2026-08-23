@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Eye, CreditCard, Briefcase, User, Building, Wrench, Star, Phone, Settings, MoreVertical } from "lucide-react";
+import { Eye, CreditCard, Briefcase, User, Building, Wrench, Star, Phone, Settings, MoreVertical, Loader2, Users } from "lucide-react";
 import { DataTable } from "../../../components/ui/data-table";
 import { Pagination } from "../../../components/ui/pagination";
 import { Link } from "react-router-dom";
 import WorkerStatusBadge from "./WorkerStatusBadge";
+import WorkerCard from "./WorkerCard";
 import ApproveDialog from "../../../components/ui/action-dialogs/ApproveDialog";
 import RejectDialog from "../../../components/ui/action-dialogs/RejectDialog";
 import SuspendDialog from "../../../components/ui/action-dialogs/SuspendDialog";
@@ -14,7 +15,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../../../hooks/useAuth";
 import { useTranslation } from "react-i18next";
 
-export default function WorkerTable({ workers, loading, page, totalPages, onPageChange }) {
+export default function WorkerTable({ workers, loading, page, totalPages, onPageChange, viewMode = "grid" }) {
   const { user } = useAuth();
   const { t } = useTranslation();
   const [selectedWorker, setSelectedWorker] = useState(null);
@@ -48,15 +49,6 @@ export default function WorkerTable({ workers, loading, page, totalPages, onPage
     }
   };
 
-  const getInitials = (name) => {
-    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-  };
-
-  const getAvatarColor = (name) => {
-    const colors = ["bg-blue-100 text-blue-600", "bg-orange-100 text-orange-600", "bg-purple-100 text-purple-600", "bg-green-100 text-green-600"];
-    return colors[name.length % colors.length];
-  };
-
   const columns = [
     { key: "checkbox", title: <input type="checkbox" className="rounded border-gray-300" />, render: () => <input type="checkbox" className="rounded border-gray-300" /> },
     { key: "employeeId", title: <div className="flex items-center gap-1.5 whitespace-nowrap"><Briefcase className="w-3.5 h-3.5" />{t('table.employeeId') || 'EMPLOYEE ID'}</div>, render: (row) => <span className="font-bold text-gray-900 text-sm whitespace-nowrap">{row.employeeId}</span> },
@@ -76,7 +68,6 @@ export default function WorkerTable({ workers, loading, page, totalPages, onPage
       columns.push({ key: "agency", title: <div className="flex items-center gap-1.5 whitespace-nowrap"><Building className="w-3.5 h-3.5" />{t('table.agency') || 'AGENCY'}</div>, render: (row) => <span className="text-sm text-gray-600 whitespace-nowrap">{row.agency}</span> });
     }
   } else {
-    // Agency specific columns
     columns.push({
       key: "availability",
       title: <div className="flex items-center gap-1.5 whitespace-nowrap">{t('table.availability') || 'AVAILABILITY'}</div>,
@@ -165,26 +156,64 @@ export default function WorkerTable({ workers, loading, page, totalPages, onPage
   );
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm flex flex-col h-full">
-      <div className="flex-1 overflow-x-auto overflow-y-auto min-h-[300px]">
-        <div className="min-w-[800px]">
-          <DataTable 
-            columns={columns} 
-            data={workers || []} 
-            loading={loading}
-            rowKey="id" 
-            hover 
-          />
-        </div>
+    <div className="flex flex-col flex-1">
+      
+      {/* Main View Container (Grid Cards vs Table) */}
+      <div className="flex-1">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center h-64 w-full bg-white rounded-2xl border border-gray-100">
+            <Loader2 className="w-8 h-8 animate-spin text-indigo-600 mb-2" />
+            <p className="text-sm font-semibold text-slate-500">Loading worker list...</p>
+          </div>
+        ) : !workers || workers.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-64 w-full text-center px-4 bg-white rounded-2xl border border-gray-100">
+            <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mb-3">
+              <Users className="w-6 h-6 text-slate-400" />
+            </div>
+            <h3 className="text-base font-bold text-slate-800">No workers found</h3>
+            <p className="text-xs text-slate-500 mt-1">There are no workers matching the selected criteria.</p>
+          </div>
+        ) : viewMode === "grid" ? (
+          /* Cards Grid View matching reference screenshot */
+          <div className="space-y-3 sm:space-y-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-4">
+            {workers.map((worker) => (
+              <WorkerCard
+                key={worker.id}
+                worker={worker}
+                user={user}
+                onAction={handleAction}
+              />
+            ))}
+          </div>
+        ) : (
+          /* Table View */
+          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm">
+            <div className="overflow-x-auto min-h-[300px]">
+              <div className="min-w-[800px]">
+                <DataTable 
+                  columns={columns} 
+                  data={workers || []} 
+                  loading={false}
+                  rowKey="id" 
+                  hover 
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Pagination & Count Bar */}
       {workers && workers.length > 0 && (
-        <div className="p-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white flex-shrink-0">
-          <span className="text-sm text-gray-500 font-medium">Showing 1 to {workers.length} of {workers.length} workers</span>
-          <Pagination 
-            currentPage={page}
-            totalPages={totalPages}
-            onPageChange={onPageChange || ((p) => console.log("Page changed to:", p))}
-          />
+        <div className="pt-3 pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 flex-shrink-0">
+          <span className="text-xs text-slate-400 font-medium">Showing 1 to {workers.length} of {workers.length} workers</span>
+          {totalPages > 1 && (
+            <Pagination 
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={onPageChange || ((p) => console.log("Page changed to:", p))}
+            />
+          )}
         </div>
       )}
 

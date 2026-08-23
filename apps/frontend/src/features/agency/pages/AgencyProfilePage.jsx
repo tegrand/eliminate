@@ -21,7 +21,7 @@ const TABS = [
 ];
 
 export default function AgencyProfilePage() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   
   const [activeTab, setActiveTab] = useState("basic");
   const [saving, setSaving] = useState(false);
@@ -100,16 +100,18 @@ export default function AgencyProfilePage() {
           workerFixedAmount: Number(updatedData.workerFixedAmount)
         };
         
-        // Remove undefined keys to prevent sending empty updates if not intended,
-        // but since we want to clear fields if empty, we should send empty strings if that's what's in the form.
+        // Remove undefined keys
         Object.keys(payload).forEach(key => payload[key] === undefined && delete payload[key]);
 
         await agencyApi.updateAgency(user.agencyProfile.id, payload);
+        if (payload.email) {
+          updateUser({ email: payload.email });
+        }
         toast.success("Profile saved perfectly!", { id: "agency-save" });
       } catch (err) {
         console.error(err);
         const { toast } = await import('sonner');
-        toast.error("Failed to save profile", { id: "agency-save" });
+        toast.error(err.response?.data?.message || "Failed to save profile", { id: "agency-save" });
       }
     }
     setSaving(false);

@@ -10,7 +10,7 @@ import ProfessionalInfoForm from "../components/ProfessionalInfoForm";
 import DocumentsForm from "../components/DocumentsForm";
 
 export default function WorkerProfilePage() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -66,10 +66,13 @@ export default function WorkerProfilePage() {
       setSaving(true);
       const response = await api.patch(`/workers/my-profile`, updatedFields);
       setProfileData(response.data.data);
+      if (updatedFields.email) {
+        updateUser({ email: updatedFields.email });
+      }
       toast.success("Profile updated successfully");
       setIsDirty(false);
     } catch (error) {
-      toast.error(err.response?.data?.message || "Failed to update profile");
+      toast.error(error.response?.data?.message || "Failed to update profile");
     } finally {
       setSaving(false);
     }
