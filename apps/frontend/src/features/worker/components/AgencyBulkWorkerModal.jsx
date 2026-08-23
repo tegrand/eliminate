@@ -60,72 +60,65 @@ export default function AgencyBulkWorkerModal({ isOpen, onClose, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl overflow-hidden animate-slide-up-sm border border-gray-100">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/80 backdrop-blur-sm">
-          <div className="flex items-center gap-4">
-            <div className="p-2.5 bg-indigo-100/80 text-indigo-700 rounded-xl shadow-sm border border-indigo-200/50">
+    <div 
+      className="fixed inset-0 z-[1000] flex items-center justify-center p-3 sm:p-4 bg-slate-900/50 backdrop-blur-md animate-fade-in"
+      style={{ backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
+    >
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg sm:max-w-2xl overflow-hidden animate-slide-up-sm border border-slate-100 max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 bg-gray-50/80 shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-violet-100 text-violet-700 rounded-xl shadow-xs">
               <Users className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900 tracking-tight">Bulk Add Workers</h2>
-              <p className="text-sm text-gray-500">Quickly add multiple managed workers via CSV format.</p>
+              <h2 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">Bulk Add Workers</h2>
+              <p className="text-xs text-gray-500">Quickly add multiple managed workers via CSV format.</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-700 hover:bg-white rounded-xl shadow-sm border border-transparent hover:border-gray-200 transition-all">
+          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors cursor-pointer">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            {/* Left side: Instructions */}
-            <div className="lg:col-span-5 flex flex-col gap-4">
-              <div className="bg-gradient-to-br from-indigo-50/50 to-blue-50/50 border border-indigo-100 rounded-2xl p-5 text-sm text-indigo-900 h-full">
-                <div className="flex items-center gap-2.5 mb-3">
-                  <AlertCircle className="w-5 h-5 text-indigo-600" />
-                  <span className="font-bold text-indigo-950 text-base">Formatting Guide</span>
-                </div>
-                <p className="text-indigo-800/80 leading-relaxed mb-4">
-                  Each row must be a new worker. Separate details with commas in this exact order:
-                </p>
-                <div className="bg-white/80 border border-indigo-100/80 rounded-xl p-3 mb-4 shadow-sm">
-                  <code className="font-mono text-[11px] font-semibold text-indigo-700 leading-relaxed">
-                    FirstName, LastName, Phone, JobType, District, City, Gender, DoB, Address, ExpYears, JoiningDate
-                  </code>
-                </div>
-                <div className="text-xs text-indigo-700/70 border-t border-indigo-100/60 pt-3">
-                  <span className="font-semibold block mb-1 text-indigo-900">Example Row:</span>
-                  <span className="font-mono">John, Doe, 9876543210, Plumber, Ernakulam, Kochi, Male, 1990-05-15, 123 Main St, 5, 2023-01-01</span>
-                </div>
-              </div>
+        <form onSubmit={handleSubmit} className="p-4 sm:p-5 flex flex-col flex-1 overflow-y-auto space-y-4">
+          {/* Formatting Guide Banner */}
+          <div className="bg-violet-50/80 border border-violet-100 rounded-xl p-3.5 text-xs text-violet-950 space-y-2">
+            <div className="flex items-center gap-2 font-bold text-violet-900">
+              <AlertCircle className="w-4 h-4 text-violet-600 shrink-0" />
+              <span>CSV Order & Format:</span>
             </div>
-
-            {/* Right side: Input */}
-            <div className="lg:col-span-7 flex flex-col">
-              <label className="text-sm font-semibold text-gray-800 flex items-center gap-2 mb-2">
-                <FileText className="w-4 h-4 text-gray-400" /> Worker Data CSV
-              </label>
-              <textarea 
-                required
-                rows={14}
-                value={bulkText}
-                onChange={(e) => setBulkText(e.target.value)}
-                className="w-full flex-1 p-4 border border-gray-200 rounded-2xl text-sm focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all font-mono whitespace-pre shadow-sm bg-gray-50/30 hover:bg-white"
-                placeholder="Paste your CSV data here..."
-              />
+            <div className="bg-white/90 border border-violet-100 rounded-lg p-2 font-mono text-[11px] font-semibold text-violet-700 overflow-x-auto">
+              FirstName, LastName, Phone, JobType, District, City, Gender, DoB, Address, ExpYears, JoiningDate
             </div>
-            
+            <p className="text-[11px] text-violet-700/80">
+              <span className="font-semibold text-violet-900">Example: </span>
+              <span className="font-mono">John, Doe, 9876543210, Plumber, Ernakulam, Kochi, Male, 1990-05-15, Main St, 5, 2023-01-01</span>
+            </p>
           </div>
 
-          <div className="pt-6 mt-6 flex justify-end gap-3 border-t border-gray-100">
-            <button type="button" onClick={onClose} className="px-6 py-2.5 text-sm font-semibold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 hover:text-gray-900 rounded-xl shadow-sm transition-all">
+          {/* Data Textarea Input */}
+          <div className="flex flex-col flex-1">
+            <label className="text-xs font-bold text-gray-700 flex items-center gap-1.5 mb-1.5 uppercase tracking-wider">
+              <FileText className="w-4 h-4 text-violet-500" /> Worker Data (CSV Lines)
+            </label>
+            <textarea 
+              required
+              rows={5}
+              value={bulkText}
+              onChange={(e) => setBulkText(e.target.value)}
+              className="w-full p-3 border border-gray-200 rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none transition-all font-mono whitespace-pre bg-slate-50/50 hover:bg-white"
+              placeholder="Paste CSV rows here (one worker per line)..."
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="pt-3 flex justify-end gap-3 border-t border-gray-100 shrink-0">
+            <button type="button" onClick={onClose} className="px-5 py-2.5 text-xs font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors cursor-pointer">
               Cancel
             </button>
-            <button type="submit" disabled={loading} className="px-6 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl shadow-sm hover:shadow transition-all flex items-center gap-2">
+            <button type="submit" disabled={loading} className="px-5 py-2.5 text-xs font-bold text-white bg-violet-500 hover:bg-violet-600 active:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl shadow-xs transition-all flex items-center gap-2 cursor-pointer">
               <Upload className="w-4 h-4" />
-              {loading ? "Processing Data..." : "Upload & Save Workers"}
+              <span>{loading ? "Processing Data..." : "Upload & Save Workers"}</span>
             </button>
           </div>
         </form>
