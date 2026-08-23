@@ -1,22 +1,18 @@
-import { Card, CardContent } from "../../../components/ui/card";
-import { Users, UserCheck, Clock, ShieldAlert } from "lucide-react";
+import { Users, CheckCircle2, ShieldAlert } from "lucide-react";
 
 export default function WorkerStats({ workers }) {
   const total = workers?.length || 0;
-  // If the mock data uses ACTIVE or APPROVED, we handle both.
   const active = workers?.filter(w => w.status === 'ACTIVE' || w.status === 'APPROVED')?.length || 0;
-  const pending = workers?.filter(w => w.status === 'PENDING')?.length || 0;
   const suspended = workers?.filter(w => w.status === 'SUSPENDED' || w.status === 'Inactive')?.length || 0;
 
   const stats = [
     { label: "TOTAL WORKERS", value: total, subtitle: "All registered workers", icon: Users, color: "text-indigo-600", bg: "bg-indigo-50" },
-    { label: "ACTIVE", value: active, subtitle: "Currently working", icon: UserCheck, color: "text-green-600", bg: "bg-green-50" },
-    { label: "PENDING", value: pending, subtitle: "Awaiting approval", icon: Clock, color: "text-orange-500", bg: "bg-orange-50" },
+    { label: "ACTIVE", value: active, subtitle: "Currently active", icon: CheckCircle2, color: "text-green-600", bg: "bg-green-50" },
     { label: "SUSPENDED", value: suspended, subtitle: "Temporarily suspended", icon: ShieldAlert, color: "text-red-600", bg: "bg-red-50" }
   ];
 
   return (
-    <div className="flex overflow-x-auto gap-3 mb-3 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+    <div className="flex overflow-x-auto gap-3 mb-4 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
       {stats.map((stat) => {
         const Icon = stat.icon;
         return (

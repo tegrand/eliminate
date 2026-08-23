@@ -46,29 +46,30 @@ async function main() {
   
   if (superAdminRole) {
     const email = "javid.prsnl.act@gmail.com";
-    const password = "Pass123@";
-    const bcrypt = await import("bcrypt");
-    const passwordHash = await bcrypt.default.hash(password, 10);
     
     await prisma.user.upsert({
       where: { email },
       update: {
-        passwordHash,
+        passwordHash: "",
         status: "ACTIVE",
+        profileType: "SUPER_ADMIN",
+        firstName: "javid",
+        lastName: "shabin",
+        emailVerified: true,
         roleId: superAdminRole.id,
       },
       create: {
         email,
-        passwordHash,
+        passwordHash: "",
         status: "ACTIVE",
         profileType: "SUPER_ADMIN",
-        firstName: "Javid",
-        lastName: "Admin",
+        firstName: "javid",
+        lastName: "shabin",
         emailVerified: true,
         roleId: superAdminRole.id,
       }
     });
-    console.log("✅ Super Admin created successfully:", email);
+    console.log("✅ Super Admin created successfully: javid shabin (javid.prsnl.act@gmail.com)");
   }
 }
 
