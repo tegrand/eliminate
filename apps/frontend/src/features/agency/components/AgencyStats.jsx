@@ -12,11 +12,11 @@ export default function AgencyStats({ agencies }) {
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+    <div className="flex overflow-x-auto gap-3 mb-4 scrollbar-hide [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
       {stats.map((stat) => {
         const Icon = stat.icon;
         return (
-          <div key={stat.label} className="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] p-4 flex items-center gap-4">
+          <div key={stat.label} className="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] p-4 flex items-center gap-4 min-w-[200px] sm:min-w-[220px] flex-1 shrink-0">
             <div className={`flex flex-shrink-0 items-center justify-center w-12 h-12 rounded-2xl ${stat.bg}`}>
               <Icon className={`w-5 h-5 ${stat.color}`} strokeWidth={2} />
             </div>

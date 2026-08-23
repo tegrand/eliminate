@@ -4,6 +4,7 @@ import './index.css'
 import App from './App.jsx'
 import QueryProvider from './providers/QueryProvider.jsx'
 import AuthProvider from './providers/AuthProvider.jsx'
+import './config/i18n.js'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

@@ -8,7 +8,7 @@ export const createWorker = asyncHandler(async (req, res) => {
 });
 
 export const getWorkers = asyncHandler(async (req, res) => {
-  const result = await workerService.getWorkers(req.query);
+  const result = await workerService.getWorkers({ ...req.query, user: req.user });
   return ApiResponse.success(res, "Workers retrieved successfully", result, 200);
 });
 
@@ -22,6 +22,31 @@ export const updateMyWorkerProfile = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, "Worker profile updated successfully", worker, 200);
 });
 
+export const uploadResume = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    return ApiResponse.error(res, "No file provided", 400);
+  }
+  const resumeUrl = `/uploads/documents/${req.file.filename}`;
+  const worker = await workerService.updateMyWorkerProfile(req.user.id, { resumeUrl });
+  return ApiResponse.success(res, "Resume uploaded successfully", worker, 200);
+});
+
+export const uploadDocument = asyncHandler(async (req, res) => {
+  if (!req.file) {
+    return ApiResponse.error(res, "No file provided", 400);
+  }
+  const { documentType } = req.body;
+  if (!documentType) {
+    return ApiResponse.error(res, "Document type is required", 400);
+  }
+  
+  const documentUrl = `/uploads/documents/${req.file.filename}`;
+  const fileName = req.file.originalname;
+  
+  const document = await workerService.uploadDocument(req.user.id, documentType, documentUrl, fileName);
+  return ApiResponse.success(res, "Document uploaded successfully", document, 201);
+});
+
 export const getWorkerById = asyncHandler(async (req, res) => {
   const worker = await workerService.getWorkerById(req.params.id, req.user);
   return ApiResponse.success(res, "Worker retrieved successfully", worker, 200);
@@ -30,6 +55,11 @@ export const getWorkerById = asyncHandler(async (req, res) => {
 export const updateWorker = asyncHandler(async (req, res) => {
   const worker = await workerService.updateWorker(req.params.id, req.validatedData, req.user);
   return ApiResponse.success(res, "Worker updated successfully", worker, 200);
+});
+
+export const updateWorkerStatus = asyncHandler(async (req, res) => {
+  const worker = await workerService.updateWorkerStatus(req.params.id, req.validatedData.status);
+  return ApiResponse.success(res, "Worker status updated successfully", worker, 200);
 });
 
 export const deleteWorker = asyncHandler(async (req, res) => {
@@ -54,4 +84,16 @@ export const rejectAgencyInvitation = asyncHandler(async (req, res) => {
 export const leaveAgency = asyncHandler(async (req, res) => {
   const result = await workerService.leaveAgency(req.user.id, req.params.agencyId);
   return ApiResponse.success(res, "Left agency successfully", result, 200);
+});
+
+
+
+export const addAgencyWorkerSingle = asyncHandler(async (req, res) => {
+  const worker = await workerService.createAgencyWorkerSingle(req.user.id, req.validatedData);
+  return ApiResponse.success(res, "Worker added successfully", worker, 201);
+});
+
+export const addAgencyWorkerBulk = asyncHandler(async (req, res) => {
+  const result = await workerService.createAgencyWorkerBulk(req.user.id, req.validatedData.workers);
+  return ApiResponse.success(res, "Workers added successfully", result, 201);
 });

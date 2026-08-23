@@ -1,26 +1,34 @@
 import { ROUTES } from "../routes/routePaths";
-import { 
-  LayoutDashboard, 
-  Users, 
-  Building2, 
-  Clock, 
-  BookOpen, 
-  Tags, 
-  Globe, 
-  MapPin, 
-  CreditCard, 
-  FileText, 
+import {
+  LayoutDashboard,
+  Users,
+  Building2,
+  Clock,
+  BookOpen,
+  Tags,
+  Globe,
+  MapPin,
+  CreditCard,
+  FileText,
+  Bell,
   DollarSign,
   UserCircle,
   Briefcase,
   Bookmark,
-  CalendarCheck
+  CalendarCheck,
+  ShieldCheck,
+  ClipboardList,
+  UserCheck,
+  UserPlus,
+  Settings,
+  Megaphone,
 } from "lucide-react";
 
 const ALL_ROLES = ["SUPER_ADMIN", "CLIENT", "AGENCY", "WORKER"];
 const ADMIN_ONLY = ["SUPER_ADMIN"];
 
 export const NAVIGATION_CONFIG = [
+  // ─── OVERVIEW ────────────────────────────────────────────────────────────
   {
     group: "Overview",
     roles: ALL_ROLES,
@@ -30,45 +38,97 @@ export const NAVIGATION_CONFIG = [
         path: ROUTES.DASHBOARD,
         icon: LayoutDashboard,
         roles: ALL_ROLES,
-      }
-    ]
+      },
+    ],
   },
+
+
+  // ─── WORKER ACCOUNT ──────────────────────────────────────────────────────
   {
-    group: "Job Opportunities",
+    group: "Account",
     roles: ["WORKER"],
     items: [
       {
-        title: "Find Work",
-        path: ROUTES.FIND_WORK,
-        icon: Briefcase,
+        title: "Profile",
+        path: ROUTES.WORKER_PROFILE,
+        icon: UserCircle,
         roles: ["WORKER"],
       },
       {
-        title: "My Jobs",
-        path: ROUTES.MY_JOBS,
-        icon: Bookmark,
+        title: "Settings",
+        path: ROUTES.WORKER_SETTINGS,
+        icon: Settings,
         roles: ["WORKER"],
       },
-      {
-        title: "My Attendance",
-        path: ROUTES.MY_ATTENDANCE,
-        icon: CalendarCheck,
-        roles: ["WORKER"],
-      },
-      {
-        title: "My Payments",
-        path: ROUTES.MY_PAYMENTS,
-        icon: CreditCard,
-        roles: ["WORKER"],
-      },
-      {
-        title: "My Documents",
-        path: ROUTES.MY_DOCUMENTS,
-        icon: FileText,
-        roles: ["WORKER"],
-      }
-    ]
+    ],
   },
+
+  // ─── CLIENT PORTAL ───────────────────────────────────────────────────────
+  {
+    group: "Recruitment",
+    roles: ["CLIENT"],
+    items: [
+      {
+        title: "Find Workers",
+        path: ROUTES.WORKFORCE_SEARCH,
+        icon: Users,
+        roles: ["CLIENT"],
+      },
+      {
+        title: "Find Agencies",
+        path: ROUTES.AGENCY_SEARCH,
+        icon: Building2,
+        roles: ["CLIENT"],
+      },
+
+    ],
+  },
+
+
+
+  // ─── AGENCY PORTAL ───────────────────────────────────────────────────────
+  {
+    group: "Workforce Management",
+    roles: ["AGENCY"],
+    items: [
+      {
+        title: "Our Workers",
+        path: ROUTES.WORKERS + "?view=my",
+        icon: Users,
+        roles: ["AGENCY"],
+      },
+    ],
+  },
+
+  // ─── AGENCY ACCOUNT ──────────────────────────────────────────────────────
+  {
+    group: "Account",
+    roles: ["AGENCY"],
+    items: [
+      {
+        title: "Settings",
+        path: ROUTES.AGENCY_SETTINGS,
+        icon: Settings,
+        roles: ["AGENCY"],
+      },
+    ],
+  },
+
+  // ─── CLIENT ACCOUNT ──────────────────────────────────────────────────────
+  {
+    group: "Account",
+    roles: ["CLIENT"],
+    items: [
+      {
+        title: "Settings",
+        path: ROUTES.CLIENT_PROFILE,
+        icon: Settings,
+        roles: ["CLIENT"],
+      },
+    ],
+  },
+
+  // ─── SUPER ADMIN PORTAL ──────────────────────────────────────────────────
   {
     group: "User Management",
     roles: ADMIN_ONLY,
@@ -90,61 +150,39 @@ export const NAVIGATION_CONFIG = [
         path: ROUTES.CLIENTS,
         icon: Building2,
         roles: ADMIN_ONLY,
-      }
-    ]
+      },
+
+      {
+        title: "Hiring Requests",
+        path: ROUTES.HIRING_REQUESTS,
+        icon: Briefcase,
+        roles: ["AGENCY", "WORKER", "CLIENT"],
+      },
+    ],
   },
+
   {
-    group: "Finance & Operations",
+    group: "System Configuration",
     roles: ADMIN_ONLY,
     items: [
       {
-        title: "Payroll",
-        path: ROUTES.PAYROLLS,
-        icon: DollarSign,
+        title: "Settings",
+        path: ROUTES.SETTINGS,
+        icon: Settings,
         roles: ADMIN_ONLY,
       },
       {
-        title: "Invoices",
-        path: ROUTES.INVOICES,
-        icon: FileText,
+        title: "Advertisements",
+        path: ROUTES.ADVERTISEMENTS,
+        icon: Megaphone,
         roles: ADMIN_ONLY,
       },
       {
-        title: "Payments",
-        path: ROUTES.PAYMENTS,
-        icon: CreditCard,
-        roles: ADMIN_ONLY,
-      }
-    ]
-  },
-  {
-    group: "Master Data",
-    roles: ADMIN_ONLY,
-    items: [
-      {
-        title: "Skills",
-        path: ROUTES.SKILLS,
-        icon: BookOpen,
-        roles: ADMIN_ONLY,
-      },
-      {
-        title: "Categories",
-        path: ROUTES.CATEGORIES,
+        title: "Ad Packages",
+        path: ROUTES.AD_PACKAGES,
         icon: Tags,
         roles: ADMIN_ONLY,
       },
-      {
-        title: "Languages",
-        path: ROUTES.LANGUAGES,
-        icon: Globe,
-        roles: ADMIN_ONLY,
-      },
-      {
-        title: "Locations",
-        path: ROUTES.LOCATIONS,
-        icon: MapPin,
-        roles: ADMIN_ONLY,
-      }
-    ]
-  }
+    ],
+  },
 ];

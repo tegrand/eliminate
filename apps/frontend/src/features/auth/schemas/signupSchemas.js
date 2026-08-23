@@ -2,9 +2,8 @@ import { z } from "zod";
 
 // Client Signup Schema
 export const clientSignupSchema = z.object({
-  clientType: z.enum(["INDIVIDUAL", "COMPANY"]).default("COMPANY"),
-  companyName: z.string().optional(),
-  contactPerson: z.string().min(2, "Contact person name is required"),
+
+  contactPerson: z.string().min(2, "Name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Valid phone number is required"),
   password: z.string().min(8, "Password must be at least 8 characters"),
@@ -43,15 +42,6 @@ export const workerStep1Schema = z.object({
 });
 
 export const workerStep2Schema = z.object({
-  houseName: z.string().min(2, "House / Address name is required"),
-  district: z.string().min(2, "District is required"),
-  state: z.string().min(2, "State is required"),
-  pincode: z.string().min(6, "Valid 6-digit pincode is required"),
-});
-
-export const workerStep3Schema = z.object({
   primarySkill: z.string().min(2, "Primary skill is required"),
-  experienceYears: z.string().min(1, "Experience years is required"),
-  preferredCategory: z.string().min(2, "Category preference is required"),
-  expectedSalary: z.string().min(1, "Expected salary is required"),
+  expectedDailyWage: z.string().min(1, "Expected daily wage is required"),
 });

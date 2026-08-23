@@ -9,8 +9,6 @@ export const ROUTES = {
 
   // Auth
   LOGIN: "/login",
-  FORGOT_PASSWORD: "/forgot-password",
-  RESET_PASSWORD: "/reset-password",
 
   // Overview
   DASHBOARD: "/dashboard",
@@ -19,19 +17,30 @@ export const ROUTES = {
   WORKERS: "/workers",
   WORKER_DETAILS: "/workers/:id",
   WORKER_PROFILE: "/worker/profile",
-  FIND_WORK: "/find-work",
-  MY_JOBS: "/my-jobs",
+  WORKER_SETTINGS: "/worker/settings",
   MY_ATTENDANCE: "/my-attendance",
-  MY_PAYMENTS: "/my-payments",
+
   MY_DOCUMENTS: "/my-documents",
+  MY_SKILLS: "/my-skills",
 
   // Client
   CLIENTS: "/clients",
   CLIENT_DETAILS: "/clients/:id",
+  CLIENT_PROFILE: "/client/profile",
+  WORKFORCE_SEARCH: "/search-workers",
+  WORKFORCE_PROFILE: "/search-workers/:id",
+  AGENCY_SEARCH: "/search-agencies",
+  AGENCY_PROFILE_CLIENT: "/search-agencies/:id",
+  CLIENT_JOBS: "/jobs",
 
   // Agency
   AGENCIES: "/agencies",
   AGENCY_DETAILS: "/agencies/:id",
+  AGENCY_PROFILE: "/agency/profile",
+  AGENCY_SETTINGS: "/agency/settings",
+  AGENCY_CLIENTS: "/agency/clients",
+  AGENCY_JOB_REQUIREMENTS: "/agency/job-requirements",
+  AGENCY_TEAM_ASSIGNMENTS: "/agency/team-assignments",
 
   // Master Data
   SKILLS: "/skills",
@@ -41,15 +50,15 @@ export const ROUTES = {
 
   // Job Requirements
   JOB_REQUIREMENTS: "/job-requirements",
+  JOB_REQUIREMENT_DETAILS: "/job-requirements/:id",
   ASSIGN_WORKERS: "/job-requirements/:id/assign",
 
-  // Assignments
-  ASSIGNMENTS: "/assignments",
 
   // Attendance
   ATTENDANCE: "/attendance",
   ATTENDANCE_BULK: "/attendance/bulk",
   ATTENDANCE_VERIFY: "/attendance/verify/:id",
+  ATTENDANCE_MISSING: "/attendance/missing/:id",
 
   // Payroll
   PAYROLLS: "/payrolls",
@@ -59,6 +68,12 @@ export const ROUTES = {
   INVOICES: "/invoices",
   INVOICE_DETAILS: "/invoices/:id",
 
-  // Payments
-  PAYMENTS: "/payments",
+
+  // Settings
+  SETTINGS: "/settings",
+  ADVERTISEMENTS: "/advertisements",
+  AD_PACKAGES: "/ad-packages",
+
+  // Admin
+  ADMIN: "/admin/*",
 };

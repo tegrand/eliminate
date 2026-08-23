@@ -3,10 +3,7 @@ import { DataTable } from "../../../components/ui/data-table";
 
 export default function CategoryTable({ data, loading, onEdit, onDelete }) {
   const columns = [
-    { key: "code", title: "Category Code", render: (row) => row.code },
     { key: "name", title: "Category Name", render: (row) => row.name },
-    { key: "description", title: "Description", render: (row) => row.description },
-    { key: "status", title: "Status", render: (row) => row.status },
     {
       key: "actions",
       title: "Actions",

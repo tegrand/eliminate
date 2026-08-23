@@ -6,7 +6,6 @@ export const assignSkill = asyncHandler(async (req, res) => {
   const payload = {
     ...req.validatedData,
     workerId: req.params.workerId,
-    skillId: req.params.skillId,
   };
   const workerSkill = await workerSkillService.assignSkill(payload);
   return ApiResponse.success(res, "Skill assigned successfully", workerSkill, 201);

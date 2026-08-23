@@ -3,6 +3,7 @@ import crypto from "crypto";
 
 import prisma from "../../config/prisma.js";
 import authConfig from "../../config/auth.config.js";
+import { firebaseAuth } from "../../config/firebase.js";
 import AppError from "../../shared/errors/app-error.js";
 import { generateAccessToken, generateRefreshToken, parseExpToMs, verifyRefreshToken } from "./auth.utils.js";
 
@@ -26,6 +27,10 @@ const issueTokensAndUpdateUser = async (user, meta, action = "LOGIN") => {
       select: {
         id: true,
         email: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        avatar: true,
         status: true,
         profileType: true,
         emailVerified: true,
@@ -52,7 +57,35 @@ const issueTokensAndUpdateUser = async (user, meta, action = "LOGIN") => {
     }),
   ]);
 
-  return { accessToken, refreshToken, user: updatedUser };
+  let userWithProfile = { ...updatedUser };
+
+  // If user is a CLIENT, attach clientProfile so the frontend can show "My Profile" vs "Company Profile"
+  if (updatedUser.profileType === "CLIENT") {
+    const clientProfile = await prisma.client.findUnique({
+      where: { userId: updatedUser.id },
+      select: { contactPerson: true },
+    });
+    if (clientProfile) {
+      userWithProfile.clientProfile = clientProfile;
+    }
+  } else if (updatedUser.profileType === "WORKER") {
+    const workerProfile = await prisma.worker.findUnique({
+      where: { userId: updatedUser.id },
+      select: { id: true, profileStatus: true },
+    });
+    if (workerProfile) {
+      userWithProfile.workerProfile = workerProfile;
+    }
+  } else if (updatedUser.profileType === "AGENCY") {
+    const agencyProfile = await prisma.agency.findUnique({
+      where: { userId: updatedUser.id },
+    });
+    if (agencyProfile) {
+      userWithProfile.agencyProfile = agencyProfile;
+    }
+  }
+
+  return { accessToken, refreshToken, user: userWithProfile };
 };
 
 export const register = async (data) => {
@@ -64,36 +97,76 @@ export const register = async (data) => {
     throw new AppError("Email already exists", 409);
   }
 
-  const role = await prisma.role.findUnique({
+  let role = await prisma.role.findUnique({
     where: { name: data.accountType },
   });
 
   if (!role) {
-    throw new AppError("Invalid account type", 400);
+    const displayName = data.accountType.charAt(0).toUpperCase() + data.accountType.slice(1).toLowerCase();
+    role = await prisma.role.create({
+      data: {
+        name: data.accountType,
+        displayName: displayName,
+        description: `System role for ${displayName}`,
+        isSystem: true,
+        isActive: true,
+      }
+    });
   }
 
   const passwordHash = await bcrypt.hash(data.password, authConfig.bcryptRounds);
+
+  const firstName = data.fullName ? data.fullName.split(' ')[0] : data.ownerName ? data.ownerName.split(' ')[0] : data.contactPerson ? data.contactPerson.split(' ')[0] : null;
+  const lastName = data.fullName ? data.fullName.split(' ').slice(1).join(' ') || null : data.ownerName ? data.ownerName.split(' ').slice(1).join(' ') || null : data.contactPerson ? data.contactPerson.split(' ').slice(1).join(' ') || null : null;
 
   const user = await prisma.user.create({
     data: {
       email: data.email,
       passwordHash,
+      firstName,
+      lastName,
+      phone: data.phone || null,
       profileType: data.accountType,
       status: data.accountType === "CLIENT" ? "ACTIVE" : "PENDING",
       roleId: role.id,
       worker: data.accountType === "WORKER" ? {
         create: {
-          workerCode: `WRK-${crypto.randomBytes(4).toString("hex").toUpperCase()}`
+          workerCode: `WRK-${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
+          firstName,
+          lastName,
+          phone: data.phone || null,
+          gender: data.gender || null,
+          dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : null,
+          expectedDailyWage: data.expectedDailyWage || null,
+          jobType: data.jobType || null,
+          totalExperienceYears: data.experience ? Number(data.experience) : null,
+          addressLine1: data.addressLine1 || null,
+          district: data.district || null,
+          state: data.state || null,
+          city: data.city || null,
+          travelDistance: data.travelDistance ? Number(data.travelDistance) : null,
+          notes: data.primarySkill ? `Primary Skill: ${data.primarySkill}` : null,
         }
       } : undefined,
       agency: data.accountType === "AGENCY" ? {
         create: {
-          agencyCode: `AGC-${crypto.randomBytes(4).toString("hex").toUpperCase()}`
+          agencyCode: `AGC-${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
+          agencyName: data.agencyName || null,
+          contactPerson: data.ownerName || null,
+          phone: data.phone || null,
+          email: data.email || null,
+          addressLine1: data.addressLine1 || null,
+          city: data.district || null,
+          state: data.state || null,
+          postalCode: data.pincode || null,
         }
       } : undefined,
       client: data.accountType === "CLIENT" ? {
         create: {
-          clientCode: `CLI-${crypto.randomBytes(4).toString("hex").toUpperCase()}`
+          clientCode: `CLI-${crypto.randomBytes(4).toString("hex").toUpperCase()}`,
+          contactPerson: data.contactPerson || null,
+          phone: data.phone || null,
+          email: data.email || null,
         }
       } : undefined
     },
@@ -103,18 +176,51 @@ export const register = async (data) => {
       profileType: true,
       status: true,
       createdAt: true,
+      worker: { select: { id: true } }
     },
   });
+
+  if (data.accountType === "WORKER" && user.worker) {
+    if (data.skill) {
+      const slug = data.skill.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const skillRecord = await prisma.skill.upsert({
+        where: { slug },
+        update: {},
+        create: { name: data.skill, slug },
+      });
+      await prisma.workerSkill.create({
+        data: {
+          workerId: user.worker.id,
+          skillId: skillRecord.id,
+          proficiencyLevel: "INTERMEDIATE",
+          isPrimary: true,
+          experienceYears: data.experience ? Number(data.experience) : null,
+        }
+      });
+    }
+    if (data.language) {
+      const code = data.language.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const langRecord = await prisma.language.upsert({
+        where: { code },
+        update: {},
+        create: { name: data.language, code },
+      });
+      await prisma.workerLanguage.create({
+        data: {
+          workerId: user.worker.id,
+          languageId: langRecord.id,
+          proficiencyLevel: "CONVERSATIONAL",
+          isPrimary: true,
+          canSpeak: true,
+        }
+      });
+    }
+  }
 
   return user;
 };
 
 export const login = async (data, meta) => {
-  console.log("\n=== LOGIN ATTEMPT ===");
-  console.log("Email received:", data.email);
-  console.log("Password received:", data.password);
-  console.log("=====================\n");
-
   const normalizedEmail = data.email.trim().toLowerCase();
 
   const user = await prisma.user.findUnique({
@@ -205,6 +311,112 @@ export const login = async (data, meta) => {
   return issueTokensAndUpdateUser(user, meta, "LOGIN");
 };
 
+export const socialLogin = async (data, meta) => {
+  const { token, role: accountType, name } = data;
+
+  if (!token) throw new AppError("Token is required", 400);
+
+  let decodedToken;
+  try {
+    if (!firebaseAuth) {
+        throw new AppError("Firebase Admin not configured on server", 500);
+    }
+    decodedToken = await firebaseAuth.verifyIdToken(token);
+  } catch (error) {
+    throw new AppError("Invalid or expired Firebase token", 401);
+  }
+
+  let email = decodedToken.email;
+  const phone = decodedToken.phone_number;
+
+  if (!email && !phone) {
+    throw new AppError("Token does not contain email or phone number", 400);
+  }
+
+  if (!email) {
+    email = `${phone.replace('+', '')}@eliminate.local`;
+  }
+
+  const normalizedEmail = email.toLowerCase();
+
+  let user = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email: normalizedEmail },
+        ...(phone ? [{ phone }] : [])
+      ]
+    },
+    select: {
+      id: true,
+      status: true,
+      profileType: true,
+      role: { select: { id: true, name: true, displayName: true } },
+    }
+  });
+
+  if (user) {
+    // If request comes from a role-specific signup page (accountType provided), ensure role matches
+    if (accountType && user.profileType !== accountType) {
+      throw new AppError(`An account with this email/phone is already registered as ${user.profileType}. Please log in instead.`, 409);
+    }
+  } else {
+    if (!accountType) {
+        throw new AppError("Account not found. Please sign up first.", 404);
+    }
+
+    const fakePassword = crypto.randomBytes(16).toString("hex");
+    const registrationData = {
+      email: normalizedEmail,
+      password: fakePassword,
+      accountType,
+      phone: phone || null,
+    };
+    
+    if (accountType === 'AGENCY') {
+        registrationData.agencyName = name;
+        registrationData.ownerName = name;
+    } else if (accountType === 'CLIENT') {
+        registrationData.contactPerson = name;
+    } else {
+        registrationData.fullName = name;
+    }
+
+    const newUser = await register(registrationData);
+    
+    user = await prisma.user.findUnique({
+      where: { id: newUser.id },
+      select: {
+        id: true,
+        status: true,
+        profileType: true,
+        role: { select: { id: true, name: true, displayName: true } },
+      }
+    });
+  }
+
+  if (user.profileType === "WORKER" || user.profileType === "AGENCY") {
+    switch (user.status) {
+      case "SUSPENDED": throw new AppError("Your account has been suspended.", 403);
+      case "REJECTED": throw new AppError("Your account has been rejected.", 403);
+      case "DELETED": throw new AppError("Account not available.", 403);
+      case "PENDING":
+      case "ACTIVE": break;
+      default: throw new AppError("Invalid account status.", 403);
+    }
+  } else {
+    switch (user.status) {
+      case "PENDING": throw new AppError("Your account is pending approval.", 403);
+      case "SUSPENDED": throw new AppError("Your account has been suspended.", 403);
+      case "REJECTED": throw new AppError("Your account has been rejected.", 403);
+      case "DELETED": throw new AppError("Account not available.", 403);
+      case "ACTIVE": break;
+      default: throw new AppError("Invalid account status.", 403);
+    }
+  }
+
+  return issueTokensAndUpdateUser(user, meta, "LOGIN");
+};
+
 export const refreshToken = async (token, meta) => {
   const payload = verifyRefreshToken(token);
   if (!payload || !payload.sub) {
@@ -283,6 +495,10 @@ export const getCurrentUser = async (userId) => {
     select: {
       id: true,
       email: true,
+      firstName: true,
+      lastName: true,
+      phone: true,
+      avatar: true,
       status: true,
       profileType: true,
       emailVerified: true,
@@ -312,7 +528,33 @@ export const getCurrentUser = async (userId) => {
     }
   }
 
-  return user;
+  let userWithProfile = { ...user };
+  if (user.profileType === "CLIENT") {
+    const clientProfile = await prisma.client.findUnique({
+      where: { userId: user.id },
+      select: { contactPerson: true },
+    });
+    if (clientProfile) {
+      userWithProfile.clientProfile = clientProfile;
+    }
+  } else if (user.profileType === "WORKER") {
+    const workerProfile = await prisma.worker.findUnique({
+      where: { userId: user.id },
+      select: { id: true, profileStatus: true },
+    });
+    if (workerProfile) {
+      userWithProfile.workerProfile = workerProfile;
+    }
+  } else if (user.profileType === "AGENCY") {
+    const agencyProfile = await prisma.agency.findUnique({
+      where: { userId: user.id },
+    });
+    if (agencyProfile) {
+      userWithProfile.agencyProfile = agencyProfile;
+    }
+  }
+
+  return userWithProfile;
 };
 
 export const changePassword = async (userId, data, meta) => {
@@ -456,4 +698,12 @@ export const verifyEmail = async (data) => {
       verificationTokenExpiresAt: null,
     },
   });
+};
+
+export const verifyPassword = async (userId, password) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new AppError("User not found", 404);
+  const isValid = await bcrypt.compare(password, user.passwordHash);
+  if (!isValid) throw new AppError("Invalid password", 401);
+  return true;
 };

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { FileText, Download, Upload, Trash2, Edit, Loader2, FileCheck, AlertCircle } from "lucide-react";
+import { FileText, Download, Upload, Trash2, Edit, Loader2, FileCheck, AlertCircle, Clock } from "lucide-react";
 import { toast } from "sonner";
 import api from "../../../api/axios";
 import Button from "../../../components/ui/button/Button";
@@ -7,15 +7,20 @@ import { Modal } from "../../../components/ui/modal/Modal";
 import { format, parseISO } from "date-fns";
 
 const DOCUMENT_TYPES = [
-  "AADHAAR",
-  "PAN",
-  "PASSPORT",
-  "DRIVING_LICENSE",
-  "CERTIFICATE",
-  "OTHER"
+  { value: "AADHAAR", label: "Aadhaar" },
+  { value: "PAN", label: "PAN (Optional)" },
+  { value: "DRIVING_LICENSE", label: "Driving License (If applicable)" },
+  { value: "EXPERIENCE_CERTIFICATE", label: "Experience Certificate" },
+  { value: "SKILL_CERTIFICATE", label: "Skill Certificate" },
+  { value: "PHOTO", label: "Passport Size Photo" }
 ];
 
-export default function MyDocumentsPage() {
+const getDocumentLabel = (type) => {
+  const found = DOCUMENT_TYPES.find(d => d.value === type);
+  return found ? found.label : type.replace('_', ' ');
+};
+
+export default function MyDocumentsPage({ embedded = false }) {
   const [documents, setDocuments] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -43,9 +48,9 @@ export default function MyDocumentsPage() {
     fetchDocuments();
   }, []);
 
-  const openUploadModal = () => {
+  const openUploadModal = (type = "AADHAAR") => {
     setModalMode("upload");
-    setDocType("AADHAAR");
+    setDocType(type);
     setFile(null);
     setSelectedDocId(null);
     setIsModalOpen(true);
@@ -72,6 +77,8 @@ export default function MyDocumentsPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
+    
     if (!file) {
       toast.error("Please select a file to upload");
       return;
@@ -132,21 +139,69 @@ export default function MyDocumentsPage() {
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto py-8 space-y-6 animate-fade-in">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">My Documents</h1>
-          <p className="text-sm text-slate-500 mt-1">Manage your identity proofs and certifications</p>
+    <div className={embedded ? "w-full space-y-5" : "w-full max-w-6xl mx-auto py-8 space-y-6 animate-fade-in"}>
+      {!embedded && (
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">My Documents</h1>
+            <p className="text-sm text-slate-500 mt-1">Manage your identity proofs and certifications</p>
+          </div>
         </div>
-        <Button onClick={openUploadModal}>
-          <Upload className="w-4 h-4 mr-2" />
-          Upload New
-        </Button>
-      </div>
+      )}
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+        </div>
+      ) : embedded ? (
+        <div className="flex flex-col space-y-3">
+          {[
+            { id: 'resume', type: 'EXPERIENCE_CERTIFICATE', title: 'Resume / CV', desc: 'Upload your latest resume', icon: FileText, color: 'text-indigo-600', bg: 'bg-indigo-50' },
+            { id: 'id_proof', type: 'AADHAAR', title: 'ID Proof', desc: 'Aadhaar, PAN, Passport, etc.', icon: FileCheck, color: 'text-emerald-600', bg: 'bg-emerald-50' },
+            { id: 'address', type: 'OTHER', title: 'Address Proof', desc: 'Utility bill, Rent agreement, etc.', icon: FileText, color: 'text-amber-600', bg: 'bg-amber-50' }
+          ].map(req => {
+            const uploadedDoc = documents.find(d => 
+              (req.id === 'resume' && d.documentType === 'EXPERIENCE_CERTIFICATE') ||
+              (req.id === 'id_proof' && ['AADHAAR', 'PAN', 'PASSPORT'].includes(d.documentType)) ||
+              (req.id === 'address' && d.documentType === 'OTHER')
+            );
+            
+            return (
+              <div key={req.id} className="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-white shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center gap-3">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${req.bg} ${req.color}`}>
+                    <req.icon className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-900">{req.title}</h3>
+                    <p className="text-[10px] text-slate-500">{uploadedDoc ? uploadedDoc.fileName : req.desc}</p>
+                  </div>
+                </div>
+                {uploadedDoc ? (
+                  <Button type="button" size="sm" variant="outline" className="text-slate-600 border-slate-200 w-24 flex justify-center" onClick={() => openReplaceModal(uploadedDoc)}>
+                    Replace
+                  </Button>
+                ) : (
+                  <Button type="button" size="sm" variant="outline" className="text-indigo-600 border-indigo-100 hover:bg-indigo-50 w-24 flex justify-center" onClick={() => openUploadModal(req.type)}>
+                    <Upload className="w-3.5 h-3.5 mr-1.5" />
+                    Upload
+                  </Button>
+                )}
+              </div>
+            );
+          })}
+          
+          <div className="pt-4 flex items-center gap-3">
+            <span className="text-[10px] font-semibold text-slate-500 whitespace-nowrap">
+              {documents.length} of 3 documents uploaded
+            </span>
+            <div className="h-1 w-full bg-slate-100 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-indigo-500 rounded-full" 
+                style={{ width: `${Math.min(100, (documents.length / 3) * 100)}%` }} 
+              />
+            </div>
+          </div>
         </div>
       ) : documents.length === 0 ? (
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center">
@@ -157,7 +212,7 @@ export default function MyDocumentsPage() {
           <p className="text-slate-500 max-w-md mx-auto mb-6">
             Upload your Aadhaar, PAN card, or other required certificates to get your profile verified.
           </p>
-          <Button onClick={openUploadModal}>Upload Document</Button>
+          <Button type="button" onClick={() => openUploadModal()}>Upload Document</Button>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -168,8 +223,8 @@ export default function MyDocumentsPage() {
                   <FileText className="w-6 h-6" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-slate-900 truncate" title={doc.documentType}>
-                    {doc.documentType.replace('_', ' ')}
+                  <h3 className="font-bold text-slate-900 truncate" title={getDocumentLabel(doc.documentType)}>
+                    {getDocumentLabel(doc.documentType)}
                   </h3>
                   <p className="text-xs text-slate-500 truncate mt-0.5" title={doc.fileName}>{doc.fileName}</p>
                   
@@ -196,13 +251,13 @@ export default function MyDocumentsPage() {
                   {format(parseISO(doc.createdAt), 'MMM dd, yyyy')}
                 </p>
                 <div className="flex items-center gap-1 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button onClick={() => handleDownload(doc)} className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" title="Download/View">
+                  <button type="button" onClick={() => handleDownload(doc)} className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors" title="Download/View">
                     <Download className="w-4 h-4" />
                   </button>
-                  <button onClick={() => openReplaceModal(doc)} className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Replace">
+                  <button type="button" onClick={() => openReplaceModal(doc)} className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Replace">
                     <Edit className="w-4 h-4" />
                   </button>
-                  <button onClick={() => handleDelete(doc.id)} className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
+                  <button type="button" onClick={() => handleDelete(doc.id)} className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -213,67 +268,71 @@ export default function MyDocumentsPage() {
       )}
 
       {/* Upload / Replace Modal */}
-      <Modal isOpen={isModalOpen} onClose={() => !uploading && setIsModalOpen(false)} title={modalMode === 'upload' ? 'Upload Document' : 'Replace Document'}>
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+      <Modal isOpen={isModalOpen} onClose={() => !uploading && setIsModalOpen(false)} title={modalMode === 'upload' ? 'Upload Document' : 'Replace Document'} className="sm:max-w-xl">
+        <div className="p-6 space-y-4">
           
-          {modalMode === 'upload' && (
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-slate-700">Document Type</label>
-              <select 
-                value={docType}
-                onChange={(e) => setDocType(e.target.value)}
-                className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              >
-                {DOCUMENT_TYPES.map(type => (
-                  <option key={type} value={type}>{type.replace('_', ' ')}</option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {modalMode === 'replace' && (
-            <div className="p-3 bg-blue-50 text-blue-800 rounded-lg text-sm border border-blue-100">
-              Replacing <strong>{docType.replace('_', ' ')}</strong>. The old file will be overwritten and status will reset to pending.
-            </div>
-          )}
-
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium text-slate-700">Select File</label>
-            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-xl hover:bg-slate-50 transition-colors">
-              <div className="space-y-1 text-center">
-                <FileText className="mx-auto h-12 w-12 text-slate-300" />
-                <div className="flex text-sm text-slate-600">
-                  <label htmlFor="file-upload" className="relative cursor-pointer bg-transparent rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
-                    <span>Upload a file</span>
-                    <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleFileChange} accept=".pdf,.jpg,.jpeg,.png" />
-                  </label>
-                  <p className="pl-1">or drag and drop</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            <div className="space-y-4">
+              {modalMode === 'upload' && (
+                <div className="space-y-1.5">
+                  <label className="text-sm font-medium text-slate-700">Document Type</label>
+                  <select 
+                    value={docType}
+                    onChange={(e) => setDocType(e.target.value)}
+                    className="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  >
+                    {DOCUMENT_TYPES.map(type => (
+                      <option key={type.value} value={type.value}>{type.label}</option>
+                    ))}
+                  </select>
                 </div>
-                <p className="text-xs text-slate-500">
-                  PDF, PNG, JPG up to 5MB
-                </p>
-              </div>
+              )}
+
+              {modalMode === 'replace' && (
+                <div className="p-3 bg-blue-50 text-blue-800 rounded-lg text-sm border border-blue-100">
+                  Replacing <strong>{getDocumentLabel(docType)}</strong>. The old file will be overwritten and status will reset to pending.
+                </div>
+              )}
             </div>
-            {file && (
-              <p className="text-sm text-emerald-600 font-medium mt-2 flex items-center gap-1">
-                <FileCheck className="w-4 h-4" /> {file.name}
-              </p>
-            )}
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700">Select File</label>
+              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-xl hover:bg-slate-50 transition-colors">
+                <div className="space-y-1 text-center">
+                  <FileText className="mx-auto h-12 w-12 text-slate-300" />
+                  <div className="flex text-sm text-slate-600 justify-center">
+                    <label htmlFor="file-upload" className="relative cursor-pointer bg-transparent rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                      <span>Upload a file</span>
+                      <input id="file-upload" name="file-upload" type="file" className="sr-only" onChange={handleFileChange} accept=".pdf,.jpg,.jpeg,.png" />
+                    </label>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-2">
+                    PDF, PNG, JPG up to 5MB
+                  </p>
+                </div>
+              </div>
+              {file && (
+                <p className="text-sm text-emerald-600 font-medium mt-2 flex items-center gap-1">
+                  <FileCheck className="w-4 h-4 shrink-0" /> <span className="truncate">{file.name}</span>
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
             <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={uploading}>
               Cancel
             </Button>
-            <Button type="submit" disabled={!file || uploading}>
-              {uploading ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {modalMode === 'upload' ? 'Uploading...' : 'Replacing...'}</>
-              ) : (
-                <><Upload className="w-4 h-4 mr-2" /> {modalMode === 'upload' ? 'Upload' : 'Replace'}</>
-              )}
+            <Button 
+              type="button"
+              onClick={handleSubmit}
+              disabled={!file || uploading}
+              leftIcon={uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+            >
+              {uploading ? (modalMode === 'upload' ? 'Uploading...' : 'Replacing...') : (modalMode === 'upload' ? 'Upload' : 'Replace')}
             </Button>
           </div>
-        </form>
+        </div>
       </Modal>
 
     </div>

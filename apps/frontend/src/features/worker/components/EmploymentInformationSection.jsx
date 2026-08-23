@@ -47,6 +47,14 @@ export default function EmploymentInformationSection({ register, errors }) {
             error={errors.salary?.message}
             {...register("salary")} 
           />
+          
+          <Input 
+            label="Experience (Years)" 
+            type="number"
+            placeholder="e.g. 5" 
+            error={errors.totalExperienceYears?.message}
+            {...register("totalExperienceYears", { valueAsNumber: true })} 
+          />
         </div>
       </CardContent>
     </Card>

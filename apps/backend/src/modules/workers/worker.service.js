@@ -17,42 +17,89 @@ const workerSelect = {
   gender: true,
   dateOfBirth: true,
   profilePhoto: true,
-  employmentStatus: true,
-  joiningDate: true,
-  notes: true,
+  resumeUrl: true,
+  email: true,
   addressLine1: true,
   addressLine2: true,
   city: true,
+  district: true,
   state: true,
   country: true,
   postalCode: true,
   emergencyContactName: true,
   emergencyContactPhone: true,
   emergencyContactRelation: true,
-  experienceYears: true,
-  expectedSalary: true,
-  preferredLocations: true,
-  aadhaarNumber: true,
-  panNumber: true,
-  bankAccountNumber: true,
-  bankIfsc: true,
-  bankName: true,
-  resumeUrl: true,
-  aadhaarUrl: true,
-  panUrl: true,
-  bankPassbookUrl: true,
-  experienceCertificates: true,
-  skillCertificates: true,
+  travelDistance: true,
+  jobType: true,
+  totalExperienceYears: true,
+  employmentStatus: true,
+  joiningDate: true,
+  notes: true,
+  expectedDailyWage: true,
+
   createdAt: true,
   updatedAt: true,
+  profileStatus: true,
+  documents: {
+    select: {
+      id: true,
+      documentType: true,
+      documentUrl: true,
+      fileName: true,
+      status: true,
+      remarks: true,
+      updatedAt: true
+    }
+  },
+  skills: {
+    select: {
+      id: true,
+      proficiencyLevel: true,
+      isPrimary: true,
+      experienceYears: true,
+      skill: { select: { id: true, name: true, slug: true } }
+    },
+    orderBy: [{ isPrimary: "desc" }]
+  },
+  languages: {
+    select: {
+      id: true,
+      proficiencyLevel: true,
+      language: { select: { id: true, name: true } }
+    }
+  },
   user: {
     select: {
       id: true,
       email: true,
       status: true,
       profileType: true,
+      firstName: true,
+      lastName: true,
+      avatar: true,
     },
   },
+  reviews: {
+    select: {
+      id: true,
+      rating: true,
+      comment: true,
+      createdAt: true,
+      reviewer: {
+        select: {
+          contactPerson: true,
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+              avatar: true
+            }
+          }
+        }
+      }
+    },
+    orderBy: { createdAt: 'desc' }
+  }
 };
 
 export const createWorker = async (userId, data) => {
@@ -87,6 +134,8 @@ export const getWorkers = async ({
   status,
   sortBy = "createdAt",
   sortOrder = "desc",
+  view,
+  user,
 }) => {
   const skip = (page - 1) * limit;
 
@@ -94,8 +143,20 @@ export const getWorkers = async ({
     deletedAt: null,
   };
 
+  if (user?.profileType === "AGENCY") {
+    const agencyUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      include: { agency: true }
+    });
+    if (agencyUser?.agency) {
+      where.agencies = {
+        some: { agencyId: agencyUser.agency.id }
+      };
+    }
+  }
+
   if (status) {
-    where.employmentStatus = status;
+    where.profileStatus = status;
   }
 
   if (search) {
@@ -107,7 +168,7 @@ export const getWorkers = async ({
     ];
   }
 
-  const [items, total] = await Promise.all([
+  const [items, total, feeSetting] = await Promise.all([
     prisma.worker.findMany({
       where,
       skip,
@@ -116,10 +177,49 @@ export const getWorkers = async ({
       select: workerSelect,
     }),
     prisma.worker.count({ where }),
+    prisma.systemSetting.findUnique({ where: { key: "platform_fee_percentage" } })
   ]);
 
+  const platformFeePercentage = feeSetting && !isNaN(parseFloat(feeSetting.value)) ? parseFloat(feeSetting.value) : 0;
+
+  const adjustedItems = items.map(worker => {
+    if (worker.expectedDailyWage && platformFeePercentage > 0) {
+      const wage = parseFloat(worker.expectedDailyWage);
+      if (!isNaN(wage)) {
+        worker.baseExpectedDailyWage = worker.expectedDailyWage;
+        worker.platformFee = String(Math.round(wage * platformFeePercentage / 100));
+        worker.expectedDailyWage = String(Math.round(wage + (wage * platformFeePercentage / 100)));
+      }
+    } else {
+      worker.baseExpectedDailyWage = worker.expectedDailyWage;
+      worker.platformFee = "0";
+    }
+    return worker;
+  });
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const workerIds = adjustedItems.map(w => w.id);
+  const todayAttendances = await prisma.workerAttendance.findMany({
+    where: {
+      workerId: { in: workerIds },
+      date: today
+    }
+  });
+
+  const attendanceMap = todayAttendances.reduce((acc, curr) => {
+    acc[curr.workerId] = { status: curr.status, checkOutTime: curr.checkOutTime };
+    return acc;
+  }, {});
+
+  const finalItems = adjustedItems.map(worker => {
+    const att = attendanceMap[worker.id];
+    worker.presentToday = att?.status === "PRESENT" && !att?.checkOutTime;
+    return worker;
+  });
+
   return {
-    items,
+    items: finalItems,
     pagination: {
       page: Number(page),
       limit: Number(limit),
@@ -139,9 +239,53 @@ export const getWorkerById = async (id, user) => {
     throw new AppError("Worker not found", 404);
   }
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayAttendance = await prisma.workerAttendance.findFirst({
+    where: {
+      workerId: worker.id,
+      date: today
+    }
+  });
+
+  worker.presentToday = todayAttendance?.status === "PRESENT" && !todayAttendance?.checkOutTime;
+
   // RBAC Ownership Check
   if (user?.profileType === "WORKER" && worker.userId !== user.id) {
     throw new AppError("Forbidden: You cannot access another worker's profile.", 403);
+  }
+
+  // Only apply commission if user viewing is NOT the worker themselves
+  if (user?.profileType !== "WORKER" || worker.userId !== user.id) {
+    const feeSetting = await prisma.systemSetting.findUnique({ where: { key: "platform_fee_percentage" } });
+    const platformFeePercentage = feeSetting && !isNaN(parseFloat(feeSetting.value)) ? parseFloat(feeSetting.value) : 0;
+    
+    if (worker.expectedDailyWage && platformFeePercentage > 0) {
+      const wage = parseFloat(worker.expectedDailyWage);
+      if (!isNaN(wage)) {
+        worker.baseExpectedDailyWage = worker.expectedDailyWage;
+        worker.platformFee = String(Math.round(wage * platformFeePercentage / 100));
+        worker.expectedDailyWage = String(Math.round(wage + (wage * platformFeePercentage / 100)));
+      }
+    } else {
+      worker.baseExpectedDailyWage = worker.expectedDailyWage;
+      worker.platformFee = "0";
+    }
+  } else {
+    // If worker viewing their own profile, still pass the base and calculated fee for display, but keep expectedDailyWage as base
+    const feeSetting = await prisma.systemSetting.findUnique({ where: { key: "platform_fee_percentage" } });
+    const platformFeePercentage = feeSetting && !isNaN(parseFloat(feeSetting.value)) ? parseFloat(feeSetting.value) : 0;
+    
+    if (worker.expectedDailyWage && platformFeePercentage > 0) {
+      const wage = parseFloat(worker.expectedDailyWage);
+      if (!isNaN(wage)) {
+        worker.baseExpectedDailyWage = worker.expectedDailyWage;
+        worker.platformFee = String(Math.round(wage * platformFeePercentage / 100));
+      }
+    } else {
+      worker.baseExpectedDailyWage = worker.expectedDailyWage;
+      worker.platformFee = "0";
+    }
   }
 
   return worker;
@@ -161,12 +305,51 @@ export const updateWorker = async (id, data, user) => {
     throw new AppError("Forbidden: You cannot update another worker's profile.", 403);
   }
 
-  const updatedWorker = await prisma.worker.update({
-    where: { id },
-    data,
-    select: workerSelect,
+  if (data.email) {
+    const normalizedEmail = data.email.trim().toLowerCase();
+    data.email = normalizedEmail;
+    if (worker.userId) {
+      const existingUser = await prisma.user.findFirst({
+        where: { email: normalizedEmail, id: { not: worker.userId } },
+      });
+      if (existingUser) {
+        throw new AppError("An account with this email address already exists", 409);
+      }
+    }
+  }
+
+  const [updatedWorker] = await prisma.$transaction([
+    prisma.worker.update({
+      where: { id },
+      data,
+      select: workerSelect,
+    }),
+    ...(data.email && worker.userId ? [
+      prisma.user.update({
+        where: { id: worker.userId },
+        data: { email: data.email },
+      })
+    ] : [])
+  ]);
+
+  return updatedWorker;
+};
+
+export const updateWorkerStatus = async (id, status) => {
+  const worker = await prisma.worker.findFirst({
+    where: { id, deletedAt: null },
   });
 
+  if (!worker) {
+    throw new AppError("Worker not found", 404);
+  }
+
+  const updatedWorker = await prisma.worker.update({
+    where: { id },
+    data: { profileStatus: status },
+    select: workerSelect,
+  });
+  
   return updatedWorker;
 };
 
@@ -209,13 +392,46 @@ export const updateMyWorkerProfile = async (userId, data) => {
     throw new AppError("Worker profile not found", 404);
   }
 
-  const updatedWorker = await prisma.worker.update({
-    where: { id: worker.id },
-    data,
-    select: workerSelect,
-  });
+  if (data.email) {
+    const normalizedEmail = data.email.trim().toLowerCase();
+    data.email = normalizedEmail;
+    const existingUser = await prisma.user.findFirst({
+      where: { email: normalizedEmail, id: { not: userId } },
+    });
+    if (existingUser) {
+      throw new AppError("An account with this email address already exists", 409);
+    }
+  }
+
+  const [updatedWorker] = await prisma.$transaction([
+    prisma.worker.update({
+      where: { id: worker.id },
+      data,
+      select: workerSelect,
+    }),
+    ...(data.email && userId ? [
+      prisma.user.update({
+        where: { id: userId },
+        data: { email: data.email },
+      })
+    ] : [])
+  ]);
 
   return updatedWorker;
+};
+
+export const uploadDocument = async (userId, documentType, documentUrl, fileName) => {
+  const worker = await getMyWorkerProfile(userId);
+  
+  return prisma.workerDocument.create({
+    data: {
+      workerId: worker.id,
+      documentType,
+      documentUrl,
+      fileName,
+      status: "PENDING_VERIFICATION"
+    }
+  });
 };
 
 export const getMyAgencies = async (userId) => {
@@ -285,7 +501,6 @@ export const acceptAgencyInvitation = async (userId, agencyId) => {
   
   return getMyAgencies(userId);
 };
-
 export const rejectAgencyInvitation = async (userId, agencyId) => {
   const worker = await getMyWorkerProfile(userId);
   
@@ -317,11 +532,95 @@ export const leaveAgency = async (userId, agencyId) => {
     throw new AppError("You are not active in this agency", 400);
   }
   
-  // Leave agency
+  // Request to leave agency
   await prisma.agencyWorker.update({
     where: { id: activeAgencyWorker.id },
-    data: { status: "LEFT" }
+    data: { status: "LEAVE_REQUESTED" }
   });
   
   return getMyAgencies(userId);
+};
+
+export const createAgencyWorkerSingle = async (userId, data) => {
+  const agencyUser = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { agency: true }
+  });
+
+  if (!agencyUser?.agency) {
+    throw new AppError("Agency profile not found", 404);
+  }
+
+  const worker = await prisma.worker.create({
+    data: {
+      workerCode: generateWorkerCode(),
+      firstName: data.firstName,
+      lastName: data.lastName,
+      phone: data.phone,
+      expectedDailyWage: data.expectedDailyWage,
+      jobType: data.skill,
+      city: data.city,
+      district: data.district,
+      state: data.state,
+      gender: data.gender,
+      dateOfBirth: data.dateOfBirth,
+      addressLine1: data.addressLine1,
+      totalExperienceYears: data.totalExperienceYears,
+      joiningDate: data.joiningDate,
+      profileStatus: "APPROVED",
+      agencies: {
+        create: {
+          agencyId: agencyUser.agency.id,
+          status: "ACTIVE"
+        }
+      }
+    },
+    select: workerSelect,
+  });
+
+  return worker;
+};
+
+export const createAgencyWorkerBulk = async (userId, workersData) => {
+  const agencyUser = await prisma.user.findUnique({
+    where: { id: userId },
+    include: { agency: true }
+  });
+
+  if (!agencyUser?.agency) {
+    throw new AppError("Agency profile not found", 404);
+  }
+
+  const createdWorkers = [];
+  
+  for (const data of workersData) {
+    const worker = await prisma.worker.create({
+      data: {
+        workerCode: generateWorkerCode(),
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone,
+        expectedDailyWage: data.expectedDailyWage,
+        jobType: data.skill,
+        city: data.city,
+        district: data.district,
+        state: data.state,
+        gender: data.gender,
+        dateOfBirth: data.dateOfBirth,
+        addressLine1: data.addressLine1,
+        totalExperienceYears: data.totalExperienceYears,
+        joiningDate: data.joiningDate,
+        profileStatus: "APPROVED",
+        agencies: {
+          create: {
+            agencyId: agencyUser.agency.id,
+            status: "ACTIVE"
+          }
+        }
+      },
+    });
+    createdWorkers.push(worker);
+  }
+
+  return { count: createdWorkers.length };
 };

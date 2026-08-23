@@ -29,6 +29,13 @@ export const login = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, "Login successful", { accessToken, user });
 });
 
+export const socialLogin = asyncHandler(async (req, res) => {
+  const meta = { ipAddress: req.ip, userAgent: req.headers["user-agent"] };
+  const { accessToken, refreshToken, user } = await authService.socialLogin(req.body, meta);
+  setRefreshTokenCookie(res, refreshToken);
+  return ApiResponse.success(res, "Login successful", { accessToken, user });
+});
+
 export const refreshToken = asyncHandler(async (req, res) => {
   const token = req.cookies.refreshToken;
   if (!token) {
@@ -83,4 +90,9 @@ export const verifyEmail = asyncHandler(async (req, res) => {
 export const resendVerification = asyncHandler(async (req, res) => {
   await authService.resendVerification(req.validatedData);
   return ApiResponse.success(res, "If your email is registered and unverified, a verification link has been sent.", null);
+});
+
+export const verifyPassword = asyncHandler(async (req, res) => {
+  await authService.verifyPassword(req.user.id, req.body.password);
+  return ApiResponse.success(res, "Password verified successfully", null);
 });

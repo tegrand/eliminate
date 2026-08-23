@@ -11,6 +11,32 @@ export const registerSchema = z.object({
     .max(100)
     .regex(passwordRegex, passwordMessage),
   accountType: z.enum(["SUPER_ADMIN", "CLIENT", "AGENCY", "WORKER"]),
+  contactPerson: z.string().trim().optional(),
+  phone: z.string().optional(),
+  
+  // Worker fields
+  fullName: z.string().optional(),
+  dateOfBirth: z.string().optional(),
+  gender: z.string().optional(),
+  primarySkill: z.string().optional(),
+  expectedDailyWage: z.string().optional(),
+  jobType: z.string().optional(),
+  experience: z.coerce.number().optional(),
+  skill: z.string().optional(),
+  language: z.string().optional(),
+  addressLine1: z.string().optional(),
+  district: z.string().optional(),
+  state: z.string().optional(),
+  city: z.string().optional(),
+  travelDistance: z.coerce.number().optional(),
+
+  // Agency fields
+  agencyName: z.string().optional(),
+  ownerName: z.string().optional(),
+  addressLine1: z.string().optional(),
+  district: z.string().optional(),
+  state: z.string().optional(),
+  pincode: z.string().optional(),
 });
 
 export const loginSchema = z.object({

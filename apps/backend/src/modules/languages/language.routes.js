@@ -17,7 +17,7 @@ import {
 
 import validate from "../../middleware/validate.middleware.js";
 import authenticate from "../../middleware/auth.middleware.js";
-import { requirePermission } from "../../middleware/authorize.middleware.js";
+import { requirePermission, authorize } from "../../middleware/authorize.middleware.js";
 
 const router = Router();
 
@@ -25,21 +25,20 @@ router.use(authenticate);
 
 router.post(
   "/",
-  requirePermission("language:create"),
   validate(createLanguageSchema),
   createLanguage
 );
 
 router.get(
   "/",
-  requirePermission("language:read"),
+  authorize("SUPER_ADMIN", "AGENCY", "WORKER", "CLIENT"),
   validate(listLanguagesQuerySchema, "query"),
   getLanguages
 );
 
 router.get(
   "/:id",
-  requirePermission("language:read"),
+  authorize("SUPER_ADMIN", "AGENCY", "WORKER", "CLIENT"),
   validate(languageIdParamSchema, "params"),
   getLanguageById
 );

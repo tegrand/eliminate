@@ -1,68 +1,109 @@
 import { z } from "zod";
 
-const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+const phoneRegex = /^\+?[0-9]\d{1,14}$/;
+
+const isAtLeast18 = (dateOfBirth) => {
+  if (!dateOfBirth) return true;
+  const dob = new Date(dateOfBirth);
+  if (isNaN(dob.getTime())) return false;
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+    age--;
+  }
+  return age >= 18;
+};
 
 export const createWorkerSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required").max(100, "First name is too long"),
   lastName: z.string().trim().min(1, "Last name is required").max(100, "Last name is too long"),
   phone: z.string().trim().regex(phoneRegex, "Invalid phone number format").optional(),
   gender: z.string().trim().min(1, "Gender is required").max(50).optional(),
-  dateOfBirth: z.coerce.date().max(new Date(), "Birth date cannot be in the future").optional(),
+  dateOfBirth: z.coerce.date().optional(),
   joiningDate: z.coerce.date().optional(),
   notes: z.string().trim().max(2000, "Notes are too long").optional(),
-}).strict("Unknown fields are not allowed");
+}).strict("Unknown fields are not allowed").refine(data => isAtLeast18(data.dateOfBirth), {
+  message: "Worker must be at least 18 years old",
+  path: ["dateOfBirth"]
+});
 
 export const updateWorkerSchema = z.object({
   firstName: z.string().trim().min(1, "First name cannot be empty").max(100, "First name is too long").optional(),
-  lastName: z.string().trim().min(1, "Last name cannot be empty").max(100, "Last name is too long").optional(),
+  lastName: z.string().trim().max(100, "Last name is too long").optional().nullable(),
   phone: z.string().trim().regex(phoneRegex, "Invalid phone number format").optional(),
   gender: z.string().trim().min(1, "Gender cannot be empty").max(50).optional(),
-  dateOfBirth: z.coerce.date().max(new Date(), "Birth date cannot be in the future").optional(),
+  dateOfBirth: z.coerce.date().optional(),
+  addressLine1: z.string().trim().max(500, "Address is too long").optional(),
+  totalExperienceYears: z.coerce.number().min(0, "Experience cannot be negative").max(100, "Invalid experience years").optional(),
   joiningDate: z.coerce.date().optional(),
   notes: z.string().trim().max(2000, "Notes are too long").optional(),
   employmentStatus: z.enum(["ACTIVE", "BUSY", "INACTIVE", "ON_LEAVE", "TERMINATED"]).optional(),
   
-  // Profile Additions
-  addressLine1: z.string().trim().optional(),
-  addressLine2: z.string().trim().optional(),
-  city: z.string().trim().optional(),
-  state: z.string().trim().optional(),
-  country: z.string().trim().optional(),
-  postalCode: z.string().trim().optional(),
-  emergencyContactName: z.string().trim().optional(),
-  emergencyContactPhone: z.string().trim().optional(),
-  emergencyContactRelation: z.string().trim().optional(),
+  city: z.string().trim().max(100).optional().nullable(),
+  district: z.string().trim().max(100).optional().nullable(),
+  state: z.string().trim().max(100).optional().nullable(),
+  travelDistance: z.coerce.number().min(1).max(500).optional().nullable(),
+  jobType: z.string().trim().max(50).optional().nullable(),
+
+  expectedDailyWage: z.string().trim().optional(),
+  profilePhoto: z.string().trim().optional().nullable(),
+  resumeUrl: z.string().trim().optional().nullable(),
   
-  experienceYears: z.number().int().min(0).optional().nullable(),
-  expectedSalary: z.string().trim().optional(),
-  preferredLocations: z.array(z.string()).optional().nullable(),
-  
-  aadhaarNumber: z.string().trim().optional(),
-  panNumber: z.string().trim().optional(),
-  bankAccountNumber: z.string().trim().optional(),
-  bankIfsc: z.string().trim().optional(),
-  bankName: z.string().trim().optional(),
-  
-  resumeUrl: z.string().url().optional().nullable(),
-  aadhaarUrl: z.string().url().optional().nullable(),
-  panUrl: z.string().url().optional().nullable(),
-  bankPassbookUrl: z.string().url().optional().nullable(),
-  experienceCertificates: z.any().optional().nullable(),
-  skillCertificates: z.any().optional().nullable(),
+  email: z.string().trim().email("Invalid email format").optional().nullable(),
+  addressLine2: z.string().trim().max(500, "Address is too long").optional().nullable(),
+  country: z.string().trim().max(100).optional().nullable(),
+  postalCode: z.string().trim().max(50).optional().nullable(),
+  emergencyContactName: z.string().trim().max(100).optional().nullable(),
+  emergencyContactPhone: z.string().trim().regex(phoneRegex, "Invalid phone number format").optional().nullable(),
+  emergencyContactRelation: z.string().trim().max(50).optional().nullable(),
 }).strict("Unknown fields are not allowed").refine(
   (data) => Object.keys(data).length > 0,
   "Update payload cannot be empty"
-);
+).refine(data => isAtLeast18(data.dateOfBirth), {
+  message: "Worker must be at least 18 years old",
+  path: ["dateOfBirth"]
+});
 
 export const workerIdParamSchema = z.object({
   id: z.string().uuid("Invalid worker ID format"),
 });
 
+export const updateWorkerStatusSchema = z.object({
+  status: z.enum(["PENDING", "APPROVED", "REJECTED", "SUSPENDED"], {
+    errorMap: () => ({ message: "Invalid status value" })
+  })
+}).strict();
+
 export const listWorkersQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(10),
   search: z.string().trim().optional(),
-  status: z.enum(["ACTIVE", "BUSY", "INACTIVE", "ON_LEAVE", "TERMINATED"]).optional(),
+  status: z.enum(["PENDING", "APPROVED", "REJECTED", "SUSPENDED", "ALL"]).optional(),
   sortBy: z.enum(["createdAt", "updatedAt", "firstName", "lastName", "joiningDate"]).default("createdAt"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
+  view: z.string().optional(),
 }).strict("Unknown query parameters are not allowed");
+
+export const createAgencyWorkerSchema = z.object({
+  firstName: z.string().trim().min(1, "First name is required").max(100),
+  lastName: z.string().trim().max(100).optional().nullable(),
+  phone: z.string().trim().regex(phoneRegex, "Invalid phone number format").optional().nullable(),
+  expectedDailyWage: z.coerce.string().optional().nullable(),
+  skill: z.string().optional().nullable(),
+  city: z.string().trim().max(100).optional().nullable(),
+  district: z.string().trim().max(100).optional().nullable(),
+  state: z.string().trim().max(100).optional().nullable(),
+  gender: z.string().trim().max(50).optional().nullable(),
+  dateOfBirth: z.coerce.date().optional().nullable(),
+  addressLine1: z.string().trim().max(500).optional().nullable(),
+  totalExperienceYears: z.coerce.number().min(0).max(100).optional().nullable(),
+  joiningDate: z.coerce.date().optional().nullable(),
+}).strict().refine(data => isAtLeast18(data.dateOfBirth), {
+  message: "Worker must be at least 18 years old",
+  path: ["dateOfBirth"]
+});
+
+export const createAgencyWorkerBulkSchema = z.object({
+  workers: z.array(createAgencyWorkerSchema).min(1, "At least one worker is required"),
+});

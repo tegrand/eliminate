@@ -6,9 +6,12 @@ import WorkerFilters from "../components/WorkerFilters";
 import WorkerTable from "../components/WorkerTable";
 import WorkerStats from "../components/WorkerStats";
 import { useWorkers } from "../hooks/useWorkers";
+import { useAuth } from "../../../hooks/useAuth";
 
 export default function WorkerListPage() {
-  const [page] = useState(1);
+  const { user } = useAuth();
+  const [page, setPage] = useState(1);
+  const [viewMode, setViewMode] = useState("grid"); // Default to Cards grid view for modern mobile-first UI
   const [searchParams] = useSearchParams();
   const currentStatus = searchParams.get("status") || "ALL";
 
@@ -17,7 +20,37 @@ export default function WorkerListPage() {
   const agencyFilter = searchParams.get("agency") || "";
   const skillFilter = searchParams.get("skill") || "";
 
-  let displayedWorkers = data?.data?.workers || [];
+  // Normalize backend shape: { items, pagination } → flat worker list with UI-friendly fields
+  const rawWorkers = data?.data?.items || data?.data?.workers || [];
+  const pagination = data?.data?.pagination || {};
+
+  const normalizedWorkers = rawWorkers.map((w) => {
+    const firstName = w.user?.firstName || w.firstName || "";
+    const lastName = w.user?.lastName || w.lastName || "";
+    const fullName = `${firstName} ${lastName}`.trim() || w.user?.name || w.name;
+    
+    return {
+      ...w,
+      id: w.id,
+      employeeId: w.workerCode || w.id,
+      name: fullName || "—",
+      gender: w.user?.gender || w.gender || "—",
+      phone: w.user?.phone || w.phone || "-",
+      agency: w.agency?.name || w.agencyProfile?.name || (typeof w.agency === 'string' ? w.agency : "—"),
+      primarySkill: w.primarySkill?.name || (typeof w.primarySkill === 'string' ? w.primarySkill : "—") || w.skills?.[0]?.name || "—",
+      status: w.profileStatus || w.status || "PENDING",
+      availability: w.availability || "Available",
+      performance: w.performance || {
+        attendance: 92,
+        completedJobs: 14,
+        rating: 4.8,
+        complaints: 0,
+        experience: w.totalExperienceYears || 3,
+      }
+    };
+  });
+
+  let displayedWorkers = normalizedWorkers;
   
   if (agencyFilter) {
     displayedWorkers = displayedWorkers.filter(w => w.agency === agencyFilter);
@@ -25,55 +58,82 @@ export default function WorkerListPage() {
   if (skillFilter) {
     displayedWorkers = displayedWorkers.filter(w => w.primarySkill === skillFilter);
   }
+  
+  const statsWorkers = displayedWorkers;
+
   if (currentStatus !== "ALL") {
     displayedWorkers = displayedWorkers.filter(w => w.status === currentStatus);
   }
 
+  const getTabPath = (statusVal) => {
+    const params = new URLSearchParams(searchParams);
+    if (statusVal === "ALL") {
+      params.delete("status");
+    } else {
+      params.set("status", statusVal);
+    }
+    const str = params.toString();
+    return str ? `/workers?${str}` : "/workers";
+  };
+
   const tabs = [
-    { name: "All Workers", value: "ALL", path: "/workers" },
-    { name: "Pending", value: "PENDING", path: "/workers?status=PENDING" },
-    { name: "Approved", value: "APPROVED", path: "/workers?status=APPROVED" },
-    { name: "Rejected", value: "REJECTED", path: "/workers?status=REJECTED" },
-    { name: "Suspended", value: "SUSPENDED", path: "/workers?status=SUSPENDED" }
+    { name: "All Workers", value: "ALL", path: getTabPath("ALL") },
+    { name: "Pending", value: "PENDING", path: getTabPath("PENDING") },
+    { name: "Approved", value: "APPROVED", path: getTabPath("APPROVED") },
+    { name: "Rejected", value: "REJECTED", path: getTabPath("REJECTED") },
+    { name: "Suspended", value: "SUSPENDED", path: getTabPath("SUSPENDED") }
   ];
 
+  const availableStatuses = [...new Set(rawWorkers.map(w => w.profileStatus || w.status || "PENDING"))];
+  const availableAgencies = [...new Set(rawWorkers.map(w => w.agency?.name || w.agencyProfile?.name || (typeof w.agency === 'string' ? w.agency : null)).filter(Boolean))];
+  const availableSkills = [...new Set(rawWorkers.map(w => w.primarySkill?.name || (typeof w.primarySkill === 'string' ? w.primarySkill : null) || w.skills?.[0]?.name).filter(Boolean))];
+
   return (
-    <div className="w-full h-[calc(100vh-4rem)] px-4 pb-4 pt-4 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
-      <WorkerToolbar totalWorkers={displayedWorkers.length} />
+    <div className="w-full min-h-[calc(100vh-4rem)] pb-24 pt-2 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-y-auto px-2 sm:px-6">
+      <WorkerToolbar 
+        totalWorkers={displayedWorkers.length} 
+        availableStatuses={availableStatuses}
+        availableAgencies={availableAgencies}
+        availableSkills={availableSkills}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+      />
       
-      <WorkerStats workers={data?.data?.workers || []} />
+      {user?.profileType !== "AGENCY" && (
+        <WorkerStats workers={statsWorkers} />
+      )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col flex-1 overflow-hidden">
-        <div className="border-b border-gray-100 px-6 pt-1 flex-shrink-0">
-          <nav className="-mb-px flex space-x-8 overflow-x-auto" aria-label="Tabs">
-            {tabs.map((tab) => (
-              <Link
-                key={tab.name}
-                to={tab.path}
-                className={clsx(
-                  currentStatus === tab.value
-                    ? "border-indigo-600 text-indigo-700 font-bold"
-                    : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 font-semibold",
-                  "whitespace-nowrap border-b-2 py-3 px-1 text-[13px] transition-colors"
-                )}
-              >
-                {tab.name}
-              </Link>
-            ))}
-          </nav>
-        </div>
-
-        <div className="px-6 pb-4 flex flex-col flex-1 overflow-hidden">
-          <WorkerFilters />
-          
-          <div className="mt-3 flex-1 overflow-hidden flex flex-col">
-            <WorkerTable 
-              workers={displayedWorkers} 
-              loading={isLoading} 
-              page={data?.data?.page || 1}
-              totalPages={data?.data?.totalPages || 1}
-            />
+      <div className="flex flex-col flex-1">
+        {user?.profileType !== "AGENCY" && (
+          <div className="border-b border-gray-200 px-2 sm:px-4 pt-1 flex-shrink-0 mb-3 bg-white rounded-xl">
+            <nav className="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto scrollbar-hide" aria-label="Tabs">
+              {tabs.map((tab) => (
+                <Link
+                  key={tab.name}
+                  to={tab.path}
+                  className={clsx(
+                    currentStatus === tab.value
+                      ? "border-indigo-600 text-indigo-700 font-bold"
+                      : "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 font-semibold",
+                    "whitespace-nowrap border-b-2 py-3 px-1 text-[12px] sm:text-[13px] transition-colors"
+                  )}
+                >
+                  {tab.name}
+                </Link>
+              ))}
+            </nav>
           </div>
+        )}
+
+        <div className="flex flex-col flex-1">
+          <WorkerTable 
+            workers={displayedWorkers} 
+            loading={isLoading} 
+            page={pagination.page || 1}
+            totalPages={pagination.totalPages || 1}
+            onPageChange={setPage}
+            viewMode={viewMode}
+          />
         </div>
       </div>
     </div>

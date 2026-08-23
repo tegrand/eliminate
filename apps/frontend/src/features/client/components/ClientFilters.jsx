@@ -9,7 +9,7 @@ import { Filter, RotateCcw } from "lucide-react";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
-export default function ClientFilters() {
+export default function ClientFilters({ availableStatuses = [], availableDistricts = [] }) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const { register, handleSubmit, reset, setValue } = useForm({
@@ -43,33 +43,31 @@ export default function ClientFilters() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col sm:flex-row items-end gap-4 mt-6">
-      <div className="flex-1 w-full">
-        <label className="block text-sm font-medium text-slate-700 mb-1.5">Status</label>
-        <select {...register("status")} className="block w-full pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg text-gray-600 border bg-white h-10">
-          <option value="">Select status</option>
-          <option value="ACTIVE">Active</option>
-          <option value="SUSPENDED">Suspended</option>
-          <option value="INACTIVE">Inactive</option>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col sm:flex-row items-center gap-2 mt-0">
+      <div className="w-full sm:w-[160px]">
+        <select {...register("status")} className="block w-full pl-3 pr-8 py-1.5 text-sm border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-lg text-gray-600 border bg-white h-9">
+          <option value="">Status (All)</option>
+          {availableStatuses.map(status => (
+            <option key={status} value={status}>{status}</option>
+          ))}
         </select>
       </div>
-      <div className="flex-1 w-full">
-        <label className="block text-sm font-medium text-slate-700 mb-1.5">District</label>
-        <select {...register("district")} className="block w-full pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg text-gray-600 border bg-white h-10">
-          <option value="">Select district</option>
-          <option value="North District">North District</option>
-          <option value="South District">South District</option>
-          <option value="Central">Central</option>
+      <div className="w-full sm:w-[160px]">
+        <select {...register("district")} className="block w-full pl-3 pr-8 py-1.5 text-sm border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-lg text-gray-600 border bg-white h-9">
+          <option value="">District (All)</option>
+          {availableDistricts.map(district => (
+            <option key={district} value={district}>{district}</option>
+          ))}
         </select>
       </div>
-      <div className="flex gap-3 w-full sm:w-auto">
-        <button type="button" onClick={handleReset} className="h-10 px-5 inline-flex items-center justify-center border border-gray-300 shadow-sm text-sm font-semibold rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full sm:w-auto gap-2">
-          <RotateCcw className="w-4 h-4" />
+      <div className="flex gap-2 w-full sm:w-auto">
+        <button type="button" onClick={handleReset} className="h-9 px-3 inline-flex items-center justify-center border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full sm:w-auto gap-1.5">
+          <RotateCcw className="w-3.5 h-3.5" />
           Reset
         </button>
-        <button type="submit" className="h-10 px-5 inline-flex items-center justify-center border border-transparent shadow-sm text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full sm:w-auto gap-2">
-          <Filter className="w-4 h-4" />
-          Apply Filters
+        <button type="submit" className="h-9 px-3 inline-flex items-center justify-center border border-transparent shadow-sm text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full sm:w-auto gap-1.5">
+          <Filter className="w-3.5 h-3.5" />
+          Apply
         </button>
       </div>
     </form>

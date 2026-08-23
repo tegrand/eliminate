@@ -4,11 +4,15 @@ import { DataTable } from "../../../components/ui/data-table";
 import { Pagination } from "../../../components/ui/pagination";
 import { Link } from "react-router-dom";
 import ClientStatusBadge from "./ClientStatusBadge";
+import { useTranslation } from "react-i18next";
 import SuspendDialog from "../../../components/ui/action-dialogs/SuspendDialog";
 import ReactivateDialog from "../../../components/ui/action-dialogs/ReactivateDialog";
+import { useQueryClient } from "@tanstack/react-query";
+import { clientApi } from "../api/client.api";
 import toast from "react-hot-toast";
 
-export default function ClientTable({ clients, loading, page, totalPages }) {
+export default function ClientTable({ clients, loading, page, totalPages, onPageChange }) {
+  const { t } = useTranslation();
   const [selectedClient, setSelectedClient] = useState(null);
   const [actionType, setActionType] = useState(null);
 
@@ -22,46 +26,54 @@ export default function ClientTable({ clients, loading, page, totalPages }) {
     setActionType(null);
   };
 
-  const handleConfirmAction = (reasonOrNote) => {
-    console.log(`Action: ${actionType} on Client: ${selectedClient.companyName}, Reason/Note: ${reasonOrNote}`);
-    toast.success(`Client ${actionType.toLowerCase()}d successfully.`);
-    closeDialog();
+  const queryClient = useQueryClient();
+
+  const handleConfirmAction = async (reasonOrNote) => {
+    try {
+      let status = actionType;
+      if (actionType === 'REACTIVATE') status = 'ACTIVE';
+      await clientApi.updateClientStatus(selectedClient.id, status);
+      toast.success(`Client ${actionType.toLowerCase()}d successfully.`);
+      queryClient.invalidateQueries({ queryKey: ["clients"] });
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to update status");
+    } finally {
+      closeDialog();
+    }
   };
-
-
 
   const columns = [
     { key: "checkbox", title: <input type="checkbox" className="rounded border-gray-300" />, render: () => <input type="checkbox" className="rounded border-gray-300" /> },
-    { key: "id", title: <div className="flex items-center gap-1.5"><CreditCard className="w-3.5 h-3.5" />CLIENT CODE</div>, render: (row) => <span className="font-bold text-gray-900 text-sm">{row.id}</span> },
-    { key: "companyName", title: <div className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" />COMPANY NAME</div>, render: (row) => <span className="text-gray-900 text-sm font-medium">{row.companyName}</span> },
-    { key: "contactPerson", title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />CONTACT PERSON</div>, render: (row) => <span className="text-sm text-gray-600">{row.contactPerson}</span> },
-    { key: "phone", title: <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />PHONE</div>, render: (row) => <span className="text-sm text-gray-600">{row.phone}</span> },
-    { key: "location", title: <div className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />LOCATION</div>, render: (row) => <span className="text-sm text-gray-600">{row.location}</span> },
+    { key: "companyName", title: <div className="flex items-center gap-1.5"><Building className="w-3.5 h-3.5" />{t('table.clientName') || 'CLIENT NAME'}</div>, render: (row) => <span className="text-gray-900 text-sm font-bold">{row.user?.firstName ? `${row.user.firstName} ${row.user.lastName || ''}`.trim() : (row.companyName || row.name || "—")}</span> },
+    { key: "contactPerson", title: <div className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" />{t('table.contactPerson') || 'CONTACT PERSON'}</div>, render: (row) => <span className="text-sm text-gray-600">{row.contactPerson}</span> },
+    { key: "phone", title: <div className="flex items-center gap-1.5"><Phone className="w-3.5 h-3.5" />{t('table.phone') || 'PHONE'}</div>, render: (row) => <span className="text-sm text-gray-600">{row.phone}</span> },
+    { key: "location", title: <div className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5" />{t('table.location') || 'LOCATION'}</div>, render: (row) => <span className="text-sm text-gray-600">{row.location}</span> },
     { 
       key: "status", 
-      title: <div className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5" />STATUS</div>, 
+      title: <div className="flex items-center gap-1.5"><Star className="w-3.5 h-3.5" />{t('table.status') || 'STATUS'}</div>, 
       render: (row) => <ClientStatusBadge status={row.status} />
     },
     {
       key: "actions",
-      title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />ACTIONS</div>,
+      title: <div className="flex items-center gap-1.5"><Settings className="w-3.5 h-3.5" />{t('table.actions') || 'ACTIONS'}</div>,
       render: (row) => (
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm font-semibold">
-          <Link to={`/clients/${row.id}`} className="text-blue-600 hover:text-blue-800 transition-colors">
+        <div className="flex items-center gap-3 text-sm font-semibold relative">
+          <Link to={`/clients/${row.id}`} className="text-blue-600 hover:text-blue-800 transition-colors whitespace-nowrap">
             View Details
           </Link>
-          {row.status === 'PENDING' && (
-            <>
-              <button onClick={() => handleAction(row, 'APPROVE')} className="text-green-600 hover:text-green-800 transition-colors">Approve</button>
-              <button onClick={() => handleAction(row, 'REJECT')} className="text-red-600 hover:text-red-800 transition-colors">Reject</button>
-            </>
-          )}
-          {row.status === 'ACTIVE' && (
-            <button onClick={() => handleAction(row, 'SUSPEND')} className="text-orange-600 hover:text-orange-800 transition-colors">Suspend</button>
-          )}
-          {row.status === 'SUSPENDED' && (
-            <button onClick={() => handleAction(row, 'REACTIVATE')} className="text-indigo-600 hover:text-indigo-800 transition-colors">Reactivate</button>
-          )}
+          <div className="relative group">
+            <button className="p-1 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded focus:outline-none">
+              <MoreVertical className="w-4 h-4" />
+            </button>
+            <div className="absolute right-0 top-full mt-1 w-32 bg-white rounded-lg shadow-lg border border-gray-100 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 flex flex-col">
+              {row.status === 'ACTIVE' && (
+                <button onClick={() => handleAction(row, 'SUSPEND')} className="text-left px-4 py-2 text-sm text-orange-600 hover:bg-orange-50 w-full transition-colors">Suspend</button>
+              )}
+              {row.status === 'SUSPENDED' && (
+                <button onClick={() => handleAction(row, 'REACTIVATE')} className="text-left px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 w-full transition-colors">Reactivate</button>
+              )}
+            </div>
+          </div>
         </div>
       )
     },

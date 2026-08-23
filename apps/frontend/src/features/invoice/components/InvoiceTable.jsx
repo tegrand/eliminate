@@ -8,11 +8,23 @@ export default function InvoiceTable({ invoices, loading, page, totalPages }) {
   const columns = [
     { key: "checkbox", title: <input type="checkbox" className="rounded border-gray-300" />, render: () => <input type="checkbox" className="rounded border-gray-300" /> },
     { key: "invoiceNumber", title: "INVOICE #", render: (row) => <span className="font-bold text-gray-900 text-sm">{row.invoiceNumber}</span> },
-    { key: "client", title: "CLIENT", render: (row) => <span className="text-gray-900 text-sm font-medium">{row.client}</span> },
-    { key: "assignments", title: "ASSIGNMENTS", render: (row) => <span className="text-sm text-gray-600">{row.assignments}</span> },
-    { key: "subtotal", title: "SUBTOTAL", render: (row) => <span className="text-sm text-gray-600">{row.subtotal}</span> },
-    { key: "taxes", title: "TAXES", render: (row) => <span className="text-sm text-gray-600">{row.taxes}</span> },
-    { key: "grandTotal", title: "GRAND TOTAL", render: (row) => <span className="font-bold text-gray-900 text-sm">{row.grandTotal}</span> },
+    { key: "client", title: "CLIENT", render: (row) => <span className="text-gray-900 text-sm font-medium">{row.client?.user?.firstName} {row.client?.user?.lastName}</span> },
+    { key: "assignment", title: "ASSIGNMENT", render: (row) => <span className="text-sm text-gray-600">{row.assignment?.title || "-"}</span> },
+    { 
+      key: "workers", 
+      title: "WORKER DETAILS", 
+      render: (row) => (
+        <div className="flex flex-col gap-1 text-sm">
+          {row.items?.map((item, idx) => (
+            <div key={idx} className="flex justify-between items-center text-gray-700 bg-gray-50 px-2 py-1 rounded">
+              <span className="font-medium">{item.worker?.user?.firstName} {item.worker?.user?.lastName}</span>
+              <span className="text-gray-900 font-bold ml-4">₹{item.amount}</span>
+            </div>
+          ))}
+        </div>
+      )
+    },
+    { key: "grandTotal", title: "GRAND TOTAL", render: (row) => <span className="font-bold text-gray-900 text-sm">₹{row.grandTotal}</span> },
     { key: "status", title: "STATUS", render: (row) => <InvoiceStatusBadge status={row.status} /> },
     {
       key: "actions",

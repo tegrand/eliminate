@@ -69,7 +69,7 @@ export default function LanguagesPage() {
           initialValues={editingData} 
           onSubmit={handleSubmit} 
           onCancel={() => setIsModalOpen(false)}
-          isLoading={createMut.isPending || updateMut.isPending}
+          loading={createMut.isPending || updateMut.isPending}
         />
       </Modal>
     </div>

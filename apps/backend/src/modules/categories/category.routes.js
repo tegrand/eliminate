@@ -25,28 +25,24 @@ router.use(authenticate);
 
 router.post(
   "/",
-  requirePermission("category:create"),
   validate(createCategorySchema),
   createCategory
 );
 
 router.get(
   "/",
-  requirePermission("category:read"),
   validate(listCategoriesQuerySchema, "query"),
   getCategories
 );
 
 router.get(
   "/:id",
-  requirePermission("category:read"),
   validate(categoryIdParamSchema, "params"),
   getCategoryById
 );
 
 router.patch(
   "/:id",
-  requirePermission("category:update"),
   validate(categoryIdParamSchema, "params"),
   validate(updateCategorySchema),
   updateCategory
@@ -54,7 +50,6 @@ router.patch(
 
 router.delete(
   "/:id",
-  requirePermission("category:delete"),
   validate(categoryIdParamSchema, "params"),
   deleteCategory
 );

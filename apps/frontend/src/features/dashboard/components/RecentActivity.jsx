@@ -1,14 +1,40 @@
+import { UserPlus, CheckCircle2, Building, Building2, UserX } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 
-import { UserPlus, CheckCircle2, Building, UserX } from "lucide-react";
-
-export default function RecentActivity() {
-  const activities = [];
+export default function RecentActivity({ data }) {
+  const activities = (data || []).map((user) => {
+    let title = user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : user.email.split('@')[0];
+    let desc = `Registered as a ${user.profileType.toLowerCase().replace('_', ' ')}`;
+    let icon = UserPlus;
+    let bg = "bg-blue-50";
+    let color = "text-blue-500";
+  
+    if (user.profileType === "CLIENT") {
+      icon = Building;
+      bg = "bg-emerald-50";
+      color = "text-emerald-500";
+    } else if (user.profileType === "AGENCY") {
+      icon = Building2;
+      bg = "bg-amber-50";
+      color = "text-amber-500";
+    }
+  
+    return {
+      id: user.id,
+      title,
+      desc,
+      icon,
+      bg,
+      color,
+      time: formatDistanceToNow(new Date(user.createdAt), { addSuffix: true })
+    };
+  });
 
   return (
     <div className="rounded-2xl bg-white h-full border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
       <div className="p-5">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-base font-bold text-gray-900">Recent Activity</h3>
+          <h3 className="text-base font-bold text-gray-900">Recent Registrations</h3>
           <a href="#" className="text-xs font-semibold text-blue-600 hover:text-blue-700">View all</a>
         </div>
         

@@ -19,42 +19,40 @@ import WorkerSignupPage from "../features/auth/pages/WorkerSignupPage";
 import PendingApprovalPage from "../features/auth/pages/PendingApprovalPage";
 
 import LoginPage from "../features/auth/pages/LoginPage";
-import ForgotPasswordPage from "../features/auth/pages/ForgotPasswordPage";
-import ResetPasswordPage from "../features/auth/pages/ResetPasswordPage";
 
 // Dashboard & Feature Pages
 import DashboardPage from "../features/dashboard/pages/DashboardPage";
-
 import WorkerListPage from "../features/worker/pages/WorkerListPage";
 import WorkerDetailsPage from "../features/worker/pages/WorkerDetailsPage";
 import WorkerProfilePage from "../features/worker-profile/pages/WorkerProfilePage";
 
-import FindWorkPage from "../features/jobs/pages/FindWorkPage";
-import MyJobsPage from "../features/jobs/pages/MyJobsPage";
 
+import WorkerSettingsPage from "../features/worker/pages/WorkerSettingsPage";
+import WorkerAttendancePage from "../features/worker/pages/WorkerAttendancePage";
+import MyDocumentsPage from "../features/documents/pages/MyDocumentsPage";
 import ClientListPage from "../features/client/pages/ClientListPage";
 import ClientDetailsPage from "../features/client/pages/ClientDetailsPage";
+import ClientProfilePage from "../features/client/pages/ClientProfilePage";
+import ClientWorkerSearchPage from "../features/client/pages/ClientWorkerSearchPage";
+import ClientWorkerProfilePage from "../features/client/pages/ClientWorkerProfilePage";
+import ClientAgencySearchPage from "../features/client/pages/ClientAgencySearchPage";
+import ClientAgencyProfilePage from "../features/client/pages/ClientAgencyProfilePage";
 
 import AgencyListPage from "../features/agency/pages/AgencyListPage";
 import AgencyDetailsPage from "../features/agency/pages/AgencyDetailsPage";
+import AgencyProfilePage from "../features/agency/pages/AgencyProfilePage";
+import AgencySettingsPage from "../features/agency/pages/AgencySettingsPage";
 
 import SkillListPage from "../features/master-data/skill/pages/SkillListPage";
 import CategoryListPage from "../features/master-data/category/pages/CategoryListPage";
 import LanguageListPage from "../features/master-data/language/pages/LanguageListPage";
 import LocationListPage from "../features/master-data/location/pages/LocationListPage";
 
-import JobRequirementListPage from "../features/job-requirement/pages/JobRequirementListPage";
-import AssignWorkersPage from "../features/job-requirement/pages/AssignWorkersPage";
-
-import AssignmentListPage from "../features/assignment/pages/AssignmentListPage";
 
 import AttendanceListPage from "../features/attendance/pages/AttendanceListPage";
 import BulkAttendancePage from "../features/attendance/pages/BulkAttendancePage";
 import AttendanceVerificationPage from "../features/attendance/pages/AttendanceVerificationPage";
-import MyAttendancePage from "../features/attendance/pages/MyAttendancePage";
-
-import MyPaymentsPage from "../features/payments/pages/MyPaymentsPage";
-import MyDocumentsPage from "../features/documents/pages/MyDocumentsPage";
+import MissingAttendancePage from "../features/attendance/pages/MissingAttendancePage";
 
 import PayrollListPage from "../features/payroll/pages/PayrollListPage";
 import PayrollDetailsPage from "../features/payroll/pages/PayrollDetailsPage";
@@ -62,7 +60,11 @@ import PayrollDetailsPage from "../features/payroll/pages/PayrollDetailsPage";
 import InvoiceListPage from "../features/invoice/pages/InvoiceListPage";
 import InvoiceDetailsPage from "../features/invoice/pages/InvoiceDetailsPage";
 
-import PaymentListPage from "../features/payment/pages/PaymentListPage";
+
+import SettingsPage from "../features/settings/pages/SettingsPage";
+import AdvertisementsPage from "../features/settings/pages/AdvertisementsPage";
+import AdPackagesPage from "../features/settings/pages/AdPackagesPage";
+import AdminRoutes from "../features/admin/routes/AdminRoutes";
 
 const NotFoundPage = () => (
   <div className="flex flex-col items-center justify-center min-h-[60vh] text-center p-6">
@@ -88,13 +90,14 @@ const AppRouter = () => {
 
           <Route element={<AuthLayout />}>
             <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-            <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
-            <Route path={ROUTES.RESET_PASSWORD} element={<ResetPasswordPage />} />
           </Route>
         </Route>
 
         {/* Protected Dashboard Routes */}
         <Route element={<ProtectedRoute />}>
+          {/* Admin Foundation */}
+          <Route path={ROUTES.ADMIN} element={<AdminRoutes />} />
+
           <Route element={<DashboardLayout />}>
             <Route path={ROUTES.DASHBOARD} element={<DashboardPage />} />
 
@@ -102,19 +105,25 @@ const AppRouter = () => {
             <Route path={ROUTES.WORKERS} element={<WorkerListPage />} />
             <Route path={ROUTES.WORKER_DETAILS} element={<WorkerDetailsPage />} />
             <Route path={ROUTES.WORKER_PROFILE} element={<WorkerProfilePage />} />
-            <Route path={ROUTES.FIND_WORK} element={<FindWorkPage />} />
-            <Route path={ROUTES.MY_JOBS} element={<MyJobsPage />} />
-            <Route path={ROUTES.MY_ATTENDANCE} element={<MyAttendancePage />} />
-            <Route path={ROUTES.MY_PAYMENTS} element={<MyPaymentsPage />} />
-            <Route path={ROUTES.MY_DOCUMENTS} element={<MyDocumentsPage />} />
+            
+
+            <Route path={ROUTES.WORKER_SETTINGS} element={<WorkerSettingsPage />} />
+
+            <Route path={ROUTES.MY_ATTENDANCE} element={<WorkerAttendancePage />} />
+            <Route path={ROUTES.WORKFORCE_SEARCH} element={<ClientWorkerSearchPage />} />
+            <Route path={ROUTES.WORKFORCE_PROFILE} element={<ClientWorkerProfilePage />} />
+            <Route path={ROUTES.AGENCY_SEARCH} element={<ClientAgencySearchPage />} />
+            <Route path={ROUTES.AGENCY_PROFILE_CLIENT} element={<ClientAgencyProfilePage />} />
 
             {/* Clients */}
             <Route path={ROUTES.CLIENTS} element={<ClientListPage />} />
             <Route path={ROUTES.CLIENT_DETAILS} element={<ClientDetailsPage />} />
+            <Route path={ROUTES.CLIENT_PROFILE} element={<ClientProfilePage />} />
 
             {/* Agencies */}
             <Route path={ROUTES.AGENCIES} element={<AgencyListPage />} />
             <Route path={ROUTES.AGENCY_DETAILS} element={<AgencyDetailsPage />} />
+            <Route path={ROUTES.AGENCY_PROFILE} element={<AgencyProfilePage />} />\n              <Route path={ROUTES.AGENCY_SETTINGS} element={<AgencySettingsPage />} />
 
             {/* Master Data */}
             <Route path={ROUTES.SKILLS} element={<SkillListPage />} />
@@ -122,17 +131,12 @@ const AppRouter = () => {
             <Route path={ROUTES.LANGUAGES} element={<LanguageListPage />} />
             <Route path={ROUTES.LOCATIONS} element={<LocationListPage />} />
 
-            {/* Job Requirements */}
-            <Route path={ROUTES.JOB_REQUIREMENTS} element={<JobRequirementListPage />} />
-            <Route path={ROUTES.ASSIGN_WORKERS} element={<AssignWorkersPage />} />
-
-            {/* Assignments */}
-            <Route path={ROUTES.ASSIGNMENTS} element={<AssignmentListPage />} />
 
             {/* Attendance */}
             <Route path={ROUTES.ATTENDANCE} element={<AttendanceListPage />} />
             <Route path={ROUTES.ATTENDANCE_BULK} element={<BulkAttendancePage />} />
             <Route path={ROUTES.ATTENDANCE_VERIFY} element={<AttendanceVerificationPage />} />
+            <Route path={ROUTES.ATTENDANCE_MISSING} element={<MissingAttendancePage />} />
 
             {/* Payroll */}
             <Route path={ROUTES.PAYROLLS} element={<PayrollListPage />} />
@@ -142,8 +146,12 @@ const AppRouter = () => {
             <Route path={ROUTES.INVOICES} element={<InvoiceListPage />} />
             <Route path={ROUTES.INVOICE_DETAILS} element={<InvoiceDetailsPage />} />
 
-            {/* Payments */}
-            <Route path={ROUTES.PAYMENTS} element={<PaymentListPage />} />
+
+            {/* System Settings */}
+            <Route path={ROUTES.SETTINGS} element={<SettingsPage />} />
+            <Route path={ROUTES.ADVERTISEMENTS} element={<AdvertisementsPage />} />
+            <Route path={ROUTES.AD_PACKAGES} element={<AdPackagesPage />} />
+
           </Route>
         </Route>
 

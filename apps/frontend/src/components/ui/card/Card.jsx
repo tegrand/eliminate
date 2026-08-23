@@ -5,7 +5,7 @@ const Card = forwardRef(({ className, ...props }, ref) => (
   <div
     ref={ref}
     className={clsx(
-      "rounded-xl border border-gray-200 bg-white text-gray-950 shadow-sm",
+      "rounded-2xl border border-gray-100 bg-white text-gray-950 shadow-sm",
       className
     )}
     {...props}

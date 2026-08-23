@@ -1,15 +1,13 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { workerFilterSchema } from "../schemas/workerFilter.schema";
-import { Select } from "../../../components/ui/select";
-import { Button } from "../../../components/ui/button";
-import { Card, CardContent } from "../../../components/ui/card";
 import { useSearchParams } from "react-router-dom";
 import { useEffect } from "react";
+import { Filter, RotateCcw, ChevronDown } from "lucide-react";
+import { useAuth } from "../../../hooks/useAuth";
 
-import { Filter, RotateCcw } from "lucide-react";
-
-export default function WorkerFilters() {
+export default function WorkerFilters({ availableStatuses = [], availableAgencies = [], availableSkills = [] }) {
+  const { user } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const { register, handleSubmit, reset, setValue } = useForm({
@@ -47,45 +45,51 @@ export default function WorkerFilters() {
     setSearchParams(new URLSearchParams());
   };
 
+  const selectContainerClass = "relative w-full";
+  const selectClass = "w-full bg-white border border-slate-200/90 rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm appearance-none outline-none focus:border-indigo-500 transition-all pr-10 cursor-pointer";
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col sm:flex-row items-end gap-4 mt-6">
-      <div className="flex-1 w-full">
-        <label className="block text-sm font-medium text-slate-700 mb-1.5">Status</label>
-        <select {...register("status")} className="block w-full pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg text-gray-600 border bg-white h-10">
-          <option value="">Select status</option>
-          <option value="ACTIVE">Active</option>
-          <option value="ON_LEAVE">On Leave</option>
-          <option value="INACTIVE">Inactive</option>
-          <option value="PENDING">Pending</option>
-          <option value="SUSPENDED">Suspended</option>
-        </select>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 w-full mb-3">
+      {/* Row 1: Dropdowns */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className={selectContainerClass}>
+          <select {...register("status")} className={selectClass}>
+            <option value="">Status (All)</option>
+            {availableStatuses.map(status => (
+              <option key={status} value={status}>{status}</option>
+            ))}
+          </select>
+          <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+        </div>
+
+        <div className={selectContainerClass}>
+          <select {...register("skill")} className={selectClass}>
+            <option value="">Skill (All)</option>
+            {availableSkills.map(skill => (
+              <option key={skill} value={skill}>{skill}</option>
+            ))}
+          </select>
+          <ChevronDown className="w-4 h-4 text-slate-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+        </div>
       </div>
-      <div className="flex-1 w-full">
-        <label className="block text-sm font-medium text-slate-700 mb-1.5">Agency</label>
-        <select {...register("agency")} className="block w-full pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg text-gray-600 border bg-white h-10">
-          <option value="">Select agency</option>
-          <option value="Alpha Staffing">Alpha Staffing</option>
-          <option value="Beta Temp">Beta Temp</option>
-          <option value="Direct Hire">Direct Hire</option>
-        </select>
-      </div>
-      <div className="flex-1 w-full">
-        <label className="block text-sm font-medium text-slate-700 mb-1.5">Skill</label>
-        <select {...register("skill")} className="block w-full pl-3 pr-10 py-2 text-base border-gray-200 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg text-gray-600 border bg-white h-10">
-          <option value="">Select skill</option>
-          <option value="Forklift Operator">Forklift Operator</option>
-          <option value="Warehouse Associate">Warehouse Associate</option>
-          <option value="Security Guard">Security Guard</option>
-        </select>
-      </div>
-      <div className="flex gap-3 w-full sm:w-auto">
-        <button type="button" onClick={handleReset} className="h-10 px-5 inline-flex items-center justify-center border border-gray-300 shadow-sm text-sm font-semibold rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full sm:w-auto gap-2">
-          <RotateCcw className="w-4 h-4" />
-          Reset
+
+      {/* Row 2: Action Buttons */}
+      <div className="grid grid-cols-2 gap-3">
+        <button
+          type="button"
+          onClick={handleReset}
+          className="w-full bg-white border border-slate-200 text-slate-700 font-bold py-3 px-4 rounded-2xl shadow-sm flex items-center justify-center gap-2 text-sm hover:bg-slate-50 active:scale-[0.98] transition-all cursor-pointer"
+        >
+          <RotateCcw className="w-4 h-4 text-slate-600" />
+          <span>Reset</span>
         </button>
-        <button type="submit" className="h-10 px-5 inline-flex items-center justify-center border border-transparent shadow-sm text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 w-full sm:w-auto gap-2">
-          <Filter className="w-4 h-4" />
-          Apply Filters
+
+        <button
+          type="submit"
+          className="w-full bg-[#4f46e5] hover:bg-[#4338ca] text-white font-bold py-3 px-4 rounded-2xl shadow-md flex items-center justify-center gap-2 text-sm active:scale-[0.98] transition-all cursor-pointer"
+        >
+          <Filter className="w-4 h-4 text-white" />
+          <span>Apply</span>
         </button>
       </div>
     </form>

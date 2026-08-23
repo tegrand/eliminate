@@ -47,6 +47,12 @@ export default function PersonalInformationSection({ register, errors }) {
             error={errors.dateOfBirth?.message}
             {...register("dateOfBirth")} 
           />
+          <Input 
+            label="Address" 
+            placeholder="123 Main St, City, Country" 
+            error={errors.addressLine1?.message}
+            {...register("addressLine1")} 
+          />
           
           <div className="flex flex-col">
             <span className="text-sm font-medium text-gray-700 mb-2">Profile Photo</span>

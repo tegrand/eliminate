@@ -15,7 +15,16 @@ export default function ClientListPage() {
   const { data, isLoading } = useClients({ page, status: currentStatus !== "ALL" ? currentStatus : undefined });
 
   const districtFilter = searchParams.get("district") || "";
-  let displayedClients = data?.data?.clients || [];
+
+  const rawClients = data?.data?.items || data?.data?.clients || [];
+  const pagination = data?.data?.pagination || {};
+
+  const normalizedClients = rawClients.map(c => ({
+    ...c,
+    status: c.profileStatus || "ACTIVE",
+  }));
+
+  let displayedClients = normalizedClients;
 
   if (districtFilter) {
     displayedClients = displayedClients.filter(c => c.district === districtFilter);
@@ -30,15 +39,22 @@ export default function ClientListPage() {
     { name: "Suspended", value: "SUSPENDED", path: "/clients?status=SUSPENDED" }
   ];
 
+  const availableStatuses = [...new Set(rawClients.map(c => c.profileStatus || "ACTIVE"))];
+  const availableDistricts = [...new Set(rawClients.map(c => c.district).filter(Boolean))];
+
   return (
-    <div className="w-full h-[calc(100vh-4rem)] px-4 pb-4 pt-4 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
-      <ClientToolbar totalClients={data?.data?.total || 0} />
+    <div className="w-full h-[calc(100vh-4rem)] pb-4 pt-2 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
+      <ClientToolbar 
+        totalClients={pagination.total || 0} 
+        availableStatuses={availableStatuses} 
+        availableDistricts={availableDistricts} 
+      />
       
-      <ClientStats clients={data?.data?.clients || []} />
+      <ClientStats clients={rawClients} />
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col flex-1 overflow-hidden">
         <div className="border-b border-gray-100 px-6 pt-1 flex-shrink-0">
-          <nav className="-mb-px flex space-x-8 overflow-x-auto" aria-label="Tabs">
+          <nav className="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto scrollbar-hide" aria-label="Tabs">
             {tabs.map((tab) => (
               <Link
                 key={tab.name}
@@ -56,15 +72,13 @@ export default function ClientListPage() {
           </nav>
         </div>
 
-        <div className="px-6 pb-4 flex flex-col flex-1 overflow-hidden">
-          <ClientFilters />
-          
+        <div className="px-3 sm:px-6 pb-4 flex flex-col flex-1 overflow-hidden">
           <div className="mt-3 flex-1 overflow-hidden flex flex-col">
             <ClientTable 
               clients={displayedClients} 
               loading={isLoading} 
-              page={data?.data?.page || 1}
-              totalPages={data?.data?.totalPages || 1}
+              page={pagination.page || 1}
+              totalPages={pagination.totalPages || 1}
             />
           </div>
         </div>

@@ -1,16 +1,52 @@
-import { useState } from "react";
-import { Save, UserCircle2 } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Save, UserCircle2, Camera, Loader2 } from "lucide-react";
 
-export default function PersonalInfoForm({ data, onSave, saving }) {
+export default function PersonalInfoForm({ data, onSave, saving, hideHeader, isActive, onDirty }) {
   const [formData, setFormData] = useState({
     firstName: data?.firstName || "",
     lastName: data?.lastName || "",
     dateOfBirth: data?.dateOfBirth ? new Date(data.dateOfBirth).toISOString().split('T')[0] : "",
     gender: data?.gender || "",
+    addressLine1: data?.addressLine1 || "",
+    notes: data?.notes || "",
   });
+
+  const maxDate = new Date();
+  maxDate.setFullYear(maxDate.getFullYear() - 18);
+  const maxDateString = maxDate.toISOString().split('T')[0];
+
+  const fileInputRef = useRef(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (onDirty) onDirty();
+  };
+
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const formDataFile = new FormData();
+      formDataFile.append("file", file);
+
+      const { usersApi } = await import("../../../api/users.api.js");
+      const res = await usersApi.uploadAvatar(formDataFile);
+      const documentUrl = res.data?.data?.avatar || res.data?.avatar;
+
+      if (!documentUrl) throw new Error("Upload failed");
+
+      // Save to worker profile too
+      onSave({ ...formData, profilePhoto: documentUrl });
+      toast.success("Profile photo uploaded successfully");
+    } catch (error) {
+      toast.error(error?.response?.data?.message || "Failed to upload photo");
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
   };
 
   const handleSubmit = (e) => {
@@ -18,76 +54,65 @@ export default function PersonalInfoForm({ data, onSave, saving }) {
     onSave(formData);
   };
 
+  const inputClass = "w-full px-3 py-1.5 sm:py-2 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-slate-800 placeholder:text-slate-400 text-sm";
+  const labelClass = "block text-xs font-semibold text-slate-600 mb-1 uppercase tracking-wide";
+
   return (
     <div className="animate-fade-in">
-      <div className="mb-6">
-        <h2 className="text-xl font-bold text-slate-900">Personal Information</h2>
-        <p className="text-sm text-slate-500 mt-1">Update your basic profile details and profile picture.</p>
-      </div>
-
-      <div className="flex items-start gap-6 mb-8 p-6 bg-slate-50 rounded-2xl border border-slate-100">
-        <div className="w-24 h-24 rounded-full bg-slate-200 border-4 border-white shadow-sm flex items-center justify-center shrink-0 overflow-hidden relative group cursor-pointer">
-          {data?.profilePhoto ? (
-            <img src={data.profilePhoto} alt="Profile" className="w-full h-full object-cover" />
-          ) : (
-            <UserCircle2 className="w-12 h-12 text-slate-400" />
-          )}
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <span className="text-white text-xs font-semibold">Change</span>
-          </div>
+      {!hideHeader && (
+        <div className="mb-4">
+          <h2 className="text-xl font-bold text-slate-900">Personal Information</h2>
+          <p className="text-sm text-slate-500 mt-1">Update your basic profile details and profile picture.</p>
         </div>
-        <div>
-          <h3 className="font-bold text-slate-900 text-base">Profile Photo</h3>
-          <p className="text-xs text-slate-500 mt-1 mb-3 max-w-sm">
-            Upload a clear, professional photo. We support PNG, JPG, or JPEG up to 5MB.
-          </p>
-          <button className="px-4 py-2 bg-white border border-slate-200 text-sm font-medium text-slate-700 rounded-lg hover:bg-slate-50 transition-colors shadow-sm">
-            Upload Photo
-          </button>
-        </div>
-      </div>
+      )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700">First Name</label>
+      <form id={isActive ? "profile-form" : undefined} onSubmit={handleSubmit} className="space-y-4">
+        {/* Name */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          <div>
+            <label className={labelClass}>First Name</label>
             <input
               type="text"
               name="firstName"
               value={formData.firstName}
               onChange={handleChange}
-              className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+              className={inputClass}
               placeholder="Enter first name"
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700">Last Name</label>
+          <div>
+            <label className={labelClass}>Last Name</label>
             <input
               type="text"
               name="lastName"
               value={formData.lastName}
               onChange={handleChange}
-              className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+              className={inputClass}
               placeholder="Enter last name"
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700">Date of Birth</label>
+        </div>
+
+        {/* DOB & Gender */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          <div>
+            <label className={labelClass}>Date of Birth</label>
             <input
               type="date"
               name="dateOfBirth"
               value={formData.dateOfBirth}
               onChange={handleChange}
-              className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+              max={maxDateString}
+              className={inputClass}
             />
           </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-700">Gender</label>
+          <div>
+            <label className={labelClass}>Gender</label>
             <select
               name="gender"
               value={formData.gender}
               onChange={handleChange}
-              className="w-full px-4 py-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-colors"
+              className={inputClass}
             >
               <option value="">Select Gender</option>
               <option value="MALE">Male</option>
@@ -97,16 +122,33 @@ export default function PersonalInfoForm({ data, onSave, saving }) {
           </div>
         </div>
 
-        <div className="pt-6 border-t border-slate-100 flex justify-end">
-          <button
-            type="submit"
-            disabled={saving}
-            className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-xl shadow-sm hover:shadow transition-all disabled:opacity-70"
-          >
-            <Save className="w-4 h-4" />
-            {saving ? "Saving..." : "Save Changes"}
-          </button>
+        {/* Address */}
+        <div>
+          <label className={labelClass}>Address</label>
+          <input
+            type="text"
+            name="addressLine1"
+            value={formData.addressLine1}
+            onChange={handleChange}
+            className={inputClass}
+            placeholder="Enter your address"
+          />
         </div>
+
+        {/* Bio */}
+        <div>
+          <label className={labelClass}>Bio / About Me</label>
+          <textarea
+            name="notes"
+            value={formData.notes}
+            onChange={handleChange}
+            rows={3}
+            className={`${inputClass} resize-none`}
+            placeholder="Tell employers about yourself — your experience, strengths, and what kind of work you're looking for..."
+          />
+          <p className="text-[11px] text-slate-400 mt-1.5">{formData.notes.length}/2000 characters</p>
+        </div>
+
       </form>
     </div>
   );

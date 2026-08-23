@@ -23,6 +23,7 @@ export const createAgencySchema = z.object({
 
 export const updateAgencySchema = z.object({
   agencyName: z.string().trim().min(1, "Agency name cannot be empty").max(200).optional(),
+  agencyType: z.string().trim().optional(),
   contactPerson: z.string().trim().min(1, "Contact person cannot be empty").max(100).optional(),
   phone: z.string().trim().regex(phoneRegex, "Invalid phone number format").optional(),
   alternatePhone: z.string().trim().regex(phoneRegex, "Invalid alternate phone number format").optional(),
@@ -34,8 +35,20 @@ export const updateAgencySchema = z.object({
   city: z.string().trim().max(100).optional(),
   state: z.string().trim().max(100).optional(),
   country: z.string().trim().max(100).optional(),
-  postalCode: z.string().trim().regex(postalCodeRegex, "Invalid postal code").optional(),
-  notes: z.string().trim().max(2000, "Notes are too long").optional(),
+  postalCode: z.string().trim().regex(postalCodeRegex, "Invalid postal code").optional().nullable(),
+  website: z.string().trim().max(200).optional().nullable(),
+  serviceAreas: z.array(z.string()).optional().nullable(),
+  workingDays: z.string().trim().max(100).optional().nullable(),
+  openTime: z.string().trim().max(20).optional().nullable(),
+  closeTime: z.string().trim().max(20).optional().nullable(),
+  notes: z.string().trim().max(2000, "Notes are too long").optional().nullable(),
+  feePercentage: z.coerce.number().min(0).max(100).optional(),
+  workerFixedAmount: z.coerce.number().min(0).optional(),
+  logoUrl: z.union([z.string().url(), z.string().startsWith("/")]).optional().nullable(),
+  aadhaarUrl: z.union([z.string().url(), z.string().startsWith("/")]).optional().nullable(),
+  licenseUrl: z.union([z.string().url(), z.string().startsWith("/")]).optional().nullable(),
+  gstCertificateUrl: z.union([z.string().url(), z.string().startsWith("/")]).optional().nullable(),
+  panUrl: z.union([z.string().url(), z.string().startsWith("/")]).optional().nullable(),
 }).strict("Unknown fields are not allowed").refine(
   (data) => Object.keys(data).length > 0,
   "Update payload cannot be empty"
@@ -45,10 +58,17 @@ export const agencyIdParamSchema = z.object({
   id: z.string().uuid("Invalid agency ID format"),
 });
 
+export const updateAgencyStatusSchema = z.object({
+  status: z.enum(["PENDING", "APPROVED", "REJECTED", "SUSPENDED"], {
+    errorMap: () => ({ message: "Invalid status value" })
+  })
+}).strict();
+
 export const listAgenciesQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(10),
   search: z.string().trim().optional(),
+  status: z.enum(["PENDING", "APPROVED", "REJECTED", "SUSPENDED", "ALL"]).optional(),
   sortBy: z.enum(["createdAt", "updatedAt", "agencyName", "contactPerson"]).default("createdAt"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 }).strict("Unknown query parameters are not allowed");

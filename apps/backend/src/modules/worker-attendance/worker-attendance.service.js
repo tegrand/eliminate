@@ -19,6 +19,12 @@ export const checkIn = async (userId) => {
   });
 
   if (existing && existing.checkInTime) {
+    if (existing.checkOutTime) {
+      return prisma.workerAttendance.update({
+        where: { id: existing.id },
+        data: { checkOutTime: null, status: "PRESENT" }
+      });
+    }
     throw new AppError("You have already checked in today", 400);
   }
 
@@ -68,6 +74,35 @@ export const checkOut = async (userId) => {
       checkOutTime,
       totalHours: Number(totalHours.toFixed(2)),
       overtimeHours: Number(overtimeHours.toFixed(2))
+    }
+  });
+};
+
+export const markStatus = async (userId, status) => {
+  const worker = await getWorkerByUserId(userId);
+  const today = startOfDay(new Date());
+
+  const validStatuses = ["PRESENT", "ABSENT", "HALF_DAY", "ON_LEAVE"];
+  if (!validStatuses.includes(status)) {
+    throw new AppError("Invalid attendance status", 400);
+  }
+
+  const existing = await prisma.workerAttendance.findUnique({
+    where: { workerId_date: { workerId: worker.id, date: today } }
+  });
+
+  if (existing) {
+    return prisma.workerAttendance.update({
+      where: { id: existing.id },
+      data: { status }
+    });
+  }
+
+  return prisma.workerAttendance.create({
+    data: {
+      workerId: worker.id,
+      date: today,
+      status
     }
   });
 };

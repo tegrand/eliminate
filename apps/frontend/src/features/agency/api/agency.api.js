@@ -17,12 +17,24 @@ export const agencyApi = {
   },
   
   updateAgency: async (id, data) => {
-    const response = await api.put(`/agencies/${id}`, data);
+    const response = await api.patch(`/agencies/${id}`, data);
+    return response.data;
+  },
+
+  updateAgencyStatus: async (id, status) => {
+    const response = await api.patch(`/agencies/${id}/status`, { status });
     return response.data;
   },
   
   deleteAgency: async (id) => {
     const response = await api.delete(`/agencies/${id}`);
+    return response.data;
+  },
+
+  uploadDocument: async (data) => {
+    const response = await api.post('/agencies/upload-document', data, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
     return response.data;
   }
 };

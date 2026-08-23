@@ -3,6 +3,7 @@ import authRoutes from "../modules/auth/auth.routes.js";
 import usersRoutes from "../modules/users/users.routes.js";
 import dashboardRoutes from "../modules/dashboard/dashboard.routes.js";
 import workerRoutes from "../modules/workers/worker.routes.js";
+import workerMarketplaceRoutes from "../modules/workers/worker-marketplace.routes.js";
 import workerSkillRoutes from "../modules/workers/worker-skill.routes.js";
 import workerLanguageRoutes from "../modules/workers/worker-language.routes.js";
 import clientRoutes from "../modules/clients/client.routes.js";
@@ -12,12 +13,17 @@ import skillRoutes from "../modules/skills/skill.routes.js";
 import categoryRoutes from "../modules/categories/category.routes.js";
 import languageRoutes from "../modules/languages/language.routes.js";
 import locationRoutes from "../modules/locations/location.routes.js";
-import jobRequirementRoutes from "../modules/job-requirement/job-requirement.routes.js";
-import jobRoutes from "../modules/jobs/job.routes.js";
+
 import workerAttendanceRoutes from "../modules/worker-attendance/worker-attendance.routes.js";
-import workerPaymentsRoutes from "../modules/worker-payments/worker-payments.routes.js";
+
 import workerDocumentsRoutes from "../modules/worker-documents/worker-documents.routes.js";
-import notificationsRoutes from "../modules/notifications/notifications.routes.js";
+import reviewRoutes from "../modules/reviews/review.routes.js";
+import reportsRoutes from "../modules/reports/reports.routes.js";
+import complaintsRoutes from "../modules/complaints/complaints.routes.js";
+import settingsRoutes from "../modules/settings/settings.routes.js";
+
+import invoiceRoutes from "../modules/invoices/invoice.route.js";
+import advertisementRoutes from "../modules/advertisements/advertisement.routes.js";
 
 const router = Router();
 
@@ -25,17 +31,23 @@ const router = Router();
 router.use("/auth", authRoutes);
 router.use("/users", usersRoutes);
 router.use("/dashboard", dashboardRoutes);
+router.use("/settings", settingsRoutes);
 
 // Entity Routes
+router.use("/workers/marketplace", workerMarketplaceRoutes);
 router.use("/workers", workerRoutes);
 router.use("/clients", clientRoutes);
 router.use("/agencies", agencyRoutes);
-router.use("/job-requirements", jobRequirementRoutes);
-router.use("/jobs", jobRoutes);
+
 router.use("/my-attendance", workerAttendanceRoutes);
-router.use("/notifications", notificationsRoutes);
-router.use("/my-payments", workerPaymentsRoutes);
+
 router.use("/my-documents", workerDocumentsRoutes);
+router.use("/reviews", reviewRoutes);
+router.use("/reports", reportsRoutes);
+router.use("/complaints", complaintsRoutes);
+
+router.use("/invoices", invoiceRoutes);
+router.use("/advertisements", advertisementRoutes);
 
 // Master Data Routes
 router.use("/skills", skillRoutes);
@@ -56,9 +68,9 @@ router.get("/health", (req, res) => {
   });
 });
 
-export default router; 
- 
- 
- 
- 
- 
+export default router;
+
+
+
+
+

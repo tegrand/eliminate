@@ -1,7 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
 import api from '../api/axios';
-
+import { 
+  signInWithPopup, 
+  GoogleAuthProvider, 
+  RecaptchaVerifier, 
+  signInWithPhoneNumber
+} from 'firebase/auth';
+import { auth } from '../config/firebase';
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -17,8 +23,25 @@ export default function AuthProvider({ children }) {
         const storedToken = localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
         
         if (storedUser && storedToken) {
+          // Set initial state from storage for instant UI render
           setUser(JSON.parse(storedUser));
           setIsAuthenticated(true);
+          
+          // Fetch fresh user data in background
+          try {
+            const { data } = await api.get('/auth/me');
+            if (data?.data) {
+              setUser(data.data);
+              // Update storage with fresh data
+              if (localStorage.getItem('user')) {
+                localStorage.setItem('user', JSON.stringify(data.data));
+              } else if (sessionStorage.getItem('user')) {
+                sessionStorage.setItem('user', JSON.stringify(data.data));
+              }
+            }
+          } catch (meError) {
+            console.error("Failed to fetch fresh user data", meError);
+          }
         }
       } catch (err) {
         console.error("Failed to restore session", err);
@@ -80,6 +103,65 @@ export default function AuthProvider({ children }) {
     }
   };
 
+  const updateUser = (newUserData) => {
+    const updatedUser = { ...user, ...newUserData };
+    setUser(updatedUser);
+    if (localStorage.getItem('user')) {
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    } else if (sessionStorage.getItem('user')) {
+      sessionStorage.setItem('user', JSON.stringify(updatedUser));
+    }
+  };
+
+  const loginWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    return result;
+  };
+
+  const requestOTP = async (phoneNumber, containerId = 'recaptcha-container') => {
+    try {
+      // Always clear any existing verifier to prevent stale DOM nodes in React
+      if (window.recaptchaVerifier) {
+        try {
+          window.recaptchaVerifier.clear();
+        } catch (e) {
+          console.error("Error clearing recaptcha:", e);
+        }
+        window.recaptchaVerifier = null;
+      }
+      
+      // Ensure the container exists and replace it with a fresh clone to completely avoid 'already rendered' errors
+      let container = document.getElementById(containerId);
+      if (!container) {
+        throw new Error("Recaptcha container not found in DOM.");
+      }
+      
+      const newContainer = container.cloneNode(false);
+      container.parentNode.replaceChild(newContainer, container);
+
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, containerId, {
+        size: 'invisible'
+      });
+
+      const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, window.recaptchaVerifier);
+      window.confirmationResult = confirmationResult;
+      return confirmationResult;
+    } catch (error) {
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = null;
+      }
+      throw error;
+    }
+  };
+
+  const verifyOTP = async (otp) => {
+    if (!window.confirmationResult) throw new Error("No confirmation result available.");
+    const result = await window.confirmationResult.confirm(otp);
+    return result;
+  };
+
   // Memoize the context value to prevent unnecessary re-renders of consuming components
   const value = useMemo(
     () => ({
@@ -89,6 +171,10 @@ export default function AuthProvider({ children }) {
       login,
       logout,
       refreshSession,
+      updateUser,
+      loginWithGoogle,
+      requestOTP,
+      verifyOTP
     }),
     [user, isAuthenticated, isLoading]
   );

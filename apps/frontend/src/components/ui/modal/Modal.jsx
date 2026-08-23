@@ -18,15 +18,16 @@ export function Modal({ isOpen, onClose, title, children, className }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
-      <div 
-        className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" 
+      <div
+        className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
-      
-      <div 
+
+      <div
         className={clsx(
-          "relative bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200",
+          "relative bg-white rounded-xl shadow-xl w-full overflow-hidden flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-200",
+          className?.includes("max-w-") ? "" : "max-w-lg",
           className
         )}
       >
@@ -40,7 +41,7 @@ export function Modal({ isOpen, onClose, title, children, className }) {
             <X className="h-5 w-5" />
           </button>
         </div>
-        
+
         <div className="p-6 overflow-y-auto">
           {children}
         </div>

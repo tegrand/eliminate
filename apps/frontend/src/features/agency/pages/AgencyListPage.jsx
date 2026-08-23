@@ -8,18 +8,27 @@ import AgencyStats from "../components/AgencyStats";
 import { useAgencies } from "../hooks/useAgencies";
 
 export default function AgencyListPage() {
-  const [page] = useState(1);
+  const [page, setPage] = useState(1);
   const [searchParams] = useSearchParams();
   const currentStatus = searchParams.get("status") || "ALL";
 
   const { data, isLoading } = useAgencies({ page, status: currentStatus !== "ALL" ? currentStatus : undefined });
 
   const districtFilter = searchParams.get("district") || "";
-  let displayedAgencies = data?.data?.agencies || [];
+  const rawAgencies = data?.data?.items || [];
+  
+  const normalizedAgencies = rawAgencies.map(a => ({
+    ...a,
+    status: a.profileStatus || "PENDING",
+    location: a.city ? (a.state ? `${a.city}, ${a.state}` : a.city) : (a.state || "—"),
+  }));
+
+  let displayedAgencies = normalizedAgencies;
 
   if (districtFilter) {
-    displayedAgencies = displayedAgencies.filter(a => a.district === districtFilter);
+    displayedAgencies = displayedAgencies.filter(a => a.city === districtFilter);
   }
+  // The API already filters by status if currentStatus !== "ALL", but we can keep client side filtering as fallback
   if (currentStatus !== "ALL") {
     displayedAgencies = displayedAgencies.filter(a => a.status === currentStatus);
   }
@@ -32,11 +41,18 @@ export default function AgencyListPage() {
     { name: "Suspended", value: "SUSPENDED", path: "/agencies?status=SUSPENDED" }
   ];
 
+  const availableStatuses = [...new Set(rawAgencies.map(a => a.profileStatus || "PENDING"))];
+  const availableDistricts = [...new Set(rawAgencies.map(a => a.city).filter(Boolean))];
+
   return (
     <div className="w-full h-[calc(100vh-4rem)] px-4 pb-4 pt-4 flex flex-col animate-fade-in bg-[#f8f9fa] overflow-hidden">
-      <AgencyToolbar totalAgencies={displayedAgencies.length} />
+      <AgencyToolbar 
+        totalAgencies={displayedAgencies.length} 
+        availableStatuses={availableStatuses}
+        availableDistricts={availableDistricts}
+      />
       
-      <AgencyStats agencies={data?.data?.agencies || []} />
+      <AgencyStats agencies={normalizedAgencies} />
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col flex-1 overflow-hidden">
         <div className="border-b border-gray-100 px-6 pt-1 flex-shrink-0">
@@ -59,14 +75,13 @@ export default function AgencyListPage() {
         </div>
 
         <div className="px-6 pb-4 flex flex-col flex-1 overflow-hidden">
-          <AgencyFilters />
-          
           <div className="mt-3 flex-1 overflow-hidden flex flex-col">
             <AgencyTable 
               agencies={displayedAgencies} 
               loading={isLoading} 
               page={data?.data?.page || 1}
               totalPages={data?.data?.totalPages || 1}
+              onPageChange={setPage}
             />
           </div>
         </div>

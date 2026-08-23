@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { register, login, refreshToken, logout, me, changePassword, forgotPassword, resetPassword, verifyEmail, resendVerification } from "./auth.controller.js";
+import { register, login, socialLogin, refreshToken, logout, me, changePassword, verifyPassword, forgotPassword, resetPassword, verifyEmail, resendVerification } from "./auth.controller.js";
 import { registerSchema, loginSchema, changePasswordSchema, forgotPasswordSchema, resetPasswordSchema, verifyEmailSchema, resendVerificationSchema } from "./auth.validation.js";
 
 import validate from "../../middleware/validate.middleware.js";
@@ -11,16 +11,22 @@ const router = Router();
 
 router.post(
   "/register",
-  authRateLimiter,
+  // authRateLimiter,
   validate(registerSchema),
   register
 );
 
 router.post(
   "/login",
-  authRateLimiter,
+  // authRateLimiter,
   validate(loginSchema),
   login
+);
+
+router.post(
+  "/social",
+  // validate(socialLoginSchema) could be added here
+  socialLogin
 );
 
 router.post("/refresh-token", refreshToken);
@@ -37,8 +43,14 @@ router.patch(
 );
 
 router.post(
+  "/verify-password",
+  authenticate,
+  verifyPassword
+);
+
+router.post(
   "/forgot-password",
-  authRateLimiter,
+  // authRateLimiter,
   validate(forgotPasswordSchema),
   forgotPassword
 );

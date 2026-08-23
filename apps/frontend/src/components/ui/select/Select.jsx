@@ -53,11 +53,11 @@ const Select = forwardRef(
               error ? errorId : helperText ? helperTextId : undefined
             }
             className={clsx(
-              "block w-full rounded-lg sm:text-sm transition-shadow focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed px-3 py-2 appearance-none bg-white",
+              "block w-full rounded-lg sm:text-sm transition-shadow focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed px-3 py-1.5 appearance-none bg-white",
               // Error vs Normal state styling
               error
                 ? "border-red-300 text-red-900 focus:border-red-500 focus:ring-red-500 border"
-                : "border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500 border"
+                : "border-gray-300 text-gray-900 focus:border-orange-500 focus:ring-orange-500 border"
             )}
             {...props}
           >
