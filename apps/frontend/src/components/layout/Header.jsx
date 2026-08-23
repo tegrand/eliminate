@@ -34,71 +34,49 @@ export default function Header() {
   }, []);
   
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 lg:px-8 sticky top-0 z-50 flex-shrink-0">
-      {/* Mobile/Tablet Menu Button */}
-      <div className="flex items-center lg:hidden">
+    <header className="pt-2 pb-1 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40 flex-shrink-0 bg-transparent pointer-events-none">
+      {/* Mobile/Sidebar Toggle (Three Lines Button) */}
+      <div className="flex items-center pointer-events-auto">
         <button 
           onClick={toggleSidebar}
-          className="p-2 -ml-2 text-gray-500 hover:bg-gray-100 rounded-md transition-colors" aria-label="Open sidebar"
+          className="p-2.5 text-gray-700 bg-white/90 hover:bg-white backdrop-blur-md border border-gray-200/80 rounded-xl shadow-sm hover:shadow transition-all cursor-pointer" 
+          aria-label="Toggle sidebar"
         >
-          <div className="w-5 flex flex-col gap-1">
-            <span className="block w-full h-0.5 bg-gray-500 rounded-full"></span>
-            <span className="block w-full h-0.5 bg-gray-500 rounded-full"></span>
-            <span className="block w-full h-0.5 bg-gray-500 rounded-full"></span>
+          <div className="w-4 flex flex-col gap-1">
+            <span className="block w-full h-0.5 bg-gray-700 rounded-full"></span>
+            <span className="block w-full h-0.5 bg-gray-700 rounded-full"></span>
+            <span className="block w-full h-0.5 bg-gray-700 rounded-full"></span>
           </div>
         </button>
       </div>
 
-      {/* Search Bar - Styled to match screenshot */}
-      <div className="hidden sm:flex items-center flex-1 ml-4 lg:ml-0 max-w-xl">
-        <div className="w-full relative flex items-center">
-          <div className="absolute left-3 text-gray-400">
-            <Search className="w-4 h-4" />
-          </div>
-          <input
-            type="text"
-            placeholder="Search anything..."
-            className="w-full pl-9 pr-16 py-2.5 bg-slate-50 border-none rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 transition-shadow text-gray-700 placeholder-gray-400"
-          />
-          <div className="absolute right-3 flex items-center pointer-events-none">
-            <span className="text-xs text-gray-400 font-medium tracking-wide">Ctrl + K</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Right Actions */}
-      <div className="flex items-center space-x-3 sm:space-x-5 ml-auto">
-        <div className="hidden lg:block mr-2">
-
-        </div>
-        <LanguageSwitcher />
+      {/* Right Actions - Profile Icon without Header Box */}
+      <div className="flex items-center ml-auto pointer-events-auto">
         {/* Profile Section with Dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button 
             onClick={() => setIsProfileOpen(!isProfileOpen)}
-            className="flex items-center gap-3 pl-2 border-l border-gray-100 hover:bg-gray-50 rounded-lg py-1 px-2 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-100"
+            className="flex items-center gap-2.5 bg-white/90 hover:bg-white backdrop-blur-md border border-gray-200/80 rounded-2xl py-1.5 px-3 shadow-sm hover:shadow transition-all focus:outline-none cursor-pointer"
           >
-            <div className="flex items-center justify-center w-9 h-9 rounded-full bg-blue-100 text-blue-600 relative overflow-hidden">
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 relative overflow-hidden shrink-0">
               {user?.avatar ? (
                 <img src={user.avatar.startsWith('http') ? user.avatar : `http://localhost:5000${user.avatar.startsWith('/') ? '' : '/'}${user.avatar}`} alt="Profile" className="w-full h-full object-cover" />
               ) : (
-                <User className="w-5 h-5" />
+                <User className="w-4 h-4" />
               )}
               {user?.profileType === "WORKER" && user?.workerProfile?.profileStatus !== "VERIFIED" && (
                 <span className="absolute top-0 right-0 block w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-white animate-pulse"></span>
               )}
             </div>
-            <div className="hidden md:flex flex-col text-left">
-              <span className="text-sm font-semibold text-gray-900 leading-tight capitalize">
+            <div className="hidden sm:flex flex-col text-left">
+              <span className="text-xs font-bold text-gray-900 leading-tight capitalize">
                 {user?.email?.split('@')[0] || "User"}
               </span>
-              <span className="text-xs text-gray-500 font-medium capitalize">
+              <span className="text-[10px] text-gray-500 font-semibold capitalize">
                 {user?.profileType?.replace('_', ' ').toLowerCase() || "User"}
               </span>
             </div>
-            <div className="text-gray-400">
-              <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} />
-            </div>
+            <ChevronDown className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-200 ${isProfileOpen ? 'rotate-180' : ''}`} />
           </button>
 
           {/* Dropdown Menu */}

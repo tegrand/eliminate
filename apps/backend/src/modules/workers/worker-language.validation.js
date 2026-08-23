@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const assignLanguageSchema = z.object({
-  workerId: z.string().uuid("Invalid worker ID format"),
+  workerId: z.string().uuid("Invalid worker ID format").optional(),
   languageId: z.string().uuid("Invalid language ID format"),
   proficiencyLevel: z.enum(["BASIC", "CONVERSATIONAL", "PROFESSIONAL", "NATIVE"]),
   canRead: z.boolean().optional(),

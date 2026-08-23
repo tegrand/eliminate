@@ -5,8 +5,8 @@ import * as workerLanguageService from "./worker-language.service.js";
 export const assignLanguage = asyncHandler(async (req, res) => {
   const payload = {
     ...req.validatedData,
-    workerId: req.params.workerId,
-    languageId: req.params.languageId,
+    workerId: req.params.workerId || req.body.workerId,
+    languageId: req.body.languageId || req.validatedData.languageId || req.params.languageId,
   };
   const workerLanguage = await workerLanguageService.assignLanguage(payload);
   return ApiResponse.success(res, "Language assigned successfully", workerLanguage, 201);

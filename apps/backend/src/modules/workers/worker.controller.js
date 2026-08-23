@@ -22,6 +22,12 @@ export const updateMyWorkerProfile = asyncHandler(async (req, res) => {
   return ApiResponse.success(res, "Worker profile updated successfully", worker, 200);
 });
 
+export const toggleOpenToWork = asyncHandler(async (req, res) => {
+  const { isOpenToWork } = req.body;
+  const worker = await workerService.updateOpenToWork(req.user.id, isOpenToWork);
+  return ApiResponse.success(res, "Open to work status updated successfully", worker, 200);
+});
+
 export const uploadResume = asyncHandler(async (req, res) => {
   if (!req.file) {
     return ApiResponse.error(res, "No file provided", 400);
