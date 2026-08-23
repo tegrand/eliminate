@@ -283,6 +283,7 @@ model Worker {
   notes            String?
   expectedDailyWage  String?
   profileStatus WorkerProfileStatus @default(PENDING)
+  isOpenToWork Boolean @default(true)
 
   // Future module relation placeholders (awaiting model implementation)
   skills          WorkerSkill[]

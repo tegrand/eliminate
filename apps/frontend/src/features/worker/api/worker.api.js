@@ -29,6 +29,10 @@ export const workerApi = {
     const response = await api.patch("/workers/my-profile", data);
     return response.data;
   },
+  toggleOpenToWork: async (isOpenToWork) => {
+    const response = await api.patch("/workers/my-profile/open-to-work", { isOpenToWork });
+    return response.data;
+  },
   updateWorkerStatus: async (id, status) => {
     const response = await api.patch(`/workers/${id}/status`, { status });
     return response.data;

@@ -36,6 +36,7 @@ const workerSelect = {
   joiningDate: true,
   notes: true,
   expectedDailyWage: true,
+  isOpenToWork: true,
 
   createdAt: true,
   updatedAt: true,
@@ -153,6 +154,10 @@ export const getWorkers = async ({
         some: { agencyId: agencyUser.agency.id }
       };
     }
+  }
+
+  if (user?.profileType === "CLIENT") {
+    where.isOpenToWork = true;
   }
 
   if (status) {
@@ -623,4 +628,22 @@ export const createAgencyWorkerBulk = async (userId, workersData) => {
   }
 
   return { count: createdWorkers.length };
+};
+
+export const updateOpenToWork = async (userId, isOpenToWork) => {
+  const worker = await prisma.worker.findFirst({
+    where: { userId, deletedAt: null },
+  });
+
+  if (!worker) {
+    throw new AppError("Worker profile not found", 404);
+  }
+
+  const updatedWorker = await prisma.worker.update({
+    where: { id: worker.id },
+    data: { isOpenToWork: Boolean(isOpenToWork) },
+    select: workerSelect,
+  });
+
+  return updatedWorker;
 };

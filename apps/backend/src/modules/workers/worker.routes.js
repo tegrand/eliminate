@@ -9,6 +9,7 @@ import {
   deleteWorker,
   getMyWorkerProfile,
   updateMyWorkerProfile,
+  toggleOpenToWork,
   getMyAgencies,
   acceptAgencyInvitation,
   rejectAgencyInvitation,
@@ -95,6 +96,11 @@ router.patch(
   "/my-profile",
   validate(updateWorkerSchema),
   updateMyWorkerProfile
+);
+
+router.patch(
+  "/my-profile/open-to-work",
+  toggleOpenToWork
 );
 
 router.post(

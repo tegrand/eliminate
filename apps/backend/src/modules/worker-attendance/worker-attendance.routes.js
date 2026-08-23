@@ -1,23 +1,17 @@
 import { Router } from "express";
 import authenticate from "../../middleware/auth.middleware.js";
 import {
-  checkIn,
-  checkOut,
   getHistory,
   getSummary,
   getLeaves,
-  applyLeave,
-  markStatus
+  applyLeave
 } from "./worker-attendance.controller.js";
 
 const router = Router();
 
 router.use(authenticate);
 
-// Attendance routes
-router.post("/check-in", checkIn);
-router.post("/check-out", checkOut);
-router.post("/mark-status", markStatus);
+// Read-only attendance history and leave routes
 router.get("/history", getHistory);
 router.get("/summary", getSummary);
 

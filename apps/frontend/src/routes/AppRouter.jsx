@@ -79,17 +79,17 @@ const AppRouter = () => {
       <Routes>
         {/* Public Marketing & Onboarding Routes */}
         <Route element={<PublicRoute />}>
-          <Route element={<PublicLayout />}>
+          <Route element={<AuthLayout />}>
             <Route path={ROUTES.LANDING} element={<LandingPage />} />
+            <Route path={ROUTES.LOGIN} element={<LoginPage />} />
             <Route path={ROUTES.SIGNUP} element={<RoleSelectionPage />} />
             <Route path={ROUTES.SIGNUP_CLIENT} element={<ClientSignupPage />} />
             <Route path={ROUTES.SIGNUP_AGENCY} element={<AgencySignupPage />} />
             <Route path={ROUTES.SIGNUP_WORKER} element={<WorkerSignupPage />} />
-            <Route path={ROUTES.PENDING_APPROVAL} element={<PendingApprovalPage />} />
           </Route>
 
-          <Route element={<AuthLayout />}>
-            <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+          <Route element={<PublicLayout />}>
+            <Route path={ROUTES.PENDING_APPROVAL} element={<PendingApprovalPage />} />
           </Route>
         </Route>
 
