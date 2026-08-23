@@ -36,19 +36,21 @@ export default function Header() {
   return (
     <header className="pt-2 pb-1 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-40 flex-shrink-0 bg-transparent pointer-events-none">
       {/* Mobile/Sidebar Toggle (Three Lines Button) */}
-      <div className="flex items-center pointer-events-auto">
-        <button 
-          onClick={toggleSidebar}
-          className="p-2.5 text-gray-700 bg-white/90 hover:bg-white backdrop-blur-md border border-gray-200/80 rounded-xl shadow-sm hover:shadow transition-all cursor-pointer" 
-          aria-label="Toggle sidebar"
-        >
-          <div className="w-4 flex flex-col gap-1">
-            <span className="block w-full h-0.5 bg-gray-700 rounded-full"></span>
-            <span className="block w-full h-0.5 bg-gray-700 rounded-full"></span>
-            <span className="block w-full h-0.5 bg-gray-700 rounded-full"></span>
-          </div>
-        </button>
-      </div>
+      {user?.profileType !== "WORKER" && (
+        <div className="flex items-center pointer-events-auto">
+          <button 
+            onClick={toggleSidebar}
+            className="p-2.5 text-gray-700 bg-white/90 hover:bg-white backdrop-blur-md border border-gray-200/80 rounded-xl shadow-sm hover:shadow transition-all cursor-pointer" 
+            aria-label="Toggle sidebar"
+          >
+            <div className="w-4 flex flex-col gap-1">
+              <span className="block w-full h-0.5 bg-gray-700 rounded-full"></span>
+              <span className="block w-full h-0.5 bg-gray-700 rounded-full"></span>
+              <span className="block w-full h-0.5 bg-gray-700 rounded-full"></span>
+            </div>
+          </button>
+        </div>
+      )}
 
       {/* Right Actions - Profile Icon without Header Box */}
       <div className="flex items-center ml-auto pointer-events-auto">
