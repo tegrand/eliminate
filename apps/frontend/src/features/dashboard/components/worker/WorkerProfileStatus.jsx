@@ -186,114 +186,124 @@ export default function WorkerProfileStatus() {
         </div>
       </div>
 
-      {/* ─── Contact Number Card ─── */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-center gap-4">
-        <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
-          <Phone className="w-5 h-5 text-indigo-500" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Contact Number</p>
-          <p className="text-sm font-bold text-gray-900">{user?.phone || "Not provided"}</p>
-        </div>
-        <div className="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
-          <Phone className="w-4 h-4 text-indigo-400" />
-        </div>
-      </div>
+      {/* ─── Apple Bento Grid Section ─── */}
+      <div className="grid grid-cols-2 gap-3.5">
 
-      {/* ─── Service Area Card ─── */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-center gap-4">
-        <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center shrink-0">
-          <MapPin className="w-5 h-5 text-purple-500" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Service Area</p>
-          <p className="text-sm font-bold text-gray-900">{location}</p>
-        </div>
-        <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center shrink-0">
-          <Globe className="w-4 h-4 text-purple-400" />
-        </div>
-      </div>
-
-      {/* ─── Work Details Card ─── */}
-      <Link to={ROUTES.WORKER_PROFILE} className="block">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-            <Briefcase className="w-5 h-5 text-blue-500" />
+        {/* Contact Tile */}
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100/90 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0">
+            <Phone className="w-5 h-5 text-indigo-600" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Work Details</p>
-            <div className="flex items-center gap-4">
-              <div>
-                <p className="text-[10px] text-gray-400">Experience</p>
-                <p className="text-xs font-bold text-gray-900">{experience}</p>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Contact</p>
+            <p className="text-xs font-bold text-slate-900 truncate">{user?.phone || "Not set"}</p>
+          </div>
+        </div>
+
+        {/* Location Tile */}
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100/90 flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center shrink-0">
+            <MapPin className="w-5 h-5 text-purple-600" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Location</p>
+            <p className="text-xs font-bold text-slate-900 truncate">{location}</p>
+          </div>
+        </div>
+
+        {/* Featured Full-Width Bento Card: Skills & Expertise */}
+        <Link to={ROUTES.WORKER_PROFILE} className="col-span-2 block">
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100/90 hover:border-emerald-200 transition-all">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">
+                  <Award className="w-4 h-4 text-emerald-600" />
+                </div>
+                <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Skills & Expertise</span>
               </div>
-              <div className="w-px h-8 bg-gray-100" />
-              <div>
-                <p className="text-[10px] text-gray-400">Work Type</p>
-                <p className="text-xs font-bold text-gray-900">{workerProfile?.jobType || "Full-Time"}</p>
+              <ChevronRight className="w-4 h-4 text-slate-300" />
+            </div>
+
+            {allSkills.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5 mt-1.5">
+                {allSkills.map((skill, idx) => (
+                  <span 
+                    key={idx} 
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs font-bold"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    {skill}
+                  </span>
+                ))}
               </div>
+            ) : (
+              <div className="flex items-center justify-between text-xs text-slate-400 py-1">
+                <span>No skills added yet</span>
+                <span className="text-emerald-600 font-bold hover:underline">+ Add skills</span>
+              </div>
+            )}
+          </div>
+        </Link>
+
+        {/* Experience & Work Details Tile */}
+        <Link to={ROUTES.WORKER_PROFILE} className="block">
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100/90 hover:border-blue-200 transition-all h-full flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+              <Briefcase className="w-5 h-5 text-blue-600" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Experience</p>
+              <p className="text-xs font-bold text-slate-900 truncate">{experience}</p>
+              <p className="text-[10px] font-semibold text-slate-500 truncate">{workerProfile?.jobType || "Full-Time"}</p>
             </div>
           </div>
-          <ChevronRight className="w-4 h-4 text-gray-300 shrink-0" />
-        </div>
-      </Link>
+        </Link>
 
-      {/* ─── Skills & Expertise Card ─── */}
-      <Link to={ROUTES.WORKER_PROFILE} className="block">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-teal-50 flex items-center justify-center shrink-0">
-            <Award className="w-5 h-5 text-teal-500" />
+        {/* Languages Spoken Tile */}
+        <Link to={ROUTES.WORKER_PROFILE} className="block">
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100/90 hover:border-pink-200 transition-all h-full flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center shrink-0">
+              <Globe className="w-5 h-5 text-pink-600" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Languages</p>
+              {languages.length > 0 ? (
+                <div className="flex flex-wrap gap-1 mt-0.5">
+                  {languages.map((lang, idx) => (
+                    <span key={idx} className="inline-block px-1.5 py-0.5 bg-pink-50 text-pink-700 rounded text-[10px] font-bold">
+                      {lang}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs font-bold text-slate-900">Not set</p>
+              )}
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Skills & Expertise</p>
-            {allSkills.length > 0 ? (
-              <p className="text-sm font-bold text-gray-900 truncate">{allSkills.join(", ")}</p>
-            ) : (
-              <p className="text-xs text-gray-400">No skills specified.</p>
-            )}
-          </div>
-          <ChevronRight className="w-4 h-4 text-gray-300 shrink-0" />
-        </div>
-      </Link>
+        </Link>
 
-      {/* ─── Languages Card ─── */}
-      <Link to={ROUTES.WORKER_PROFILE} className="block">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 flex items-center gap-4">
-          <div className="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center shrink-0">
-            <Globe className="w-5 h-5 text-pink-500" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Languages</p>
-            {languages.length > 0 ? (
-              <p className="text-sm font-bold text-gray-900 truncate">{languages.join(", ")}</p>
-            ) : (
-              <p className="text-xs text-gray-400">No languages specified.</p>
-            )}
-          </div>
-          <ChevronRight className="w-4 h-4 text-gray-300 shrink-0" />
-        </div>
-      </Link>
+      </div>
 
       {/* ─── CTA Banner ─── */}
-      <div className="rounded-2xl p-5 flex items-center gap-4 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' }}>
+      <div className="rounded-2xl py-4 px-4 flex items-center gap-3.5 relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}>
         {/* Decorative blob */}
         <div className="absolute right-0 top-0 w-24 h-24 opacity-20 pointer-events-none">
           <svg viewBox="0 0 100 100" fill="none" className="w-full h-full">
             <circle cx="70" cy="30" r="50" fill="white" />
           </svg>
         </div>
-        <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
-          <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center shrink-0">
+          <svg className="w-4.5 h-4.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
           </svg>
         </div>
         <div className="flex-1 min-w-0 relative z-10">
-          <h4 className="text-sm font-bold text-white">Want to get more calls?</h4>
-          <p className="text-[11px] text-white/70 mt-0.5 leading-snug">Add more skills and details to your profile to rank higher in client searches.</p>
+          <h4 className="text-xs font-bold text-white leading-tight">Get More Calls!</h4>
+          <p className="text-[11px] text-white/80 mt-0.5 leading-snug truncate">Add skills & details to rank higher.</p>
         </div>
         <Link to={ROUTES.WORKER_PROFILE} className="shrink-0 relative z-10">
-          <button className="bg-white text-indigo-600 text-xs font-bold px-4 py-2 rounded-xl flex items-center gap-1 whitespace-nowrap shadow-sm hover:bg-indigo-50 transition-colors">
-            Update Profile
+          <button className="bg-white text-emerald-700 text-xs font-bold px-3.5 py-2 rounded-xl flex items-center gap-1 whitespace-nowrap shadow-sm hover:bg-emerald-50 transition-colors cursor-pointer">
+            Update
             <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </Link>

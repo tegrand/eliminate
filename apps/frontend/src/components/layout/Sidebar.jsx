@@ -13,6 +13,8 @@ export default function Sidebar() {
   const profileType = user?.profileType;
   const location = useLocation();
 
+  if (profileType === "WORKER") return null;
+
   const filteredNavigation = NAVIGATION_CONFIG.map(group => {
     if (group.roles && !group.roles.includes(profileType)) return null;
 

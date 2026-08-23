@@ -320,16 +320,18 @@ export default function ProfessionalInfoForm({ data, onSave, saving, hideHeader,
         </div>
 
         {/* Submit Button */}
-        <div className="pt-3">
-          <button
-            type="submit"
-            disabled={saving}
-            className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold text-sm rounded-xl shadow-md transition-all disabled:opacity-70 cursor-pointer"
-          >
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            <span>{saving ? "Saving Changes..." : "Save Changes"}</span>
-          </button>
-        </div>
+        {!hideHeader && (
+          <div className="pt-3">
+            <button
+              type="submit"
+              disabled={saving}
+              className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-bold text-sm rounded-xl shadow-md transition-all disabled:opacity-70 cursor-pointer"
+            >
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              <span>{saving ? "Saving Changes..." : "Save Changes"}</span>
+            </button>
+          </div>
+        )}
 
       </form>
     </div>

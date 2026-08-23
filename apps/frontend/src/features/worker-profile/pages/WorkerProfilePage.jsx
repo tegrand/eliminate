@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { User, Phone, Briefcase, FileText, Loader2, ShieldCheck, AlertTriangle, Clock, XCircle, CheckCircle2, MapPin, Camera, Save } from "lucide-react";
+import { User, Phone, Briefcase, FileText, Loader2, ShieldCheck, AlertTriangle, Clock, XCircle, CheckCircle2, MapPin, Camera, Save, X, Check } from "lucide-react";
 
 import { useAuth } from "../../../hooks/useAuth";
 import api from "../../../api/axios";
@@ -14,7 +14,7 @@ export default function WorkerProfilePage() {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState('personal');
+  const [activeModalTab, setActiveModalTab] = useState(null);
   const [isDirty, setIsDirty] = useState(false);
 
   const [isUploading, setIsUploading] = useState(false);
@@ -39,7 +39,7 @@ export default function WorkerProfilePage() {
       handleSave({ profilePhoto: documentUrl });
       toast.success("Profile photo uploaded successfully");
     } catch (error) {
-      toast.error(err?.response?.data?.message || "Failed to upload photo");
+      toast.error(error?.response?.data?.message || "Failed to upload photo");
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -137,198 +137,340 @@ export default function WorkerProfilePage() {
     { id: 'documents', label: 'Documents', icon: FileText },
   ];
 
-  return (
-    <div className="w-full min-h-screen bg-gray-50/50 pb-24 sm:pb-28 font-sans">
-      
-      {/* ── Cover Header ── */}
-      <div className="h-28 sm:h-32 bg-gradient-to-r from-blue-600 to-indigo-700 w-full relative">
-        <div className="absolute top-4 left-4 sm:top-6 sm:left-6">
-          <h1 className="text-xs sm:text-sm font-bold text-white/90 uppercase tracking-widest">My Profile</h1>
-        </div>
-      </div>
+  // Checklist items completion status
+  const checklistItems = [
+    {
+      id: 'avatar',
+      label: 'Profile Photo',
+      subtitle: (avatar || profileData?.profilePhoto) ? 'Completed' : 'Upload photo',
+      icon: Camera,
+      isCompleted: Boolean(avatar || profileData?.profilePhoto),
+      onClick: () => fileInputRef.current?.click(),
+    },
+    {
+      id: 'personal',
+      label: 'Personal Details',
+      subtitle: (profileData?.firstName && profileData?.dateOfBirth && profileData?.gender) ? 'Completed' : 'Basic info & identification',
+      icon: User,
+      isCompleted: Boolean(profileData?.firstName && profileData?.dateOfBirth && profileData?.gender && profileData?.city),
+      onClick: () => setActiveModalTab('personal'),
+    },
+    {
+      id: 'contact',
+      label: 'Contact Details',
+      subtitle: (profileData?.phone && (profileData?.user?.email || profileData?.email)) ? 'Completed' : 'Phone number & email',
+      icon: Phone,
+      isCompleted: Boolean(profileData?.phone && (profileData?.user?.email || profileData?.email)),
+      onClick: () => setActiveModalTab('contact'),
+    },
+    {
+      id: 'professional',
+      label: 'Skills & Experience',
+      subtitle: (profileData?.skills?.length > 0 || profileData?.primarySkill) ? 'Completed' : 'Add skills, experience & wages',
+      icon: Briefcase,
+      isCompleted: Boolean((profileData?.skills?.length > 0 || profileData?.primarySkill) && profileData?.expectedDailyWage),
+      onClick: () => setActiveModalTab('professional'),
+    },
+    {
+      id: 'documents',
+      label: 'Documents & Verification',
+      subtitle: (profileData?.documents?.length > 0 || profileData?.resumeUrl || profileData?.aadhaarNumber) ? 'Completed' : 'Upload ID & certificates',
+      icon: FileText,
+      isCompleted: Boolean(profileData?.documents?.length > 0 || profileData?.resumeUrl || profileData?.aadhaarNumber),
+      onClick: () => setActiveModalTab('documents'),
+    },
+  ];
 
-      <div className="max-w-3xl mx-auto px-2 sm:px-4 relative z-10 -mt-12 sm:-mt-16 space-y-3 sm:space-y-4">
+  return (
+    <div className="w-full min-h-screen bg-transparent pb-24 sm:pb-28 font-sans">
+      
+      <div className="max-w-4xl mx-auto px-2 sm:px-4 pt-1 sm:pt-2 space-y-3 sm:space-y-4">
 
         {/* ── Profile Overview Card ── */}
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm px-4 pb-4 pt-0 flex flex-col items-center text-center">
+        <div className="bg-white rounded-[28px] border border-gray-100 shadow-sm p-4 sm:p-5 relative mt-4 sm:mt-5">
           
-          {/* Avatar */}
-          <div className="relative shrink-0 -mt-10 sm:-mt-12 group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-white p-1 border border-gray-100 shadow-sm relative">
-              <div className="w-full h-full rounded-full bg-gray-100 overflow-hidden flex items-center justify-center relative">
-                {isUploading ? (
-                  <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
-                ) : avatar ? (
-                  <img src={getAvatarUrl(avatar)} alt={name} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-3xl sm:text-4xl font-bold text-gray-400">{initials}</span>
-                )}
-                {/* Hover overlay */}
-                <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Camera className="w-8 h-8 text-white" />
+          <div className="flex flex-row items-center gap-4 sm:gap-6">
+            {/* Avatar with Circular SVG Progress Ring */}
+            <div className="relative shrink-0 -mt-14 sm:-mt-16 group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+              
+              {/* Circular SVG Progress Ring wrapped around avatar */}
+              <div className="relative w-26 h-26 sm:w-30 sm:h-30 flex items-center justify-center">
+                <svg className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none" viewBox="0 0 100 100">
+                  {/* Track Ring */}
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="44"
+                    fill="none"
+                    stroke="#e2e8f0"
+                    strokeWidth="5"
+                  />
+                  {/* Progress Stroke */}
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="44"
+                    fill="none"
+                    stroke={isComplete ? "#10b981" : "#059669"}
+                    strokeWidth="5.5"
+                    strokeLinecap="round"
+                    strokeDasharray={276.46}
+                    strokeDashoffset={276.46 * (1 - completion / 100)}
+                    className="transition-all duration-1000 ease-out"
+                  />
+                </svg>
+
+                {/* Inner Round Avatar Photo */}
+                <div className="w-[82%] h-[82%] rounded-full bg-white p-0.5 shadow-sm relative overflow-hidden flex items-center justify-center">
+                  {isUploading ? (
+                    <Loader2 className="w-7 h-7 text-emerald-600 animate-spin" />
+                  ) : avatar ? (
+                    <img src={getAvatarUrl(avatar)} alt={name} className="w-full h-full object-cover rounded-full" />
+                  ) : (
+                    <span className="text-2xl sm:text-3xl font-bold text-slate-400">{initials}</span>
+                  )}
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Camera className="w-6 h-6 text-white" />
+                  </div>
                 </div>
               </div>
+              
+              {/* Camera badge */}
+              <div className="absolute bottom-0 right-0 w-6.5 h-6.5 sm:w-7.5 sm:h-7.5 bg-emerald-600 rounded-full flex items-center justify-center shadow-md border-2 border-white z-10 hover:bg-emerald-700 transition-colors">
+                <Camera className="w-3.5 h-3.5 text-white" />
+              </div>
+
+              {/* Completion Percentage Badge */}
+              <div className="absolute -top-1 -right-1 bg-emerald-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full border border-white shadow-sm z-10">
+                {completion}%
+              </div>
+
+              <input ref={fileInputRef} onChange={handlePhotoUpload} type="file" className="hidden" accept="image/png,image/jpg,image/jpeg" />
             </div>
-            
-            {/* Camera badge */}
-            <div className="absolute bottom-1 right-1 sm:bottom-2 sm:right-2 w-7 h-7 sm:w-8 sm:h-8 bg-indigo-600 rounded-full flex items-center justify-center shadow-md border-2 border-white z-10 hover:bg-indigo-700 transition-colors">
-              <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
-            </div>
 
-            {profileData?.presentToday && (
-              <div className="absolute bottom-1 left-1 sm:bottom-2 sm:left-2 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white shadow-sm z-10" />
-            )}
+            {/* Name & Status on Right */}
+            <div className="flex-1 min-w-0 text-left">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900 leading-tight truncate">{name}</h2>
+                {profileData?.profileStatus === 'APPROVED' && (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                )}
+              </div>
 
-            <input ref={fileInputRef} onChange={handlePhotoUpload} type="file" className="hidden" accept="image/png,image/jpg,image/jpeg" />
-          </div>
-
-          {/* Name & Title */}
-          <div className="mt-2 w-full">
-            <div className="flex items-center gap-1.5 justify-center flex-wrap">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 leading-tight">{name}</h2>
-              {profileData?.profileStatus === 'APPROVED' && (
-                <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-              )}
-            </div>
-            <p className="text-sm font-medium text-gray-500 mt-1">{skillName}</p>
-
-            {/* Status Badge */}
-            <div className="mt-2 flex justify-center">
-              {profileData?.profileStatus === 'APPROVED' && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">
-                  <ShieldCheck className="w-4 h-4" /> Approved
-                </span>
-              )}
-              {profileData?.profileStatus === 'PENDING' && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100">
-                  <Clock className="w-4 h-4" /> Pending Approval
-                </span>
-              )}
-              {profileData?.profileStatus === 'REJECTED' && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-red-50 text-red-700 border border-red-100">
-                  <XCircle className="w-4 h-4" /> Rejected
-                </span>
-              )}
-              {profileData?.profileStatus === 'SUSPENDED' && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-gray-100 text-gray-700 border border-gray-200">
-                  <AlertTriangle className="w-4 h-4" /> Suspended
-                </span>
-              )}
+              {/* Status Badge directly under name */}
+              <div className="mt-1 flex items-center gap-2">
+                {profileData?.profileStatus === 'APPROVED' && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">
+                    <ShieldCheck className="w-3.5 h-3.5" /> Approved
+                  </span>
+                )}
+                {profileData?.profileStatus === 'PENDING' && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-100">
+                    <Clock className="w-3.5 h-3.5" /> Pending Approval
+                  </span>
+                )}
+                {profileData?.profileStatus === 'REJECTED' && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-red-50 text-red-700 border border-red-100">
+                    <XCircle className="w-3.5 h-3.5" /> Rejected
+                  </span>
+                )}
+                {profileData?.profileStatus === 'SUSPENDED' && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-gray-100 text-gray-700 border border-gray-200">
+                    <AlertTriangle className="w-3.5 h-3.5" /> Suspended
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Location & Joined Info */}
-          <div className="w-full grid grid-cols-2 gap-4 border-t border-gray-100 mt-4 pt-4">
-            <div className="flex flex-col items-center">
-              <MapPin className="w-5 h-5 text-gray-400 mb-1.5" />
-              <span className="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider font-bold">Location</span>
-              <span className="text-sm font-semibold text-gray-800 mt-0.5">{location}</span>
+          <div className="w-full grid grid-cols-2 gap-2 border-t border-gray-100 mt-3 pt-3">
+            <div className="flex flex-col items-center sm:items-start sm:pl-2">
+              <span className="text-[9px] sm:text-[10px] text-gray-400 uppercase tracking-wider font-bold flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5 text-gray-400" /> Location
+              </span>
+              <span className="text-xs font-semibold text-gray-800 mt-0.5">{location}</span>
             </div>
-            <div className="flex flex-col items-center">
-              <User className="w-5 h-5 text-gray-400 mb-1.5" />
-              <span className="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider font-bold">Member Since</span>
-              <span className="text-sm font-semibold text-gray-800 mt-0.5">{memberSince}</span>
+            <div className="flex flex-col items-center sm:items-start sm:pl-2">
+              <span className="text-[9px] sm:text-[10px] text-gray-400 uppercase tracking-wider font-bold flex items-center gap-1">
+                <User className="w-3.5 h-3.5 text-gray-400" /> Member Since
+              </span>
+              <span className="text-xs font-semibold text-gray-800 mt-0.5">{memberSince}</span>
             </div>
           </div>
         </div>
 
-        {/* ── Profile Completion Card ── */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-3 sm:p-4">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-xs sm:text-sm font-bold text-gray-900">Profile Completion</span>
-            <span className={`text-xs sm:text-sm font-black ${isComplete ? 'text-emerald-500' : 'text-blue-600'}`}>{completion}%</span>
+        {/* ── Segmented Control Tab Toggle Bar ── */}
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-1.5 sm:p-2">
+          <div className="flex items-center p-1 bg-slate-100/80 rounded-2xl gap-1 overflow-x-auto scrollbar-hide">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveModalTab(tab.id)}
+                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 bg-white text-slate-800 hover:text-emerald-700 hover:bg-emerald-50/80 rounded-xl shadow-xs border border-slate-200/50 transition-all text-xs sm:text-sm font-bold cursor-pointer whitespace-nowrap"
+                >
+                  <Icon className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span className="truncate">{tab.label}</span>
+                </button>
+              );
+            })}
           </div>
-          <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden mb-2">
-            <div
-              className={`h-full rounded-full transition-all duration-1000 ease-out ${isComplete ? 'bg-emerald-500' : 'bg-blue-600'}`}
-              style={{ width: `${completion}%` }}
-            />
-          </div>
-          {isComplete ? (
-            <div className="flex items-center justify-center gap-1.5 text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg text-xs font-bold border border-emerald-100">
-              <CheckCircle2 className="w-3.5 h-3.5" /> Profile is 100% Complete!
-            </div>
-          ) : (
-            <p className="text-[11px] sm:text-xs text-gray-500 text-center font-medium">Complete the sections below to reach 100% and get noticed.</p>
-          )}
         </div>
 
-        {/* ── Tabs + Form Card ── */}
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
-          {/* iOS-style Segmented Control for Tabs */}
-          <div className="p-2 sm:p-3 border-b border-gray-100 bg-gray-50/50">
-            <div className="flex p-1 bg-gray-200/60 rounded-xl overflow-x-auto scrollbar-hide gap-1">
-              {tabs.map((tab) => {
-                const Icon = tab.icon;
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => { setActiveTab(tab.id); setIsDirty(false); }}
-                    className={`flex items-center gap-1.5 px-3 py-2.5 text-xs sm:text-sm font-bold whitespace-nowrap transition-all flex-1 justify-center rounded-lg ${
-                      isActive
-                        ? 'bg-white text-gray-900 shadow-sm border border-gray-100/50'
-                        : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    <span className={isActive ? 'block' : 'hidden sm:block'}>{tab.label}</span>
-                  </button>
-                );
-              })}
-            </div>
+        {/* ── Profile Completion Checklist Items ── */}
+        <div className="space-y-2 pt-1">
+          <div className="flex items-center justify-between px-1 mb-1">
+            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Profile Checklist</h3>
+            <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-100">
+              {checklistItems.filter(i => i.isCompleted).length} / {checklistItems.length} Completed
+            </span>
           </div>
 
-          {/* Tab content */}
-          <div className="p-4 sm:p-6">
-            <div className={activeTab === 'personal' ? 'block animate-fade-in' : 'hidden'}>
-              <div className="mb-5">
-                <h3 className="text-lg font-bold text-gray-900">Personal Info</h3>
-                <p className="text-sm text-gray-500 mt-1">Update your basic details and identification.</p>
-              </div>
-              <PersonalInfoForm data={profileData} onSave={handleSave} saving={saving} hideHeader isActive={activeTab === 'personal'} onDirty={() => setIsDirty(true)} />
-            </div>
+          <div className="space-y-2">
+            {checklistItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <div
+                  key={item.id}
+                  onClick={item.onClick}
+                  className="bg-white rounded-2xl border border-gray-100 shadow-xs p-3.5 sm:p-4 flex items-center justify-between transition-all hover:border-emerald-200 hover:shadow-sm cursor-pointer group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center font-bold transition-colors ${
+                      item.isCompleted 
+                        ? 'bg-emerald-50 text-emerald-600 border border-emerald-100/60' 
+                        : 'bg-slate-100 text-slate-400 border border-slate-200/50 group-hover:bg-emerald-50/50 group-hover:text-emerald-500'
+                    }`}>
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition-colors leading-snug">
+                        {item.label}
+                      </h4>
+                      <p className={`text-xs font-medium mt-0.5 ${item.isCompleted ? 'text-emerald-600 font-semibold' : 'text-slate-400'}`}>
+                        {item.subtitle}
+                      </p>
+                    </div>
+                  </div>
 
-            <div className={activeTab === 'contact' ? 'block animate-fade-in' : 'hidden'}>
-              <div className="mb-5">
-                <h3 className="text-lg font-bold text-gray-900">Contact Details</h3>
-                <p className="text-sm text-gray-500 mt-1">Manage how clients can reach out to you.</p>
-              </div>
-              <ContactInfoForm data={profileData} onSave={handleSave} saving={saving} hideHeader isActive={activeTab === 'contact'} onDirty={() => setIsDirty(true)} />
-            </div>
-
-            <div className={activeTab === 'professional' ? 'block animate-fade-in' : 'hidden'}>
-              <div className="mb-5">
-                <h3 className="text-lg font-bold text-gray-900">Professional Info</h3>
-                <p className="text-sm text-gray-500 mt-1">Set your skills, experience, and work preferences.</p>
-              </div>
-              <ProfessionalInfoForm data={profileData} onSave={handleSave} saving={saving} hideHeader isActive={activeTab === 'professional'} onDirty={() => setIsDirty(true)} />
-            </div>
-
-            <div className={activeTab === 'documents' ? 'block animate-fade-in' : 'hidden'}>
-              <div className="mb-5">
-                <h3 className="text-lg font-bold text-gray-900">Documents</h3>
-                <p className="text-sm text-gray-500 mt-1">Upload files for verification and client viewing.</p>
-              </div>
-              <DocumentsForm data={profileData} onSave={handleSave} saving={saving} hideHeader isActive={activeTab === 'documents'} onDirty={() => setIsDirty(true)} />
-            </div>
+                  {/* Green Checkmark Circle vs Empty Circle */}
+                  <div className="shrink-0 ml-3">
+                    {item.isCompleted ? (
+                      <div className="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-xs">
+                        <Check className="w-4 h-4 stroke-[3]" />
+                      </div>
+                    ) : (
+                      <div className="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 text-slate-300 flex items-center justify-center group-hover:border-emerald-300 group-hover:text-emerald-400 transition-colors">
+                        <div className="w-2 h-2 rounded-full bg-slate-300 group-hover:bg-emerald-400" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 
       </div>
 
-      {/* Floating Save Button Container - Always Visible */}
-      <div className="fixed bottom-0 left-0 right-0 p-3 sm:p-4 bg-white/90 backdrop-blur-md border-t border-gray-200 shadow-[0_-4px_12px_rgba(0,0,0,0.08)] z-50 flex justify-center">
-        <button
-          type="submit"
-          form="profile-form"
-          disabled={saving}
-          className="w-full max-w-2xl flex justify-center items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white text-sm sm:text-base font-bold rounded-xl shadow-lg hover:shadow-indigo-500/20 transition-all disabled:opacity-70 active:scale-[0.98] cursor-pointer"
-        >
-          {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-          <span>{saving ? "Saving Changes..." : "Save Changes"}</span>
-        </button>
-      </div>
+      {/* ── Full-Screen / Blurred Background Modal for Forms ── */}
+      {activeModalTab && (
+        <div className="fixed inset-0 z-[110] bg-slate-900/50 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fade-in">
+          <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-100 flex flex-col max-h-[85vh] overflow-hidden animate-scale-up">
+            
+            {/* Modal Header */}
+            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8.5 h-8.5 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                  {activeModalTab === 'personal' && <User className="w-4.5 h-4.5" />}
+                  {activeModalTab === 'contact' && <Phone className="w-4.5 h-4.5" />}
+                  {activeModalTab === 'professional' && <Briefcase className="w-4.5 h-4.5" />}
+                  {activeModalTab === 'documents' && <FileText className="w-4.5 h-4.5" />}
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900 leading-tight">
+                    {activeModalTab === 'personal' && "Personal Information"}
+                    {activeModalTab === 'contact' && "Contact Details"}
+                    {activeModalTab === 'professional' && "Professional Info"}
+                    {activeModalTab === 'documents' && "Documents & Verification"}
+                  </h3>
+                  <p className="text-[11px] text-slate-500">Update and save your information below.</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setActiveModalTab(null)}
+                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors cursor-pointer"
+              >
+                <X className="w-4.5 h-4.5" />
+              </button>
+            </div>
+
+            {/* Modal Body (Scrollable Form) */}
+            <div className="p-5 sm:p-6 overflow-y-auto flex-1">
+              {activeModalTab === 'personal' && (
+                <PersonalInfoForm 
+                  data={profileData} 
+                  onSave={async (fields) => { await handleSave(fields); setActiveModalTab(null); }} 
+                  saving={saving} 
+                  hideHeader 
+                  isActive={true}
+                />
+              )}
+              {activeModalTab === 'contact' && (
+                <ContactInfoForm 
+                  data={profileData} 
+                  onSave={async (fields) => { await handleSave(fields); setActiveModalTab(null); }} 
+                  saving={saving} 
+                  hideHeader 
+                  isActive={true}
+                />
+              )}
+              {activeModalTab === 'professional' && (
+                <ProfessionalInfoForm 
+                  data={profileData} 
+                  onSave={async (fields) => { await handleSave(fields); setActiveModalTab(null); }} 
+                  saving={saving} 
+                  hideHeader 
+                  isActive={true}
+                />
+              )}
+              {activeModalTab === 'documents' && (
+                <DocumentsForm 
+                  data={profileData} 
+                  onSave={async (fields) => { await handleSave(fields); setActiveModalTab(null); }} 
+                  saving={saving} 
+                  hideHeader 
+                  isActive={true}
+                />
+              )}
+            </div>
+
+            {/* Modal Footer with Save Button */}
+            <div className="px-5 py-3.5 border-t border-slate-100 bg-slate-50 flex items-center justify-end gap-2.5">
+              <button
+                type="button"
+                onClick={() => setActiveModalTab(null)}
+                className="px-4 py-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-100 text-xs font-bold rounded-xl transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                form="profile-form"
+                disabled={saving}
+                className="px-6 py-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-70"
+              >
+                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                <span>{saving ? "Saving..." : "Save Changes"}</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );
