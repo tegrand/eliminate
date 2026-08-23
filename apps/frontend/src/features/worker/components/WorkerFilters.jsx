@@ -73,7 +73,10 @@ export default function WorkerFilters({ availableStatuses = [], availableAgencie
 
       {/* Backdrop-Blurred Full-Screen Filter Popup Modal */}
       {isOpen && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in">
+        <div 
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-md z-[1000] flex items-center justify-center p-4 animate-fade-in"
+          style={{ backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
+        >
           <div className="bg-white rounded-2xl border border-slate-100 shadow-2xl w-full max-w-md p-5 sm:p-6 space-y-5 animate-scale-up">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
