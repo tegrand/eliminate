@@ -46,24 +46,27 @@ export default function AgencySingleWorkerModal({ isOpen, onClose, onSuccess }) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-slide-up-sm">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+    <div 
+      className="fixed inset-0 z-[1000] flex items-center justify-center p-3 sm:p-4 bg-slate-900/50 backdrop-blur-md animate-fade-in"
+      style={{ backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
+    >
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md sm:max-w-lg overflow-hidden animate-slide-up-sm border border-slate-100 max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 bg-gray-50/50 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-indigo-100 text-indigo-700 rounded-lg">
+            <div className="p-2 bg-violet-100 text-violet-700 rounded-lg">
               <UserPlus className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-900 leading-tight">Add Offline Worker</h2>
+              <h2 className="text-base sm:text-lg font-bold text-gray-900 leading-tight">Add Offline Worker</h2>
               <p className="text-xs text-gray-500">Create a managed worker profile without login access.</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors">
+          <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors cursor-pointer">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-3.5 overflow-y-auto flex-1">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
@@ -168,9 +171,9 @@ export default function AgencySingleWorkerModal({ isOpen, onClose, onSuccess }) 
             </div>
           </div>
 
-          <div className="pt-4 flex justify-end gap-3 border-t border-gray-100">
-            <button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors">Cancel</button>
-            <button type="submit" disabled={loading} className="px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl shadow-sm transition-all flex items-center gap-2">
+          <div className="pt-3 flex justify-end gap-3 border-t border-gray-100 shrink-0">
+            <button type="button" onClick={onClose} className="px-5 py-2.5 text-xs font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors cursor-pointer">Cancel</button>
+            <button type="submit" disabled={loading} className="px-5 py-2.5 text-xs font-bold text-white bg-violet-500 hover:bg-violet-600 active:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl shadow-xs transition-all flex items-center gap-2 cursor-pointer">
               {loading ? "Adding..." : "Add Worker"}
             </button>
           </div>
