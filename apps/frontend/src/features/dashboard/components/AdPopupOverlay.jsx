@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useQuery } from "@tanstack/react-query";
 import { X, ChevronRight, ChevronLeft, ExternalLink, Megaphone, Sparkles } from "lucide-react";
 import { advertisementsApi } from "../../../api/advertisements.api";
@@ -78,9 +79,9 @@ export default function AdPopupOverlay() {
     return `https://${url}`;
   };
 
-  return (
+  return createPortal(
     <div 
-      className="fixed inset-0 z-[1000] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md animate-fade-in"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md animate-fade-in"
       style={{ backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}
     >
       <div className="relative w-full max-w-md sm:max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100 flex flex-col animate-scale-up">
@@ -188,6 +189,7 @@ export default function AdPopupOverlay() {
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
