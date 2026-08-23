@@ -78,35 +78,7 @@ export default function WorkerProfilePage() {
     }
   };
 
-  // Calculate profile completion percentage
-  const calculateCompletion = () => {
-    if (!profileData) return 0;
-    const requiredFields = [
-      profileData.firstName,
-      profileData.phone,
-      profileData.gender,
-      profileData.dateOfBirth,
-      profileData.city,
-      profileData.district,
-      profileData.jobType || (profileData.skills && profileData.skills.length > 0),
-      profileData.totalExperienceYears !== null,
-      profileData.expectedDailyWage,
-      profileData.resumeUrl || profileData.aadhaarNumber,
-    ];
-    const filledFields = requiredFields.filter(field => Boolean(field));
-    return Math.round((filledFields.length / requiredFields.length) * 100);
-  };
-
-  if (loading) {
-    return (
-      <div className="w-full h-[60vh] flex items-center justify-center">
-        <Loader2 className="w-10 h-10 animate-spin text-gray-900" />
-      </div>
-    );
-  }
-
-  const completion = calculateCompletion();
-  const isComplete = completion === 100;
+  const avatar = profileData?.user?.avatar || profileData?.profilePhoto || user?.avatar;
 
   const firstName = profileData?.user?.firstName || profileData?.firstName || user?.firstName || "";
   const lastName = profileData?.user?.lastName || profileData?.lastName || user?.lastName || "";
@@ -114,14 +86,23 @@ export default function WorkerProfilePage() {
   const initials = name.split(" ").map(n => n?.[0] || "").join("").substring(0, 2).toUpperCase() || "W";
 
   const skillName = profileData?.primarySkill?.name || (typeof profileData?.primarySkill === 'string' ? profileData?.primarySkill : null) || profileData?.skills?.[0]?.skill?.name || "Complete your profile";
-  const avatar = profileData?.user?.avatar || profileData?.profilePhoto || user?.avatar;
+
+  const city = profileData?.city || profileData?.user?.city || "";
+  const district = profileData?.district || profileData?.user?.district || "";
+  const state = profileData?.state || profileData?.user?.state || "";
 
   let location = "Location not set";
-  if (profileData?.district && profileData?.state) location = `${profileData.district}, ${profileData.state}`;
-  else if (profileData?.district) location = profileData.district;
+  if (city && district) location = `${city}, ${district}`;
+  else if (city && state) location = `${city}, ${state}`;
+  else if (district && state) location = `${district}, ${state}`;
+  else if (city) location = city;
+  else if (district) location = district;
+  else if (state) location = state;
+  else if (profileData?.addressLine1) location = profileData.addressLine1;
 
-  const memberSince = profileData?.createdAt
-    ? new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(new Date(profileData.createdAt))
+  const createdAtRaw = profileData?.createdAt || profileData?.user?.createdAt || user?.createdAt;
+  const memberSince = createdAtRaw
+    ? new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' }).format(new Date(createdAtRaw))
     : "Unknown";
 
   const getAvatarUrl = (src) => {
@@ -150,25 +131,25 @@ export default function WorkerProfilePage() {
     {
       id: 'personal',
       label: 'Personal Details',
-      subtitle: (profileData?.firstName && profileData?.dateOfBirth && profileData?.gender) ? 'Completed' : 'Basic info & identification',
+      subtitle: (profileData?.firstName || profileData?.user?.firstName) ? 'Completed' : 'Basic info & identification',
       icon: User,
-      isCompleted: Boolean(profileData?.firstName && profileData?.dateOfBirth && profileData?.gender && profileData?.city),
+      isCompleted: Boolean(profileData?.firstName || profileData?.user?.firstName),
       onClick: () => setActiveModalTab('personal'),
     },
     {
       id: 'contact',
       label: 'Contact Details',
-      subtitle: (profileData?.phone && (profileData?.user?.email || profileData?.email)) ? 'Completed' : 'Phone number & email',
+      subtitle: (profileData?.phone || profileData?.user?.email || profileData?.email) ? 'Completed' : 'Phone number & email',
       icon: Phone,
-      isCompleted: Boolean(profileData?.phone && (profileData?.user?.email || profileData?.email)),
+      isCompleted: Boolean(profileData?.phone || profileData?.user?.email || profileData?.email),
       onClick: () => setActiveModalTab('contact'),
     },
     {
       id: 'professional',
       label: 'Skills & Experience',
-      subtitle: (profileData?.skills?.length > 0 || profileData?.primarySkill) ? 'Completed' : 'Add skills, experience & wages',
+      subtitle: (profileData?.skills?.length > 0 || profileData?.primarySkill || profileData?.jobType || profileData?.expectedDailyWage || profileData?.totalExperienceYears !== null) ? 'Completed' : 'Add skills, experience & wages',
       icon: Briefcase,
-      isCompleted: Boolean((profileData?.skills?.length > 0 || profileData?.primarySkill) && profileData?.expectedDailyWage),
+      isCompleted: Boolean(profileData?.skills?.length > 0 || profileData?.primarySkill || profileData?.jobType || profileData?.expectedDailyWage || profileData?.totalExperienceYears !== null),
       onClick: () => setActiveModalTab('professional'),
     },
     {
@@ -181,13 +162,31 @@ export default function WorkerProfilePage() {
     },
   ];
 
+  // Calculate profile completion percentage dynamically from checklist items
+  const calculateCompletion = () => {
+    if (!checklistItems || checklistItems.length === 0) return 0;
+    const completedCount = checklistItems.filter(item => item.isCompleted).length;
+    return Math.round((completedCount / checklistItems.length) * 100);
+  };
+
+  if (loading) {
+    return (
+      <div className="w-full h-[60vh] flex items-center justify-center">
+        <Loader2 className="w-10 h-10 animate-spin text-gray-900" />
+      </div>
+    );
+  }
+
+  const completion = calculateCompletion();
+  const isComplete = completion === 100;
+
   return (
     <div className="w-full min-h-screen bg-transparent pb-24 sm:pb-28 font-sans">
       
-      <div className="max-w-4xl mx-auto px-2 sm:px-4 pt-1 sm:pt-2 space-y-3 sm:space-y-4">
+      <div className="max-w-4xl mx-auto px-2 sm:px-4 pt-4 sm:pt-5 space-y-3 sm:space-y-4">
 
         {/* ── Profile Overview Card ── */}
-        <div className="bg-white rounded-[28px] border border-gray-100 shadow-sm p-4 sm:p-5 relative mt-4 sm:mt-5">
+        <div className="bg-white rounded-[28px] border border-gray-100 shadow-sm p-4 sm:p-5 relative mt-7 sm:mt-8">
           
           <div className="flex flex-row items-center gap-4 sm:gap-6">
             {/* Avatar with Circular SVG Progress Ring */}
